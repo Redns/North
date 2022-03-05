@@ -4,7 +4,51 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<input id="image_input" type="file" name="file" hidden accept="image/*"/>
+<div class="upload">
+    <img id="upload"  src="~/upload.png" alt="">
 </div>
+
+<script>
+    const image_input = document.getElementById("image_input");
+    const upload = document.getElementById("upload");
+    upload.onclick = function(){
+        image_input.click()
+    }
+
+    function copyToClip(content, message) {
+        var aux = document.createElement("input"); 
+        aux.setAttribute("value", content); 
+        document.body.appendChild(aux); 
+        aux.select();
+        document.execCommand("copy"); 
+        document.body.removeChild(aux);
+    }
+
+    image_input.onchange = function(){
+        if(this.files[0]){
+            var form = new FormData();
+            form.append("", this.files[0], "image");
+
+            var settings = {
+                "url": "http://localhost:12121/api/image",
+                "method": "POST",
+                "timeout": 0,
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "data": form
+            };
+
+            $.ajax(settings).done(function (response){
+                var response = JSON.parse(response);
+                if(response.status_Code == 200){
+                    copyToClip(response.url);
+                }
+                else{
+                    alert(`上传失败,{response.message}`);
+                }
+            });
+        }
+    }
+</script>

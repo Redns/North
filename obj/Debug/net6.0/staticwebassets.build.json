@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "EAOscHo2xAjOQ+S20CNt2kylUEXwWZJnERzc/SwsEDg=",
+  "Hash": "XM70GJg39pWReD0cfx6ZI0JtpT76cHq+D9MYBBx/t44=",
   "Source": "ImageBed",
   "BasePath": "_content/ImageBed",
   "Mode": "Default",
@@ -51,6 +51,23 @@
       "OriginalItemSpec": "D:\\Project\\ImageBed\\obj\\Debug\\net6.0\\scopedcss\\projectbundle\\ImageBed.bundle.scp.css"
     },
     {
+      "Identity": "D:\\Project\\ImageBed\\wwwroot\\background.jpg",
+      "SourceId": "ImageBed",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Project\\ImageBed\\wwwroot\\",
+      "BasePath": "_content/ImageBed",
+      "RelativePath": "background.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\background.jpg"
+    },
+    {
       "Identity": "D:\\Project\\ImageBed\\wwwroot\\css\\site.css",
       "SourceId": "ImageBed",
       "SourceType": "Discovered",
@@ -80,7 +97,7 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
+      "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
     },
@@ -1069,6 +1086,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Identity": "D:\\Project\\ImageBed\\wwwroot\\upload.png",
+      "SourceId": "ImageBed",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Project\\ImageBed\\wwwroot\\",
+      "BasePath": "_content/ImageBed",
+      "RelativePath": "upload.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\upload.png"
     }
   ]
 }
