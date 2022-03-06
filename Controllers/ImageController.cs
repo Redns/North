@@ -30,7 +30,7 @@ namespace ImageBed.Controllers
                 {
                     Status_Code = 200,
                     Message = "upload success",
-                    Url = $"{AppSettings.Get("imageBed:url")}:12121/api/image/{unitImageName}"
+                    Url = $"{AppSettings.Get("imageBed:url")}/api/image/{unitImageName}"
                 };
             }
             catch (Exception ex)

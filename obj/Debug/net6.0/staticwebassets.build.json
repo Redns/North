@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "XM70GJg39pWReD0cfx6ZI0JtpT76cHq+D9MYBBx/t44=",
+  "Hash": "n2UscJziAMu1l7a4goDBPU5FiYo1LgT3F6UP4/+lfJI=",
   "Source": "ImageBed",
   "BasePath": "_content/ImageBed",
   "Mode": "Default",
@@ -83,23 +83,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\site.css"
-    },
-    {
-      "Identity": "D:\\Project\\ImageBed\\wwwroot\\favicon.ico",
-      "SourceId": "ImageBed",
-      "SourceType": "Discovered",
-      "ContentRoot": "D:\\Project\\ImageBed\\wwwroot\\",
-      "BasePath": "_content/ImageBed",
-      "RelativePath": "favicon.ico",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\favicon.ico"
     },
     {
       "Identity": "D:\\Project\\ImageBed\\wwwroot\\js\\site.js",

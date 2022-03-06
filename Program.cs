@@ -13,6 +13,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.Urls.Add("http://0.0.0.0:12121");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
