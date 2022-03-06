@@ -33,6 +33,7 @@
 
 - 安全可靠，图片完全存储在主机
 - 无图片尺寸、带宽限制（取决于您的环境）
+- 图片上传成功后自动将链接复制到剪贴板
 - 跨平台，可在 `windows`、`Linux`、`MacOS`部署
 
 <br>
@@ -43,6 +44,7 @@
   - [在 Windows 上安装 ](https://docs.microsoft.com/zh-cn/dotnet/core/install/windows?tabs=net60)
   - [在 macOS 上安装 .NET](https://docs.microsoft.com/zh-cn/dotnet/core/install/macos)
   - [在 Linux 发行版上安装 .NET](https://docs.microsoft.com/zh-cn/dotnet/core/install/linux)
+- [Nginx](https://nginx.org/en/)（云服务器需要）
 
 <br>
 
@@ -61,27 +63,206 @@
 
 ### 本地搭建
 
-1. 前往 [ImageBed主页](https://github.com/Redns/ImageBed/releases/tag/v1.0.0) 下载资源包（或者选择 [蓝奏云](https://wwz.lanzouv.com/i5uy4013bs8h)下载）
+1. 前往 [ImageBed主页](https://github.com/Redns/ImageBed/releases/tag/v1.0.0) 下载资源包（或者选择 [蓝奏云](https://wwz.lanzouv.com/iaYci013dbkj) 下载）
 
-![image-20220306202309799](http://jing-image.test.upcdn.net/image-20220306202309799.png)
-
-<br>
-
-2. 解压资源包，内部应包含如下文件
-
-![image-20220306205013617](http://jing-image.test.upcdn.net/image-20220306205013617.png)
+![image-20220306205736968](http://jing-image.test.upcdn.net/image-20220306205736968.png)
 
 <br>
 
-3. 
+2. 解压资源包，内部应包含如下文件（图片存储在 Assets/Images 文件夹下）
 
+![image-20220306211237487](http://jing-image.test.upcdn.net/image-20220306211237487.png)
 
+<br>
+
+3. 打开 `appsettings.json`，修改相关设置
+
+   ```json
+   {
+     "Logging": {
+       "LogLevel": {
+         "Default": "Information",
+         "Microsoft.AspNetCore": "Warning"
+       }
+     },
+     "AllowedHosts": "*",
+       "imageBed": {
+           "url": "http://127.0.0.1:12121"		// 修改这里
+       }
+   }
+   ```
+
+   需要注意的是，这里的 `url` 必须为 `http://127.0.0.1:12121`，修改端口号无效。这个链接实际上是将来服务器返回的图片链接的一部分，因为该服务可能部署在本地或者云服务器上（IP地址不同），因此设置这样一个字段。
+
+<br>
+
+4. 双击 `ImageBed.exe` 运行服务
+
+   ![image-20220306210514795](http://jing-image.test.upcdn.net/image-20220306210514795.png)
+
+   ![image-20220306210438546](http://jing-image.test.upcdn.net/image-20220306210438546.png)
+
+   <br>
+
+5. 打开浏览器，输入 `localhost:12121`
+
+   ![image-20220306210631733](http://jing-image.test.upcdn.net/image-20220306210631733.png)
+
+   <br>
+
+6. 点击绿色区域即可上传图片，上传完成后会有弹窗提示并将链接复制到剪贴板
+
+   ![image-20220306211551153](http://jing-image.test.upcdn.net/image-20220306211551153.png)
+
+   <br>
+
+7. 保持 `ImageBed.exe` 运行即可
+
+​	<br>
 
 ### 云服务器搭建
 
+这里以 `腾讯云服务器` 为例，其他的云服务器配置流程相似。
 
+1.  将资源包解压后上传至云服务器
+
+![image-20220306213004539](http://jing-image.test.upcdn.net/image-20220306213004539.png)
+
+​	<br>
+
+2. 打开 `appsettings.json` 并修改 `url`
+
+   ```json
+   {
+     "Logging": {
+       "LogLevel": {
+         "Default": "Information",
+         "Microsoft.AspNetCore": "Warning"
+       }
+     },
+     "AllowedHosts": "*",
+       "imageBed": {
+           "url": "http://xxx.xxx.xxx.xxx"		// xxx.xxx.xxx.xxx为云服务的公网ip
+       }
+   }
+   ```
+
+   <br>
+
+3. 安装 `nginx`（如果您还没有安装的话）
+
+   ```shell
+   sudo apt-get install nginx
+   ```
+
+​	<br>
+
+4. 打开 `/etc/nginx/nginx.conf`，修改相关设置
+
+   ```nginx
+   user www-data;
+   worker_processes auto;
+   pid /run/nginx.pid;
+   include /etc/nginx/modules-enabled/*.conf;
+   
+   events {
+   	worker_connections 768;
+   }
+   
+   http {
+   	sendfile on;
+   	tcp_nopush on;
+   	tcp_nodelay on;
+   	keepalive_timeout 65;
+   	types_hash_max_size 20480;
+   
+   	include /etc/nginx/mime.types;
+   	default_type application/octet-stream;
+   
+   	ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+   	ssl_prefer_server_ciphers on;
+   
+   	access_log /var/log/nginx/access.log;
+   	error_log /var/log/nginx/error.log;
+   
+   	gzip on;
+   
+   	# ========================== 重点看这里========================
+       server {
+           listen       80;
+           server_name  xxx.xxx.xxx.xxx;				# 云服务器公网ip
+    
+           proxy_set_header X-Forwarded-Host $host;
+           proxy_set_header X-Forwarded-Server $host;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    
+           location / {	
+   			client_max_body_size 100m;				# 图片尺寸限制，这里为100MB
+   			proxy_pass http://127.0.0.1:12121;
+   			proxy_connect_timeout 600;
+   			proxy_read_timeout 600;
+           }
+       }
+   
+   	include /etc/nginx/conf.d/*.conf;
+   	include /etc/nginx/sites-enabled/*;
+   }
+   ```
+
+   <br>
+
+5. 检查 `nginx.conf` 格式是否正确
+
+   ```shell
+   sudo nginx -t
+   ```
+
+   若格式正确则输出
+
+   ```sh
+   nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+   nginx: configuration file /etc/nginx/nginx.conf test is successful
+   ```
+
+   <br>
+
+6. 关闭防火墙并重新加载 `nginx`
+
+   ```shell
+   sudo systemctl stop firewalld
+   sudo firewall-cmd --reload
+   sudo nginx -s reload
+   ```
+
+   <br>
+
+7. 进入 `ImageBed` 文件夹，运行 `ImageBed`
+
+   ```shell
+   nohup dotnet ImageBed.dll &
+   ```
+
+   该命令会在后台运行 `ImageBed`，若要关闭 `ImageBed` 服务，需要先查询 `ImageBed` 服务的 `pid`，之后用 `kill` 命令关闭
+
+   ```shell
+   # 查询ImageBed服务pid
+   ps -ef | grep dotnet
+   
+   # pid为4363
+   ubuntu    4363  1636  0 19:32 pts/0    00:00:01 dotnet ImageBed.dll
+   ubuntu   31389 30239  0 21:47 pts/2    00:00:00 grep --color=auto dotnet
+   
+   # 关闭ImageBed服务
+   ubuntu@VM-0-16-ubuntu:~$ sudo kill 4363
+   ```
+
+   <br>
+
+8. 大功告成！
+
+   <br>
 
 ## License
 
-[license]
+MIT License
       
