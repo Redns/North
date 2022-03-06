@@ -4,9 +4,20 @@
     ViewData["Title"] = "Home page";
 }
 
-<input id="image_input" type="file" name="file" hidden accept="image/*"/>
+<style type="text/css">
+		.upload{
+			width: 550px;
+			margin:auto;
+            left:10px;
+		}
+
+</style>
+
+<div>
+    <input id="image_input" type="file" name="file" hidden accept="image/*"/>
+</div>
 <div class="upload">
-    <img id="upload"  src="~/upload.png" alt="">
+    <img id="upload"  src="~/upload.png" width=550 style="position:center">
 </div>
 
 <script>
@@ -29,9 +40,8 @@
         if(this.files[0]){
             var form = new FormData();
             form.append("", this.files[0], "image");
-
             var settings = {
-                "url": "http://localhost:12121/api/image",
+                "url": `http://${window.location.host}/api/image`,
                 "method": "POST",
                 "timeout": 0,
                 "processData": false,
@@ -43,6 +53,7 @@
             $.ajax(settings).done(function (response){
                 var response = JSON.parse(response);
                 if(response.status_Code == 200){
+                    alert(response.url);
                     copyToClip(response.url);
                 }
                 else{
