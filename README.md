@@ -262,7 +262,8 @@
 
    <br>
 
-## License
+## Contributor
 
-MIT License
-      
+- [Redns](https://github.com/Redns)
+- [Robert30-xl](https://github.com/Robert30-xl)
+- [fslongjin](https://github.com/fslongjin)
