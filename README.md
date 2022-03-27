@@ -225,6 +225,69 @@
 
    <br>
 
+## API
+
+该图床服务器包含三个API（上传、下载、删除），大家也可自行修改 `Controllers/ImageController` 中的内容来修改 API
+
+<br>
+
+### 上传图片
+
+`HTTP` `POST` /api/image
+
+> Body 请求参数 `Form-data`
+
+| 参数名 |  类型  | 必填 |   说明   |
+| :----: | :----: | :--: | :------: |
+|   *    | [file] |  是  | 图片文件 |
+
+> 返回参数 `JSON` `最外层结构为: Object`
+
+|   参数名   |   类型   | 必含 |   说明   |
+| :--------: | :------: | :--: | :------: |
+| statusCode |  [int]   |  是  |  状态码  |
+|  message   | [string] |  是  | 提示信息 |
+|    res     | [array]  |  是  | 图片链接 |
+
+<br>
+
+### 下载图片
+
+`HTTP` `GET` /api/image/{imageName}
+
+> REST参数
+
+|  参数名   |   类型   | 必填 |   说明   |
+| :-------: | :------: | :--: | :------: |
+| imageName | [string] |  是  | 图片名称 |
+
+> 返回参数 `Binary`
+
+| 图片文件 |
+| -------- |
+
+<br>
+
+### 删除图片
+
+`HTTP` `DELETE` /api/image/{imageName}
+
+> REST参数
+
+|  参数名   |   类型   | 必填 |   说明   |
+| :-------: | :------: | :--: | :------: |
+| imageName | [string] |  是  | 图片名称 |
+
+> 返回参数 `JSON` `最外层结构为: Object`
+
+|   参数名   |   类型   | 必含 |   说明   |
+| :--------: | :------: | :--: | :------: |
+| statusCode |  [int]   |  是  |  状态码  |
+|  message   | [string] |  是  | 提示信息 |
+|    res     | [object] |  是  | 恒为null |
+
+<br>
+
 ## Q & A
 
 ### S1: 局域网用户如何上传图片？
