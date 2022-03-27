@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "dkgs46GuCGgsJucEHL0gVM7bXmLGeB39Ey9Dyof50CNNEnJotqclwvg79aYbUQO87tEmx9KPo2gs3SwIURF7Iw==",
+  "dgSpecHash": "48qJpkbHxK5Ncqppu8XDI0lKmNBLyouNOhExYtHDmLNvSBMi9ntU4xukzet0x9SK7rDRi/6rDUqC8rj5y7XxWw==",
   "success": true,
   "projectFilePath": "D:\\Project\\ImageBed\\ImageBed.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\LJ\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
+  ],
   "logs": []
 }

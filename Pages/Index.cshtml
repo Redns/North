@@ -39,9 +39,10 @@
     image_input.onchange = function(){
         if(this.files[0]){
             var form = new FormData();
-            form.append("", this.files[0], "image");
+            form.append("", this.files[0], this.files[0].FileName);
+
             var settings = {
-                "url": `http://${window.location.host}/api/image`,
+                "url": `${window.location.origin}/api/image`,
                 "method": "POST",
                 "timeout": 0,
                 "processData": false,
@@ -50,11 +51,11 @@
                 "data": form
             };
 
-            $.ajax(settings).done(function (response){
+            $.ajax(settings).done(function (response) {
                 var response = JSON.parse(response);
-                if(response.status_Code == 200){
-                    alert(response.url);
-                    copyToClip(response.url);
+                if(response.statusCode == 200){
+                    alert(`${window.location.origin}${response.res[0]}`);
+                    copyToClip(`${window.location.origin}${response.res[0]}`);
                 }
                 else{
                     alert(`上传失败,{response.message}`);

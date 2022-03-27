@@ -1,69 +1,90 @@
 ﻿using ImageBed.Common;
+using ImageBed.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace ImageBed.Controllers
 {
-    [Consumes("application/json", "multipart/form-data")]
-    [Route("api/image")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ImageController : ControllerBase
     {
         /// <summary>
         /// 上传图片
         /// </summary>
+        /// <param name="token">用户令牌</param>
         /// <returns></returns>
-        /// POST api/image
         [HttpPost]
-        public async Task<ActionResult<object>> Post([FromForm] IFormCollection formcollection)
+        public async Task<ApiResult<object>> Post([FromForm] IFormCollection formCollection)
         {
-            try
-            {
-                // 规范图片名称
-                var file = formcollection.Files[0];
-                string unitImageName = ((long)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds).ToString() + Path.GetExtension(file.FileName);
+            List<string> imageUrls = new();
 
-                // 复制图片文件
-                using var imageReader = file.OpenReadStream();
-                using var imageWriter = new FileStream($"Assets/Images/" + unitImageName, FileMode.OpenOrCreate, FileAccess.Write);
-                await imageReader.CopyToAsync(imageWriter);
-                return new
-                {
-                    Status_Code = 200,
-                    Message = "upload success",
-                    Url = $"{AppSettings.Get("imageBed:url")}/api/image/{unitImageName}"
-                };
-            }
-            catch (Exception ex)
+            FormFileCollection fileCollection = (FormFileCollection)formCollection.Files;
+            foreach (IFormFile fileReader in fileCollection)
             {
-                return new
+                try
                 {
-                    Status_Code = 400,
-                    Message = $"upload failed,{ex.Message}"
-                };
+                    // 格式化文件名
+                    string unitFileName = $"{UnitNameGenerator.GetTimeStamp()}.{UnitNameGenerator.GetFileExtension(fileReader.FileName)}";
+                    string? unitFilePath = $"{AppSettings.Get("Data:Resources:Images:Path")}/{unitFileName}";
+                    if (System.IO.File.Exists(unitFilePath))
+                    {
+                        System.IO.File.Delete(unitFilePath);
+                    }
+
+                    // 读取图片
+                    using FileStream fileWriter = System.IO.File.Create(unitFilePath);
+                    await fileReader.CopyToAsync(fileWriter);
+                    fileWriter.Flush();
+
+                    // 添加Url
+                    imageUrls.Add($"/api/image/{unitFileName}");
+                }
+                catch (Exception)
+                {
+                    imageUrls.Add(string.Empty);
+                }
             }
+            return new ApiResult<object>(200, "Upload finished", imageUrls);
         }
 
 
         /// <summary>
-        /// 获取图片
+        /// 下载图片
         /// </summary>
-        /// <param name="image_name">图片名称</param>
+        /// <param name="filename">图片名称</param>
         /// <returns></returns>
-        /// GET api/image/{image_name}
-        [HttpGet("{image_name}")]
-        public async Task<IActionResult?> Get(string image_name)
+        [HttpGet("{filename}")]
+        public IActionResult Get(string filename)
         {
-            try
+            // 解析文件路径
+            string? imagePath = $"{AppSettings.Get("Data:Resources:Images:Path")}/{filename}";
+            if (!System.IO.File.Exists(imagePath))
             {
-                using var imageReader = new FileStream($"Assets/Images/{image_name}", FileMode.Open);
-                byte[] buffer = new byte[imageReader.Length];
-                await imageReader.ReadAsync(buffer);
-                return new FileContentResult(buffer, "image/jpeg");
+                imagePath = $"{AppSettings.Get("Data:Resources:Images:Path")}/imageNotFound.jpg";
             }
-            catch (Exception)
+            var imageStream = System.IO.File.OpenRead(imagePath);
+            var memi = new FileExtensionContentTypeProvider().Mappings[$".{UnitNameGenerator.GetFileExtension(filename)}" ?? "image"];
+            return File(imageStream, memi, Path.GetFileName(filename));
+        }
+
+
+        /// <summary>
+        /// 删除指定图片
+        /// </summary>
+        /// <param name="token">用户令牌</param>
+        /// <param name="filename">待删除的图片名称</param>
+        /// <returns></returns>
+        [HttpDelete("{filename}")]
+        public ApiResult<object> Delete(string filename)
+        {
+            // 解析文件路径
+            string? imagePath = $"{AppSettings.Get("Data:Resources:Images:Path")}/{filename}";
+            if (System.IO.File.Exists(imagePath))
             {
-                return null;
+                System.IO.File.Delete(imagePath);
             }
+            return new ApiResult<object>(200, "Delete image success", null);
         }
     }
 }

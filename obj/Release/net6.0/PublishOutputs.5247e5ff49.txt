@@ -1,7 +1,9 @@
 D:\Project\ImageBed\obj\Release\net6.0\PubTmp\Out\ImageBed.exe
 D:\Project\ImageBed\obj\Release\net6.0\PubTmp\Out\appsettings.Development.json
 D:\Project\ImageBed\obj\Release\net6.0\PubTmp\Out\appsettings.json
+D:\Project\ImageBed\obj\Release\net6.0\PubTmp\Out\libman.json
 D:\Project\ImageBed\obj\Release\net6.0\PubTmp\Out\ImageBed.dll
 D:\Project\ImageBed\obj\Release\net6.0\PubTmp\Out\ImageBed.deps.json
 D:\Project\ImageBed\obj\Release\net6.0\PubTmp\Out\ImageBed.runtimeconfig.json
 D:\Project\ImageBed\obj\Release\net6.0\PubTmp\Out\ImageBed.pdb
+D:\Project\ImageBed\obj\Release\net6.0\PubTmp\Out\Newtonsoft.Json.dll

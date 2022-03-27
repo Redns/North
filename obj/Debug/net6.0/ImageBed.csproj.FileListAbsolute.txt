@@ -24,3 +24,6 @@ D:\Project\ImageBed\obj\Debug\net6.0\refint\ImageBed.dll
 D:\Project\ImageBed\obj\Debug\net6.0\ImageBed.pdb
 D:\Project\ImageBed\obj\Debug\net6.0\ImageBed.genruntimeconfig.cache
 D:\Project\ImageBed\obj\Debug\net6.0\ref\ImageBed.dll
+D:\Project\ImageBed\bin\Debug\net6.0\Newtonsoft.Json.dll
+D:\Project\ImageBed\obj\Debug\net6.0\ImageBed.csproj.CopyComplete
+D:\Project\ImageBed\bin\Debug\net6.0\libman.json
