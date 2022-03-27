@@ -63,93 +63,55 @@
 
 ### 本地搭建
 
-1. 前往 [ImageBed主页](https://github.com/Redns/ImageBed/releases/tag/v1.0.0) 下载资源包（或者选择 [蓝奏云](https://wwz.lanzouv.com/iaYci013dbkj) 下载）
+1. 前往 [ImageBed主页](https://github.com/Redns/ImageBed/releases/tag/v1.0.0) 下载资源包
 
-![image-20220306205736968](http://jing-image.test.upcdn.net/image-20220306205736968.png)
-
-<br>
-
-2. 解压资源包，内部应包含如下文件（图片存储在 Assets/Images 文件夹下）
-
-![image-20220306211237487](http://jing-image.test.upcdn.net/image-20220306211237487.png)
+![image-20220327212552774](https://imgtp.apqiang.com/2022/03/27/zInx3Ck9.png)
 
 <br>
 
-3. 打开 `appsettings.json`，修改相关设置
+2. 解压资源包，内部应包含如下文件（图片存储在 Data/Resources/Images 文件夹下）
 
-   ```json
-   {
-     "Logging": {
-       "LogLevel": {
-         "Default": "Information",
-         "Microsoft.AspNetCore": "Warning"
-       }
-     },
-     "AllowedHosts": "*",
-       "imageBed": {
-           "url": "http://127.0.0.1:12121"		// 修改这里
-       }
-   }
-   ```
-
-   需要注意的是，这里的 `url` 必须为 `http://127.0.0.1:12121`，修改端口号无效。这个链接实际上是将来服务器返回的图片链接的一部分，因为该服务可能部署在本地或者云服务器上（IP地址不同），因此设置这样一个字段。
+![image-20220327212625510](https://imgtp.apqiang.com/2022/03/27/YCbStCl7.png)
 
 <br>
 
-4. 双击 `ImageBed.exe` 运行服务
+3. 双击 `ImageBed.exe` 运行服务
 
-   ![image-20220306210514795](http://jing-image.test.upcdn.net/image-20220306210514795.png)
+   ![image-20220327212743452](http://jing-image.test.upcdn.net/image-20220327212743452.png)
 
-   ![image-20220306210438546](http://jing-image.test.upcdn.net/image-20220306210438546.png)
+   ![image-20220327212810352](http://jing-image.test.upcdn.net/image-20220327212810352.png)
 
-   <br>
+<br>
 
-5. 打开浏览器，输入 `localhost:12121`
+4. 打开浏览器，输入 `localhost:12121`
 
-   ![image-20220306210631733](http://jing-image.test.upcdn.net/image-20220306210631733.png)
+   ![image-20220327212852020](http://jing-image.test.upcdn.net/image-20220327212852020.png)
 
-   <br>
 
-6. 点击绿色区域即可上传图片，上传完成后会有弹窗提示并将链接复制到剪贴板
 
-   ![image-20220306211551153](http://jing-image.test.upcdn.net/image-20220306211551153.png)
+<br>
 
-   <br>
+5. 点击绿色区域即可上传图片，上传完成后会有弹窗提示并将链接复制到剪贴板
 
-7. 保持 `ImageBed.exe` 运行即可
+   ![image-20220327212932653](http://jing-image.test.upcdn.net/image-20220327212932653.png)
+
+<br>
+
+6. 保持 `ImageBed.exe` 运行即可
 
 ​	<br>
 
 ### 云服务器搭建
 
-这里以 `腾讯云服务器` 为例，其他的云服务器配置流程相似。
+这里以 `腾讯云服务器` 为例，其他的云服务器配置流程相似
 
-1.  将资源包解压后上传至云服务器
+1. 将资源包解压后上传至云服务器
 
-![image-20220306213004539](http://jing-image.test.upcdn.net/image-20220306213004539.png)
+   ![image-20220327213013364](http://jing-image.test.upcdn.net/image-20220327213013364.png)
 
-​	<br>
+​    <br>
 
-2. 打开 `appsettings.json` 并修改 `url`
-
-   ```json
-   {
-     "Logging": {
-       "LogLevel": {
-         "Default": "Information",
-         "Microsoft.AspNetCore": "Warning"
-       }
-     },
-     "AllowedHosts": "*",
-       "imageBed": {
-           "url": "http://xxx.xxx.xxx.xxx"		// xxx.xxx.xxx.xxx为云服务的公网ip
-       }
-   }
-   ```
-
-   <br>
-
-3. 安装 `nginx`（如果您还没有安装的话）
+2. 安装 `nginx`（如果您还没有安装的话）
 
    ```shell
    sudo apt-get install nginx
@@ -157,7 +119,7 @@
 
 ​	<br>
 
-4. 打开 `/etc/nginx/nginx.conf`，修改相关设置
+3. 打开 `/etc/nginx/nginx.conf`，修改相关设置
 
    ```nginx
    user www-data;
@@ -209,9 +171,9 @@
    }
    ```
 
-   <br>
+<br>
 
-5. 检查 `nginx.conf` 格式是否正确
+4. 检查 `nginx.conf` 格式是否正确
 
    ```shell
    sudo nginx -t
@@ -226,17 +188,18 @@
 
    <br>
 
-6. 关闭防火墙并重新加载 `nginx`
+5. 关闭防火墙并重新加载 `nginx`
 
    ```shell
    sudo systemctl stop firewalld
+   sudo systemctl start girewalld
    sudo firewall-cmd --reload
    sudo nginx -s reload
    ```
 
    <br>
 
-7. 进入 `ImageBed` 文件夹，运行 `ImageBed`
+6. 进入 `ImageBed` 文件夹，运行 `ImageBed`
 
    ```shell
    nohup dotnet ImageBed.dll &
@@ -258,13 +221,21 @@
 
    <br>
 
-8. 大功告成！
+7. 大功告成！
 
    <br>
 
-## Picgo
+## Q & A
 
-[PicGo](https://picgo.github.io/PicGo-Doc/zh/) 是一款图床管理软件，支持多种图床。使用 `picgo` 可大大简化我们上传图片的流程，笔者在此开发了 `picgo` 插件 [picgo-plugin-imagebed](https://github.com/Redns/picgo-plugin-imagebed) 以供大家使用。
+### S1: 局域网用户如何上传图片？
+
+局域网内用户在浏览器输入 `{ip}:12121` 即可访问图床服务器，其中 `{ip}` 为服务器的 `局域网IP`
+
+<br>
+
+### S2.如何对接Picgo?
+
+[PicGo](https://picgo.github.io/PicGo-Doc/zh/) 是一款图床管理软件，支持多种图床。使用 `picgo` 可大大简化我们上传图片的流程，笔者在此开发了 `picgo` 插件 [picgo-plugin-imagebed](https://github.com/Redns/picgo-plugin-imagebed) 以供大家使用
 
 <br>
 
