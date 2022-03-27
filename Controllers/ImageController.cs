@@ -2,6 +2,8 @@
 using ImageBed.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using System.Net;
+using System.Net.Http.Headers;
 
 namespace ImageBed.Controllers
 {
@@ -63,9 +65,8 @@ namespace ImageBed.Controllers
             {
                 imagePath = $"{AppSettings.Get("Data:Resources:Images:Path")}/imageNotFound.jpg";
             }
-            var imageStream = System.IO.File.OpenRead(imagePath);
-            var memi = new FileExtensionContentTypeProvider().Mappings[$".{UnitNameGenerator.GetFileExtension(filename)}" ?? "image"];
-            return File(imageStream, memi, Path.GetFileName(filename));
+
+            return File(System.IO.File.ReadAllBytes(imagePath), $"image/{UnitNameGenerator.GetFileExtension(filename)}");
         }
 
 

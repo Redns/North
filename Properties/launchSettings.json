@@ -11,7 +11,7 @@
     "ImageBed": {
         "commandName": "Project",
         "dotnetRunMessages": true,
-        "launchBrowser": true,
+        "launchBrowser": false,
         "applicationUrl": "http://localhost:12121",
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development"
