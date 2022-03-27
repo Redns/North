@@ -49,7 +49,7 @@
 <br>
 
 ## Usage
-![test](http://imagebed.krins.cloud/api/image/1648415435641.jpeg)
+
 笔者在此将演示如何在 `本地Windows主机` 和 `Linux云服务器` 上搭建 `ImageBed` 服务，系统版本分别如下
 
 - `本地Windows主机`
