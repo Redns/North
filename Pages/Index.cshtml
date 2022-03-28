@@ -14,7 +14,7 @@
 </style>
 
 <div>
-    <input id="image_input" type="file" name="file" hidden accept="image/*"/>
+    <input id="image_input" type="file" name="file[]" hidden accept="image/*" multiple/>
 </div>
 <div class="upload">
     <img id="upload"  src="~/upload.png" width=550 style="position:center">
@@ -37,10 +37,15 @@
     }
 
     image_input.onchange = function(){
-        if(this.files[0]){
-            var form = new FormData();
-            form.append("", this.files[0], this.files[0].FileName);
+        var urls = ""
+        var imgList = image_input.files
 
+        if(imgList != undefined){
+            var form = new FormData();
+            for(var i = 0; i < imgList.length; i++){
+                form.append("", imgList[i], imgList[i].name);
+            }
+            
             var settings = {
                 "url": `${window.location.origin}/api/image`,
                 "method": "POST",
@@ -50,12 +55,15 @@
                 "contentType": false,
                 "data": form
             };
-
+            
             $.ajax(settings).done(function (response) {
                 var response = JSON.parse(response);
                 if(response.statusCode == 200){
-                    alert(`${window.location.origin}${response.res[0]}`);
-                    copyToClip(`${window.location.origin}${response.res[0]}`);
+                    for(var i = 0; i < response.res.length; i++){
+                        urls += `${window.location.origin}${response.res[i]}\n`
+                    }
+                    alert(urls)
+                    copyToClip(urls, "")
                 }
                 else{
                     alert(`上传失败,{response.message}`);
