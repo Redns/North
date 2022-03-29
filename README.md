@@ -1,6 +1,6 @@
 # ImageBed
 
-![version: v1.1.0 (shields.io)](https://img.shields.io/badge/version-v1.1.0-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-v6.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
+![version: v1.1.4 (shields.io)](https://img.shields.io/badge/version-v1.1.4-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-v6.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
 
 <br>
 
