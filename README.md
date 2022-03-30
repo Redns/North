@@ -1,6 +1,6 @@
 # ImageBed
 
-![version: v1.1.0 (shields.io)](https://img.shields.io/badge/version-v1.1.0-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-v6.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
+![version: v1.1.4 (shields.io)](https://img.shields.io/badge/version-v1.1.4-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-v6.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
 
 <br>
 
@@ -299,6 +299,11 @@
 ### S2.如何对接Picgo?
 
 [PicGo](https://picgo.github.io/PicGo-Doc/zh/) 是一款图床管理软件，支持多种图床。使用 `picgo` 可大大简化我们上传图片的流程，笔者在此开发了 `picgo` 插件 [picgo-plugin-imagebed](https://github.com/Redns/picgo-plugin-imagebed) 以供大家使用
+
+<br>
+
+## 开发计划
+[点击这里](https://github.com/Redns/ImageBed/projects/1)了解最新的开发计划！
 
 <br>
 
