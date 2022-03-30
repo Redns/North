@@ -1,0 +1,31 @@
+﻿@page "/"
+@using AntDesign
+
+<PageTitle>Index</PageTitle>
+
+<style type="text/css">
+		.upload{
+			width: 550px;
+			margin:auto;
+            left:10px;
+		}
+</style>
+
+<InputFile OnChange="@LoadFiles" multiple hidden/>
+
+@code {
+    private void LoadFiles(InputFileChangeEventArgs e)
+    {
+       
+    }
+}
+<div class="upload">
+    <Image Id="upload" Width="550px" Src="images/upload.png" Preview=false Style="position:center" OnClick=UploadImage/>
+</div>
+
+@code{
+	private void UploadImage()
+	{
+		
+	}
+}

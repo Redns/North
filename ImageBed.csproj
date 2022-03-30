@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -7,17 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="wwwroot\favicon.ico" />
+    <Content Remove="wwwroot\upload.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AntDesign" Version="0.10.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Tewr.Blazor.FileReader" Version="3.3.1.21360" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="wwwroot\favicon.ico">
+    <Resource Include="wwwroot\upload.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\images\upload.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

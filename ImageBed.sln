@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.1.32210.238
+VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageBed", "ImageBed.csproj", "{7151E584-9D45-4D24-BDED-2617EAE9A3A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageBed", "ImageBed.csproj", "{735CCFAA-73C8-4FB7-BD23-E806EBB2540B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7151E584-9D45-4D24-BDED-2617EAE9A3A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7151E584-9D45-4D24-BDED-2617EAE9A3A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7151E584-9D45-4D24-BDED-2617EAE9A3A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7151E584-9D45-4D24-BDED-2617EAE9A3A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{735CCFAA-73C8-4FB7-BD23-E806EBB2540B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{735CCFAA-73C8-4FB7-BD23-E806EBB2540B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{735CCFAA-73C8-4FB7-BD23-E806EBB2540B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{735CCFAA-73C8-4FB7-BD23-E806EBB2540B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {7FF227DB-CDB7-499B-B3F2-6A805574A619}
+		SolutionGuid = {CE24D105-9EB4-4164-ABFB-5CEB014F7DAF}
 	EndGlobalSection
 EndGlobal

@@ -26,21 +26,32 @@ namespace ImageBed.Controllers
             {
                 try
                 {
-                    // 格式化文件名
-                    string unitFileName = $"{UnitNameGenerator.GetTimeStamp()}.{UnitNameGenerator.GetFileExtension(fileReader.FileName)}";
-                    string? unitFilePath = $"{AppSettings.Get("Data:Resources:Images:Path")}/{unitFileName}";
-                    if (System.IO.File.Exists(unitFilePath))
+                    string? imageDirPath = AppSettings.Get("Data:Resources:Images:Path").ToString();
+                    if(!string.IsNullOrEmpty(imageDirPath))
                     {
-                        System.IO.File.Delete(unitFilePath);
+                        if (!Directory.Exists(imageDirPath))
+                        {
+                            Directory.CreateDirectory(imageDirPath);
+                        }
+
+                        // 格式化文件名
+                        string unitFileName = $"{UnitNameGenerator.GetTimeStamp()}.{UnitNameGenerator.GetFileExtension(fileReader.FileName)}";
+                        string? unitFilePath = $"{imageDirPath}/{unitFileName}";
+                        if (System.IO.File.Exists(unitFilePath))
+                        {
+                            System.IO.File.Delete(unitFilePath);
+                        }
+
+                        // 读取图片
+                        using FileStream fileWriter = System.IO.File.Create(unitFilePath);
+                        await fileReader.CopyToAsync(fileWriter);
+                        fileWriter.Flush();
+                        imageUrls.Add($"/api/image/{unitFileName}");
                     }
-
-                    // 读取图片
-                    using FileStream fileWriter = System.IO.File.Create(unitFilePath);
-                    await fileReader.CopyToAsync(fileWriter);
-                    fileWriter.Flush();
-
-                    // 添加Url
-                    imageUrls.Add($"/api/image/{unitFileName}");
+                    else
+                    {
+                        imageUrls.Add(string.Empty);
+                    }
                 }
                 catch (Exception)
                 {

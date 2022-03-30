@@ -14,4 +14,8 @@
     <SourceRoot Include="D:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages\" />
     <SourceRoot Include="C:\Program Files\dotnet\sdk\NuGetFallbackFolder\" />
   </ItemGroup>
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)tewr.blazor.filereader\3.3.1.21360\buildTransitive\Tewr.Blazor.FileReader.props" Condition="Exists('$(NuGetPackageRoot)tewr.blazor.filereader\3.3.1.21360\buildTransitive\Tewr.Blazor.FileReader.props')" />
+    <Import Project="$(NuGetPackageRoot)antdesign\0.10.5\buildTransitive\AntDesign.props" Condition="Exists('$(NuGetPackageRoot)antdesign\0.10.5\buildTransitive\AntDesign.props')" />
+  </ImportGroup>
 </Project>
