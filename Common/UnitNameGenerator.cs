@@ -70,5 +70,33 @@
                 return string.Empty;
             }
         }
+
+
+        /// <summary>
+        /// 生成随机字符串
+        /// </summary>
+        /// <param name="len">字符串长度</param>
+        /// <returns></returns>
+        public static string GererateRandomString(int len)
+        {
+            string str = string.Empty;
+            long num2 = DateTime.Now.Ticks;
+            Random random = new(((int)(((ulong)num2) & 0xffffffffL)) | ((int)(num2 >> len)));
+            for (int i = 0; i < len; i++)
+            {
+                char ch;
+                int num = random.Next();
+                if ((num % 2) == 0)
+                {
+                    ch = (char)(0x30 + ((ushort)(num % 10)));
+                }
+                else
+                {
+                    ch = (char)(0x41 + ((ushort)(num % 0x1a)));
+                }
+                str += ch.ToString();
+            }
+            return str;
+        }
     }
 }

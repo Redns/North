@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "YHYq/4gFX+MUxI2pBNvqtlQkf9jD3Ca72gSERCSo6r0zfjwCNzgr/OwTDypEvFlZdZjxya7dlH0EbdFtqppAag==",
+  "dgSpecHash": "j/YFLPeedvh8FHaIJfWSVcQIjPN4tdsfPe0rN6IvQnKrDofA1ryrmW97aNfI1sR3Kfpi9GIR8gaZE86Gg4FFyQ==",
   "success": true,
   "projectFilePath": "D:\\Project\\ImageBed\\ImageBed.csproj",
   "expectedPackageFiles": [
@@ -11,6 +11,8 @@
     "C:\\Users\\LJ\\.nuget\\packages\\microsoft.aspnetcore.components.dataannotations.validation\\3.2.0-rc1.20223.4\\microsoft.aspnetcore.components.dataannotations.validation.3.2.0-rc1.20223.4.nupkg.sha512",
     "C:\\Users\\LJ\\.nuget\\packages\\microsoft.aspnetcore.components.forms\\6.0.0\\microsoft.aspnetcore.components.forms.6.0.0.nupkg.sha512",
     "C:\\Users\\LJ\\.nuget\\packages\\microsoft.aspnetcore.components.web\\6.0.0\\microsoft.aspnetcore.components.web.6.0.0.nupkg.sha512",
+    "C:\\Users\\LJ\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.2.0\\microsoft.aspnetcore.http.abstractions.2.2.0.nupkg.sha512",
+    "C:\\Users\\LJ\\.nuget\\packages\\microsoft.aspnetcore.http.features\\2.2.0\\microsoft.aspnetcore.http.features.2.2.0.nupkg.sha512",
     "C:\\Users\\LJ\\.nuget\\packages\\microsoft.aspnetcore.metadata\\6.0.0\\microsoft.aspnetcore.metadata.6.0.0.nupkg.sha512",
     "C:\\Users\\LJ\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\6.0.0\\microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",
     "C:\\Users\\LJ\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\6.0.0\\microsoft.extensions.dependencyinjection.6.0.0.nupkg.sha512",
@@ -89,6 +91,7 @@
     "C:\\Users\\LJ\\.nuget\\packages\\system.security.cryptography.x509certificates\\4.3.0\\system.security.cryptography.x509certificates.4.3.0.nupkg.sha512",
     "C:\\Users\\LJ\\.nuget\\packages\\system.text.encoding\\4.3.0\\system.text.encoding.4.3.0.nupkg.sha512",
     "C:\\Users\\LJ\\.nuget\\packages\\system.text.encoding.extensions\\4.3.0\\system.text.encoding.extensions.4.3.0.nupkg.sha512",
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.text.encodings.web\\4.5.0\\system.text.encodings.web.4.5.0.nupkg.sha512",
     "C:\\Users\\LJ\\.nuget\\packages\\system.text.regularexpressions\\4.3.0\\system.text.regularexpressions.4.3.0.nupkg.sha512",
     "C:\\Users\\LJ\\.nuget\\packages\\system.threading\\4.3.0\\system.threading.4.3.0.nupkg.sha512",
     "C:\\Users\\LJ\\.nuget\\packages\\system.threading.tasks\\4.3.0\\system.threading.tasks.4.3.0.nupkg.sha512",

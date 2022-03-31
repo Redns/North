@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="AntDesign" Version="0.10.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Tewr.Blazor.FileReader" Version="3.3.1.21360" />
   </ItemGroup>

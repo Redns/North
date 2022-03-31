@@ -1,38 +1,39 @@
-﻿<Menu Mode=MenuMode.Horizontal>
-    <MenuItem Key="mail">
-        <Icon Type="mail" Theme="outline"></Icon>
-        Navigation One
-    </MenuItem>
-    <MenuItem Key="app" Disabled>
-        <Icon Type="appstore" Theme="outline"></Icon>
-        Navigation Two
-    </MenuItem>
-    <SubMenu TitleTemplate=@sub1Title>
-        <MenuItemGroup Title="Item 1">
-            <MenuItem Key="setting:1">Option 1</MenuItem>
-            <MenuItem Key="setting:2">Option 2</MenuItem>
-        </MenuItemGroup>
-        <MenuDivider />
-        <MenuItemGroup Title="Item 2">
-            <MenuItem Key="setting:3">Option 3</MenuItem>
-            <SubMenu Title="Option 4">
-                <MenuItem Key="setting4:1">Option 1</MenuItem>
-                <MenuItem Key="setting4:2">Option 2</MenuItem>
-            </SubMenu>
-        </MenuItemGroup>
-    </SubMenu>
-    <MenuItem Key="alipay">
-        <MenuLink Href="https://ant.design" target="_blank" rel="noopener noreferrer">
-            Navigation Four - Link
-        </MenuLink>
-    </MenuItem>
-</Menu>
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">ImageBed</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
 
-@code
-{
-    RenderFragment sub1Title =
-    @<Template>
-        <Icon Type="setting" Theme="outline"></Icon>
-        Navigation Three - Submenu
-    </Template>;
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-cloud-upload" aria-hidden="true"></span> 上 传
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Pics">
+                <span class="oi oi-folder" aria-hidden="true"></span> 图 库
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="https://github.com/Redns/ImageBed">
+                <span class="oi oi-external-link" aria-hidden="true"></span> Github
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
 }
