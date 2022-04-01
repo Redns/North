@@ -1,6 +1,8 @@
 ﻿@page "/"
 @using AntDesign
 @using ImageBed.Data.Entity
+
+@inject IJSRuntime JS
 @inject MessageService _message
 
 <div class="upload">
@@ -81,10 +83,25 @@
         });
     }
 
-    void UploadFinished()
+    async void UploadFinished()
     {
         progress_percent = 0;
-        _message.Success("图片上传完成！");
+
+        string urls = string.Empty;
+        foreach(string url in imageUrls)
+        {
+            if(url == imageUrls.Last())
+            {
+                urls += url;
+            }
+            else
+            {
+                urls += $"{url}\n";
+            }
+        }
+        await JS.InvokeVoidAsync("CopyToClip", urls);
+
+        await _message.Success("图片上传完成！");
     }
 }
 <style type="text/css">

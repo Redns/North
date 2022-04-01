@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "frFvQJm5mtcVtJOMOaZlqbLpkoxXFk0CRlZ6TEjWsZQ=",
+  "Hash": "gAPxPywtkcHyQ9HvgQVDdtgcCVBP1YvaOMmJthB6+uc=",
   "Source": "ImageBed",
   "BasePath": "_content/ImageBed",
   "Mode": "Default",
@@ -5846,6 +5846,23 @@
       "CopyToOutputDirectory": "Always",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\upload.png"
+    },
+    {
+      "Identity": "D:\\Project\\ImageBed\\wwwroot\\module.js",
+      "SourceId": "ImageBed",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Project\\ImageBed\\wwwroot\\",
+      "BasePath": "_content/ImageBed",
+      "RelativePath": "module.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\module.js"
     }
   ]
 }
