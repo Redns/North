@@ -11,7 +11,7 @@
             OnChange="CheckImages"
             OnSingleCompleted="UploadImage"
             OnCompleted="UploadFinished">
-        <Image Id="upload" Width="550px" Src="images/upload.png" Preview=false Style="position:center"/>
+        <Image Id="upload" Width="550px" Src="images/upload.png" Preview=false Style="position:center;margin-top:130px;"/>
     </Upload>
     <Progress Percent=_progress_percent StrokeWidth=progress_stroke_width ShowInfo=progress_showInfo/>
 </div>
@@ -56,11 +56,13 @@
     bool progress_showInfo = false;             // 是否显示进度条信息
 
 
+    /// <summary>
+    /// 更新进度条进度
+    /// </summary>
     void UpdateProgress()
     {
         progress_percent = (int)(imageUrls.ToArray().Length * 100.0 / image_total);
     }
-
 
     void CheckImages(UploadInfo imageInfo)
     {
@@ -68,7 +70,6 @@
         imageUrls.Clear();
         UpdateProgress();
     }
-
 
     void UploadImage(UploadInfo fileinfo)
     {
@@ -79,7 +80,6 @@
             UpdateProgress();
         });
     }
-
 
     void UploadFinished()
     {

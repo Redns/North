@@ -46,7 +46,7 @@ namespace ImageBed.Controllers
                         using FileStream fileWriter = System.IO.File.Create(unitFilePath);
                         await fileReader.CopyToAsync(fileWriter);
                         fileWriter.Flush();
-                        imageUrls.Add($"/api/image/{unitFileName}");
+                        imageUrls.Add($"{GetHost()}/api/image/{unitFileName}");
                     }
                     else
                     {
@@ -97,6 +97,25 @@ namespace ImageBed.Controllers
                 System.IO.File.Delete(imagePath);
             }
             return new ApiResult<object>(200, "Delete image success", null);
+        }
+
+
+        /// <summary>
+        /// 获取完整host地址
+        /// </summary>
+        /// <returns></returns>
+        private string GetHost()
+        {
+            string? host = string.Empty;
+            if (Request.IsHttps)
+            {
+                host += $"https://{Request.Host}";
+            }
+            else
+            {
+                host += $"http://{Request.Host}";
+            }
+            return host;
         }
     }
 }
