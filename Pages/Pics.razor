@@ -3,6 +3,7 @@
 @using System.ComponentModel
 @using AntDesign.TableModels
 @using System.Text.Json;
+@using ImageBed.Data.Access
 @using ImageBed.Data.Entity
 
 @inject MessageService _message
@@ -32,11 +33,10 @@
         <Column @bind-Field="@context.Name" Align="@ColumnAlign.Center" Sortable>
             <a href=@context.Url>@context.Name</a>
         </Column>
-        <Column @bind-Field="@context.Tags" Sortable Align="@ColumnAlign.Center"/>
+        <Column @bind-Field="@context.Dpi" Sortable Align="@ColumnAlign.Center"/>
         <Column @bind-Field="@context.Size" Sortable Align="@ColumnAlign.Center"/>
         <Column @bind-Field="@context.UploadTime" Sortable Align="@ColumnAlign.Center"/>
-        <Column @bind-Field="@context.LastModifyTime" Sortable Align="@ColumnAlign.Center"/>
-        <Column @bind-Field="@context.Uploader" Sortable Align="@ColumnAlign.Center"/>
+        <Column @bind-Field="@context.Owner" Sortable Align="@ColumnAlign.Center"/>
         <ActionColumn Align="@ColumnAlign.Center">
             <Space>
                 <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{}">下 载</Button></SpaceItem>
@@ -52,16 +52,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        images.Add(new ImageEntity
-            {
-                Id = "11111111",
-                Name = "test.jpg",
-                Tags = "动物、自然、社会",
-                Url = "https://baidu.com",
-                Size = "10.8MB",
-                UploadTime = "2022/4/1 0:28",
-                LastModifyTime = "2022/4/1 0:34",
-                Uploader = "Admin"
-            });
+        using var context = new OurDbContext();
+        using var sqlImageData = new SQLImageData(context);
+        images = await sqlImageData.Get();
     }
 }

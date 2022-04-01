@@ -6,7 +6,7 @@
         /// 获取appsettings.json实例
         /// </summary>
         /// <returns></returns>
-        public static IConfigurationRoot? GetInstance()
+        public static IConfigurationRoot GetInstance()
         {
             return new ConfigurationBuilder()
                    .SetBasePath(Environment.CurrentDirectory)
@@ -23,12 +23,30 @@
         /// <returns></returns>
         public static object Get(string path)
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Environment.CurrentDirectory)
-                .AddJsonFile("appsettings.json")
-                .AddInMemoryCollection()
-                .Build();
-            return config[path];
+            return GetInstance()[path];
+        }
+
+
+        /// <summary>
+        /// 修改appsettings.json文件
+        /// </summary>
+        /// <param name="path">待修改的变量路径</param>
+        /// <param name="val">修改后的值</param>
+        /// <returns></returns>
+        public static bool Set(string path, object val)
+        {
+            try
+            {
+                var config = GetInstance();
+                config[path] = val.ToString();
+                config.Reload();
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
