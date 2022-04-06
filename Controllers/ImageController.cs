@@ -39,11 +39,12 @@ namespace ImageBed.Controllers
                     }
 
                     // 格式化文件名(原文件名为fileReader.FileName)
-                    string unitFileName = $"{UnitNameGenerator.GetTimeStamp()}.{UnitNameGenerator.GetFileExtension(fileReader.FileName)}";
+                    string unitFileName = $"{UnitNameGenerator.GererateRandomString(16)}.{UnitNameGenerator.GetFileExtension(fileReader.FileName)}";
                     string unitFilePath = $"{imageDirPath}/{unitFileName}";
                     if (System.IO.File.Exists(unitFilePath))
                     {
-                        System.IO.File.Delete(unitFilePath);
+                        unitFileName = UnitNameGenerator.GererateRandomString(5) + unitFileName[5..];
+                        unitFilePath = $"{imageDirPath}/{unitFileName}";
                     }
 
                     // 读取图片
@@ -56,7 +57,7 @@ namespace ImageBed.Controllers
                     var imageInfo = new FileInfo(unitFilePath);
                     ImageEntity image = new()
                     {
-                        Id = UnitNameGenerator.GetTimeStamp().ToString(),
+                        Id = $"{unitFileName}",
                         Name = unitFileName,
                         Url = imageUrls.Last(),
                         Dpi = "*",

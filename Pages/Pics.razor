@@ -40,16 +40,17 @@
     }
 </Space>
 @code{
-    void RemoveSelectedImages()
+    async void RemoveSelectedImages()
     {
         using var context = new OurDbContext();
         using var sqlImageData = new SQLImageData(context);
 
         foreach(var image in imagesSelected)
         {
-            RemoveImage(image.Id);
+            await sqlImageData.Remove(image.Id);
             imagesAll.Remove(image);
         }
+        _message.Success("图片已删除!");
 
         OnSearch();
     }
