@@ -2,10 +2,7 @@
 using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.StaticFiles;
-using System.Drawing;
-using System.Net;
-using System.Net.Http.Headers;
+using SixLabors.ImageSharp;
 
 namespace ImageBed.Controllers
 {
@@ -51,21 +48,23 @@ namespace ImageBed.Controllers
                     using FileStream fileWriter = System.IO.File.Create(unitFilePath);
                     await fileReader.CopyToAsync(fileWriter);
                     fileWriter.Flush();
+                    fileWriter.Close();
                     imageUrls.Add($"{GetHost()}/api/image/{unitFileName}");
 
                     // 录入数据库
-                    var imageInfo = new FileInfo(unitFilePath);
+                    var imageInfo = SixLabors.ImageSharp.Image.Load(unitFilePath);
+                    var fileInfo = new FileInfo(unitFilePath);
                     ImageEntity image = new()
                     {
                         Id = $"{unitFileName}",
                         Name = unitFileName,
                         Url = imageUrls.Last(),
-                        Dpi = "*",
-                        Size = UnitNameGenerator.RebuildFileSize(imageInfo.Length),
-                        UploadTime = imageInfo.LastAccessTime.ToString(),
-                        Owner = "*"
+                        Dpi = $"{imageInfo.Width}*{imageInfo.Height}",
+                        Size = UnitNameGenerator.RebuildFileSize(fileInfo.Length),
+                        UploadTime = fileInfo.LastAccessTime.ToString(),
+                        Owner = "Admin"
                     };
-                    
+
                     await sqlImageData.Add(image);
                 }
                 catch (Exception)
