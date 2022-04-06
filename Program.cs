@@ -1,5 +1,4 @@
 using ImageBed.Data;
-using Tewr.Blazor.FileReader;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using ImageBed.Data.Access;
@@ -15,7 +14,6 @@ builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddFileReaderService();
 builder.Services.AddDbContext<OurDbContext>();
 
 

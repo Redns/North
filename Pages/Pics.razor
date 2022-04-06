@@ -31,11 +31,11 @@
         }
     }
     <SpaceItem>
-        <Button Type="@ButtonType.Primary" Ghost>导  入</Button>
+        <Button Type="@ButtonType.Primary" Ghost OnClick=@ImportImages>导  入</Button>
     </SpaceItem>
     @if ((imagesSelected != null ) && (imagesSelected.Any()))
     {
-        <SpaceItem><Button Type="@ButtonType.Primary" Ghost>导  出</Button></SpaceItem>
+        <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick=@ExportSelectedImages>导  出</Button></SpaceItem>
         <SpaceItem><Button Danger Ghost OnClick=@RemoveSelectedImages>删 除</Button></SpaceItem>
     }
 </Space>
@@ -53,6 +53,38 @@
         _message.Success("图片已删除!");
 
         OnSearch();
+    }
+
+
+    async Task ExportSelectedImages()
+    {
+        // 加载配置文件
+        List<string> imageFullpaths = new();
+        AppSetting? appSetting = AppSetting.Parse();
+
+        // 构造源文件数组
+        if(appSetting != null)
+        {
+            foreach(var image in imagesSelected)
+            {
+                imageFullpaths.Add($"{appSetting?.Data?.Resources?.Images?.Path}/{image.Name}");
+            }
+        }
+
+        // 打包压缩文件
+        if (File.Exists($"{appSetting?.Data?.Resources?.Images?.Path}/Images.export"))
+        {
+            File.Delete($"{appSetting?.Data?.Resources?.Images?.Path}/Images.export");
+        }
+        FileCompress.CompressMulti(imageFullpaths.ToArray(), $"{appSetting?.Data?.Resources?.Images?.Path}/Images.export");
+
+        await _message.Success("导出成功!");
+    }
+
+
+    async Task ImportImages()
+    {
+        
     }
 }
 <br/>
@@ -111,10 +143,12 @@
         }
     }
 
+
     async void DownloadFile(string url, string imagename)
     {
         await JS.InvokeVoidAsync("downloadFileFromStream", url, imagename);
     }
+
 
     async void RemoveImage(string? id)
     {

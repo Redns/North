@@ -2,7 +2,7 @@
 using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
-using SixLabors.ImageSharp;
+using System.IO.Compression;
 
 namespace ImageBed.Controllers
 {
@@ -23,18 +23,19 @@ namespace ImageBed.Controllers
             using var context = new OurDbContext();
             using var sqlImageData = new SQLImageData(context);
 
+            // 加载设置文件
             AppSetting? appSetting = AppSetting.Parse();
+            string imageDirPath = appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
+            if (!Directory.Exists(imageDirPath))
+            {
+                Directory.CreateDirectory(imageDirPath);
+            }
+
             FormFileCollection fileCollection = (FormFileCollection)formCollection.Files;
             foreach (IFormFile fileReader in fileCollection)
             {
                 try
                 {
-                    string imageDirPath = appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
-                    if (!Directory.Exists(imageDirPath))
-                    {
-                        Directory.CreateDirectory(imageDirPath);
-                    }
-
                     // 格式化文件名(原文件名为fileReader.FileName)
                     string unitFileName = $"{UnitNameGenerator.GererateRandomString(16)}.{UnitNameGenerator.GetFileExtension(fileReader.FileName)}";
                     string unitFilePath = $"{imageDirPath}/{unitFileName}";
@@ -115,6 +116,17 @@ namespace ImageBed.Controllers
             }
             return new ApiResult<object>(200, "Delete image success", null);
         }
+
+
+        /// <summary>
+        /// 导出图片
+        /// </summary>
+        /// <returns></returns>
+        //[HttpGet("export")]
+        //public IActionResult ExportImages()
+        //{
+        //    return new IActionResult(200);
+        //}
 
 
         /// <summary>
