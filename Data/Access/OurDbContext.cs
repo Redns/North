@@ -11,24 +11,24 @@ namespace ImageBed.Data.Access
 
         public DbSet<ImageEntity> Images { get; set; }
 
-
         /// <summary>
         /// 连接本地SQLite数据库
         /// </summary>
         /// <param name="opt"></param>
         protected override void OnConfiguring(DbContextOptionsBuilder opt)
         {
-            string? connStr = AppSettings.Get(SQLiteHelper.connPath).ToString();
-            if (string.IsNullOrEmpty(connStr))
+            AppSetting? appSetting = AppSetting.Parse(File.ReadAllText("appsettings.json"));
+            if ((appSetting != null) && (appSetting.Data != null) && (appSetting.Data.Resources != null) && (appSetting.Data.Resources.Database != null))
             {
-                // 创建数据库
-                connStr = SQLiteHelper.CreateSQLiteDatabase("Data/Database/imagebed.sqlite");
-                AppSettings.Set(SQLiteHelper.connPath, connStr);
+                if (string.IsNullOrEmpty(appSetting.Data.Resources.Database.ConnStr))
+                {
+                    appSetting.Data.Resources.Database.ConnStr = SQLiteHelper.CreateSQLiteDatabase("Data/Database");
 
-                // 创建数据库表
-                SQLiteHelper.ExecuteSQLCommand(SQLiteHelper.CreateImageTableCommand("Images"));
+                    // 保存设置
+                    AppSetting.Save(appSetting, "appsettings.json");
+                }
+                opt.UseSqlite(appSetting.Data.Resources.Database.ConnStr);
             }
-            opt.UseSqlite(connStr);
         }
     }
 
@@ -40,7 +40,6 @@ namespace ImageBed.Data.Access
         {
             _context = context;
         }
-
 
         /// <summary>
         /// 获取数据库中的所有图片信息
@@ -55,7 +54,6 @@ namespace ImageBed.Data.Access
             return new List<ImageEntity>();
         }
 
-
         /// <summary>
         /// 获取数据库中指定ID的图片信息
         /// </summary>
@@ -69,7 +67,6 @@ namespace ImageBed.Data.Access
             }
             return null;
         }
-
 
         /// <summary>
         /// 移除数据库中指定图片的信息
@@ -97,7 +94,6 @@ namespace ImageBed.Data.Access
             }
             return false;
         }
-
 
         public void Dispose()
         {

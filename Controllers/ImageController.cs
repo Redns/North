@@ -21,37 +21,31 @@ namespace ImageBed.Controllers
         {
             List<string> imageUrls = new();
 
+            AppSetting? appSetting = AppSetting.Parse();
             FormFileCollection fileCollection = (FormFileCollection)formCollection.Files;
             foreach (IFormFile fileReader in fileCollection)
             {
                 try
                 {
-                    string? imageDirPath = AppSettings.Get("Data:Resources:Images:Path").ToString();
-                    if(!string.IsNullOrEmpty(imageDirPath))
+                    string imageDirPath = appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
+                    if (!Directory.Exists(imageDirPath))
                     {
-                        if (!Directory.Exists(imageDirPath))
-                        {
-                            Directory.CreateDirectory(imageDirPath);
-                        }
-
-                        // 格式化文件名
-                        string unitFileName = $"{UnitNameGenerator.GetTimeStamp()}.{UnitNameGenerator.GetFileExtension(fileReader.FileName)}";
-                        string? unitFilePath = $"{imageDirPath}/{unitFileName}";
-                        if (System.IO.File.Exists(unitFilePath))
-                        {
-                            System.IO.File.Delete(unitFilePath);
-                        }
-
-                        // 读取图片
-                        using FileStream fileWriter = System.IO.File.Create(unitFilePath);
-                        await fileReader.CopyToAsync(fileWriter);
-                        fileWriter.Flush();
-                        imageUrls.Add($"{GetHost()}/api/image/{unitFileName}");
+                        Directory.CreateDirectory(imageDirPath);
                     }
-                    else
+
+                    // 格式化文件名
+                    string unitFileName = $"{UnitNameGenerator.GetTimeStamp()}.{UnitNameGenerator.GetFileExtension(fileReader.FileName)}";
+                    string unitFilePath = $"{imageDirPath}/{unitFileName}";
+                    if (System.IO.File.Exists(unitFilePath))
                     {
-                        imageUrls.Add(string.Empty);
+                        System.IO.File.Delete(unitFilePath);
                     }
+
+                    // 读取图片
+                    using FileStream fileWriter = System.IO.File.Create(unitFilePath);
+                    await fileReader.CopyToAsync(fileWriter);
+                    fileWriter.Flush();
+                    imageUrls.Add($"{GetHost()}/api/image/{unitFileName}");
                 }
                 catch (Exception)
                 {
@@ -70,13 +64,15 @@ namespace ImageBed.Controllers
         [HttpGet("{filename}")]
         public IActionResult Get(string filename)
         {
-            // 解析文件路径
-            string? imagePath = $"{AppSettings.Get("Data:Resources:Images:Path")}/{filename}";
+            AppSetting? appSetting = AppSetting.Parse();
+
+            string imageDir = appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
+            string imagePath = $"{imageDir}/{filename}";
+
             if (!System.IO.File.Exists(imagePath))
             {
-                imagePath = $"{AppSettings.Get("Data:Resources:Images:Path")}/imageNotFound.jpg";
+                imagePath = $"{imageDir}/imageNotFound.jpg";
             }
-
             return File(System.IO.File.ReadAllBytes(imagePath), $"image/{UnitNameGenerator.GetFileExtension(filename)}");
         }
 
@@ -90,8 +86,9 @@ namespace ImageBed.Controllers
         [HttpDelete("{filename}")]
         public ApiResult<object> Delete(string filename)
         {
-            // 解析文件路径
-            string? imagePath = $"{AppSettings.Get("Data:Resources:Images:Path")}/{filename}";
+            AppSetting? appSetting = AppSetting.Parse();
+
+            string? imagePath = $"{appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images"}/{filename}";
             if (System.IO.File.Exists(imagePath))
             {
                 System.IO.File.Delete(imagePath);

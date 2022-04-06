@@ -1,14 +1,11 @@
 ﻿using ImageBed.Common;
+using ImageBed.Data.Entity;
 using System.Data.SQLite;
 
 namespace ImageBed.Data.Access
 {
     public class SQLiteHelper
     {
-        // 连接字符串路径
-        public const string connPath = "Data:Resources:Database:connStr";
-
-
         /// <summary>
         /// 创建SQLite数据库
         /// </summary>
@@ -16,10 +13,19 @@ namespace ImageBed.Data.Access
         /// <returns></returns>
         public static string CreateSQLiteDatabase(string path)
         {
-            if(UnitNameGenerator.GetFileExtension(path) == "sqlite")
+            AppSetting? appSetting = AppSetting.Parse();
+            if(appSetting != null)
             {
-                SQLiteConnection.CreateFile(path);
-                return $"Data Source={path};";
+                try
+                {
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                    File.Copy(appSetting?.Data?.Resources?.Database?.Template ?? $"Data/Database/imagebed-blank.sqlite", $"{path}/imagebed.sqlite");
+                    return $"Data Source={path}/imagebed.sqlite;";
+                }
+                catch { }
             }
             return string.Empty;           
         }
@@ -32,7 +38,7 @@ namespace ImageBed.Data.Access
         /// <returns></returns>
         public static bool ExecuteSQLCommand(string sqlCommand)
         {
-            string? connStr = AppSettings.Get(connPath).ToString();
+            string? connStr = AppSetting.Parse()?.Data?.Resources?.Database?.ConnStr;
             if (!string.IsNullOrEmpty(connStr))
             {
                 try
@@ -50,17 +56,6 @@ namespace ImageBed.Data.Access
                 catch (Exception) { }
             }
             return false;
-        }
-
-
-        /// <summary>
-        /// 生成"创建Images数据库表"命令
-        /// </summary>
-        /// <param name="tableName">数据库表名字</param>
-        /// <returns></returns>
-        public static string CreateImageTableCommand(string tableName)
-        {
-            return $"create table {tableName} (Id varchar(30), Name varchar(40), Url varchar(100), Size varchar(10), UploadTime varchar(20), Dpi varchar(20), Owner varchar(20))";
         }
     }
 }
