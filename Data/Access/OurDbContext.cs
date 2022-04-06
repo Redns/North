@@ -17,17 +17,15 @@ namespace ImageBed.Data.Access
         /// <param name="opt"></param>
         protected override void OnConfiguring(DbContextOptionsBuilder opt)
         {
-            AppSetting? appSetting = AppSetting.Parse(File.ReadAllText("appsettings.json"));
+            AppSetting? appSetting = AppSetting.Parse();
             if ((appSetting != null) && (appSetting.Data != null) && (appSetting.Data.Resources != null) && (appSetting.Data.Resources.Database != null))
             {
-                if (string.IsNullOrEmpty(appSetting.Data.Resources.Database.ConnStr))
+                if (string.IsNullOrEmpty(appSetting.Data.Resources.Database.Path))
                 {
-                    appSetting.Data.Resources.Database.ConnStr = SQLiteHelper.CreateSQLiteDatabase("Data/Database");
-
-                    // 保存设置
+                    appSetting.Data.Resources.Database.Path = SQLiteHelper.CreateSQLiteDatabase("Data/Database/imagebed.sqlite");
                     AppSetting.Save(appSetting, "appsettings.json");
                 }
-                opt.UseSqlite(appSetting.Data.Resources.Database.ConnStr);
+                opt.UseSqlite(appSetting.Data.Resources.Database.Path);
             }
         }
     }
@@ -40,6 +38,24 @@ namespace ImageBed.Data.Access
         {
             _context = context;
         }
+
+
+        /// <summary>
+        /// 添加图片信息至数据库
+        /// </summary>
+        /// <param name="image">待添加的图片</param>
+        /// <returns>添加成功返回true，否则返回false</returns>
+        public async Task<bool> Add(ImageEntity image)
+        {
+            if((_context != null) && (_context.Images != null) && (image != null))
+            {
+                await _context.Images.AddAsync(image);
+                _context.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
 
         /// <summary>
         /// 获取数据库中的所有图片信息
@@ -82,6 +98,11 @@ namespace ImageBed.Data.Access
                     ImageEntity? image = await Get(id);
                     if(image != null)
                     {
+                        string imagePath = $"{AppSetting.Parse()?.Data?.Resources?.Images?.Path}/{image.Name}";
+                        if (File.Exists(imagePath))
+                        {
+                            File.Delete(imagePath);
+                        }
                         _context.Images.Remove(image);
                         _context.SaveChanges();
                     }

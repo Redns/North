@@ -77,7 +77,7 @@ namespace ImageBed.Data.Entity
 
     public class Database
     {
-        public string? Template { get; set; }
-        public string? ConnStr { get; set; }
+        public string? Path { get; set; }
+        public string? TemplatePath { get; set; }
     }
 }

@@ -5,29 +5,62 @@
 @using System.Text.Json;
 @using ImageBed.Data.Access
 @using ImageBed.Data.Entity
+@using System.Net
 
+@inject IJSRuntime JS
 @inject MessageService _message
 
 <Space>
     <SpaceItem>
-        <Search Placeholder="Search what you want..." EnterButton="true"/>
+        <Search Placeholder="Search what you want..." EnterButton="true" @bind-Value="searchText" Loading=@searchRunning OnSearch=@OnSearch/>
     </SpaceItem>
+    @code{
+        string? searchText;
+        bool searchRunning = false;
+
+        public void OnSearch()
+        {
+            searchRunning = true;
+
+            imagesShow.Clear();
+            foreach (var image in imagesAll.Where(image => (searchText == null) || (image.Name ?? "").Contains(searchText) || (image.Owner ?? "").Contains(searchText))) {
+                imagesShow.Add(image);
+            }
+
+            searchRunning = false;
+        }
+    }
     <SpaceItem>
         <Button Type="@ButtonType.Primary" Ghost>导  入</Button>
     </SpaceItem>
-    <SpaceItem>
-        <Button Type="@ButtonType.Primary" Ghost>导  出</Button>
-    </SpaceItem>
-    <SpaceItem>
-        <Button Danger Ghost>删 除</Button>
-    </SpaceItem>
+    @if ((imagesSelected != null ) && (imagesSelected.Any()))
+    {
+        <SpaceItem><Button Type="@ButtonType.Primary" Ghost>导  出</Button></SpaceItem>
+        <SpaceItem><Button Danger Ghost OnClick=@RemoveSelectedImages>删 除</Button></SpaceItem>
+    }
 </Space>
+@code{
+    void RemoveSelectedImages()
+    {
+        using var context = new OurDbContext();
+        using var sqlImageData = new SQLImageData(context);
+
+        foreach(var image in imagesSelected)
+        {
+            RemoveImage(image.Id);
+            imagesAll.Remove(image);
+        }
+
+        OnSearch();
+    }
+}
 <br/>
 <br/>
 <Table @ref="table"
        TItem="ImageEntity"
-       DataSource="@images"
+       DataSource="@imagesShow"
        @bind-PageSize="_pageSize"
+       @bind-SelectedRows="@imagesSelected"
 >
         <Selection Key="@(context.Id?.ToString())" />
         <Column @bind-Field="@context.Name" Align="@ColumnAlign.Center" Sortable>
@@ -39,8 +72,9 @@
         <Column @bind-Field="@context.Owner" Sortable Align="@ColumnAlign.Center"/>
         <ActionColumn Align="@ColumnAlign.Center">
             <Space>
-                <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{}">下 载</Button></SpaceItem>
-                <SpaceItem><Button Danger OnClick="()=>{}">删 除</Button></SpaceItem>
+                <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{CopyUrlToClip(context.Url);}">复 制</Button></SpaceItem>
+                <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{DownloadFile(context.Name, context.Url);}">下 载</Button></SpaceItem>
+                <SpaceItem><Button Danger OnClick="()=>{RemoveImage(context.Id);}">删 除</Button></SpaceItem>
             </Space>
         </ActionColumn>
 </Table>
@@ -48,12 +82,56 @@
 @code {
     ITable table;
     int _pageSize = 8;
-    List<ImageEntity> images = new();
+
+    List<ImageEntity> imagesShow = new();
+    List<ImageEntity> imagesAll = new();
+    IEnumerable<ImageEntity> imagesSelected;
 
     protected override async Task OnInitializedAsync()
     {
         using var context = new OurDbContext();
         using var sqlImageData = new SQLImageData(context);
-        images = await sqlImageData.Get();
+
+        imagesAll = await sqlImageData.Get();
+
+        OnSearch();
+    }
+
+    async void CopyUrlToClip(string? content)
+    {
+        if (!string.IsNullOrEmpty(content))
+        {
+            await JS.InvokeVoidAsync("CopyToClip", content);
+            _message.Success("已拷贝链接到剪贴板！");
+        }
+        else
+        {
+            await _message.Error("拷贝链接失败！");
+        }
+    }
+
+    async void DownloadFile(string url, string imagename)
+    {
+        await JS.InvokeVoidAsync("downloadFileFromStream", url, imagename);
+    }
+
+    async void RemoveImage(string? id)
+    {
+        if (!string.IsNullOrEmpty(id))
+        {
+            using var context = new OurDbContext();
+            using var sqlImageData = new SQLImageData(context);
+
+            await sqlImageData.Remove(id);
+
+            ImageEntity? image = imagesAll.FirstOrDefault(image => image.Id == id);
+            if(image != null)
+            {
+                imagesAll.Remove(image);
+                OnSearch();
+            }
+
+            _message.Success("图片已删除！");
+        }
     }
 }

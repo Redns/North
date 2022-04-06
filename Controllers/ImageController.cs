@@ -1,7 +1,9 @@
 ﻿using ImageBed.Common;
+using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using System.Drawing;
 using System.Net;
 using System.Net.Http.Headers;
 
@@ -21,6 +23,9 @@ namespace ImageBed.Controllers
         {
             List<string> imageUrls = new();
 
+            using var context = new OurDbContext();
+            using var sqlImageData = new SQLImageData(context);
+
             AppSetting? appSetting = AppSetting.Parse();
             FormFileCollection fileCollection = (FormFileCollection)formCollection.Files;
             foreach (IFormFile fileReader in fileCollection)
@@ -33,7 +38,7 @@ namespace ImageBed.Controllers
                         Directory.CreateDirectory(imageDirPath);
                     }
 
-                    // 格式化文件名
+                    // 格式化文件名(原文件名为fileReader.FileName)
                     string unitFileName = $"{UnitNameGenerator.GetTimeStamp()}.{UnitNameGenerator.GetFileExtension(fileReader.FileName)}";
                     string unitFilePath = $"{imageDirPath}/{unitFileName}";
                     if (System.IO.File.Exists(unitFilePath))
@@ -46,6 +51,21 @@ namespace ImageBed.Controllers
                     await fileReader.CopyToAsync(fileWriter);
                     fileWriter.Flush();
                     imageUrls.Add($"{GetHost()}/api/image/{unitFileName}");
+
+                    // 录入数据库
+                    var imageInfo = new FileInfo(unitFilePath);
+                    ImageEntity image = new()
+                    {
+                        Id = UnitNameGenerator.GetTimeStamp().ToString(),
+                        Name = unitFileName,
+                        Url = imageUrls.Last(),
+                        Dpi = "*",
+                        Size = UnitNameGenerator.RebuildFileSize(imageInfo.Length),
+                        UploadTime = imageInfo.LastAccessTime.ToString(),
+                        Owner = "*"
+                    };
+                    
+                    await sqlImageData.Add(image);
                 }
                 catch (Exception)
                 {

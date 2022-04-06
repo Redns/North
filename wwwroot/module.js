@@ -10,3 +10,18 @@ async function CopyToClip(content) {
     document.execCommand("copy");
     document.body.removeChild(aux);
 }
+
+
+/**
+ * 调用浏览器下载器下载文件
+ * @param {文件名称} filename
+ * @param {文件链接} url
+ */
+async function downloadFileFromStream(filename, url) {
+    var a = document.createElement('a');
+    var filename = filename;
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+}

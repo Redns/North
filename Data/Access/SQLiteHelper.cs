@@ -18,12 +18,11 @@ namespace ImageBed.Data.Access
             {
                 try
                 {
-                    if (!Directory.Exists(path))
+                    if (File.Exists(appSetting?.Data?.Resources?.Database?.TemplatePath))
                     {
-                        Directory.CreateDirectory(path);
+                        File.Copy(appSetting?.Data?.Resources?.Database?.TemplatePath ?? $"Data/Database/imagebed-blank.sqlite", path);
+                        return $"Data Source={path};";
                     }
-                    File.Copy(appSetting?.Data?.Resources?.Database?.Template ?? $"Data/Database/imagebed-blank.sqlite", $"{path}/imagebed.sqlite");
-                    return $"Data Source={path}/imagebed.sqlite;";
                 }
                 catch { }
             }
@@ -31,31 +30,31 @@ namespace ImageBed.Data.Access
         }
 
 
-        /// <summary>
-        /// 执行SQL命令
-        /// </summary>
-        /// <param name="sqlCommand">SQL命令</param>
-        /// <returns></returns>
-        public static bool ExecuteSQLCommand(string sqlCommand)
-        {
-            string? connStr = AppSetting.Parse()?.Data?.Resources?.Database?.ConnStr;
-            if (!string.IsNullOrEmpty(connStr))
-            {
-                try
-                {
-                    // 打开数据库
-                    var database = new SQLiteConnection(connStr);
-                    database.Open();
+        ///// <summary>
+        ///// 执行SQL命令
+        ///// </summary>
+        ///// <param name="sqlCommand">SQL命令</param>
+        ///// <returns></returns>
+        //public static bool ExecuteSQLCommand(string sqlCommand)
+        //{
+        //    string? connStr = AppSetting.Parse()?.Data?.Resources?.Database?.ConnStr;
+        //    if (!string.IsNullOrEmpty(connStr))
+        //    {
+        //        try
+        //        {
+        //            // 打开数据库
+        //            var database = new SQLiteConnection(connStr);
+        //            database.Open();
 
-                    // 执行SQL命令
-                    if(new SQLiteCommand(sqlCommand, database).ExecuteNonQuery() != -1)
-                    {
-                        return true;
-                    }
-                }
-                catch (Exception) { }
-            }
-            return false;
-        }
+        //            // 执行SQL命令
+        //            if(new SQLiteCommand(sqlCommand, database).ExecuteNonQuery() != -1)
+        //            {
+        //                return true;
+        //            }
+        //        }
+        //        catch (Exception) { }
+        //    }
+        //    return false;
+        //}
     }
 }
