@@ -1,9 +1,14 @@
-using ImageBed.Data;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using ImageBed.Data.Access;
+using ImageBed.Common;
+using ImageBed.Data.Entity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+/// <summary>
+/// 加载本地设置
+/// </summary>
+GlobalValues.appSetting = AppSetting.Parse();
 
 
 /// <summary>
@@ -23,6 +28,7 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.Urls.Add("http://0.0.0.0:12121");
 app.UseStaticFiles();
+
 
 /// <summary>
 /// 启用路由

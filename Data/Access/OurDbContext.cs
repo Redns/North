@@ -17,16 +17,12 @@ namespace ImageBed.Data.Access
         /// <param name="opt"></param>
         protected override void OnConfiguring(DbContextOptionsBuilder opt)
         {
-            AppSetting? appSetting = AppSetting.Parse();
-            if ((appSetting != null) && (appSetting.Data != null) && (appSetting.Data.Resources != null) && (appSetting.Data.Resources.Database != null))
+            if (string.IsNullOrEmpty(GlobalValues.appSetting?.Data?.Resources?.Database?.Path))
             {
-                if (string.IsNullOrEmpty(appSetting.Data.Resources.Database.Path))
-                {
-                    appSetting.Data.Resources.Database.Path = SQLiteHelper.CreateSQLiteDatabase("Data/Database/imagebed.sqlite");
-                    AppSetting.Save(appSetting, "appsettings.json");
-                }
-                opt.UseSqlite(appSetting.Data.Resources.Database.Path);
+                GlobalValues.appSetting.Data.Resources.Database.Path = SQLiteHelper.CreateSQLiteDatabase("Data/Database/imagebed.sqlite");
+                AppSetting.Save(GlobalValues.appSetting, "appsettings.json");
             }
+            opt.UseSqlite(GlobalValues.appSetting.Data.Resources.Database.Path);
         }
     }
 
@@ -52,6 +48,22 @@ namespace ImageBed.Data.Access
                 await _context.Images.AddAsync(image);
                 _context.SaveChanges();
                 return true;
+            }
+            return false;
+        }
+
+
+        public async Task<bool> Update(ImageEntity image)
+        {
+            if ((_context != null) && (_context.Images != null))
+            {
+                try
+                {
+                    _context.Images.Update(image);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                catch (Exception) { }
             }
             return false;
         }
@@ -84,6 +96,22 @@ namespace ImageBed.Data.Access
             return null;
         }
 
+
+        /// <summary>
+        /// 根据图片名称查找
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async Task<ImageEntity?> GetByName(string name)
+        {
+            if ((_context != null) && (_context.Images != null))
+            {
+                return await _context.Images.FirstAsync(x => x.Name == name);
+            }
+            return null;
+        }
+
+
         /// <summary>
         /// 移除数据库中指定图片的信息
         /// </summary>
@@ -98,7 +126,7 @@ namespace ImageBed.Data.Access
                     ImageEntity? image = await Get(id);
                     if(image != null)
                     {
-                        string imagePath = $"{AppSetting.Parse()?.Data?.Resources?.Images?.Path}/{image.Name}";
+                        string imagePath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}";
                         if (File.Exists(imagePath))
                         {
                             File.Delete(imagePath);

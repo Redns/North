@@ -2,7 +2,7 @@
 
 namespace ImageBed.Common
 {
-    public class FileCompress
+    public class FileOperator
     {
         /// <summary>
         /// 自定义多文件压缩（生成的压缩包和第三方的压缩文件解压不兼容）

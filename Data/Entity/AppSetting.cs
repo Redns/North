@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using static ImageBed.Common.UnitNameGenerator;
 
 namespace ImageBed.Data.Entity
 {
@@ -14,11 +15,12 @@ namespace ImageBed.Data.Entity
         {
             try
             {
-                return JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText("appsettings.json"));
+                return JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText("appSettings.json"));
             }
             catch (Exception) { }
             return null;
         }
+
 
         /// <summary>
         /// 解析配置文件
@@ -38,10 +40,11 @@ namespace ImageBed.Data.Entity
             return null;
         }
 
+
         /// <summary>
         /// 保存设置
         /// </summary>
-        /// <param name="appSetting"></param>
+        /// <param name="GlobalValues.appSetting"></param>
         /// <param name="path"></param>
         /// <returns></returns>
         public static bool Save(AppSetting appSetting, string path)
@@ -59,10 +62,12 @@ namespace ImageBed.Data.Entity
         }
     }
 
+
     public class Data
     {
         public Resource? Resources { get; set; }
     }
+
 
     public class Resource
     {
@@ -70,10 +75,13 @@ namespace ImageBed.Data.Entity
         public Database? Database { get; set; }
     }
 
+
     public class Image
     {
         public string? Path { get; set; }
+        public RenameFormat RenameFormat { get; set; }
     }
+
 
     public class Database
     {

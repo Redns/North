@@ -98,5 +98,55 @@
             }
             return str;
         }
+
+
+        /// <summary>
+        /// 重命名格式
+        /// </summary>
+        public enum RenameFormat
+        {
+            NONE = 0,               // 不重命名
+            MD5,                    // MD5重命名
+            TIME,                   // 时间重命名
+            TIMESTAMP,              // 时间戳重命名
+            RANDOM_STRING           // 随机字符串重命名
+        }
+
+
+        /// <summary>
+        /// 重命名文件
+        /// </summary>
+        /// <param name="dir">文件夹</param>
+        /// <param name="srcName">源文件名称</param>
+        /// <param name="format">重命名规则</param>
+        /// <returns></returns>
+        public static string RenameFile(string dir, string srcName, RenameFormat format)
+        {
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            if(format == RenameFormat.NONE) { return srcName; }
+            string dstName = format switch
+            {
+                RenameFormat.MD5 => EncryptAndDecrypt.Encrypt_MD5(srcName),
+                RenameFormat.TIME => DateTime.Now.ToLocalTime().ToString().Replace(":", "-"),
+                RenameFormat.TIMESTAMP => GetTimeStamp().ToString(),
+                RenameFormat.RANDOM_STRING => GererateRandomString(8),
+                _ => srcName,
+            };
+            dstName += $".{GetFileExtension(srcName)}";
+
+            if (File.Exists(dstName))
+            {
+                dstName = RenameFile(dir, dstName, format);
+                return dstName;
+            }
+            else
+            {
+                return dstName;
+            }
+        }
     }
 }

@@ -2,7 +2,6 @@
 using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
-using System.IO.Compression;
 
 namespace ImageBed.Controllers
 {
@@ -24,8 +23,7 @@ namespace ImageBed.Controllers
             using var sqlImageData = new SQLImageData(context);
 
             // 加载设置文件
-            AppSetting? appSetting = AppSetting.Parse();
-            string imageDirPath = appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
+            string imageDirPath = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
             if (!Directory.Exists(imageDirPath))
             {
                 Directory.CreateDirectory(imageDirPath);
@@ -37,15 +35,16 @@ namespace ImageBed.Controllers
                 try
                 {
                     // 格式化文件名(原文件名为fileReader.FileName)
-                    string unitFileName = $"{UnitNameGenerator.GererateRandomString(16)}.{UnitNameGenerator.GetFileExtension(fileReader.FileName)}";
+                    string unitFileName = UnitNameGenerator.RenameFile(imageDirPath, fileReader.FileName, GlobalValues.appSetting.Data.Resources.Images.RenameFormat);
                     string unitFilePath = $"{imageDirPath}/{unitFileName}";
-                    if (System.IO.File.Exists(unitFilePath))
+
+                    // 检查是否命名冲突
+                    if ((GlobalValues.appSetting.Data.Resources.Images.RenameFormat == UnitNameGenerator.RenameFormat.NONE) && System.IO.File.Exists(unitFilePath)) 
                     {
-                        unitFileName = UnitNameGenerator.GererateRandomString(5) + unitFileName[5..];
-                        unitFilePath = $"{imageDirPath}/{unitFileName}";
+                        System.IO.File.Delete(unitFilePath);
                     }
 
-                    // 读取图片
+                    // 保存图片
                     using FileStream fileWriter = System.IO.File.Create(unitFilePath);
                     await fileReader.CopyToAsync(fileWriter);
                     fileWriter.Flush();
@@ -53,13 +52,13 @@ namespace ImageBed.Controllers
                     imageUrls.Add($"{GetHost()}/api/image/{unitFileName}");
 
                     // 录入数据库
-                    var imageInfo = SixLabors.ImageSharp.Image.Load(unitFilePath);
                     var fileInfo = new FileInfo(unitFilePath);
+                    var imageInfo = SixLabors.ImageSharp.Image.Load(unitFilePath);
                     ImageEntity image = new()
                     {
-                        Id = $"{unitFileName}",
+                        Id = EncryptAndDecrypt.Encrypt_MD5(unitFileName),
                         Name = unitFileName,
-                        Url = imageUrls.Last(),
+                        Url = $"api/image/{unitFileName}",
                         Dpi = $"{imageInfo.Width}*{imageInfo.Height}",
                         Size = UnitNameGenerator.RebuildFileSize(fileInfo.Length),
                         UploadTime = fileInfo.LastAccessTime.ToString(),
@@ -85,9 +84,7 @@ namespace ImageBed.Controllers
         [HttpGet("{filename}")]
         public IActionResult Get(string filename)
         {
-            AppSetting? appSetting = AppSetting.Parse();
-
-            string imageDir = appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
+            string imageDir = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
             string imagePath = $"{imageDir}/{filename}";
 
             if (!System.IO.File.Exists(imagePath))
@@ -107,26 +104,13 @@ namespace ImageBed.Controllers
         [HttpDelete("{filename}")]
         public ApiResult<object> Delete(string filename)
         {
-            AppSetting? appSetting = AppSetting.Parse();
-
-            string? imagePath = $"{appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images"}/{filename}";
+            string? imagePath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images"}/{filename}";
             if (System.IO.File.Exists(imagePath))
             {
                 System.IO.File.Delete(imagePath);
             }
             return new ApiResult<object>(200, "Delete image success", null);
         }
-
-
-        /// <summary>
-        /// 导出图片
-        /// </summary>
-        /// <returns></returns>
-        //[HttpGet("export")]
-        //public IActionResult ExportImages()
-        //{
-        //    return new IActionResult(200);
-        //}
 
 
         /// <summary>

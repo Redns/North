@@ -9,6 +9,7 @@
 
 @inject IJSRuntime JS
 @inject MessageService _message
+@inject NavigationManager NavigationManager
 
 <Space>
     <SpaceItem>
@@ -60,23 +61,22 @@
     {
         // 加载配置文件
         List<string> imageFullpaths = new();
-        AppSetting? appSetting = AppSetting.Parse();
 
         // 构造源文件数组
-        if(appSetting != null)
+        if(GlobalValues.appSetting != null)
         {
             foreach(var image in imagesSelected)
             {
-                imageFullpaths.Add($"{appSetting?.Data?.Resources?.Images?.Path}/{image.Name}");
+                imageFullpaths.Add($"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}");
             }
         }
 
         // 打包压缩文件
-        if (File.Exists($"{appSetting?.Data?.Resources?.Images?.Path}/Images.export"))
+        if (File.Exists($"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/Images.export"))
         {
-            File.Delete($"{appSetting?.Data?.Resources?.Images?.Path}/Images.export");
+            File.Delete($"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/Images.export");
         }
-        FileCompress.CompressMulti(imageFullpaths.ToArray(), $"{appSetting?.Data?.Resources?.Images?.Path}/Images.export");
+        FileOperator.CompressMulti(imageFullpaths.ToArray(), $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/Images.export");
 
         await _message.Success("导出成功!");
     }
@@ -105,8 +105,8 @@
         <Column @bind-Field="@context.Owner" Sortable Align="@ColumnAlign.Center"/>
         <ActionColumn Align="@ColumnAlign.Center">
             <Space>
-                <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{CopyUrlToClip(context.Url);}">复 制</Button></SpaceItem>
-                <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{DownloadFile(context.Name, context.Url);}">下 载</Button></SpaceItem>
+                <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{CopyUrlToClip(NavigationManager.BaseUri + context.Url);}">复 制</Button></SpaceItem>
+                <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{DownloadFile(context.Name, NavigationManager.BaseUri + context.Url);}">下 载</Button></SpaceItem>
                 <SpaceItem><Button Danger OnClick="()=>{RemoveImage(context.Id);}">删 除</Button></SpaceItem>
             </Space>
         </ActionColumn>
