@@ -78,6 +78,7 @@
         }
         FileOperator.CompressMulti(imageFullpaths.ToArray(), $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/Images.export");
 
+        await JS.InvokeVoidAsync("downloadFileFromStream", "Images.export", "api/image/Images.export");
         await _message.Success("导出成功!");
     }
 
@@ -107,7 +108,7 @@
         <ActionColumn Align="@ColumnAlign.Center">
             <Space>
                 <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{CopyUrlToClip(NavigationManager.BaseUri + context.Url);}">复 制</Button></SpaceItem>
-                <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{DownloadFile(context.Name, NavigationManager.BaseUri + context.Url);}">下 载</Button></SpaceItem>
+                <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{DownloadFile(NavigationManager.BaseUri + context.Url, context.Name);}">下 载</Button></SpaceItem>
                 <SpaceItem><Button Danger OnClick="()=>{RemoveImage(context.Id);}">删 除</Button></SpaceItem>
             </Space>
         </ActionColumn>
@@ -147,7 +148,7 @@
 
     async void DownloadFile(string url, string imagename)
     {
-        await JS.InvokeVoidAsync("downloadFileFromStream", url, imagename);
+        await JS.InvokeVoidAsync("downloadFileFromStream", imagename, url);
     }
 
 

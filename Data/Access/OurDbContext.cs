@@ -106,7 +106,11 @@ namespace ImageBed.Data.Access
         {
             if ((_context != null) && (_context.Images != null))
             {
-                return await _context.Images.FirstAsync(x => x.Name == name);
+                try
+                {
+                    return await _context.Images.FirstAsync(x => x.Name == name);
+                }
+                catch { }
             }
             return null;
         }
