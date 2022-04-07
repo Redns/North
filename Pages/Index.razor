@@ -67,11 +67,16 @@
         progress_percent = (int)(imageUrls.ToArray().Length * 100.0 / image_total);
     }
 
+    bool uploadRunning = false;
     void CheckImages(UploadInfo imageInfo)
     {
-        image_total = fileList.ToArray().Length;
-        imageUrls.Clear();
-        UpdateProgress();
+        if (!uploadRunning)
+        {
+            image_total = fileList.ToArray().Length;
+            imageUrls.Clear();
+            UpdateProgress();
+            uploadRunning = true;
+        }
     }
 
     void UploadImage(UploadInfo fileinfo)

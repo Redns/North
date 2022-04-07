@@ -69,11 +69,16 @@
 
         async void UploadFinished()
         {
+            using var context = new OurDbContext();
+            using var sqlImageData = new SQLImageData(context);
+            imagesAll = await sqlImageData.Get();
+            OnSearch();
+
             await _notice.Open(new NotificationConfig()
             {
                 Message = "图片导入完成",
                 Description = "图片已成功导入至服务器！"
-            });
+            }); 
         }
         }
     </SpaceItem>
