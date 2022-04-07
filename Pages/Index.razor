@@ -24,6 +24,7 @@
     List<UploadFileItem> fileList = new List<UploadFileItem>();
     Dictionary<string, object> attrs = new Dictionary<string, object>
     {
+        {"accept", "image/*"},
         {"Action", "/api/image" },
         {"Name", "files" },
         {"Multiple", true }

@@ -43,33 +43,38 @@
         </Upload>
         @code{
             Upload? upload;
-            List<UploadFileItem> fileList = new List<UploadFileItem>();
-            Dictionary<string, object> attrs = new Dictionary<string, object>
-            {
-                {"Action", "/api/image" },
-                {"Name", "files" },
-                {"Multiple", true }
-            };
+        List<UploadFileItem> fileList = new List<UploadFileItem>();
+        Dictionary<string, object> attrs = new Dictionary<string, object>
+        {
+            {"accept", "image/*,.export"},
+            {"Action", "/api/image" },
+            {"Name", "files" },
+            {"Multiple", true }
+        };
 
-
-            async void StartImport(UploadInfo imageInfo)
+        bool uploadRunning = false;
+        void StartImport(UploadInfo imageInfo)
+        {
+            if (!uploadRunning)
             {
-                await _notice.Open(new NotificationConfig()
+                _notice.Open(new NotificationConfig()
                 {
                     Message = "图片开始导入",
                     Description = "图片后台导入中，导入完成前请勿再次导入！"
                 });
+                uploadRunning = true;
             }
+        }
 
 
-            async void UploadFinished()
+        async void UploadFinished()
+        {
+            await _notice.Open(new NotificationConfig()
             {
-                await _notice.Open(new NotificationConfig()
-                {
-                    Message = "图片导入完成",
-                    Description = "图片已成功导入至服务器！"
-                });
-            }
+                Message = "图片导入完成",
+                Description = "图片已成功导入至服务器！"
+            });
+        }
         }
     </SpaceItem>
     @if ((imagesSelected != null ) && (imagesSelected.Any()))
