@@ -22,5 +22,8 @@ namespace ImageBed.Data.Entity
 
         [DisplayName("所有者")]
         public string? Owner { get; set; }
+
+        [DisplayName("请求次数")]
+        public int RequestNum { get; set; }
     }
 }

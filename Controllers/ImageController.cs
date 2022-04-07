@@ -82,7 +82,7 @@ namespace ImageBed.Controllers
         /// <param name="filename">图片名称</param>
         /// <returns></returns>
         [HttpGet("{filename}")]
-        public IActionResult Get(string filename)
+        public async Task<IActionResult> Get(string filename)
         {
             string imageDir = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
             string imagePath = $"{imageDir}/{filename}";
@@ -91,6 +91,18 @@ namespace ImageBed.Controllers
             {
                 imagePath = $"{imageDir}/imageNotFound.jpg";
             }
+
+            // 修改请求次数
+            using var context = new OurDbContext();
+            using var sqlImageData = new SQLImageData(context);
+            
+            var image = await sqlImageData.GetByName(filename);
+            if(image != null)
+            {
+                image.RequestNum++;
+                await sqlImageData.Update(image);
+            }
+
             return File(System.IO.File.ReadAllBytes(imagePath), $"image/{UnitNameGenerator.GetFileExtension(filename)}");
         }
 
