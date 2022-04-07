@@ -49,7 +49,7 @@ namespace ImageBed.Common
             if (File.Exists(zipPath))
             {
                 using FileStream fStream = File.Open(zipPath, FileMode.Open);
-                using MemoryStream ms = new MemoryStream();
+                using MemoryStream ms = new();
                 using (GZipStream zipStream = new(fStream, CompressionMode.Decompress))
                 {
                     zipStream.CopyTo(ms);

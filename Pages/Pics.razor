@@ -9,6 +9,7 @@
 
 @inject IJSRuntime JS
 @inject MessageService _message
+@inject NotificationService _notice
 @inject NavigationManager NavigationManager
 
 <Space>
@@ -32,7 +33,44 @@
         }
     }
     <SpaceItem>
-        <Button Type="@ButtonType.Primary" Ghost OnClick=@ImportImages>导  入</Button>
+        <Upload Multiple
+            @attributes=attrs
+            FileList=fileList
+            ShowUploadList=false
+            OnChange="StartImport"
+            OnCompleted="UploadFinished">
+            <Button Type="@ButtonType.Primary" Ghost OnClick=@ImportImages>导  入</Button>
+        </Upload>
+        @code{
+            Upload? upload;
+            List<UploadFileItem> fileList = new List<UploadFileItem>();
+            Dictionary<string, object> attrs = new Dictionary<string, object>
+            {
+                {"Action", "/api/image" },
+                {"Name", "files" },
+                {"Multiple", true }
+            };
+
+
+            async void StartImport(UploadInfo imageInfo)
+            {
+                await _notice.Open(new NotificationConfig()
+                {
+                    Message = "图片开始导入",
+                    Description = "图片后台导入中，导入完成前请勿再次导入！"
+                });
+            }
+
+
+            async void UploadFinished()
+            {
+                await _notice.Open(new NotificationConfig()
+                {
+                    Message = "图片导入完成",
+                    Description = "图片已成功导入至服务器！"
+                });
+            }
+        }
     </SpaceItem>
     @if ((imagesSelected != null ) && (imagesSelected.Any()))
     {

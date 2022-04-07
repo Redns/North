@@ -34,38 +34,42 @@ namespace ImageBed.Controllers
             {
                 try
                 {
-                    // 格式化文件名(原文件名为fileReader.FileName)
-                    string unitFileName = UnitNameGenerator.RenameFile(imageDirPath, fileReader.FileName, GlobalValues.appSetting.Data.Resources.Images.RenameFormat);
-                    string unitFilePath = $"{imageDirPath}/{unitFileName}";
-
-                    // 检查是否命名冲突
-                    if ((GlobalValues.appSetting.Data.Resources.Images.RenameFormat == UnitNameGenerator.RenameFormat.NONE) && System.IO.File.Exists(unitFilePath)) 
+                    var extName = UnitNameGenerator.GetFileExtension(fileReader.FileName);
+                    if(extName == "export")
                     {
-                        System.IO.File.Delete(unitFilePath);
+                        // 创建解压文件夹
+                        string importImagePath = $"{imageDirPath}/Import";
+                        if (!Directory.Exists(importImagePath))
+                        {
+                            Directory.CreateDirectory(importImagePath);
+                        }
+
+                        // 保存并解压export文件
+                        await SaveFile(fileReader.OpenReadStream(), $"{importImagePath}/ImportImages.export");
+                        FileOperator.DeCompressMulti($"{importImagePath}/ImportImages.export", $"{importImagePath}/");
+
+                        // 保存图片信息至数据库
+                        IEnumerable<string> imagePaths = Directory.GetFiles(importImagePath);
+                        foreach(string imagePath in imagePaths)
+                        {
+                            var imageName = imagePath.Split('\\').Last();
+                            if(UnitNameGenerator.GetFileExtension(imageName) != "export")
+                            {
+                                var image = await SaveImage(new FileStream(imagePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), imageName, imageDirPath);
+                                imageUrls.Add($"{GetHost()}{image.Url}");
+                                await sqlImageData.Add(image);
+                            }
+                        }
+
+                        // 删除文件夹
+                        Directory.Delete(importImagePath, true);
                     }
-
-                    // 保存图片
-                    using FileStream fileWriter = System.IO.File.Create(unitFilePath);
-                    await fileReader.CopyToAsync(fileWriter);
-                    fileWriter.Flush();
-                    fileWriter.Close();
-                    imageUrls.Add($"{GetHost()}/api/image/{unitFileName}");
-
-                    // 录入数据库
-                    var fileInfo = new FileInfo(unitFilePath);
-                    var imageInfo = SixLabors.ImageSharp.Image.Load(unitFilePath);
-                    ImageEntity image = new()
+                    else
                     {
-                        Id = EncryptAndDecrypt.Encrypt_MD5(unitFileName),
-                        Name = unitFileName,
-                        Url = $"api/image/{unitFileName}",
-                        Dpi = $"{imageInfo.Width}*{imageInfo.Height}",
-                        Size = UnitNameGenerator.RebuildFileSize(fileInfo.Length),
-                        UploadTime = fileInfo.LastAccessTime.ToString(),
-                        Owner = "Admin"
-                    };
-
-                    await sqlImageData.Add(image);
+                        var image = await SaveImage(fileReader.OpenReadStream(), fileReader.FileName, imageDirPath);
+                        imageUrls.Add($"{GetHost()}{image.Url}");
+                        await sqlImageData.Add(image);
+                    }
                 }
                 catch (Exception)
                 {
@@ -73,6 +77,71 @@ namespace ImageBed.Controllers
                 }
             }
             return new ApiResult<object>(200, "Upload finished", imageUrls);
+        }
+
+
+        /// <summary>
+        /// 保存图片到本地
+        /// </summary>
+        /// <param name="fileReader">图片输入流</param>
+        /// <param name="filename">图片名称</param>
+        /// <param name="imageDirPath">图片存储文件夹</param>
+        /// <returns></returns>
+        private async Task<ImageEntity> SaveImage(Stream fileReader, string filename, string imageDirPath)
+        {
+            // 格式化文件名
+            string unitFileName = UnitNameGenerator.RenameFile(imageDirPath, filename, GlobalValues.appSetting.Data.Resources.Images.RenameFormat);
+            string unitFilePath = $"{imageDirPath}/{unitFileName}";
+
+            // 检查是否命名冲突
+            if ((GlobalValues.appSetting.Data.Resources.Images.RenameFormat == UnitNameGenerator.RenameFormat.NONE) && System.IO.File.Exists(unitFilePath))
+            {
+                System.IO.File.Delete(unitFilePath);
+            }
+
+            // 保存图片
+            using FileStream fileWriter = System.IO.File.Create(unitFilePath);
+            await fileReader.CopyToAsync(fileWriter);
+            fileWriter.Flush();
+            fileWriter.Close();
+            fileReader.Flush();
+            fileReader.Close();
+
+            // 录入数据库
+            var fileInfo = new FileInfo(unitFilePath);
+            var imageInfo = SixLabors.ImageSharp.Image.Load(unitFilePath);
+            ImageEntity image = new()
+            {
+                Id = EncryptAndDecrypt.Encrypt_MD5(unitFileName),
+                Name = unitFileName,
+                Url = $"api/image/{unitFileName}",
+                Dpi = $"{imageInfo.Width}*{imageInfo.Height}",
+                Size = UnitNameGenerator.RebuildFileSize(fileInfo.Length),
+                UploadTime = fileInfo.LastAccessTime.ToString(),
+                Owner = "Admin"
+            };
+            return image;
+        }
+
+
+        /// <summary>
+        /// 保存文件到本地
+        /// </summary>
+        /// <param name="fileReader">文件输入流</param>
+        /// <param name="dstDirPath">文件存储路径</param>
+        /// <returns></returns>
+        private async Task SaveFile(Stream fileReader, string dstDirPath)
+        {
+            if (System.IO.File.Exists(dstDirPath))
+            {
+                System.IO.File.Delete(dstDirPath);
+            }
+            using FileStream fileWriter = System.IO.File.Create(dstDirPath);
+            await fileReader.CopyToAsync(fileWriter);
+            fileWriter.Flush();
+            fileWriter.Close();
+            fileReader.Flush();
+            fileReader.Close();
         }
 
 
