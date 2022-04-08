@@ -30,9 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\g2plot.min.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Update="wwwroot\images\upload.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

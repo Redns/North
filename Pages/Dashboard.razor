@@ -5,321 +5,59 @@
 @inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
 
-<style type="text/css">
-    .liquid {
-        display: -webkit-flex;
-        display: flex;
-    }
-
-    .liquid-item {
-        flex: 1;
-        position:center;
-    }
-
-    .line {
-        display: -webkit-flex;
-        display: flex;
-        margin-top: 50px;
-    }
-
-    .line-item {
-        flex: 1;
-    }
-</style>
-
-
-<div class="liquid" style="width: 100%;">
-     <div class="liquid-item"><Liquid Config="config1"/></div>
-     <div class="liquid-item"><Liquid Config="config1"/></div>
-     <div class="liquid-item"><Liquid Config="config1"/></div>
-</div>
-<div class="line" style="width:100%;">
-    <div class="line-item"><Line Data="data4" Config="config4" /></div>
+<div>
+    <Row Gutter=32 Style="position:center;margin-top:20px;">
+        <Col Span=6>
+            <Card TitleTemplate=TitleTemplate_HostImageNum>
+                <Body>
+                    <h4>@HostImageNums</h4>
+                </Body>
+            </Card>
+        </Col>
+        <Col Span=6>
+            <Card TitleTemplate=TitleTemplate_DiskOccupancy>
+                <Body>
+                    <h4>@DiskOccupancy</h4>
+                </Body>
+            </Card>
+        </Col>
+        <Col Span=6>
+            <Card TitleTemplate=TitleTemplate_RunningMemUse>
+                <Body>
+                    <h4>@RunningMemUsage</h4>
+                </Body>
+            </Card>
+        </Col>
+        <Col Span=6>
+            <Card TitleTemplate=TitleTemplate_CpuUse>
+                <Body>
+                    <h4>@CpuUsageRate</h4>
+                </Body>
+            </Card>
+        </Col>
+    </Row>
+    <Row Style="margin-top:50px;">
+        <Col Span=22>
+            <Line Data="data4" Config="config4" />
+        </Col>
+    </Row>
 </div>
 
 @code{
-    readonly LiquidConfig config1 = new LiquidConfig
-    {
-        Percent = 0.5M,
-        Width = 220,
-        Height = 220,
-        XField = "data",
-        YField = "value"
-    };
+    RenderFragment TitleTemplate_HostImageNum = @<Space><SpaceItem><Icon Type="picture" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>托管图片总数</SpaceItem></Space>;
+    RenderFragment TitleTemplate_DiskOccupancy = @<Space><SpaceItem><Icon Type="database" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>磁盘存储占用</SpaceItem></Space>;
+    RenderFragment TitleTemplate_RunningMemUse = @<Space><SpaceItem><Icon Type="fund-projection-screen" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>运行内存占用</SpaceItem></Space>;
+    RenderFragment TitleTemplate_CpuUse = @<Space><SpaceItem><Icon Type="dashboard" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>CPU占用</SpaceItem></Space>
+    ;
 
+    string HostImageNums { get; set; } = "0";
+    string DiskOccupancy { get; set; } = "0 MB";
+    string RunningMemUsage { get; set; } = "0 MB";
+    string CpuUsageRate { get; set; } = "0.00 %";
 
     object[] data4 =
-        {
-        new
-        {
-            date = "2018/8/1",
-            type = "download",
-            value = 4623
-        },
-        new
-        {
-            date = "2018/8/1",
-            type = "register",
-            value = 2208
-        },
-        new
-        {
-            date = "2018/8/1",
-            type = "bill",
-            value = 182
-        },
-        new
-        {
-            date = "2018/8/2",
-            type = "download",
-            value = 6145
-        },
-        new
-        {
-            date = "2018/8/2",
-            type = "register",
-            value = 2016
-        },
-        new
-        {
-            date = "2018/8/2",
-            type = "bill",
-            value = 257
-        },
-        new
-        {
-            date = "2018/8/3",
-            type = "download",
-            value = 508
-        },
-        new
-        {
-            date = "2018/8/3",
-            type = "register",
-            value = 2916
-        },
-        new
-        {
-            date = "2018/8/3",
-            type = "bill",
-            value = 289
-        },
-        new
-        {
-            date = "2018/8/4",
-            type = "download",
-            value = 6268
-        },
-        new
-        {
-            date = "2018/8/4",
-            type = "register",
-            value = 4512
-        },
-        new
-        {
-            date = "2018/8/4",
-            type = "bill",
-            value = 428
-        },
-        new
-        {
-            date = "2018/8/5",
-            type = "download",
-            value = 6411
-        },
-        new
-        {
-            date = "2018/8/5",
-            type = "register",
-            value = 8281
-        },
-        new
-        {
-            date = "2018/8/5",
-            type = "bill",
-            value = 619
-        },
-        new
-        {
-            date = "2018/8/6",
-            type = "download",
-            value = 1890
-        },
-        new
-        {
-            date = "2018/8/6",
-            type = "register",
-            value = 2008
-        },
-        new
-        {
-            date = "2018/8/6",
-            type = "bill",
-            value = 87
-        },
-        new
-        {
-            date = "2018/8/7",
-            type = "download",
-            value = 4251
-        },
-        new
-        {
-            date = "2018/8/7",
-            type = "register",
-            value = 1963
-        },
-        new
-        {
-            date = "2018/8/7",
-            type = "bill",
-            value = 706
-        },
-        new
-        {
-            date = "2018/8/8",
-            type = "download",
-            value = 2978
-        },
-        new
-        {
-            date = "2018/8/8",
-            type = "register",
-            value = 2367
-        },
-        new
-        {
-            date = "2018/8/8",
-            type = "bill",
-            value = 387
-        },
-        new
-        {
-            date = "2018/8/9",
-            type = "download",
-            value = 3880
-        },
-        new
-        {
-            date = "2018/8/9",
-            type = "register",
-            value = 2956
-        },
-        new
-        {
-            date = "2018/8/9",
-            type = "bill",
-            value = 488
-        },
-        new
-        {
-            date = "2018/8/10",
-            type = "download",
-            value = 3606
-        },
-        new
-        {
-            date = "2018/8/10",
-            type = "register",
-            value = 678
-        },
-        new
-        {
-            date = "2018/8/10",
-            type = "bill",
-            value = 507
-        },
-        new
-        {
-            date = "2018/8/11",
-            type = "download",
-            value = 4311
-        },
-        new
-        {
-            date = "2018/8/11",
-            type = "register",
-            value = 3188
-        },
-        new
-        {
-            date = "2018/8/11",
-            type = "bill",
-            value = 548
-        },
-        new
-        {
-            date = "2018/8/12",
-            type = "download",
-            value = 4116
-        },
-        new
-        {
-            date = "2018/8/12",
-            type = "register",
-            value = 3491
-        },
-        new
-        {
-            date = "2018/8/12",
-            type = "bill",
-            value = 456
-        },
-        new
-        {
-            date = "2018/8/13",
-            type = "download",
-            value = 6419
-        },
-        new
-        {
-            date = "2018/8/13",
-            type = "register",
-            value = 2852
-        },
-        new
-        {
-            date = "2018/8/13",
-            type = "bill",
-            value = 689
-        },
-        new
-        {
-            date = "2018/8/14",
-            type = "download",
-            value = 1643
-        },
-        new
-        {
-            date = "2018/8/14",
-            type = "register",
-            value = 4788
-        },
-        new
-        {
-            date = "2018/8/14",
-            type = "bill",
-            value = 280
-        },
-        new
-        {
-            date = "2018/8/15",
-            type = "download",
-            value = 445
-        },
-        new
-        {
-            date = "2018/8/15",
-            type = "register",
-            value = 4319
-        },
-        new
-        {
-            date = "2018/8/15",
-            type = "bill",
-            value = 176
-        }
+    {
+
     };
 
         LineConfig config4 = new LineConfig
