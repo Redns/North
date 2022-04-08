@@ -1,5 +1,5 @@
 ﻿@page "/"
-@using AntDesign
+
 @using ImageBed.Data.Entity
 
 @inject IJSRuntime JS
@@ -13,7 +13,7 @@
             OnChange="CheckImages"
             OnSingleCompleted="UploadImage"
             OnCompleted="UploadFinished">
-        <Image Id="upload" Width="550px" Src="images/upload.png" Preview=false Style="position:center;margin-top:130px;"/>
+        <Image Id="upload" Width="100%" Src="images/upload.png" Preview=false Style="position:center;margin-top:130px;"/>
     </Upload>
     <Progress Percent=_progress_percent StrokeWidth=progress_stroke_width ShowInfo=progress_showInfo/>
 </div>

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="AntDesign" Version="0.10.5" />
+    <PackageReference Include="AntDesign.Charts" Version="0.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -29,8 +30,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="wwwroot\g2plot.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\images\upload.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\module.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

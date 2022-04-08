@@ -142,6 +142,7 @@
        TItem="ImageEntity"
        DataSource="@imagesShow"
        @bind-PageSize="_pageSize"
+       @bind-Total="_total"
        @bind-SelectedRows="@imagesSelected"
 >
         <Selection Key="@(context.Id?.ToString())" />
@@ -161,10 +162,12 @@
             </Space>
         </ActionColumn>
 </Table>
+<p>托管图片总数：@_total</p>
 
 @code {
     ITable table;
-    int _pageSize = 8;
+    int _pageSize = 7;
+    int _total;
 
     List<ImageEntity> imagesShow = new();
     List<ImageEntity> imagesAll = new();
