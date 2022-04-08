@@ -11,6 +11,7 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 
+@implements IDisposable
 
 <div>
     <Row Gutter=32 Style="position:center;margin-top:20px;">
@@ -45,7 +46,7 @@
     </Row>
     <Row Style="margin-top:50px;">
         <Col Span=22>
-            <Line Data="data4" Config="config4" />
+            <Line Data="SysRecords" Config="SysRecordConfig" />
         </Col>
     </Row>
 </div>
@@ -57,22 +58,26 @@
     RenderFragment TitleTemplate_CpuUse = @<Space><SpaceItem><Icon Type="dashboard" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>系统运行时长</SpaceItem></Space>
     ;
 
+    public static Timer t = new Timer(1000);
+
     int HostImageNums { get; set; } = 0;
     string DiskOccupancy { get; set; } = "MB";
     string RunningMemUsage { get; set; } = "MB";
     string SysRunningTime { get; set; } = "00:00:00";
 
+    List<object> SysRecords = new();
 
     protected override void OnInitialized()
     {
-        RefreshDashboard(null, null);
+        // 由于曲线数据更新缓慢且耗费资源，因此不采用定时刷新机制
         InitTimer();
+        RefreshChart();
+        RefreshDashboard(null, null);
     }
 
 
     void InitTimer()
     {
-        Timer t = new Timer(1000);
         t.Elapsed += RefreshDashboard;
         t.AutoReset = true;
         t.Enabled = true;
@@ -104,36 +109,65 @@
 
         // 获取应用运行时长
         TimeSpan SysRunningTimeSpan = DateTime.Now - mainProcess.StartTime;
-        int SysRunningHours = (int)SysRunningTimeSpan.TotalHours;
-        int SysRunningMinutes = (int)(SysRunningTimeSpan.TotalMinutes - SysRunningHours * 60);
-        int SysRunningSeconds = (int)(SysRunningTimeSpan.TotalSeconds - SysRunningHours * 60 * 60 - SysRunningMinutes * 60);
-        SysRunningTime = $"{SysRunningHours}:{SysRunningMinutes}:{SysRunningSeconds}";
+        SysRunningTime = $"{(int)SysRunningTimeSpan.TotalHours}:{((int)SysRunningTimeSpan.TotalMinutes) % 60}:{((int)SysRunningTimeSpan.TotalSeconds) % 60}";
 
         await InvokeAsync(new Action(() => { StateHasChanged(); }));
     }
 
 
-    object[] data4 =
+    async void RefreshChart()
     {
+        using var context2 = new OurDbContext();
+        using var sqlRecordData = new SQLRecordData(context2);
 
-    };
-
-        LineConfig config4 = new LineConfig
+        SysRecords.Clear();
+        foreach(var record in await sqlRecordData.Get())
         {
-            Padding = "auto",
-            XField = "date",
-            YField = "value",
-            YAxis = new ValueAxis
+            SysRecords.Add(new
             {
-                Label = new BaseAxisLabel()
-            },
-            Legend = new Legend
+                date = record.Date,
+                type = "图片上传数量",
+                value = record.UploadImageNum
+            });
+
+            SysRecords.Add(new
             {
-                Position = "right-top"
-            },
-            SeriesField = "type",
-            Color = new string[] { "#1979C9", "#D62A0D", "#FAA219" },
-            Responsive = true,
-            Smooth = true
-        };
+                date = record.Date,
+                type = "图片磁盘占用(MB)",
+                value = record.UploadImageSize
+            });
+
+            SysRecords.Add(new
+            {
+                date = record.Date,
+                type = "图片请求次数",
+                value = record.RequestNum
+            });
+        }
+    }
+
+    public void Dispose()
+    {
+        t.Stop();    
+    }
+
+
+    LineConfig SysRecordConfig = new LineConfig
+    {
+        Padding = "auto",
+        XField = "date",
+        YField = "value",
+        YAxis = new ValueAxis
+        {
+            Label = new BaseAxisLabel()
+        },
+        Legend = new Legend
+        {
+            Position = "right-top"
+        },
+        SeriesField = "type",
+        Color = new string[] { "#1979C9", "#D62A0D", "#FAA219" },
+        Responsive = true,
+        Smooth = true
+    };
 }

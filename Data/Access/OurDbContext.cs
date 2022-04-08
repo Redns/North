@@ -10,6 +10,8 @@ namespace ImageBed.Data.Access
         public OurDbContext(DbContextOptions<OurDbContext> options) : base(options) { }
 
         public DbSet<ImageEntity> Images { get; set; }
+        public DbSet<RecordEntity> Records { get; set; }
+
 
         /// <summary>
         /// 连接本地SQLite数据库
@@ -27,6 +29,9 @@ namespace ImageBed.Data.Access
     }
 
 
+    /// <summary>
+    /// 图片数据处理
+    /// </summary>
     public class SQLImageData : IDisposable
     {
         public OurDbContext? _context { get; set; }
@@ -159,6 +164,65 @@ namespace ImageBed.Data.Access
                 GC.SuppressFinalize(this);
             }
             catch (Exception) { }
+        }
+    }
+
+
+    public class SQLRecordData : IDisposable
+    {
+        private OurDbContext _context { get; set; }
+        public SQLRecordData(OurDbContext context)
+        {
+            _context = context;
+        }
+
+
+        /// <summary>
+        /// 获取所有记录数据
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<RecordEntity>> Get()
+        {
+            if((_context != null) && (_context.Records != null))
+            {
+                return await _context.Records.ToListAsync();
+            }
+            return new List<RecordEntity>();
+        }
+
+
+        /// <summary>
+        /// 更新记录信息
+        /// </summary>
+        /// <param name="record"></param>
+        /// <returns></returns>
+        public async Task<bool> Update(RecordEntity newRecord)
+        {
+            if((_context != null) && (_context.Records != null))
+            {
+                try
+                {
+                    RecordEntity? oldRecord = _context.Records.FirstOrDefault(r => r.Date == newRecord.Date);
+                    if(oldRecord != null)
+                    {
+                        _context.Records.Update(newRecord);
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                }
+                catch (Exception) { }
+            }
+            return false;
+        }
+
+
+        public void Dispose()
+        {
+            if(_context != null)
+            {
+                _context.Dispose();
+            }
+            GC.SuppressFinalize(this);
         }
     }
 }
