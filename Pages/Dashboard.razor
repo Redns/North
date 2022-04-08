@@ -2,11 +2,15 @@
 
 @using AntDesign.Charts
 @using ImageBed.Data.Access
+@using System.Diagnostics
+@using System.Timers
 @using Title = AntDesign.Charts.Title
 @using ImageBed.Data.Entity
+@using CZGL.SystemInfo
 
-@inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
 
 <div>
     <Row Gutter=32 Style="position:center;margin-top:20px;">
@@ -34,7 +38,7 @@
         <Col Span=6>
             <Card TitleTemplate=TitleTemplate_CpuUse>
                 <Body>
-                    <h4>@CpuUsageRate</h4>
+                    <h4>@SysRunningTime</h4>
                 </Body>
             </Card>
         </Col>
@@ -50,31 +54,64 @@
     RenderFragment TitleTemplate_HostImageNum = @<Space><SpaceItem><Icon Type="picture" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>托管图片总数</SpaceItem></Space>;
     RenderFragment TitleTemplate_DiskOccupancy = @<Space><SpaceItem><Icon Type="database" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>磁盘存储占用</SpaceItem></Space>;
     RenderFragment TitleTemplate_RunningMemUse = @<Space><SpaceItem><Icon Type="fund-projection-screen" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>运行内存占用</SpaceItem></Space>;
-    RenderFragment TitleTemplate_CpuUse = @<Space><SpaceItem><Icon Type="dashboard" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>CPU占用</SpaceItem></Space>
+    RenderFragment TitleTemplate_CpuUse = @<Space><SpaceItem><Icon Type="dashboard" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>系统运行时长</SpaceItem></Space>
     ;
 
     int HostImageNums { get; set; } = 0;
-    string DiskOccupancy { get; set; } = "0 MB";
-    string RunningMemUsage { get; set; } = "0 MB";
-    string CpuUsageRate { get; set; } = "0.00 %";
+    string DiskOccupancy { get; set; } = "MB";
+    string RunningMemUsage { get; set; } = "MB";
+    string SysRunningTime { get; set; } = "00:00:00";
 
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
+    {
+        RefreshDashboard(null, null);
+        InitTimer();
+    }
+
+
+    void InitTimer()
+    {
+        Timer t = new Timer(1000);
+        t.Elapsed += RefreshDashboard;
+        t.AutoReset = true;
+        t.Enabled = true;
+    }
+
+
+    async void RefreshDashboard(Object? source, ElapsedEventArgs? e)
     {
         using var context = new OurDbContext();
         using var sqlImageData = new SQLImageData(context);
 
         List<ImageEntity> images = await sqlImageData.Get();
 
+        // 获取托管图片总数
         HostImageNums = images.Count;
 
+        // 获取托管图片所占磁盘存储总量
         double diskOccupancyKB = 0;
         foreach(var image in images)
         {
             diskOccupancyKB += UnitNameGenerator.ParseFileSize(image.Size ?? "0B");
         }
         DiskOccupancy = $"{(diskOccupancyKB / 1024.0).ToString("f3")} MB";
+
+        // 获取该进程占用的运行内存
+        Process mainProcess = Process.GetCurrentProcess();
+        mainProcess.Refresh();
+        RunningMemUsage = $"{mainProcess.WorkingSet64 / (1024*1024)} MB";
+
+        // 获取应用运行时长
+        TimeSpan SysRunningTimeSpan = DateTime.Now - mainProcess.StartTime;
+        int SysRunningHours = (int)SysRunningTimeSpan.TotalHours;
+        int SysRunningMinutes = (int)(SysRunningTimeSpan.TotalMinutes - SysRunningHours * 60);
+        int SysRunningSeconds = (int)(SysRunningTimeSpan.TotalSeconds - SysRunningHours * 60 * 60 - SysRunningMinutes * 60);
+        SysRunningTime = $"{SysRunningHours}:{SysRunningMinutes}:{SysRunningSeconds}";
+
+        await InvokeAsync(new Action(() => { StateHasChanged(); }));
     }
+
 
     object[] data4 =
     {
