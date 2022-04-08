@@ -73,6 +73,28 @@
 
 
         /// <summary>
+        /// 解析文件大小(B、KB、MB)
+        /// </summary>
+        /// <param name="size"></param>
+        /// <returns>文件大小(以KB计)</returns>
+        public static double ParseFileSize(string size)
+        {
+            if (size.Contains("MB"))
+            {
+                return double.Parse(size[0..^2])*1024;
+            }
+            else if (size.Contains("KB"))
+            {
+                return double.Parse(size[0..^2]);
+            }
+            else
+            {
+                return double.Parse(size[0..^2])/1024.0;
+            }
+        }
+
+
+        /// <summary>
         /// 生成随机字符串
         /// </summary>
         /// <param name="len">字符串长度</param>

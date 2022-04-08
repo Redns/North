@@ -1,7 +1,10 @@
 ﻿@page "/Dashboard"
 
 @using AntDesign.Charts
+@using ImageBed.Data.Access
 @using Title = AntDesign.Charts.Title
+@using ImageBed.Data.Entity
+
 @inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
 
@@ -50,10 +53,28 @@
     RenderFragment TitleTemplate_CpuUse = @<Space><SpaceItem><Icon Type="dashboard" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>CPU占用</SpaceItem></Space>
     ;
 
-    string HostImageNums { get; set; } = "0";
+    int HostImageNums { get; set; } = 0;
     string DiskOccupancy { get; set; } = "0 MB";
     string RunningMemUsage { get; set; } = "0 MB";
     string CpuUsageRate { get; set; } = "0.00 %";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = new OurDbContext();
+        using var sqlImageData = new SQLImageData(context);
+
+        List<ImageEntity> images = await sqlImageData.Get();
+
+        HostImageNums = images.Count;
+
+        double diskOccupancyKB = 0;
+        foreach(var image in images)
+        {
+            diskOccupancyKB += UnitNameGenerator.ParseFileSize(image.Size ?? "0B");
+        }
+        DiskOccupancy = $"{(diskOccupancyKB / 1024.0).ToString("f3")} MB";
+    }
 
     object[] data4 =
     {

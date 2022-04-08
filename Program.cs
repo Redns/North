@@ -25,7 +25,6 @@ builder.Services.AddDbContext<OurDbContext>();
 var app = builder.Build();
 
 
-app.UseHttpsRedirection();
 app.Urls.Add("http://0.0.0.0:12121");
 app.UseStaticFiles();
 
