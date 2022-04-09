@@ -153,7 +153,10 @@
             string dstName = format switch
             {
                 RenameFormat.MD5 => EncryptAndDecrypt.Encrypt_MD5(srcName),
-                RenameFormat.TIME => DateTime.Now.ToLocalTime().ToString().Replace(":", "-"),
+                RenameFormat.TIME => DateTime.Now.ToLocalTime()
+                                                 .ToString()
+                                                 .Replace(":", "-")
+                                                 .Replace("/", "-"),
                 RenameFormat.TIMESTAMP => GetTimeStamp().ToString(),
                 RenameFormat.RANDOM_STRING => GererateRandomString(8),
                 _ => srcName,

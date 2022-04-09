@@ -6,9 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 /// <summary>
-/// 加载本地设置
+/// 加载本地设置，启动系统资源记录定时器
 /// </summary>
 GlobalValues.appSetting = AppSetting.Parse();
+GlobalValues.InitSysRecordTimer();
 
 
 /// <summary>

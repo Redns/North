@@ -46,7 +46,14 @@
     </Row>
     <Row Style="margin-top:50px;">
         <Col Span=22>
-            <Line Data="SysRecords" Config="SysRecordConfig" />
+            @if(SysRecords.Count > 0)
+            {
+                <Line Data="SysRecords" Config="SysRecordConfig" />
+            }
+            else
+            {
+                <Empty Style="margin-top:100px;"/>
+            }
         </Col>
     </Row>
 </div>
@@ -58,7 +65,7 @@
     RenderFragment TitleTemplate_CpuUse = @<Space><SpaceItem><Icon Type="dashboard" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>系统运行时长</SpaceItem></Space>
     ;
 
-    public static Timer t = new Timer(1000);
+    public static Timer? t;
 
     int HostImageNums { get; set; } = 0;
     string DiskOccupancy { get; set; } = "MB";
@@ -69,7 +76,6 @@
 
     protected override void OnInitialized()
     {
-        // 由于曲线数据更新缓慢且耗费资源，因此不采用定时刷新机制
         InitTimer();
         RefreshChart();
         RefreshDashboard(null, null);
@@ -78,6 +84,7 @@
 
     void InitTimer()
     {
+        t = new Timer(1000);
         t.Elapsed += RefreshDashboard;
         t.AutoReset = true;
         t.Enabled = true;
@@ -148,7 +155,8 @@
 
     public void Dispose()
     {
-        t.Stop();    
+        t?.Stop();
+        t?.Dispose();
     }
 
 

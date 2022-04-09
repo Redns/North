@@ -192,6 +192,35 @@ namespace ImageBed.Data.Access
 
 
         /// <summary>
+        /// 获取指定日期的数据
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        public async Task<RecordEntity?> Get(string date)
+        {
+            if ((_context != null) && (_context.Records != null))
+            {
+                return await _context.Records.FirstAsync(r => r.Date == date);
+            }
+            return null;
+        }
+
+
+        public RecordEntity? GetByDate(string date)
+        {
+            if ((_context != null) && (_context.Records != null))
+            {
+                try
+                {
+                    return _context.Records.First(r => r.Date == date);
+                }
+                catch { }
+            }
+            return null;
+        }
+
+
+        /// <summary>
         /// 更新记录信息
         /// </summary>
         /// <param name="record"></param>
@@ -211,6 +240,27 @@ namespace ImageBed.Data.Access
                     }
                 }
                 catch (Exception) { }
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// 添加记录
+        /// </summary>
+        /// <param name="newRecord"></param>
+        /// <returns></returns>
+        public async Task<bool> Add(RecordEntity newRecord)
+        {
+            if((newRecord != null) && (_context.Records != null))
+            {
+                try
+                {
+                    await _context.Records.AddAsync(newRecord);
+                    _context.SaveChanges();
+                    return true;
+                }
+                catch { }
             }
             return false;
         }

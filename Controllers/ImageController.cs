@@ -18,11 +18,9 @@ namespace ImageBed.Controllers
         public async Task<ApiResult<object>> Post([FromForm] IFormCollection formCollection)
         {
             List<string> imageUrls = new();
-
             using var context = new OurDbContext();
             using var sqlImageData = new SQLImageData(context);
 
-            // 加载设置文件
             string imageDirPath = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
             if (!Directory.Exists(imageDirPath))
             {
@@ -60,8 +58,6 @@ namespace ImageBed.Controllers
                                 await sqlImageData.Add(image);
                             }
                         }
-
-                        // 删除文件夹
                         Directory.Delete(importImagePath, true);
                     }
                     else
