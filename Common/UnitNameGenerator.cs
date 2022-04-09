@@ -47,9 +47,9 @@
 
 
         /// <summary>
-        /// 
+        /// 格式化文件大小
         /// </summary>
-        /// <param name="len">文件大小（字节数）</param>
+        /// <param name="len">文件大小(单位:Byte)</param>
         /// <returns></returns>
         public static string RebuildFileSize(long len)
         {
@@ -73,9 +73,9 @@
 
 
         /// <summary>
-        /// 解析文件大小(B、KB、MB)
+        /// 解析文件大小字符串(B、KB、MB)
         /// </summary>
-        /// <param name="size"></param>
+        /// <param name="size">格式化后的文件大小</param>
         /// <returns>文件大小(以KB计)</returns>
         public static double ParseFileSize(string size)
         {

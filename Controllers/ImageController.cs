@@ -18,58 +18,65 @@ namespace ImageBed.Controllers
         public async Task<ApiResult<object>> Post([FromForm] IFormCollection formCollection)
         {
             List<string> imageUrls = new();
-            using var context = new OurDbContext();
-            using var sqlImageData = new SQLImageData(context);
-
-            string imageDirPath = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
-            if (!Directory.Exists(imageDirPath))
+            List<ImageEntity> images = new();
+            using (var context = new OurDbContext())
             {
-                Directory.CreateDirectory(imageDirPath);
-            }
-
-            FormFileCollection fileCollection = (FormFileCollection)formCollection.Files;
-            foreach (IFormFile fileReader in fileCollection)
-            {
-                try
+                // 获取图片统一存储路径
+                string imageDirPath = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
+                if (!Directory.Exists(imageDirPath))
                 {
-                    var extName = UnitNameGenerator.GetFileExtension(fileReader.FileName);
-                    if(extName == "export")
+                    Directory.CreateDirectory(imageDirPath);
+                }
+
+                using (var sqlImageData = new SQLImageData(context))
+                {
+                    FormFileCollection fileCollection = (FormFileCollection)formCollection.Files;
+                    foreach (IFormFile fileReader in fileCollection)
                     {
-                        // 创建解压文件夹
-                        string importImagePath = $"{imageDirPath}/Import";
-                        if (!Directory.Exists(importImagePath))
+                        try
                         {
-                            Directory.CreateDirectory(importImagePath);
-                        }
-
-                        // 保存并解压export文件
-                        await SaveFile(fileReader.OpenReadStream(), $"{importImagePath}/ImportImages.export");
-                        FileOperator.DeCompressMulti($"{importImagePath}/ImportImages.export", $"{importImagePath}/");
-
-                        // 保存图片信息至数据库
-                        IEnumerable<string> imagePaths = Directory.GetFiles(importImagePath);
-                        foreach(string imagePath in imagePaths)
-                        {
-                            var imageName = imagePath.Split('\\').Last();
-                            if(UnitNameGenerator.GetFileExtension(imageName) != "export")
+                            var extName = UnitNameGenerator.GetFileExtension(fileReader.FileName);
+                            if (extName == "export")
                             {
-                                var image = await SaveImage(new FileStream(imagePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), imageName, imageDirPath);
-                                imageUrls.Add($"{GetHost()}{image.Url}");
-                                await sqlImageData.Add(image);
+                                // export 为图片导出文件后缀
+                                // 创建文件夹用于存储 export 解压文件
+                                string importImagePath = $"{imageDirPath}/Import";
+                                if (!Directory.Exists(importImagePath))
+                                {
+                                    Directory.CreateDirectory(importImagePath);
+                                }
+
+                                // 保存并解压export文件
+                                await SaveFile(fileReader.OpenReadStream(), $"{importImagePath}/ImportImages.export");
+                                FileOperator.DeCompressMulti($"{importImagePath}/ImportImages.export", $"{importImagePath}/");
+
+                                // 保存图片信息至数据库
+                                IEnumerable<string> imagePaths = Directory.GetFiles(importImagePath);
+                                foreach (string imagePath in imagePaths)
+                                {
+                                    var imageName = imagePath.Split('\\').Last();
+                                    if (UnitNameGenerator.GetFileExtension(imageName) != "export")
+                                    {
+                                        var image = await SaveImage(new FileStream(imagePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), imageName, imageDirPath);
+                                        imageUrls.Add($"{GetHost()}/{image.Url}");
+                                        images.Add(image);
+                                    }
+                                }
+                                Directory.Delete(importImagePath, true);
+                            }
+                            else
+                            {
+                                var image = await SaveImage(fileReader.OpenReadStream(), fileReader.FileName, imageDirPath);
+                                imageUrls.Add($"{GetHost()}/{image.Url}");
+                                images.Add(image);
                             }
                         }
-                        Directory.Delete(importImagePath, true);
+                        catch (Exception)
+                        {
+                            imageUrls.Add(string.Empty);
+                        }
                     }
-                    else
-                    {
-                        var image = await SaveImage(fileReader.OpenReadStream(), fileReader.FileName, imageDirPath);
-                        imageUrls.Add($"{GetHost()}{image.Url}");
-                        await sqlImageData.Add(image);
-                    }
-                }
-                catch (Exception)
-                {
-                    imageUrls.Add(string.Empty);
+                    _ = sqlImageData.AddRangeAsync(images);
                 }
             }
             return new ApiResult<object>(200, "Upload finished", imageUrls);

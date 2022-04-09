@@ -46,17 +46,39 @@ namespace ImageBed.Data.Access
         /// </summary>
         /// <param name="image">待添加的图片</param>
         /// <returns>添加成功返回true，否则返回false</returns>
-        public async Task<bool> Add(ImageEntity image)
+        public async Task<bool> AddAsync(ImageEntity image)
         {
             if((_context != null) && (_context.Images != null) && (image != null))
             {
-                await _context.Images.AddAsync(image);
-                _context.SaveChanges();
-                return true;
+                try
+                {
+                    await _context.Images.AddAsync(image);
+                    _ = _context.SaveChangesAsync();
+                    return true;
+                }
+                catch { }
             }
             return false;
         }
 
+
+        /// <summary>
+        /// 添加多张图片至数据库
+        /// </summary>
+        /// <param name="images"></param>
+        /// <returns></returns>
+        public async Task AddRangeAsync(IEnumerable<ImageEntity> images)
+        {
+            if ((_context != null) && (_context.Images != null) && (images != null))
+            {
+                try
+                {
+                    await _context.Images.AddRangeAsync(images);
+                    _ = _context.SaveChangesAsync();
+                }
+                catch { }
+            }
+        }
 
         public async Task<bool> Update(ImageEntity image)
         {

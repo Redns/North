@@ -1,6 +1,7 @@
 ﻿@page "/"
 
 @using ImageBed.Data.Entity
+@using Image = AntDesign.Image
 
 @inject IJSRuntime JS
 @inject MessageService _message
@@ -32,10 +33,11 @@
 
 
     int image_total = 0;                        // 待上传的图片总数
-    List<string> imageUrls = new();             // 图片url集和
+    int image_uploaded = 0;                     // 上传完成的图片数
 
     int _progress_percent = 0;                  // 上传完成的图片的百分比
-    int progress_percent {
+    int progress_percent 
+    {
         get
         {
             return _progress_percent;
@@ -59,55 +61,54 @@
     bool progress_showInfo = false;             // 是否显示进度条信息
 
 
-    /// <summary>
-    /// 更新进度条进度
-    /// </summary>
     void UpdateProgress()
     {
-        progress_percent = (int)(imageUrls.ToArray().Length * 100.0 / image_total);
+        progress_percent = (int)(image_uploaded * 100.0 / image_total);
     }
+
 
     bool uploadRunning = false;
     void CheckImages(UploadInfo imageInfo)
     {
         if (!uploadRunning)
         {
-            image_total = fileList.ToArray().Length;
-            imageUrls.Clear();
+            image_total = fileList.Count;
+            image_uploaded = 0;
             UpdateProgress();
             uploadRunning = true;
         }
     }
 
+
     void UploadImage(UploadInfo fileinfo)
     {
-        fileList.Where(file => file.State == UploadState.Success && !string.IsNullOrWhiteSpace(file.Response)).ForEach(file =>
-        {
-            string? url = file.GetResponse<ApiResult<List<string>>>()?.Res?.First() ?? string.Empty;
-            imageUrls.Add(url);
-            UpdateProgress();
-        });
+        image_uploaded = fileList.Where(file => file.State == UploadState.Success && !string.IsNullOrWhiteSpace(file.Response)).Count();
+        UpdateProgress();
     }
 
     async void UploadFinished()
     {
         progress_percent = 0;
 
+        // 获取图片链接
         string urls = string.Empty;
-        foreach(string url in imageUrls)
+        fileList.ForEach(file =>
         {
-            if(url == imageUrls.Last())
+            string url = file.GetResponse<ApiResult<List<string>>>()?.Res?.First() ?? string.Empty;
+            if(url != string.Empty)
             {
-                urls += url;
+                if(file == fileList.Last())
+                {
+                    urls += url;
+                }
+                else
+                {
+                    urls += $"{url}\n";
+                }
             }
-            else
-            {
-                urls += $"{url}\n";
-            }
-        }
+        });
         await JS.InvokeVoidAsync("CopyToClip", urls);
-
-        await _message.Success("图片上传完成！");
+        _ = _message.Success("图片上传完成！");
     }
 }
 <style type="text/css">

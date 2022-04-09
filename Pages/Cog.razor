@@ -13,36 +13,46 @@
       OnFinish="OnFinish" 
       OnFinishFailed="OnFinishFailed"
       Style="margin-top:80px;">
-      <FormItem Label="重命名方式">
-          <Select @bind-Value="@renameFormat"
-                    DefaultValue="@RenameFormat.MD5"
-		            TItemValue="RenameFormat"
-                    TItem="string"
-                    LabelInValue="true"
-		            Style="width: 200px;">
-		        <SelectOptions>
-			        <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.NONE" Label="不重命名 (不推荐)"/>
-			        <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.MD5" Label="MD5字符串 (32位)"/>
-                    <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.TIME" Label="上传时间"/>
-                    <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.TIMESTAMP" Label="上传时间戳"/>
-                    <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.RANDOM_STRING" Label="随机字符串"/>
-		        </SelectOptions>
-          </Select>
-      </FormItem>
-      <FormItem Label="实时刷新仪表盘">
-          <RadioGroup @bind-Value="RefreshDashboardRealTime">
-              <Radio RadioButton Value="@true">是</Radio>
-              <Radio RadioButton Value="@false">否</Radio>
-          </RadioGroup>
-      </FormItem>
-      <FormItem WrapperColOffset="8" WrapperColSpan="16">
-          <Button Type="@ButtonType.Primary" HtmlType="submit">
-              保 存
-          </Button>
-      </FormItem>
+        <FormItem Label="重命名方式">
+            <Tooltip Title="@("若不开启重命名, 图片名冲突时将覆盖原图片")">
+                <Select @bind-Value="@renameFormat"
+                        DefaultValue="@RenameFormat.MD5"
+		                TItemValue="RenameFormat"
+                        TItem="string"
+                        LabelInValue="true"
+		                Style="width: 200px;">
+		            <SelectOptions>
+			            <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.NONE" Label="不重命名 (不推荐)"/>
+			            <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.MD5" Label="MD5字符串 (32位)"/>
+                        <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.TIME" Label="上传时间"/>
+                        <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.TIMESTAMP" Label="上传时间戳"/>
+                        <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.RANDOM_STRING" Label="随机字符串"/>
+		            </SelectOptions>
+                </Select>
+            </Tooltip>
+        </FormItem>
+        <FormItem Label="图片存储路径">
+            <Tooltip Title="@("相对路径, 目前不支持修改")">
+                <Input Style="width:200px;" @bind-Value="@imageDir"  />
+            </Tooltip>
+        </FormItem>
+        <FormItem Label="实时刷新仪表盘">
+            <Tooltip Title="@("开启实时刷新将占用更多的资源")">
+                <RadioGroup @bind-Value="RefreshDashboardRealTime">
+                    <Radio RadioButton Value="@true">是</Radio>
+                    <Radio RadioButton Value="@false">否</Radio>
+                </RadioGroup>
+            </Tooltip>
+        </FormItem>
+        <FormItem WrapperColOffset="8" WrapperColSpan="16">
+            <Button Type="@ButtonType.Primary" HtmlType="submit">
+                保 存
+            </Button>
+        </FormItem>
 </Form>
 @code
 {
+    string imageDir = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "";
     bool RefreshDashboardRealTime = GlobalValues.appSetting?.Record?.RefreshRealTime ?? true;
     RenameFormat renameFormat = GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat ?? RenameFormat.MD5;
 
