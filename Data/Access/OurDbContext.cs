@@ -9,8 +9,8 @@ namespace ImageBed.Data.Access
         public OurDbContext() { }
         public OurDbContext(DbContextOptions<OurDbContext> options) : base(options) { }
 
-        public DbSet<ImageEntity> Images { get; set; }
-        public DbSet<RecordEntity> Records { get; set; }
+        public DbSet<ImageEntity>? Images { get; set; }
+        public DbSet<RecordEntity>? Records { get; set; }
 
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace ImageBed.Data.Access
                 try
                 {
                     _context.Images.Update(image);
-                    _ = _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                     return true;
                 }
                 catch (Exception) { }
@@ -114,6 +114,7 @@ namespace ImageBed.Data.Access
             }
             return new List<ImageEntity>();
         }
+
 
         /// <summary>
         /// 获取数据库中指定ID的图片信息
@@ -202,7 +203,7 @@ namespace ImageBed.Data.Access
                         }
                     });
                     _context.Images.RemoveRange(images);
-                    _ = _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                     return true;
                 }
                 catch {}

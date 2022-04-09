@@ -2,6 +2,7 @@
 using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
+using static ImageBed.Common.UnitNameGenerator;
 
 namespace ImageBed.Controllers
 {
@@ -90,14 +91,15 @@ namespace ImageBed.Controllers
         /// <param name="filename">图片名称</param>
         /// <param name="imageDirPath">图片存储文件夹</param>
         /// <returns></returns>
-        private async Task<ImageEntity> SaveImage(Stream fileReader, string filename, string imageDirPath)
+        private static async Task<ImageEntity> SaveImage(Stream fileReader, string filename, string imageDirPath)
         {
             // 格式化文件名
-            string unitFileName = UnitNameGenerator.RenameFile(imageDirPath, filename, GlobalValues.appSetting.Data.Resources.Images.RenameFormat);
+            RenameFormat renameFormat = GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat ?? UnitNameGenerator.RenameFormat.MD5;
+            string unitFileName = RenameFile(imageDirPath, filename, renameFormat);
             string unitFilePath = $"{imageDirPath}/{unitFileName}";
 
             // 检查是否命名冲突
-            if ((GlobalValues.appSetting.Data.Resources.Images.RenameFormat == UnitNameGenerator.RenameFormat.NONE) && System.IO.File.Exists(unitFilePath))
+            if ((renameFormat == RenameFormat.NONE) && System.IO.File.Exists(unitFilePath))
             {
                 System.IO.File.Delete(unitFilePath);
             }
@@ -137,7 +139,7 @@ namespace ImageBed.Controllers
         /// <param name="fileReader">文件输入流</param>
         /// <param name="dstDirPath">文件存储路径</param>
         /// <returns></returns>
-        private async Task SaveFile(Stream fileReader, string dstDirPath)
+        private static async Task SaveFile(Stream fileReader, string dstDirPath)
         {
             if (System.IO.File.Exists(dstDirPath))
             {
