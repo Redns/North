@@ -80,6 +80,12 @@ namespace ImageBed.Data.Access
             }
         }
 
+
+        /// <summary>
+        /// 更新图片信息
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
         public async Task<bool> Update(ImageEntity image)
         {
             if ((_context != null) && (_context.Images != null))
@@ -87,7 +93,7 @@ namespace ImageBed.Data.Access
                 try
                 {
                     _context.Images.Update(image);
-                    await _context.SaveChangesAsync();
+                    _ = _context.SaveChangesAsync();
                     return true;
                 }
                 catch (Exception) { }

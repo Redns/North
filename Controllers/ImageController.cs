@@ -103,16 +103,15 @@ namespace ImageBed.Controllers
             }
 
             // 保存图片
-            using FileStream fileWriter = System.IO.File.Create(unitFilePath);
-            await fileReader.CopyToAsync(fileWriter);
-            fileWriter.Flush();
-            fileWriter.Close();
-            fileReader.Flush();
-            fileReader.Close();
+            using (FileStream fileWriter = System.IO.File.Create(unitFilePath))
+            {
+                await fileReader.CopyToAsync(fileWriter);
+            }
+            fileReader.Dispose();
 
             // 录入数据库
             var fileInfo = new FileInfo(unitFilePath);
-            var imageInfo = SixLabors.ImageSharp.Image.Load(unitFilePath);
+            var imageInfo = NetVips.Image.NewFromFile(unitFilePath);
             ImageEntity image = new()
             {
                 Id = EncryptAndDecrypt.Encrypt_MD5(unitFileName),
@@ -123,6 +122,9 @@ namespace ImageBed.Controllers
                 UploadTime = fileInfo.LastAccessTime.ToString(),
                 Owner = "Admin"
             };
+            imageInfo.Close();
+            imageInfo.Dispose();
+            
             return image;
         }
 
@@ -139,12 +141,11 @@ namespace ImageBed.Controllers
             {
                 System.IO.File.Delete(dstDirPath);
             }
-            using FileStream fileWriter = System.IO.File.Create(dstDirPath);
-            await fileReader.CopyToAsync(fileWriter);
-            fileWriter.Flush();
-            fileWriter.Close();
-            fileReader.Flush();
-            fileReader.Close();
+            using (FileStream fileWriter = System.IO.File.Create(dstDirPath))
+            {
+                await fileReader.CopyToAsync(fileWriter);
+            }
+            fileReader.Dispose();
         }
 
 
@@ -165,16 +166,18 @@ namespace ImageBed.Controllers
             }
 
             // 修改请求次数
-            using var context = new OurDbContext();
-            using var sqlImageData = new SQLImageData(context);
-            
-            var image = await sqlImageData.GetByName(filename);
-            if(image != null)
+            using (var context = new OurDbContext())
             {
-                image.RequestNum++;
-                await sqlImageData.Update(image);
+                using (var sqlImageData = new SQLImageData(context))
+                {
+                    var image = await sqlImageData.GetByName(filename);
+                    if (image != null)
+                    {
+                        image.RequestNum++;
+                        _ = sqlImageData.Update(image);
+                    }
+                }
             }
-
             return File(System.IO.File.ReadAllBytes(imagePath), $"image/{UnitNameGenerator.GetFileExtension(filename)}");
         }
 
