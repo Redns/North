@@ -23,7 +23,10 @@ namespace ImageBed.Data.Access
                         return $"Data Source={path};";
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    GlobalValues.Logger.Error($"Create database failed, {ex.Message}");
+                }
             }
             return string.Empty;           
         }

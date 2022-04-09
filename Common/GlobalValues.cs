@@ -12,16 +12,23 @@ namespace ImageBed.Common
         // 资源数据记录刷新定时器(6h)
         public static System.Timers.Timer? SysRecordTimer { get; set; }
 
+        // 日志记录器
+        public static LoggerHelper Logger { get; set; } = new LoggerHelper();
+
 
         /// <summary>
         /// 初始化资源刷新定时器
         /// </summary>
         public static void InitSysRecordTimer()
         {
+            Logger.Info("Start init SysRecordTimer");
+
             SysRecordTimer = new(6 * 60 * 60 * 1000);
             SysRecordTimer.Elapsed += RefreshSysRecord;
             SysRecordTimer.AutoReset = true;
             SysRecordTimer.Enabled = true;
+
+            Logger.Info("Init SysRecordTimer finished");
         }
 
 
@@ -36,6 +43,7 @@ namespace ImageBed.Common
             DateTime today = DateTime.Now;
             if((today.Hour >= 0) && (today.Hour <= 6))
             {
+                Logger.Info("Refreshing sys record");
                 using (var context = new OurDbContext())
                 {
                     int hostImageNumTotal = 0;
@@ -86,6 +94,7 @@ namespace ImageBed.Common
                         });
                     }
                 }
+                Logger.Info("Refresh finished");
             }
         }
 
@@ -97,6 +106,7 @@ namespace ImageBed.Common
         {
             SysRecordTimer?.Stop();
             SysRecordTimer?.Dispose();
+            Logger.Info("The SysRecordTimer is stoped");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ImageBed.Common;
+using Newtonsoft.Json;
 using static ImageBed.Common.UnitNameGenerator;
 
 namespace ImageBed.Data.Entity
@@ -15,11 +16,19 @@ namespace ImageBed.Data.Entity
         /// <returns></returns>
         public static AppSetting? Parse()
         {
+            GlobalValues.Logger.Info("开始解析配置文件");
             try
             {
-                return JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText("appSettings.json"));
+                AppSetting? appSetting = JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText("appsettings.json"));
+                
+                GlobalValues.Logger.Info("配置文件解析完成!");
+
+                return appSetting;
             }
-            catch (Exception) { }
+            catch (Exception ex) 
+            {
+                GlobalValues.Logger.Error($"配置文件解析失败\n{ex.Message}");
+            }
             return null;
         }
 
@@ -31,6 +40,7 @@ namespace ImageBed.Data.Entity
         /// <returns></returns>
         public static AppSetting? Parse(string content)
         {
+            GlobalValues.Logger.Info("开始解析配置文件");
             if (!string.IsNullOrWhiteSpace(content))
             {
                 try
@@ -39,6 +49,7 @@ namespace ImageBed.Data.Entity
                 }
                 catch (Exception) { }
             }
+            GlobalValues.Logger.Error("配置文件为空!");
             return null;
         }
 

@@ -302,7 +302,4 @@
 
 <br>
 
-## 开发计划
-[点击这里](https://github.com/Redns/ImageBed/projects/1)了解最新的开发计划！
-
 [![Star History Chart](https://api.star-history.com/svg?repos=Redns/ImageBed&type=Date)](https://star-history.com/#Redns/ImageBed&Date)

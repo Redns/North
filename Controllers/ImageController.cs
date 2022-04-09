@@ -18,6 +18,8 @@ namespace ImageBed.Controllers
         [HttpPost]
         public async Task<ApiResult<object>> Post([FromForm] IFormCollection formCollection)
         {
+            GlobalValues.Logger.Info("Uploading images...");
+
             List<string> imageUrls = new();
             List<ImageEntity> images = new();
             using (var context = new OurDbContext())
@@ -36,9 +38,11 @@ namespace ImageBed.Controllers
                     {
                         try
                         {
-                            var extName = UnitNameGenerator.GetFileExtension(fileReader.FileName);
+                            var extName = GetFileExtension(fileReader.FileName);
                             if (extName == "export")
                             {
+                                GlobalValues.Logger.Info("Importing images...");
+
                                 // export 为图片导出文件后缀
                                 // 创建文件夹用于存储 export 解压文件
                                 string importImagePath = $"{imageDirPath}/Import";
@@ -52,6 +56,8 @@ namespace ImageBed.Controllers
                                 FileOperator.DeCompressMulti($"{importImagePath}/ImportImages.export", $"{importImagePath}/");
 
                                 // 保存图片信息至数据库
+                                GlobalValues.Logger.Info("Putting images into database...");
+
                                 IEnumerable<string> imagePaths = Directory.GetFiles(importImagePath);
                                 foreach (string imagePath in imagePaths)
                                 {
@@ -64,6 +70,8 @@ namespace ImageBed.Controllers
                                     }
                                 }
                                 Directory.Delete(importImagePath, true);
+
+                                GlobalValues.Logger.Info("Import finished");
                             }
                             else
                             {
@@ -74,12 +82,14 @@ namespace ImageBed.Controllers
                         }
                         catch (Exception)
                         {
+                            GlobalValues.Logger.Error($"Upload failed, imageName: {fileReader.FileName}");
                             imageUrls.Add(string.Empty);
                         }
                     }
                     _ = sqlImageData.AddRangeAsync(images);
                 }
             }
+            GlobalValues.Logger.Info("Upload finished");
             return new ApiResult<object>(200, "Upload finished", imageUrls);
         }
 
@@ -94,11 +104,13 @@ namespace ImageBed.Controllers
         private static async Task<ImageEntity> SaveImage(Stream fileReader, string filename, string imageDirPath)
         {
             // 格式化文件名
-            RenameFormat renameFormat = GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat ?? UnitNameGenerator.RenameFormat.MD5;
+            GlobalValues.Logger.Info($"Rename image... Current rename format is {GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat}");
+            RenameFormat renameFormat = GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat ?? RenameFormat.MD5;
             string unitFileName = RenameFile(imageDirPath, filename, renameFormat);
             string unitFilePath = $"{imageDirPath}/{unitFileName}";
 
             // 检查是否命名冲突
+
             if ((renameFormat == RenameFormat.NONE) && System.IO.File.Exists(unitFilePath))
             {
                 System.IO.File.Delete(unitFilePath);
@@ -162,6 +174,8 @@ namespace ImageBed.Controllers
         [HttpGet("{filename}")]
         public async Task<IActionResult> Get(string filename)
         {
+            GlobalValues.Logger.Info($"Get image {filename}");
+
             string imageDir = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
             string imagePath = $"{imageDir}/{filename}";
 
@@ -183,7 +197,7 @@ namespace ImageBed.Controllers
                     }
                 }
             }
-            return File(System.IO.File.ReadAllBytes(imagePath), $"image/{UnitNameGenerator.GetFileExtension(filename)}");
+            return File(System.IO.File.ReadAllBytes(imagePath), $"image/{GetFileExtension(filename)}");
         }
 
 
@@ -196,6 +210,8 @@ namespace ImageBed.Controllers
         [HttpDelete("{filename}")]
         public ApiResult<object> Delete(string filename)
         {
+            GlobalValues.Logger.Info($"Del image {filename}");
+
             string? imagePath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images"}/{filename}";
             if (System.IO.File.Exists(imagePath))
             {

@@ -1,6 +1,7 @@
 using ImageBed.Data.Access;
 using ImageBed.Common;
 using ImageBed.Data.Entity;
+using NLog.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,10 +22,16 @@ builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContext<OurDbContext>();
-
+builder.Services.AddLogging(logger =>
+{
+    logger.ClearProviders();
+    logger.AddConsole();
+    logger.AddDebug();
+    logger.AddEventSourceLogger();
+    logger.AddNLog();
+});
 
 var app = builder.Build();
-
 
 app.Urls.Add("http://0.0.0.0:12121");
 app.UseStaticFiles();

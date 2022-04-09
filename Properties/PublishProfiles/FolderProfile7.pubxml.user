@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>D:\Project\ImageBed\bin\Release\net6.0\publish\linux-arm</_PublishTargetUrl>
+    <History>True|2022-04-09T17:13:47.5630671Z;True|2022-04-10T01:13:28.5323084+08:00;True|2022-04-10T00:30:23.0284344+08:00;True|2022-04-10T00:29:55.1697052+08:00;</History>
+  </PropertyGroup>
+</Project>

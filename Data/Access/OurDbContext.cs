@@ -48,7 +48,8 @@ namespace ImageBed.Data.Access
         /// <returns>添加成功返回true，否则返回false</returns>
         public async Task<bool> AddAsync(ImageEntity image)
         {
-            if((_context != null) && (_context.Images != null) && (image != null))
+            GlobalValues.Logger.Info("Putting image into database");
+            if ((_context != null) && (_context.Images != null) && (image != null))
             {
                 try
                 {
@@ -56,8 +57,12 @@ namespace ImageBed.Data.Access
                     _ = _context.SaveChangesAsync();
                     return true;
                 }
-                catch { }
+                catch(Exception ex) 
+                {
+                    GlobalValues.Logger.Error($"Putting image failed, {ex.Message}");
+                }
             }
+            GlobalValues.Logger.Error("Putting image failed, context or dbset or param is null");
             return false;
         }
 
@@ -69,6 +74,7 @@ namespace ImageBed.Data.Access
         /// <returns></returns>
         public async Task AddRangeAsync(IEnumerable<ImageEntity> images)
         {
+            GlobalValues.Logger.Info("Putting images into database");
             if ((_context != null) && (_context.Images != null) && (images != null))
             {
                 try
@@ -76,8 +82,12 @@ namespace ImageBed.Data.Access
                     await _context.Images.AddRangeAsync(images);
                     _ = _context.SaveChangesAsync();
                 }
-                catch { }
+                catch(Exception ex) 
+                {
+                    GlobalValues.Logger.Error($"Putting images failed, {ex.Message}");
+                }
             }
+            GlobalValues.Logger.Info("Putting images finished");
         }
 
 
@@ -96,7 +106,10 @@ namespace ImageBed.Data.Access
                     await _context.SaveChangesAsync();
                     return true;
                 }
-                catch (Exception) { }
+                catch (Exception ex) 
+                {
+                    GlobalValues.Logger.Error($"Update image failed, {ex.Message}");
+                }
             }
             return false;
         }
@@ -144,7 +157,10 @@ namespace ImageBed.Data.Access
                 {
                     return await _context.Images.FirstAsync(x => x.Name == name);
                 }
-                catch { }
+                catch(Exception ex) 
+                {
+                    GlobalValues.Logger.Error($"Get image failed, {ex.Message}");
+                }
             }
             return null;
         }
@@ -174,9 +190,9 @@ namespace ImageBed.Data.Access
                     }
                     return true;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    GlobalValues.Logger.Error($"Remove image failed, {ex.Message}");
                 }
             }
             return false;
@@ -206,7 +222,10 @@ namespace ImageBed.Data.Access
                     await _context.SaveChangesAsync();
                     return true;
                 }
-                catch {}
+                catch (Exception ex)
+                {
+                    GlobalValues.Logger.Error($"Remove images failed, {ex.Message}");
+                }
             }
             return false;
         }
@@ -222,7 +241,10 @@ namespace ImageBed.Data.Access
                 }
                 GC.SuppressFinalize(this);
             }
-            catch (Exception) { }
+            catch (Exception ex) 
+            {
+                GlobalValues.Logger.Error($"Dispose SqlImageData failed, {ex.Message}");
+            }
         }
     }
 
@@ -273,7 +295,10 @@ namespace ImageBed.Data.Access
                 {
                     return _context.Records.First(r => r.Date == date);
                 }
-                catch { }
+                catch (Exception ex) 
+                {
+                    GlobalValues.Logger.Error($"Get record of {date} failed, {ex.Message}");
+                }
             }
             return null;
         }
@@ -298,7 +323,10 @@ namespace ImageBed.Data.Access
                         return true;
                     }
                 }
-                catch (Exception) { }
+                catch (Exception ex) 
+                {
+                    GlobalValues.Logger.Error($"Update record of {newRecord.Date} failed, {ex.Message}");
+                }
             }
             return false;
         }
@@ -319,7 +347,10 @@ namespace ImageBed.Data.Access
                     _context.SaveChanges();
                     return true;
                 }
-                catch { }
+                catch (Exception ex) 
+                {
+                    GlobalValues.Logger.Error($"Add record of {newRecord.Date} failed, {ex.Message}");
+                }
             }
             return false;
         }

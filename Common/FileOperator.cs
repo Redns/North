@@ -11,6 +11,8 @@ namespace ImageBed.Common
         /// <param name="saveFullPath">压缩包全路径</param>
         public static void CompressMulti(string[] sourceFileList, string saveFullPath)
         {
+            GlobalValues.Logger.Info("Compressing files...");
+
             MemoryStream ms = new();
             foreach (string filePath in sourceFileList)
             {
@@ -35,6 +37,8 @@ namespace ImageBed.Common
                 ms.CopyTo(zipStream);
             }
             ms.Close();
+
+            GlobalValues.Logger.Info("Compress finished");
         }
 
 
@@ -45,6 +49,8 @@ namespace ImageBed.Common
         /// <param name="targetPath">解压目录</param>
         public static void DeCompressMulti(string zipPath, string targetPath)
         {
+            GlobalValues.Logger.Info("DeCompressing file...");
+
             byte[] fileSize = new byte[4];
             if (File.Exists(zipPath))
             {
@@ -71,6 +77,8 @@ namespace ImageBed.Common
                     childFileStream.Write(fileContentBytes, 0, fileContentBytes.Length);
                 }
             }
+
+            GlobalValues.Logger.Info("DeCompress finished");
         }
     }
 }
