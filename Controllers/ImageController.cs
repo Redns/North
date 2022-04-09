@@ -106,7 +106,9 @@ namespace ImageBed.Controllers
             using (FileStream fileWriter = System.IO.File.Create(unitFilePath))
             {
                 await fileReader.CopyToAsync(fileWriter);
+                await fileWriter.FlushAsync();
             }
+            await fileReader.FlushAsync();
             fileReader.Dispose();
 
             // 录入数据库
@@ -145,6 +147,7 @@ namespace ImageBed.Controllers
             {
                 await fileReader.CopyToAsync(fileWriter);
             }
+            await fileReader.FlushAsync();
             fileReader.Dispose();
         }
 

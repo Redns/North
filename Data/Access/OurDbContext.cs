@@ -181,6 +181,36 @@ namespace ImageBed.Data.Access
             return false;
         }
 
+
+        /// <summary>
+        /// 移除多个图片信息
+        /// </summary>
+        /// <param name="images"></param>
+        /// <returns></returns>
+        public async Task<bool> RemoveRangeAsync(List<ImageEntity> images)
+        {
+            if ((_context != null) && (_context.Images != null))
+            {
+                try
+                {
+                    images.ForEach(image =>
+                    {
+                        string imagePath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}";
+                        if (File.Exists(imagePath))
+                        {
+                            File.Delete(imagePath);
+                        }
+                    });
+                    _context.Images.RemoveRange(images);
+                    _ = _context.SaveChangesAsync();
+                    return true;
+                }
+                catch {}
+            }
+            return false;
+        }
+
+
         public void Dispose()
         {
             try

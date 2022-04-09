@@ -25,10 +25,9 @@
             searchRunning = true;
 
             imagesShow.Clear();
-            foreach (var image in imagesAll.Where(image => (searchText == null) || (image.Name ?? "").Contains(searchText) || (image.Owner ?? "").Contains(searchText))) {
-                imagesShow.Add(image);
-            }
-
+            imagesShow.AddRange(imagesAll.Where(image => (searchText == null) || 
+                                               (image.Name ?? "").Contains(searchText) || 
+                                               (image.Owner ?? "").Contains(searchText)));
             searchRunning = false;
         }
     }
@@ -69,18 +68,22 @@
 
         async void UploadFinished()
         {
-            using var context = new OurDbContext();
-            using var sqlImageData = new SQLImageData(context);
-            imagesAll = await sqlImageData.Get();
-            OnSearch();
-
-            await _notice.Open(new NotificationConfig()
+            using (var context = new OurDbContext())
             {
-                Message = "图片导入完成",
-                Description = "图片已成功导入至服务器！"
-            }); 
+                using (var sqlImageData = new SQLImageData(context))
+                {
+                    imagesAll = await sqlImageData.Get();
+                    OnSearch();
+
+                    _ = _notice.Open(new NotificationConfig()
+                    {
+                        Message = "图片导入完成",
+                        Description = "图片已成功导入至服务器！"
+                    }); 
+                }
+            }
         }
-        }
+    }
     </SpaceItem>
     @if ((imagesSelected != null ) && (imagesSelected.Any()))
     {
@@ -91,17 +94,20 @@
 @code{
     async void RemoveSelectedImages()
     {
-        using var context = new OurDbContext();
-        using var sqlImageData = new SQLImageData(context);
-
-        foreach(var image in imagesSelected)
+        using (var context = new OurDbContext())
         {
-            await sqlImageData.Remove(image.Id);
-            imagesAll.Remove(image);
-        }
-        _message.Success("图片已删除!");
+            using (var sqlImageData = new SQLImageData(context))
+            {
+                _ = sqlImageData.RemoveRangeAsync(imagesSelected.ToList());
+                foreach(var image in imagesSelected)
+                {
+                    imagesAll.Remove(image);
+                }
+                _ = _message.Success("图片已删除!");
 
-        OnSearch();
+                OnSearch();
+            }
+        }
     }
 
 
@@ -126,8 +132,8 @@
         }
         FileOperator.CompressMulti(imageFullpaths.ToArray(), $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/Images.export");
 
-        await JS.InvokeVoidAsync("downloadFileFromStream", "Images.export", "api/image/Images.export");
-        await _message.Success("导出成功!");
+        _ = JS.InvokeVoidAsync("downloadFileFromStream", "Images.export", "api/image/Images.export");
+        _ = _message.Success("导出成功!");
     }
 
 

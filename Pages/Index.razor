@@ -107,6 +107,7 @@
                 }
             }
         });
+        fileList.Clear();
         await JS.InvokeVoidAsync("CopyToClip", urls);
         _ = _message.Success("图片上传完成！");
     }
