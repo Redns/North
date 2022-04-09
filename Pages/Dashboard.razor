@@ -76,7 +76,10 @@
 
     protected override void OnInitialized()
     {
-        InitTimer();
+        if(GlobalValues.appSetting?.Record?.RefreshRealTime ?? true)
+        {
+            InitTimer();
+        }
         RefreshChart();
         RefreshDashboard(null, null);
     }

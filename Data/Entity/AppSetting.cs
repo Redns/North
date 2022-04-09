@@ -6,6 +6,8 @@ namespace ImageBed.Data.Entity
     public class AppSetting
     {
         public Data? Data { get; set; }
+        public Record? Record { get; set; }
+
 
         /// <summary>
         /// 解析配置文件
@@ -87,5 +89,11 @@ namespace ImageBed.Data.Entity
     {
         public string? Path { get; set; }
         public string? TemplatePath { get; set; }
+    }
+
+
+    public class Record
+    {
+        public bool RefreshRealTime { get; set; }
     }
 }
