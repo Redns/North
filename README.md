@@ -79,8 +79,6 @@
 
    ![image-20220327212743452](http://imagebed.krins.cloud/api/image/3453F13C3C4085B5C959950F68389446.png)
 
-   ![image-20220327212810352](http://imagebed.krins.cloud/api/image/55D3F488ED98C28008CE34DFC7E9FE0F.png)
-
 <br>
 
 4. 打开浏览器，输入 `localhost:12121`
