@@ -62,10 +62,10 @@ namespace ImageBed.Controllers
                                 foreach (string imagePath in imagePaths)
                                 {
                                     var imageName = imagePath.Split('\\').Last();
-                                    if (UnitNameGenerator.GetFileExtension(imageName) != "export")
+                                    if (GetFileExtension(imageName) != "export")
                                     {
                                         var image = await SaveImage(new FileStream(imagePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), imageName, imageDirPath);
-                                        imageUrls.Add($"{GetHost()}/{image.Url}");
+                                        imageUrls.Add($"{image.Url}");
                                         images.Add(image);
                                     }
                                 }
@@ -76,7 +76,7 @@ namespace ImageBed.Controllers
                             else
                             {
                                 var image = await SaveImage(fileReader.OpenReadStream(), fileReader.FileName, imageDirPath);
-                                imageUrls.Add($"{GetHost()}/{image.Url}");
+                                imageUrls.Add($"{image.Url}");
                                 images.Add(image);
                             }
                         }

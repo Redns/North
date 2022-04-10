@@ -5,6 +5,7 @@
 
 @inject IJSRuntime JS
 @inject MessageService _message
+@inject NavigationManager NavigationManager
 
 <div class="upload">
     <Upload Multiple
@@ -99,11 +100,11 @@
             {
                 if(file == fileList.Last())
                 {
-                    urls += url;
+                    urls += $"{NavigationManager.BaseUri}{url}";
                 }
                 else
                 {
-                    urls += $"{url}\n";
+                    urls += $"{NavigationManager.BaseUri}{url}\n";
                 }
             }
         });
