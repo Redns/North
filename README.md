@@ -315,6 +315,7 @@
 
 [PicGo](https://picgo.github.io/PicGo-Doc/zh/) 是一款图床管理软件，支持多种图床。使用 `picgo` 可大大简化我们上传图片的流程，笔者在此开发了 `picgo` 插件 [picgo-plugin-imagebed](https://github.com/Redns/picgo-plugin-imagebed) 以供大家使用
 
-<br>
+<br/>
+<br/>
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Redns/ImageBed&type=Date)](https://star-history.com/#Redns/ImageBed&Date)
