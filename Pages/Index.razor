@@ -4,8 +4,11 @@
 @using Image = AntDesign.Image
 
 @inject IJSRuntime JS
+@using Tewr.Blazor.FileReader
 @inject MessageService _message
 @inject NavigationManager NavigationManager
+@inject IFileReaderService fileReaderService;
+
 
 <div class="upload">
     <Upload Multiple
@@ -31,7 +34,6 @@
         {"Name", "files" },
         {"Multiple", true }
     };
-
 
     int image_total = 0;                        // 待上传的图片总数
     int image_uploaded = 0;                     // 上传完成的图片数
@@ -61,13 +63,13 @@
     int progress_stroke_width = 0;              // 进度条宽度
     bool progress_showInfo = false;             // 是否显示进度条信息
 
-
+    
     void UpdateProgress()
     {
         progress_percent = (int)(image_uploaded * 100.0 / image_total);
     }
-
-
+    
+    
     bool uploadRunning = false;
     void CheckImages(UploadInfo imageInfo)
     {

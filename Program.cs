@@ -1,7 +1,9 @@
-using ImageBed.Data.Access;
 using ImageBed.Common;
+using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
+using Tewr.Blazor.FileReader;
 using NLog.Extensions.Logging;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContext<OurDbContext>();
+builder.Services.AddFileReaderService();
 builder.Services.AddLogging(logger =>
 {
     logger.ClearProviders();

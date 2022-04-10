@@ -1,6 +1,6 @@
 # ImageBed
 
-![version: v1.1.4 (shields.io)](https://img.shields.io/badge/version-v1.1.4-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-v6.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
+![version: v1.1.4 (shields.io)](https://img.shields.io/badge/version-v2.0.0-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-v6.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
 
 <br>
 
@@ -19,21 +19,21 @@
 - 公共图床往往会开启审查机制，可能造成数据泄露，而且其往往会限制上传图片的尺寸
 - 公共图床的稳定性未知，万一哪天站长顶不住压力跑路就凉凉
 - `Github`容量虽不做限制，但国内访问速度堪忧。并且，官方明令禁止将`Github`仓库作为图床，说不定哪天就真动手了……
-- `Gitee`访问速度虽然较快，但对普通用户的仓库容量做出了限制
 - 对象存储的容量和访问速度还不错，但流量太贵了……说不定哪天博客火了，第二天房子就是阿里的了[滑稽]
 - ……
 
 <br>
 
-说到底，图片只有掌握在自己手里才放心！出于这样的想法，笔者设计了 `ImageBed` 以方便大家搭建属于自己的图床服务器，您可以将该服务部署在任何主机上，无论是本地主机还是云服务器！
+说到底，图片只有掌握在自己手里才放心。出于这样的想法，笔者设计了 `ImageBed` 以方便大家搭建属于自己的图床服务器，您可以将该服务部署在任何主机上，包括本地主机和云服务器。
 
 <br>
 
 ## Feature
 
 - 安全可靠，图片完全存储在主机
-- 无图片尺寸、带宽限制（取决于您的环境）
+- 无图片尺寸、带宽限制（取决于环境）
 - 图片上传成功后自动将链接复制到剪贴板
+- 可视化图片管理
 - 跨平台，可在 `windows`、`Linux`、`MacOS`部署
 
 <br>
@@ -44,7 +44,7 @@
   - [在 Windows 上安装 ](https://docs.microsoft.com/zh-cn/dotnet/core/install/windows?tabs=net60)
   - [在 macOS 上安装 .NET](https://docs.microsoft.com/zh-cn/dotnet/core/install/macos)
   - [在 Linux 发行版上安装 .NET](https://docs.microsoft.com/zh-cn/dotnet/core/install/linux)
-- [Nginx](https://nginx.org/en/)（云服务器需要）
+- [Nginx](https://nginx.org/en/)（非必须）
 
 <br>
 
@@ -63,29 +63,29 @@
 
 ### 本地搭建
 
-1. 前往 [ImageBed主页](https://github.com/Redns/ImageBed/releases/tag/v1.0.0) 下载资源包
+1. 前往 [ImageBed主页](https://github.com/Redns/ImageBed/releases/tag/v2.0.0) 下载资源包，请根据主机架构选择
 
-![image-20220327212552774](https://imgtp.apqiang.com/2022/03/27/zInx3Ck9.png)
+   ![image-20220410201522203](http://imagebed.krins.cloud/api/image/52DEA9A44C69AF7728F9731B2B3BA610.png)
 
 <br>
 
 2. 解压资源包，内部应包含如下文件（图片存储在 Data/Resources/Images 文件夹下）
 
-![image-20220327212625510](https://imgtp.apqiang.com/2022/03/27/YCbStCl7.png)
+   ![image-20220410201629481](http://imagebed.krins.cloud/api/image/2A8369FF5A9632F8DAEB6BE3F8C3267E.png)
 
 <br>
 
 3. 双击 `ImageBed.exe` 运行服务
 
-   ![image-20220327212743452](http://jing-image.test.upcdn.net/image-20220327212743452.png)
+   ![image-20220327212743452](http://imagebed.krins.cloud/api/image/3453F13C3C4085B5C959950F68389446.png)
 
-   ![image-20220327212810352](http://jing-image.test.upcdn.net/image-20220327212810352.png)
+   ![image-20220327212810352](http://imagebed.krins.cloud/api/image/55D3F488ED98C28008CE34DFC7E9FE0F.png)
 
 <br>
 
 4. 打开浏览器，输入 `localhost:12121`
 
-   ![image-20220327212852020](http://jing-image.test.upcdn.net/image-20220327212852020.png)
+   ![image-20220410201954327](http://imagebed.krins.cloud/api/image/E6FE45489B288F1956E5EF34BD6F4089.png)
 
 
 
@@ -93,13 +93,13 @@
 
 5. 点击绿色区域即可上传图片，上传完成后会有弹窗提示并将链接复制到剪贴板
 
-   ![image-20220327212932653](http://jing-image.test.upcdn.net/image-20220327212932653.png)
+   ![image-20220410202028674](http://imagebed.krins.cloud/api/image/CC9CEA389A43DB3B1A8EF62064D8B815.png)
 
 <br>
 
 6. 保持 `ImageBed.exe` 运行即可
 
-​	<br>
+	<br>
 
 ### 云服务器搭建
 
@@ -107,17 +107,17 @@
 
 1. 将资源包解压后上传至云服务器
 
-   ![image-20220327213013364](http://jing-image.test.upcdn.net/image-20220327213013364.png)
+   ![image-20220327213013364](http://imagebed.krins.cloud/api/image/29519474D012465D3682702CD05B1146.png)
 
-​    <br>
+    <br>
 
-2. 安装 `nginx`（如果您还没有安装的话）
+2. 安装 `nginx`（若想要直接通过云服务器公网IP、域名访问则需要配置反向代理，否则不必安装）
 
    ```shell
    sudo apt-get install nginx
    ```
 
-​	<br>
+	<br>
 
 3. 打开 `/etc/nginx/nginx.conf`，修改相关设置
 
@@ -128,46 +128,63 @@
    include /etc/nginx/modules-enabled/*.conf;
    
    events {
-   	worker_connections 768;
+   	  worker_connections 768;
    }
    
    http {
-   	sendfile on;
-   	tcp_nopush on;
-   	tcp_nodelay on;
-   	keepalive_timeout 65;
-   	types_hash_max_size 20480;
+      sendfile on;
+      tcp_nopush on;
+      tcp_nodelay on;
+      keepalive_timeout 65;
+      types_hash_max_size 20480;
    
-   	include /etc/nginx/mime.types;
-   	default_type application/octet-stream;
+      include /etc/nginx/mime.types;
+      default_type application/octet-stream;
    
-   	ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
-   	ssl_prefer_server_ciphers on;
+      ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+      ssl_prefer_server_ciphers on;
    
-   	access_log /var/log/nginx/access.log;
-   	error_log /var/log/nginx/error.log;
+      access_log /var/log/nginx/access.log;
+      error_log /var/log/nginx/error.log;
    
-   	gzip on;
+      gzip on;
    
-   	# ========================== 重点看这里========================
-       server {
-           listen       80;
-           server_name  xxx.xxx.xxx.xxx;				# 云服务器公网ip
-    
-           proxy_set_header X-Forwarded-Host $host;
-           proxy_set_header X-Forwarded-Server $host;
-           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    
-           location / {	
-   			client_max_body_size 100m;				# 图片尺寸限制，这里为100MB
-   			proxy_pass http://127.0.0.1:12121;
-   			proxy_connect_timeout 600;
-   			proxy_read_timeout 600;
-           }
-       }
+      map $http_connection $connection_upgrade {
+        "~*Upgrade" $http_connection;
+        default keep-alive;
+      }
    
-   	include /etc/nginx/conf.d/*.conf;
-   	include /etc/nginx/sites-enabled/*;
+      # ========================== 重点看这里========================
+      server {
+          listen 80;
+          server_name xxx.xxx.xxx.xxx;				                    # 云服务器公网ip (或域名)     
+   
+          location / {
+              client_max_body_size 100m;                          		# html报文尺寸限制
+              
+              proxy_pass http://127.0.0.1:12121;
+   
+              # Configuration for WebSockets
+              proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection $connection_upgrade;
+                    proxy_cache off;
+	            # WebSockets were implemented after http/1.0
+              proxy_http_version 1.1;
+   
+              # Configuration for ServerSentEvents
+              proxy_buffering off;
+   
+              # Configuration for LongPolling or if your KeepAliveInterval is longer than 60 seconds
+              proxy_read_timeout 100s;
+   
+              proxy_set_header Host $host;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+          }
+      }
+   
+   	  include /etc/nginx/conf.d/*.conf;
+   	  include /etc/nginx/sites-enabled/*;
    }
    ```
 

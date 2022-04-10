@@ -38,7 +38,7 @@
             ShowUploadList=false
             OnChange="StartImport"
             OnCompleted="UploadFinished">
-            <Button Type="@ButtonType.Primary" Ghost OnClick=@ImportImages>导  入</Button>
+            <Button Type="@ButtonType.Primary" Ghost>导  入</Button>
         </Upload>
         @code{
             Upload? upload;
@@ -134,12 +134,6 @@
 
         _ = JS.InvokeVoidAsync("downloadFileFromStream", "Images.export", "api/image/Images.export");
         _ = _message.Success("导出成功!");
-    }
-
-
-    async Task ImportImages()
-    {
-        
     }
 }
 <br/>
