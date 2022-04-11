@@ -98,32 +98,30 @@
     {
         using (var context = new OurDbContext())
         {
-            using (var sqlImageData = new SQLImageData(context))
+            var sqlImageData = new SQLImageData(context);
+            List<ImageEntity> images = await sqlImageData.Get();
+
+            // 获取托管图片总数
+            HostImageNums = images.Count;
+
+            // 获取托管图片所占磁盘存储总量
+            double diskOccupancyKB = 0;
+            images.ForEach(image =>
             {
-                List<ImageEntity> images = await sqlImageData.Get();
+                diskOccupancyKB += UnitNameGenerator.ParseFileSize(image.Size ?? "0B");
+            });
+            DiskOccupancy = $"{(diskOccupancyKB / 1024.0).ToString("f3")} MB";
 
-                // 获取托管图片总数
-                HostImageNums = images.Count;
+            // 获取该进程占用的运行内存
+            Process mainProcess = Process.GetCurrentProcess();
+            mainProcess.Refresh();
+            RunningMemUsage = $"{mainProcess.WorkingSet64 / (1024*1024)} MB";
 
-                // 获取托管图片所占磁盘存储总量
-                double diskOccupancyKB = 0;
-                images.ForEach(image =>
-                {
-                    diskOccupancyKB += UnitNameGenerator.ParseFileSize(image.Size ?? "0B");
-                });
-                DiskOccupancy = $"{(diskOccupancyKB / 1024.0).ToString("f3")} MB";
+            // 获取应用运行时长
+            TimeSpan SysRunningTimeSpan = DateTime.Now - mainProcess.StartTime;
+            SysRunningTime = $"{(int)SysRunningTimeSpan.TotalHours}:{((int)SysRunningTimeSpan.TotalMinutes) % 60}:{((int)SysRunningTimeSpan.TotalSeconds) % 60}";
 
-                // 获取该进程占用的运行内存
-                Process mainProcess = Process.GetCurrentProcess();
-                mainProcess.Refresh();
-                RunningMemUsage = $"{mainProcess.WorkingSet64 / (1024*1024)} MB";
-
-                // 获取应用运行时长
-                TimeSpan SysRunningTimeSpan = DateTime.Now - mainProcess.StartTime;
-                SysRunningTime = $"{(int)SysRunningTimeSpan.TotalHours}:{((int)SysRunningTimeSpan.TotalMinutes) % 60}:{((int)SysRunningTimeSpan.TotalSeconds) % 60}";
-
-                await InvokeAsync(new Action(() => { StateHasChanged(); }));
-            }
+            await InvokeAsync(new Action(() => { StateHasChanged(); }));
         } 
     }
 
@@ -132,32 +130,30 @@
     {
         using (var context = new OurDbContext())
         {
-            using (var sqlRecordData = new SQLRecordData(context))
+            var sqlRecordData = new SQLRecordData(context);
+            SysRecords.Clear();
+            foreach(var record in await sqlRecordData.Get())
             {
-                SysRecords.Clear();
-                foreach(var record in await sqlRecordData.Get())
+                SysRecords.Add(new
                 {
-                    SysRecords.Add(new
-                    {
-                        date = record.Date,
-                        type = "图片上传数量",
-                        value = record.UploadImageNum
-                    });
+                    date = record.Date,
+                    type = "图片上传数量",
+                    value = record.UploadImageNum
+                });
 
-                    SysRecords.Add(new
-                    {
-                        date = record.Date,
-                        type = "图片磁盘占用(MB)",
-                        value = record.UploadImageSize
-                    });
+                SysRecords.Add(new
+                {
+                    date = record.Date,
+                    type = "图片磁盘占用(MB)",
+                    value = record.UploadImageSize
+                });
 
-                    SysRecords.Add(new
-                    {
-                        date = record.Date,
-                        type = "图片请求次数",
-                        value = record.RequestNum
-                    });
-                }
+                SysRecords.Add(new
+                {
+                    date = record.Date,
+                    type = "图片请求次数",
+                    value = record.RequestNum
+                });
             }
         }
     }

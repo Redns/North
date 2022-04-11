@@ -32,7 +32,7 @@ namespace ImageBed.Data.Access
     /// <summary>
     /// 图片数据处理
     /// </summary>
-    public class SQLImageData : IDisposable
+    public class SQLImageData
     {
         public OurDbContext? _context { get; set; }
         public SQLImageData(OurDbContext context)
@@ -229,27 +229,10 @@ namespace ImageBed.Data.Access
             }
             return false;
         }
-
-
-        public void Dispose()
-        {
-            try
-            {
-                if(_context != null)
-                {
-                    _context?.Dispose();
-                }
-                GC.SuppressFinalize(this);
-            }
-            catch (Exception ex) 
-            {
-                GlobalValues.Logger.Error($"Dispose SqlImageData failed, {ex.Message}");
-            }
-        }
     }
 
 
-    public class SQLRecordData : IDisposable
+    public class SQLRecordData
     {
         private OurDbContext _context { get; set; }
         public SQLRecordData(OurDbContext context)
@@ -277,28 +260,11 @@ namespace ImageBed.Data.Access
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public async Task<RecordEntity?> Get(string date)
+        public async Task<RecordEntity?> GetAsync(string date)
         {
             if ((_context != null) && (_context.Records != null))
             {
                 return await _context.Records.FirstAsync(r => r.Date == date);
-            }
-            return null;
-        }
-
-
-        public RecordEntity? GetByDate(string date)
-        {
-            if ((_context != null) && (_context.Records != null))
-            {
-                try
-                {
-                    return _context.Records.First(r => r.Date == date);
-                }
-                catch (Exception ex) 
-                {
-                    GlobalValues.Logger.Error($"Get record of {date} failed, {ex.Message}");
-                }
             }
             return null;
         }
@@ -309,7 +275,7 @@ namespace ImageBed.Data.Access
         /// </summary>
         /// <param name="record"></param>
         /// <returns></returns>
-        public async Task<bool> Update(RecordEntity newRecord)
+        public async Task<bool> UpdateAsync(RecordEntity newRecord)
         {
             if((_context != null) && (_context.Records != null))
             {
@@ -344,7 +310,7 @@ namespace ImageBed.Data.Access
                 try
                 {
                     await _context.Records.AddAsync(newRecord);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     return true;
                 }
                 catch (Exception ex) 
@@ -353,16 +319,6 @@ namespace ImageBed.Data.Access
                 }
             }
             return false;
-        }
-
-
-        public void Dispose()
-        {
-            if(_context != null)
-            {
-                _context.Dispose();
-            }
-            GC.SuppressFinalize(this);
         }
     }
 }

@@ -51,48 +51,44 @@ namespace ImageBed.Common
                     double hostImageDiskOccupyTotal = 0;
 
                     // 收集数据库中所有图片的数量、磁盘占用(MB)、请求次数
-                    using (var sqlImageData = new SQLImageData(context))
+                    var sqlImageData = new SQLImageData(context);
+                    List<ImageEntity> images = await sqlImageData.Get();
+
+                    hostImageNumTotal = images.Count;
+
+                    foreach (var image in images)
                     {
-                        List<ImageEntity> images = await sqlImageData.Get();
-
-                        hostImageNumTotal = images.Count;
-
-                        foreach (var image in images)
-                        {
-                            hostImageRequestTotal += image.RequestNum;
-                            hostImageDiskOccupyTotal += UnitNameGenerator.ParseFileSize(image.Size ?? "0MB") / 1024.0;
-                        }
+                        hostImageRequestTotal += image.RequestNum;
+                        hostImageDiskOccupyTotal += UnitNameGenerator.ParseFileSize(image.Size ?? "0MB") / 1024.0;
                     }
 
                     /// <summary>
                     /// 与前日数据对比，计算昨日数据
                     /// </summary>
-                    using(var sqlRecordData = new SQLRecordData(context))
+                    var sqlRecordData = new SQLRecordData(context);
+                    int hostImageNumRecord = 0;
+                    int hostImageRequestRecord = 0;
+                    int hostImageDiskOccupyRecord = 0;
+
+                    List<RecordEntity> records = await sqlRecordData.Get();
+                    foreach(var record in records)
                     {
-                        int hostImageNumRecord = 0;
-                        int hostImageRequestRecord = 0;
-                        int hostImageDiskOccupyRecord = 0;
-
-                        List<RecordEntity> records = await sqlRecordData.Get();
-                        foreach(var record in records)
-                        {
-                            hostImageNumRecord += record.UploadImageNum;
-                            hostImageRequestRecord += record.RequestNum;
-                            hostImageDiskOccupyRecord += record.UploadImageSize;
-                        }
-
-                        string dateYestoday = today.Subtract(new TimeSpan(TimeSpan.TicksPerDay))
-                                                   .ToShortDateString()
-                                                   .Split(" ")[0]
-                                                   .Replace("-", "/");
-                        _ = sqlRecordData.Add(new RecordEntity
-                        {
-                            Date = dateYestoday,
-                            UploadImageNum = hostImageNumTotal - hostImageNumRecord,
-                            UploadImageSize = (int)hostImageDiskOccupyTotal - hostImageDiskOccupyRecord,
-                            RequestNum = hostImageRequestTotal - hostImageRequestRecord
-                        });
+                        hostImageNumRecord += record.UploadImageNum;
+                        hostImageRequestRecord += record.RequestNum;
+                        hostImageDiskOccupyRecord += record.UploadImageSize;
                     }
+
+                    string dateYestoday = today.Subtract(new TimeSpan(TimeSpan.TicksPerDay))
+                                                .ToShortDateString()
+                                                .Split(" ")[0]
+                                                .Replace("-", "/");
+                    _ = sqlRecordData.Add(new RecordEntity
+                    {
+                        Date = dateYestoday,
+                        UploadImageNum = hostImageNumTotal - hostImageNumRecord,
+                        UploadImageSize = (int)hostImageDiskOccupyTotal - hostImageDiskOccupyRecord,
+                        RequestNum = hostImageRequestTotal - hostImageRequestRecord
+                    });
                 }
                 Logger.Info("Refresh finished");
             }

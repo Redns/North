@@ -31,63 +31,61 @@ namespace ImageBed.Controllers
                     Directory.CreateDirectory(imageDirPath);
                 }
 
-                using (var sqlImageData = new SQLImageData(context))
+                var sqlImageData = new SQLImageData(context);
+                FormFileCollection fileCollection = (FormFileCollection)formCollection.Files;
+                foreach (IFormFile fileReader in fileCollection)
                 {
-                    FormFileCollection fileCollection = (FormFileCollection)formCollection.Files;
-                    foreach (IFormFile fileReader in fileCollection)
+                    try
                     {
-                        try
+                        var extName = GetFileExtension(fileReader.FileName);
+                        if (extName == "export")
                         {
-                            var extName = GetFileExtension(fileReader.FileName);
-                            if (extName == "export")
+                            GlobalValues.Logger.Info("Importing images...");
+
+                            // export 为图片导出文件后缀
+                            // 创建文件夹用于存储 export 解压文件
+                            string importImagePath = $"{imageDirPath}/Import";
+                            if (!Directory.Exists(importImagePath))
                             {
-                                GlobalValues.Logger.Info("Importing images...");
-
-                                // export 为图片导出文件后缀
-                                // 创建文件夹用于存储 export 解压文件
-                                string importImagePath = $"{imageDirPath}/Import";
-                                if (!Directory.Exists(importImagePath))
-                                {
-                                    Directory.CreateDirectory(importImagePath);
-                                }
-
-                                // 保存并解压export文件
-                                await SaveFile(fileReader.OpenReadStream(), $"{importImagePath}/ImportImages.export");
-                                FileOperator.DeCompressMulti($"{importImagePath}/ImportImages.export", $"{importImagePath}/");
-
-                                // 保存图片信息至数据库
-                                GlobalValues.Logger.Info("Putting images into database...");
-
-                                IEnumerable<string> imagePaths = Directory.GetFiles(importImagePath);
-                                foreach (string imagePath in imagePaths)
-                                {
-                                    var imageName = imagePath.Split('\\').Last();
-                                    if (GetFileExtension(imageName) != "export")
-                                    {
-                                        var image = await SaveImage(new FileStream(imagePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), imageName, imageDirPath);
-                                        imageUrls.Add($"{image.Url}");
-                                        images.Add(image);
-                                    }
-                                }
-                                Directory.Delete(importImagePath, true);
-
-                                GlobalValues.Logger.Info("Import finished");
+                                Directory.CreateDirectory(importImagePath);
                             }
-                            else
+
+                            // 保存并解压export文件
+                            await SaveFile(fileReader.OpenReadStream(), $"{importImagePath}/ImportImages.export");
+                            FileOperator.DeCompressMulti($"{importImagePath}/ImportImages.export", $"{importImagePath}/");
+
+                            // 保存图片信息至数据库
+                            GlobalValues.Logger.Info("Putting images into database...");
+
+                            IEnumerable<string> imagePaths = Directory.GetFiles(importImagePath);
+                            foreach (string imagePath in imagePaths)
                             {
-                                var image = await SaveImage(fileReader.OpenReadStream(), fileReader.FileName, imageDirPath);
-                                imageUrls.Add($"{image.Url}");
-                                images.Add(image);
+                                var imageName = imagePath.Split('\\').Last();
+                                if (GetFileExtension(imageName) != "export")
+                                {
+                                    var image = await SaveImage(new FileStream(imagePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), imageName, imageDirPath);
+                                    imageUrls.Add($"{image.Url}");
+                                    images.Add(image);
+                                }
                             }
+                            Directory.Delete(importImagePath, true);
+
+                            GlobalValues.Logger.Info("Import finished");
                         }
-                        catch (Exception)
+                        else
                         {
-                            GlobalValues.Logger.Error($"Upload failed, imageName: {fileReader.FileName}");
-                            imageUrls.Add(string.Empty);
+                            var image = await SaveImage(fileReader.OpenReadStream(), fileReader.FileName, imageDirPath);
+                            imageUrls.Add($"{image.Url}");
+                            images.Add(image);
                         }
                     }
-                    _ = sqlImageData.AddRangeAsync(images);
+                    catch (Exception)
+                    {
+                        GlobalValues.Logger.Error($"Upload failed, imageName: {fileReader.FileName}");
+                        imageUrls.Add(string.Empty);
+                    }
                 }
+                _ = sqlImageData.AddRangeAsync(images);
             }
             GlobalValues.Logger.Info("Upload finished");
             return new ApiResult<object>(200, "Upload finished", imageUrls);
@@ -187,14 +185,12 @@ namespace ImageBed.Controllers
             // 修改请求次数
             using (var context = new OurDbContext())
             {
-                using (var sqlImageData = new SQLImageData(context))
+                var sqlImageData = new SQLImageData(context);
+                var image = await sqlImageData.GetByName(filename);
+                if (image != null)
                 {
-                    var image = await sqlImageData.GetByName(filename);
-                    if (image != null)
-                    {
-                        image.RequestNum++;
-                        _ = sqlImageData.Update(image);
-                    }
+                    image.RequestNum++;
+                    _ = sqlImageData.Update(image);
                 }
             }
             return File(System.IO.File.ReadAllBytes(imagePath), $"image/{GetFileExtension(filename)}");
@@ -218,25 +214,6 @@ namespace ImageBed.Controllers
                 System.IO.File.Delete(imagePath);
             }
             return new ApiResult<object>(200, "Delete image success", null);
-        }
-
-
-        /// <summary>
-        /// 获取完整host地址
-        /// </summary>
-        /// <returns></returns>
-        private string GetHost()
-        {
-            string? host = string.Empty;
-            if (Request.IsHttps)
-            {
-                host += $"https://{Request.Host}";
-            }
-            else
-            {
-                host += $"http://{Request.Host}";
-            }
-            return host;
         }
     }
 }

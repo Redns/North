@@ -70,17 +70,15 @@
         {
             using (var context = new OurDbContext())
             {
-                using (var sqlImageData = new SQLImageData(context))
-                {
-                    imagesAll = await sqlImageData.Get();
-                    OnSearch();
+                var sqlImageData = new SQLImageData(context);
+                imagesAll = await sqlImageData.Get();
+                OnSearch();
 
-                    _ = _notice.Open(new NotificationConfig()
-                    {
-                        Message = "图片导入完成",
-                        Description = "图片已成功导入至服务器！"
-                    }); 
-                }
+                _ = _notice.Open(new NotificationConfig()
+                {
+                    Message = "图片导入完成",
+                    Description = "图片已成功导入至服务器！"
+                }); 
             }
         }
     }
@@ -96,17 +94,15 @@
     {
         using (var context = new OurDbContext())
         {
-            using (var sqlImageData = new SQLImageData(context))
+            var sqlImageData = new SQLImageData(context);
+            _ = sqlImageData.RemoveRangeAsync(imagesSelected.ToList());
+            foreach(var image in imagesSelected)
             {
-                _ = sqlImageData.RemoveRangeAsync(imagesSelected.ToList());
-                foreach(var image in imagesSelected)
-                {
-                    imagesAll.Remove(image);
-                }
-                _ = _message.Success("图片已删除!");
-
-                OnSearch();
+                imagesAll.Remove(image);
             }
+            _ = _message.Success("图片已删除!");
+
+            OnSearch();
         }
     }
 
@@ -174,12 +170,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = new OurDbContext();
-        using var sqlImageData = new SQLImageData(context);
+        using(var context = new OurDbContext())
+        {
+            var sqlImageData = new SQLImageData(context);
 
-        imagesAll = await sqlImageData.Get();
+            imagesAll = await sqlImageData.Get();
 
-        OnSearch();
+            OnSearch();
+        } 
     }
 
     async void CopyUrlToClip(string? content)
@@ -208,19 +206,17 @@
         {
             using (var context = new OurDbContext())
             {
-                using (var sqlImageData = new SQLImageData(context))
+                var sqlImageData = new SQLImageData(context);
+                _ = sqlImageData.Remove(id);
+
+                ImageEntity? image = imagesAll.FirstOrDefault(image => image.Id == id);
+                if(image != null)
                 {
-                    _ = sqlImageData.Remove(id);
-
-                    ImageEntity? image = imagesAll.FirstOrDefault(image => image.Id == id);
-                    if(image != null)
-                    {
-                        imagesAll.Remove(image);
-                        OnSearch();
-                    }
-
-                    _ = _message.Success("图片已删除！");
+                    imagesAll.Remove(image);
                 }
+                OnSearch();
+
+                _ = _message.Success("图片已删除！");
             }
         }
     }
