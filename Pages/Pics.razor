@@ -16,21 +16,6 @@
     <SpaceItem>
         <Search Placeholder="Search what you want..." EnterButton="true" @bind-Value="searchText" Loading=@searchRunning OnSearch=@OnSearch/>
     </SpaceItem>
-    @code{
-        string? searchText;
-        bool searchRunning = false;
-
-        public void OnSearch()
-        {
-            searchRunning = true;
-
-            imagesShow.Clear();
-            imagesShow.AddRange(imagesAll.Where(image => (searchText == null) || 
-                                               (image.Name ?? "").Contains(searchText) || 
-                                               (image.Owner ?? "").Contains(searchText)));
-            searchRunning = false;
-        }
-    }
     <SpaceItem>
         <Upload Multiple
             @attributes=attrs
@@ -40,48 +25,6 @@
             OnCompleted="UploadFinished">
             <Button Type="@ButtonType.Primary" Ghost>导  入</Button>
         </Upload>
-        @code{
-            Upload? upload;
-        List<UploadFileItem> fileList = new List<UploadFileItem>();
-        Dictionary<string, object> attrs = new Dictionary<string, object>
-        {
-            {"accept", "image/*,.export"},
-            {"Action", "/api/image" },
-            {"Name", "files" },
-            {"Multiple", true }
-        };
-
-        bool uploadRunning = false;
-        void StartImport(UploadInfo imageInfo)
-        {
-            if (!uploadRunning)
-            {
-                _notice.Open(new NotificationConfig()
-                {
-                    Message = "图片开始导入",
-                    Description = "图片后台导入中，导入完成前请勿再次导入！"
-                });
-                uploadRunning = true;
-            }
-        }
-
-
-        async void UploadFinished()
-        {
-            using (var context = new OurDbContext())
-            {
-                var sqlImageData = new SQLImageData(context);
-                imagesAll = await sqlImageData.Get();
-                OnSearch();
-
-                _ = _notice.Open(new NotificationConfig()
-                {
-                    Message = "图片导入完成",
-                    Description = "图片已成功导入至服务器！"
-                }); 
-            }
-        }
-    }
     </SpaceItem>
     @if ((imagesSelected != null ) && (imagesSelected.Any()))
     {
@@ -89,49 +32,6 @@
         <SpaceItem><Button Danger Ghost OnClick=@RemoveSelectedImages>删 除</Button></SpaceItem>
     }
 </Space>
-@code{
-    async Task RemoveSelectedImages()
-    {
-        using (var context = new OurDbContext())
-        {
-            var sqlImageData = new SQLImageData(context);
-            _ = sqlImageData.RemoveRangeAsync(imagesSelected.ToList());
-            foreach(var image in imagesSelected)
-            {
-                imagesAll.Remove(image);
-            }
-            _ = _message.Success("图片已删除!");
-
-            OnSearch();
-        }
-    }
-
-
-    async Task ExportSelectedImages()
-    {
-        // 加载配置文件
-        List<string> imageFullpaths = new();
-
-        // 构造源文件数组
-        if(GlobalValues.appSetting != null)
-        {
-            foreach(var image in imagesSelected)
-            {
-                imageFullpaths.Add($"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}");
-            }
-        }
-
-        // 打包压缩文件
-        if (File.Exists($"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/Images.export"))
-        {
-            File.Delete($"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/Images.export");
-        }
-        FileOperator.CompressMulti(imageFullpaths.ToArray(), $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/Images.export");
-
-        _ = JS.InvokeVoidAsync("downloadFileFromStream", "Images.export", "api/image/Images.export");
-        _ = _message.Success("导出成功!");
-    }
-}
 <br/>
 <br/>
 <Table @ref="table"
@@ -154,70 +54,7 @@
             <Space>
                 <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{CopyUrlToClip(NavigationManager.BaseUri + context.Url);}">复 制</Button></SpaceItem>
                 <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{DownloadFile(NavigationManager.BaseUri + context.Url, context.Name);}">下 载</Button></SpaceItem>
-                <SpaceItem><Button Danger OnClick="()=>{RemoveImage(context.Id);}">删 除</Button></SpaceItem>
+                <SpaceItem><Button Danger OnClick="()=>{RemoveImage(context);}">删 除</Button></SpaceItem>
             </Space>
         </ActionColumn>
 </Table>
-
-@code {
-    ITable? table;
-    int _pageSize = 8;
-    int _total;
-
-    List<ImageEntity> imagesShow = new();
-    List<ImageEntity> imagesAll = new();
-    IEnumerable<ImageEntity>? imagesSelected;
-
-    protected override async Task OnInitializedAsync()
-    {
-        using(var context = new OurDbContext())
-        {
-            var sqlImageData = new SQLImageData(context);
-
-            imagesAll = await sqlImageData.Get();
-
-            OnSearch();
-        } 
-    }
-
-    async void CopyUrlToClip(string? content)
-    {
-        if (!string.IsNullOrEmpty(content))
-        {
-            await JS.InvokeVoidAsync("CopyToClip", content);
-            _ = _message.Success("已拷贝链接到剪贴板！");
-        }
-        else
-        {
-            _ = _message.Error("拷贝链接失败！");
-        }
-    }
-
-
-    async void DownloadFile(string url, string imagename)
-    {
-        await JS.InvokeVoidAsync("downloadFileFromStream", imagename, url);
-    }
-
-
-    async void RemoveImage(string? id)
-    {
-        if (!string.IsNullOrEmpty(id))
-        {
-            using (var context = new OurDbContext())
-            {
-                var sqlImageData = new SQLImageData(context);
-                _ = sqlImageData.Remove(id);
-
-                ImageEntity? image = imagesAll.FirstOrDefault(image => image.Id == id);
-                if(image != null)
-                {
-                    imagesAll.Remove(image);
-                }
-                OnSearch();
-
-                _ = _message.Success("图片已删除！");
-            }
-        }
-    }
-}

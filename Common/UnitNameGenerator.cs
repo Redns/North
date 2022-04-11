@@ -47,6 +47,57 @@
 
 
         /// <summary>
+        /// 文件类型
+        /// </summary>
+        public enum FileType
+        {
+            IMAGE = 0,          // 图片
+            COMPRESS,           // 压缩文件
+            BIN,                // 二进制
+            ILLEGAL             // 非法
+        }
+
+
+        /// <summary>
+        /// 根据文件名后缀获取文件类型
+        /// </summary>
+        /// <param name="extension">文件后缀</param>
+        /// <returns></returns>
+        public static FileType GetFileType(string extension)
+        {
+            if (string.IsNullOrEmpty(extension))
+            {
+                return FileType.ILLEGAL;
+            }
+            else
+            {
+                extension = extension.ToLower();
+                if (extension.Contains("jpg")  ||
+                    extension.Contains("png")  ||
+                    extension.Contains("jpeg") ||
+                    extension.Contains("svg")  ||
+                    extension.Contains("bmp")  ||
+                    extension.Contains("gif")  ||
+                    extension.Contains("tiff") ||
+                    extension.Contains("raw"))
+                {
+                    return FileType.IMAGE;
+                }
+                else if(extension.Contains("zip") ||
+                        extension.Contains("rar") ||
+                        extension.Contains("7z"))
+                {
+                    return FileType.COMPRESS;
+                }
+                else
+                {
+                    return FileType.BIN;
+                }
+            }
+        }
+
+
+        /// <summary>
         /// 格式化文件大小
         /// </summary>
         /// <param name="len">文件大小(单位:Byte)</param>

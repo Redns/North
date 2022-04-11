@@ -6,7 +6,6 @@
 @using System.Timers
 @using Title = AntDesign.Charts.Title
 @using ImageBed.Data.Entity
-@using CZGL.SystemInfo
 
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
@@ -99,7 +98,7 @@
         using (var context = new OurDbContext())
         {
             var sqlImageData = new SQLImageData(context);
-            List<ImageEntity> images = await sqlImageData.Get();
+            List<ImageEntity> images = await sqlImageData.GetAsync();
 
             // 获取托管图片总数
             HostImageNums = images.Count;
@@ -132,7 +131,7 @@
         {
             var sqlRecordData = new SQLRecordData(context);
             SysRecords.Clear();
-            foreach(var record in await sqlRecordData.Get())
+            foreach(var record in await sqlRecordData.GetAsync())
             {
                 SysRecords.Add(new
                 {

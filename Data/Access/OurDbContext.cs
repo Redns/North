@@ -30,7 +30,7 @@ namespace ImageBed.Data.Access
 
 
     /// <summary>
-    /// 图片数据处理
+    /// 处理数据库中的图片信息
     /// </summary>
     public class SQLImageData
     {
@@ -71,7 +71,7 @@ namespace ImageBed.Data.Access
         /// 添加多张图片至数据库
         /// </summary>
         /// <param name="images"></param>
-        /// <returns></returns>
+        /// <returns>添加成功返回true， 否则返回false</returns>
         public async Task AddRangeAsync(IEnumerable<ImageEntity> images)
         {
             GlobalValues.Logger.Info("Putting images into database");
@@ -94,9 +94,9 @@ namespace ImageBed.Data.Access
         /// <summary>
         /// 更新图片信息
         /// </summary>
-        /// <param name="image"></param>
-        /// <returns></returns>
-        public async Task<bool> Update(ImageEntity image)
+        /// <param name="image">更新后的图片实体</param>
+        /// <returns>更新成功返回true, 否则返回false</returns>
+        public async Task<bool> UpdateAsync(ImageEntity image)
         {
             if ((_context != null) && (_context.Images != null))
             {
@@ -116,10 +116,22 @@ namespace ImageBed.Data.Access
 
 
         /// <summary>
+        /// 图片过滤方式
+        /// </summary>
+        public enum ImageFilter
+        {
+            ID,             // 根据ID过滤
+            NAME,           // 根据名称过滤
+            UploadTime,     // 上传时间 xxxx/xx/xx xx:xx:xx
+            UpoadDate       // 上传日期 xxxx/xx/xx
+        }
+
+
+        /// <summary>
         /// 获取数据库中的所有图片信息
         /// </summary>
-        /// <returns></returns>
-        public async Task<List<ImageEntity>> Get()
+        /// <returns>获取到的全部信息</returns>
+        public async Task<List<ImageEntity>> GetAsync()
         {
             if((_context != null) && (_context.Images != null))
             {
@@ -130,63 +142,51 @@ namespace ImageBed.Data.Access
 
 
         /// <summary>
-        /// 获取数据库中指定ID的图片信息
+        /// 获取图片信息
         /// </summary>
-        /// <param name="id">图片ID</param>
-        /// <returns></returns>
-        public async Task<ImageEntity?> Get(string id)
+        /// <param name="filter">过滤器类型</param>
+        /// <param name="param">过滤器参数</param>
+        /// <returns>获取到的图片信息</returns>
+        public async Task<ImageEntity?> GetAsync(ImageFilter filter, object param)
         {
-            if ((_context != null) && (_context.Images != null))
+            if((_context != null) && (_context.Images != null))
             {
-                return await _context.Images.FirstAsync(x => x.Id == id);
+                return filter switch
+                {
+                    ImageFilter.ID => await _context.Images.FirstOrDefaultAsync(i => i.Id == param.ToString()),
+                    ImageFilter.NAME => await _context.Images.FirstOrDefaultAsync(i => i.Name == param.ToString()),
+                    ImageFilter.UploadTime => await _context.Images.FirstOrDefaultAsync(i => i.UploadTime == param.ToString()),
+                    ImageFilter.UpoadDate => await _context.Images.FirstOrDefaultAsync(i => i.UploadTime.Contains(param.ToString() ?? "xxxx/xx/xx")),
+                    _ => null
+                };
             }
             return null;
         }
 
 
         /// <summary>
-        /// 根据图片名称查找
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public async Task<ImageEntity?> GetByName(string name)
-        {
-            if ((_context != null) && (_context.Images != null))
-            {
-                try
-                {
-                    return await _context.Images.FirstAsync(x => x.Name == name);
-                }
-                catch(Exception ex) 
-                {
-                    GlobalValues.Logger.Error($"Get image failed, {ex.Message}");
-                }
-            }
-            return null;
-        }
-
-
-        /// <summary>
-        /// 移除数据库中指定图片的信息
+        /// 移除图片信息
         /// </summary>
         /// <param name="id">图片ID</param>
-        /// <returns></returns>
-        public async Task<bool> Remove(string id)
+        /// <returns>移除成功返回true, 否则返回false</returns>
+        public async Task<bool> RemoveAsync(string id)
         {
             if ((_context != null) && (_context.Images != null))
             {
                 try
                 {
-                    ImageEntity? image = await Get(id);
+                    ImageEntity? image = await GetAsync(ImageFilter.ID, id);
                     if(image != null)
                     {
-                        string imagePath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}";
-                        if (File.Exists(imagePath))
-                        {
-                            File.Delete(imagePath);
-                        }
                         _context.Images.Remove(image);
-                        _context.SaveChanges();
+                        _ = _context.SaveChangesAsync();
+                    }
+
+                    // 删除磁盘上的文件
+                    string? imageFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}";
+                    if (File.Exists(imageFullPath))
+                    {
+                        File.Delete(imageFullPath);
                     }
                     return true;
                 }
@@ -200,24 +200,56 @@ namespace ImageBed.Data.Access
 
 
         /// <summary>
+        /// 移除图片信息
+        /// </summary>
+        /// <param name="image">图片实体</param>
+        /// <returns>移除成功返回true， 否则返回false</returns>
+        public async Task<bool> RemovaAsync(ImageEntity image)
+        {
+            if((_context != null) && (_context.Images != null))
+            {
+                try
+                {
+                    // 删除磁盘上的文件
+                    string? imageFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}";
+                    if (File.Exists(imageFullPath))
+                    {
+                        File.Delete(imageFullPath);
+                    }
+
+                    _context.Images.Remove(image);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                catch(Exception ex)
+                {
+                    GlobalValues.Logger.Error($"Remove image failed, {ex.Message}");
+                }
+            }
+            return false;
+        }
+
+
+        /// <summary>
         /// 移除多个图片信息
         /// </summary>
-        /// <param name="images"></param>
-        /// <returns></returns>
+        /// <param name="images">待移除的图片列表</param>
+        /// <returns>移除成功返回true， 否则返回false</returns>
         public async Task<bool> RemoveRangeAsync(List<ImageEntity> images)
         {
             if ((_context != null) && (_context.Images != null))
             {
                 try
                 {
-                    images.ForEach(image =>
+                    string imageDir = $"{GlobalValues.appSetting.Data.Resources.Images.Path}";
+                    foreach(var image in images)
                     {
-                        string imagePath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}";
-                        if (File.Exists(imagePath))
+                        string imageFullPath = $"{imageDir}/{image.Name}";
+                        if (File.Exists(imageFullPath))
                         {
-                            File.Delete(imagePath);
+                            File.Delete(imageFullPath);
                         }
-                    });
+                    }
                     _context.Images.RemoveRange(images);
                     await _context.SaveChangesAsync();
                     return true;
@@ -232,6 +264,9 @@ namespace ImageBed.Data.Access
     }
 
 
+    /// <summary>
+    /// 处理数据库中的资源记录信息
+    /// </summary>
     public class SQLRecordData
     {
         private OurDbContext _context { get; set; }
@@ -242,10 +277,23 @@ namespace ImageBed.Data.Access
 
 
         /// <summary>
+        /// 资源记录筛选器
+        /// </summary>
+        public enum RecordFilter
+        {
+            NONE = 0,               // 不筛选
+            DATE,                   // 根据日期筛选
+            UploadNum,              // 根据上传数量筛选 [min, max]
+            UploadSize,             // 根据上传尺寸筛选 [min, max]
+            RequestNum              // 根据请求次数筛选 [min, max]
+        }
+
+
+        /// <summary>
         /// 获取所有记录数据
         /// </summary>
-        /// <returns></returns>
-        public async Task<List<RecordEntity>> Get()
+        /// <returns>获取到的所有记录信息</returns>
+        public async Task<List<RecordEntity>> GetAsync()
         {
             if((_context != null) && (_context.Records != null))
             {
@@ -256,15 +304,23 @@ namespace ImageBed.Data.Access
 
 
         /// <summary>
-        /// 获取指定日期的数据
+        /// 获取指定的记录数据
         /// </summary>
-        /// <param name="date"></param>
+        /// <param name="filter">过滤器类型</param>
+        /// <param name="param">过滤器参数</param>
         /// <returns></returns>
-        public async Task<RecordEntity?> GetAsync(string date)
+        public async Task<RecordEntity?> GetAsync(RecordFilter filter, object param)
         {
             if ((_context != null) && (_context.Records != null))
             {
-                return await _context.Records.FirstAsync(r => r.Date == date);
+                return filter switch
+                {
+                    RecordFilter.DATE => await _context.Records.FirstOrDefaultAsync(r => r.Date == param.ToString()),
+                    RecordFilter.UploadNum => await _context.Records.FirstOrDefaultAsync(r => r.UploadImageNum == (int)param),
+                    RecordFilter.UploadSize => await _context.Records.FirstOrDefaultAsync(r => r.UploadImageSize == (int)param),
+                    RecordFilter.RequestNum => await _context.Records.FirstOrDefaultAsync(r => r.RequestNum == (int) param),
+                    _ => null
+                };
             }
             return null;
         }
@@ -281,11 +337,11 @@ namespace ImageBed.Data.Access
             {
                 try
                 {
-                    RecordEntity? oldRecord = _context.Records.FirstOrDefault(r => r.Date == newRecord.Date);
-                    if(oldRecord != null)
+                    RecordEntity? record = await GetAsync(RecordFilter.DATE, newRecord.Date);
+                    if(record != null)
                     {
                         _context.Records.Update(newRecord);
-                        await _context.SaveChangesAsync();
+                        _ = _context.SaveChangesAsync();
                         return true;
                     }
                 }
@@ -303,14 +359,14 @@ namespace ImageBed.Data.Access
         /// </summary>
         /// <param name="newRecord"></param>
         /// <returns></returns>
-        public async Task<bool> Add(RecordEntity newRecord)
+        public async Task<bool> AddAsync(RecordEntity newRecord)
         {
             if((newRecord != null) && (_context.Records != null))
             {
                 try
                 {
                     await _context.Records.AddAsync(newRecord);
-                    await _context.SaveChangesAsync();
+                    _ = _context.SaveChangesAsync();
                     return true;
                 }
                 catch (Exception ex) 

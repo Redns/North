@@ -52,7 +52,7 @@ namespace ImageBed.Common
 
                     // 收集数据库中所有图片的数量、磁盘占用(MB)、请求次数
                     var sqlImageData = new SQLImageData(context);
-                    List<ImageEntity> images = await sqlImageData.Get();
+                    List<ImageEntity> images = await sqlImageData.GetAsync();
 
                     hostImageNumTotal = images.Count;
 
@@ -70,7 +70,7 @@ namespace ImageBed.Common
                     int hostImageRequestRecord = 0;
                     int hostImageDiskOccupyRecord = 0;
 
-                    List<RecordEntity> records = await sqlRecordData.Get();
+                    List<RecordEntity> records = await sqlRecordData.GetAsync();
                     foreach(var record in records)
                     {
                         hostImageNumRecord += record.UploadImageNum;
@@ -82,7 +82,7 @@ namespace ImageBed.Common
                                                 .ToShortDateString()
                                                 .Split(" ")[0]
                                                 .Replace("-", "/");
-                    _ = sqlRecordData.Add(new RecordEntity
+                    _ = sqlRecordData.AddAsync(new RecordEntity
                     {
                         Date = dateYestoday,
                         UploadImageNum = hostImageNumTotal - hostImageNumRecord,

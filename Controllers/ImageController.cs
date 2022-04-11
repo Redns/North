@@ -3,6 +3,7 @@ using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
 using static ImageBed.Common.UnitNameGenerator;
+using static ImageBed.Data.Access.SQLImageData;
 
 namespace ImageBed.Controllers
 {
@@ -18,200 +19,138 @@ namespace ImageBed.Controllers
         [HttpPost]
         public async Task<ApiResult<object>> Post([FromForm] IFormCollection formCollection)
         {
-            GlobalValues.Logger.Info("Uploading images...");
-
             List<string> imageUrls = new();
             List<ImageEntity> images = new();
-            using (var context = new OurDbContext())
+
+            try
             {
-                // 获取图片统一存储路径
-                string imageDirPath = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
-                if (!Directory.Exists(imageDirPath))
+                GlobalValues.Logger.Info("Uploading images...");
+                using (var context = new OurDbContext())
                 {
-                    Directory.CreateDirectory(imageDirPath);
-                }
-
-                var sqlImageData = new SQLImageData(context);
-                FormFileCollection fileCollection = (FormFileCollection)formCollection.Files;
-                foreach (IFormFile fileReader in fileCollection)
-                {
-                    try
+                    // 获取图片存储路径
+                    // 若文件夹不存在则创建
+                    string imageDir = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}";
+                    if (!Directory.Exists(imageDir))
                     {
-                        var extName = GetFileExtension(fileReader.FileName);
-                        if (extName == "export")
+                        Directory.CreateDirectory(imageDir);
+                    }
+
+                    var sqlImageData = new SQLImageData(context);
+                    foreach (IFormFile fileReader in (FormFileCollection)formCollection.Files)
+                    {
+                        try
                         {
-                            GlobalValues.Logger.Info("Importing images...");
-
-                            // export 为图片导出文件后缀
-                            // 创建文件夹用于存储 export 解压文件
-                            string importImagePath = $"{imageDirPath}/Import";
-                            if (!Directory.Exists(importImagePath))
+                            if (GetFileType(GetFileExtension(fileReader.FileName) ?? "") == FileType.COMPRESS)
                             {
-                                Directory.CreateDirectory(importImagePath);
-                            }
+                                GlobalValues.Logger.Info("Importing images...");
 
-                            // 保存并解压export文件
-                            await SaveFile(fileReader.OpenReadStream(), $"{importImagePath}/ImportImages.export");
-                            FileOperator.DeCompressMulti($"{importImagePath}/ImportImages.export", $"{importImagePath}/");
-
-                            // 保存图片信息至数据库
-                            GlobalValues.Logger.Info("Putting images into database...");
-
-                            IEnumerable<string> imagePaths = Directory.GetFiles(importImagePath);
-                            foreach (string imagePath in imagePaths)
-                            {
-                                var imageName = imagePath.Split('\\').Last();
-                                if (GetFileExtension(imageName) != "export")
+                                string importFullPath = $"{imageDir}/Import.zip";
+                                await FileOperator.SaveFile(fileReader.OpenReadStream(), importFullPath);
+                                foreach(var image in await FileOperator.ImportImages(importFullPath, imageDir))
                                 {
-                                    var image = await SaveImage(new FileStream(imagePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), imageName, imageDirPath);
-                                    imageUrls.Add($"{image.Url}");
                                     images.Add(image);
-                                }
+                                    imageUrls.Add($"{image.Url}");
+                                } 
                             }
-                            Directory.Delete(importImagePath, true);
-
-                            GlobalValues.Logger.Info("Import finished");
+                            else
+                            {
+                                var image = await FileOperator.SaveImage(fileReader.OpenReadStream(), fileReader.FileName, imageDir);
+                                images.Add(image);
+                                imageUrls.Add($"{image.Url}");
+                            }
                         }
-                        else
+                        catch (Exception)
                         {
-                            var image = await SaveImage(fileReader.OpenReadStream(), fileReader.FileName, imageDirPath);
-                            imageUrls.Add($"{image.Url}");
-                            images.Add(image);
+                            GlobalValues.Logger.Error($"Upload failed, imageName: {fileReader.FileName}");
+                            imageUrls.Add(string.Empty);
                         }
                     }
-                    catch (Exception)
-                    {
-                        GlobalValues.Logger.Error($"Upload failed, imageName: {fileReader.FileName}");
-                        imageUrls.Add(string.Empty);
-                    }
+                    _ = sqlImageData.AddRangeAsync(images);
                 }
-                _ = sqlImageData.AddRangeAsync(images);
+                GlobalValues.Logger.Info("Upload finished");
             }
-            GlobalValues.Logger.Info("Upload finished");
+            catch (Exception ex)
+            {
+                GlobalValues.Logger.Error($"Upload image failed, {ex.Message}");
+            }
             return new ApiResult<object>(200, "Upload finished", imageUrls);
         }
 
 
         /// <summary>
-        /// 保存图片到本地
+        /// 下载图片(或文件)
         /// </summary>
-        /// <param name="fileReader">图片输入流</param>
-        /// <param name="filename">图片名称</param>
-        /// <param name="imageDirPath">图片存储文件夹</param>
+        /// <param name="imageName">图片(或文件)名称</param>
         /// <returns></returns>
-        private static async Task<ImageEntity> SaveImage(Stream fileReader, string filename, string imageDirPath)
+        [HttpGet("{imageName}")]
+        public async Task<IActionResult> Get(string imageName)
         {
-            // 格式化文件名
-            GlobalValues.Logger.Info($"Rename image... Current rename format is {GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat}");
-            RenameFormat renameFormat = GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat ?? RenameFormat.MD5;
-            string unitFileName = RenameFile(imageDirPath, filename, renameFormat);
-            string unitFilePath = $"{imageDirPath}/{unitFileName}";
+            GlobalValues.Logger.Info($"Get image {imageName}");
 
-            // 检查是否命名冲突
-
-            if ((renameFormat == RenameFormat.NONE) && System.IO.File.Exists(unitFilePath))
+            // 构造图片路径
+            // 图片存储路径为 Data/Resources/Images
+            // 当图片不存在时返回 "imageNotFound.jpg"
+            string imageDir = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? string.Empty;
+            string imageFullPath = $"{imageDir}/{imageName}";
+            string imageExtension = GetFileExtension(imageName) ?? string.Empty;
+            if (!System.IO.File.Exists(imageFullPath))
             {
-                System.IO.File.Delete(unitFilePath);
+                return File(System.IO.File.ReadAllBytes($"{imageDir}/imageNotFound.jpg"), $"image/{imageExtension}");
             }
-
-            // 保存图片
-            using (FileStream fileWriter = System.IO.File.Create(unitFilePath))
+            else
             {
-                await fileReader.CopyToAsync(fileWriter);
-                await fileWriter.FlushAsync();
+                // 为了实现代码公用, 这里的图片接口也会返回其他格式的文件
+                if (GetFileType(imageExtension) == FileType.COMPRESS)
+                {
+                    return File(System.IO.File.ReadAllBytes(imageFullPath), "application/octet-stream");
+                }
+                else
+                {
+                    // 修改图片请求次数
+                    // 更新图片的过程可以放在子线程中完成, 不需要等待
+                    using (var context = new OurDbContext())
+                    {
+                        var sqlImageData = new SQLImageData(context);
+                        var image = await sqlImageData.GetAsync(ImageFilter.NAME, imageName);
+                        if (image != null)
+                        {
+                            image.RequestNum++;
+                            _ = sqlImageData.UpdateAsync(image);
+                        }
+                    }
+                    return File(System.IO.File.ReadAllBytes(imageFullPath), $"image/{imageExtension}");
+                }
             }
-            await fileReader.FlushAsync();
-            fileReader.Dispose();
-
-            // 录入数据库
-            var fileInfo = new FileInfo(unitFilePath);
-            var imageInfo = NetVips.Image.NewFromFile(unitFilePath);
-            ImageEntity image = new()
-            {
-                Id = EncryptAndDecrypt.Encrypt_MD5(unitFileName),
-                Name = unitFileName,
-                Url = $"api/image/{unitFileName}",
-                Dpi = $"{imageInfo.Width}*{imageInfo.Height}",
-                Size = UnitNameGenerator.RebuildFileSize(fileInfo.Length),
-                UploadTime = fileInfo.LastAccessTime.ToString(),
-                Owner = "Admin"
-            };
-            imageInfo.Close();
-            imageInfo.Dispose();
-            
-            return image;
         }
 
 
         /// <summary>
-        /// 保存文件到本地
+        /// 删除指定图片(文件)
         /// </summary>
-        /// <param name="fileReader">文件输入流</param>
-        /// <param name="dstDirPath">文件存储路径</param>
+        /// <param name="token">用户令牌</param>
+        /// <param name="imageName">待删除的图片名称</param>
         /// <returns></returns>
-        private static async Task SaveFile(Stream fileReader, string dstDirPath)
+        [HttpDelete("{imageName}")]
+        public async Task<ApiResult<object>> Delete(string imageName)
         {
-            if (System.IO.File.Exists(dstDirPath))
+            GlobalValues.Logger.Info($"Del image {imageName}");
+
+            // 删除磁盘上的文件
+            string? imageFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{imageName}";
+            if (System.IO.File.Exists(imageFullPath))
             {
-                System.IO.File.Delete(dstDirPath);
-            }
-            using (FileStream fileWriter = System.IO.File.Create(dstDirPath))
-            {
-                await fileReader.CopyToAsync(fileWriter);
-            }
-            await fileReader.FlushAsync();
-            fileReader.Dispose();
-        }
-
-
-        /// <summary>
-        /// 下载图片
-        /// </summary>
-        /// <param name="filename">图片名称</param>
-        /// <returns></returns>
-        [HttpGet("{filename}")]
-        public async Task<IActionResult> Get(string filename)
-        {
-            GlobalValues.Logger.Info($"Get image {filename}");
-
-            string imageDir = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images";
-            string imagePath = $"{imageDir}/{filename}";
-
-            if (!System.IO.File.Exists(imagePath))
-            {
-                imagePath = $"{imageDir}/imageNotFound.jpg";
+                System.IO.File.Delete(imageFullPath);
             }
 
-            // 修改请求次数
+            // 删除数据库信息
             using (var context = new OurDbContext())
             {
                 var sqlImageData = new SQLImageData(context);
-                var image = await sqlImageData.GetByName(filename);
-                if (image != null)
+                var image = await sqlImageData.GetAsync(ImageFilter.NAME, imageName);
+                if(image != null)
                 {
-                    image.RequestNum++;
-                    _ = sqlImageData.Update(image);
+                    _ = sqlImageData.RemovaAsync(image);
                 }
-            }
-            return File(System.IO.File.ReadAllBytes(imagePath), $"image/{GetFileExtension(filename)}");
-        }
-
-
-        /// <summary>
-        /// 删除指定图片
-        /// </summary>
-        /// <param name="token">用户令牌</param>
-        /// <param name="filename">待删除的图片名称</param>
-        /// <returns></returns>
-        [HttpDelete("{filename}")]
-        public ApiResult<object> Delete(string filename)
-        {
-            GlobalValues.Logger.Info($"Del image {filename}");
-
-            string? imagePath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "Data/Resources/Images"}/{filename}";
-            if (System.IO.File.Exists(imagePath))
-            {
-                System.IO.File.Delete(imagePath);
             }
             return new ApiResult<object>(200, "Delete image success", null);
         }

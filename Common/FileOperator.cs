@@ -1,43 +1,41 @@
-﻿using System.IO.Compression;
+﻿using ImageBed.Data.Entity;
+using System.IO.Compression;
+using static ImageBed.Common.UnitNameGenerator;
 
 namespace ImageBed.Common
 {
     public class FileOperator
     {
         /// <summary>
-        /// 自定义多文件压缩（生成的压缩包和第三方的压缩文件解压不兼容）
+        /// 多文件压缩
         /// </summary>
-        /// <param name="sourceFileList">文件列表</param>
-        /// <param name="saveFullPath">压缩包全路径</param>
-        public static void CompressMulti(string[] sourceFileList, string saveFullPath)
+        /// <param name="srcFilepaths">源文件路径列表</param>
+        public static async Task CompressMulti(IEnumerable<string> srcFilepaths, string zipFilepath)
         {
-            GlobalValues.Logger.Info("Compressing files...");
+            GlobalValues.Logger.Info($"Compressing {srcFilepaths.Count()} files...");
 
-            MemoryStream ms = new();
-            foreach (string filePath in sourceFileList)
+            try
             {
-                if (File.Exists(filePath))
+                string ExportTempDir = $"{GlobalValues.appSetting.Data.Resources.Images.Path}/ExportTempDir";
+                if (Directory.Exists(ExportTempDir))
                 {
-                    string fileName = Path.GetFileName(filePath);
-                    byte[] fileNameBytes = System.Text.Encoding.UTF8.GetBytes(fileName);
-                    byte[] sizeBytes = BitConverter.GetBytes(fileNameBytes.Length);
-                    ms.Write(sizeBytes, 0, sizeBytes.Length);
-                    ms.Write(fileNameBytes, 0, fileNameBytes.Length);
-                    byte[] fileContentBytes = File.ReadAllBytes(filePath);
-                    ms.Write(BitConverter.GetBytes(fileContentBytes.Length), 0, 4);
-                    ms.Write(fileContentBytes, 0, fileContentBytes.Length);
+                    Directory.Delete(ExportTempDir, true);
                 }
-            }
-            ms.Flush();
-            ms.Position = 0;
-            using (FileStream zipFileStream = File.Create(saveFullPath))
-            {
-                using GZipStream zipStream = new(zipFileStream, CompressionMode.Compress);
-                ms.Position = 0;
-                ms.CopyTo(zipStream);
-            }
-            ms.Close();
+                Directory.CreateDirectory(ExportTempDir);
 
+                foreach(string srcFilepath in srcFilepaths)
+                {
+                    var srcFileName = srcFilepath.Split("/").Last();
+                    await SaveFile(new FileStream(srcFilepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), $"{ExportTempDir}/{srcFileName}");
+                }
+                ZipFile.CreateFromDirectory(ExportTempDir, zipFilepath);
+                Directory.Delete(ExportTempDir, true);
+            }
+            catch (Exception ex)
+            {
+                GlobalValues.Logger.Error($"Compress images failed, {ex.Message}");
+            }
+                
             GlobalValues.Logger.Info("Compress finished");
         }
 
@@ -49,36 +47,146 @@ namespace ImageBed.Common
         /// <param name="targetPath">解压目录</param>
         public static void DeCompressMulti(string zipPath, string targetPath)
         {
-            GlobalValues.Logger.Info("DeCompressing file...");
+            GlobalValues.Logger.Info("Extracting package...");
 
-            byte[] fileSize = new byte[4];
-            if (File.Exists(zipPath))
+            try
             {
-                using FileStream fStream = File.Open(zipPath, FileMode.Open);
-                using MemoryStream ms = new();
-                using (GZipStream zipStream = new(fStream, CompressionMode.Decompress))
-                {
-                    zipStream.CopyTo(ms);
-                }
-                ms.Position = 0;
-                while (ms.Position != ms.Length)
-                {
-                    ms.Read(fileSize, 0, fileSize.Length);
-                    int fileNameLength = BitConverter.ToInt32(fileSize, 0);
-                    byte[] fileNameBytes = new byte[fileNameLength];
-                    ms.Read(fileNameBytes, 0, fileNameBytes.Length);
-                    string fileName = System.Text.Encoding.UTF8.GetString(fileNameBytes);
-                    string fileFulleName = targetPath + fileName;
-                    ms.Read(fileSize, 0, 4);
-                    int fileContentLength = BitConverter.ToInt32(fileSize, 0);
-                    byte[] fileContentBytes = new byte[fileContentLength];
-                    ms.Read(fileContentBytes, 0, fileContentBytes.Length);
-                    using FileStream childFileStream = File.Create(fileFulleName);
-                    childFileStream.Write(fileContentBytes, 0, fileContentBytes.Length);
-                }
+                ZipFile.ExtractToDirectory(zipPath, targetPath);
+            }
+            catch(Exception ex)
+            {
+                GlobalValues.Logger.Error($"Extract package failed, {ex.Message}");
             }
 
-            GlobalValues.Logger.Info("DeCompress finished");
+            GlobalValues.Logger.Info("Extract package finished");
+        }
+
+
+        /// <summary>
+        /// 保存文件
+        /// </summary>
+        /// <param name="fileReader">文件输入流</param>
+        /// <param name="dstPath">文件存储路径</param>
+        /// <returns></returns>
+        public static async Task SaveFile(Stream fileReader, string dstPath)
+        {
+            if (File.Exists(dstPath))
+            {
+                File.Delete(dstPath);
+            }
+
+            using (FileStream fileWriter = File.Create(dstPath))
+            {
+                await fileReader.CopyToAsync(fileWriter);
+                await fileReader.FlushAsync();
+                fileReader.Dispose();
+            }
+        }
+
+
+        /// <summary>
+        /// 保存图片
+        /// </summary>
+        /// <param name="imageReader">待写入的图片流</param>
+        /// <param name="imageName">图片原名称</param>
+        /// <param name="imageDir">图片存储文件夹</param>
+        /// <returns></returns>
+        public static async Task<ImageEntity> SaveImage(Stream imageReader, string imageName, string imageDir)
+        {
+            // 格式化文件名
+            GlobalValues.Logger.Info($"Rename image... Current rename format is {GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat}");
+            
+            RenameFormat renameFormat = GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat ?? RenameFormat.MD5;
+            string unitImageName = RenameFile(imageDir, imageName, renameFormat);
+            string unitImageFullPath = $"{imageDir}/{unitImageName}";
+
+            // 检查是否命名冲突
+            if ((renameFormat == RenameFormat.NONE) && File.Exists(unitImageFullPath))
+            {
+                File.Delete(unitImageFullPath);
+            }
+
+            // 保存图片
+            using (FileStream imageWriter = File.Create(unitImageFullPath))
+            {
+                await imageReader.CopyToAsync(imageWriter);
+                await imageWriter.FlushAsync();
+                await imageReader.FlushAsync();
+                await imageReader.DisposeAsync();
+            }
+
+            // 录入数据库
+            var fileInfo = new FileInfo(unitImageFullPath);
+            var imageInfo = NetVips.Image.NewFromFile(unitImageFullPath);
+            ImageEntity image = new()
+            {
+                Id = EncryptAndDecrypt.Encrypt_MD5(unitImageName),
+                Name = unitImageName,
+                Url = $"api/image/{unitImageName}",
+                Dpi = $"{imageInfo.Width}*{imageInfo.Height}",
+                Size = RebuildFileSize(fileInfo.Length),
+                UploadTime = fileInfo.LastAccessTime.ToString(),
+                Owner = "Admin"
+            };
+            imageInfo.Close();
+            imageInfo.Dispose();
+
+            return image;
+        }
+
+
+        /// <summary>
+        /// 导入图片
+        /// </summary>
+        /// <param name="zipFullPath">图片压缩包路径</param>
+        /// <param name="importDir">图片导入路径</param>
+        /// <returns></returns>
+        public static async Task<List<ImageEntity>> ImportImages(string zipFullPath, string importDir)
+        {
+            List<ImageEntity> images = new();
+            try
+            {
+                if(GetFileType(GetFileExtension(zipFullPath) ?? "") == FileType.COMPRESS)
+                {
+                    // 创建临时文件夹
+                    string tempDir = $"{importDir}/Temp";
+                    if (!Directory.Exists(importDir))
+                    {
+                        Directory.CreateDirectory(importDir);
+                        Directory.CreateDirectory(tempDir);
+                    }
+                    else if (!Directory.Exists(tempDir))
+                    {
+                        Directory.CreateDirectory(tempDir);
+                    }
+
+                    // 解压压缩包
+                    // 录入解压出的所有图片信息, 并将其移动至 importDir 文件夹下
+                    DeCompressMulti(zipFullPath, tempDir);
+                    foreach (string tempFileFullpath in Directory.GetFiles(tempDir))
+                    {
+                        var tempFileName = tempFileFullpath.Split('\\').Last();
+                        if(GetFileType(GetFileExtension(tempFileName) ?? "") == FileType.IMAGE)
+                        {
+                            using (var imageReader = new FileStream(tempFileFullpath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            {
+                                images.Add(await SaveImage(imageReader, tempFileName, importDir));
+                            }
+                        }
+                    }
+                    Directory.Delete(tempDir, true);
+                    File.Delete(zipFullPath);
+                }
+                else
+                {
+                    GlobalValues.Logger.Error("Import package failed, can only import compress files");
+                }
+            }
+            catch (Exception ex)
+            {
+                GlobalValues.Logger.Error($"Import package failed, {ex.Message}");
+            }
+            return images;
         }
     }
 }
