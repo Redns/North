@@ -3,7 +3,6 @@
 @using AntDesign.Charts
 @using ImageBed.Data.Access
 @using System.Diagnostics
-@using System.Timers
 @using Title = AntDesign.Charts.Title
 @using ImageBed.Data.Entity
 
@@ -56,130 +55,9 @@
         </Col>
     </Row>
 </div>
-
 @code{
-    RenderFragment TitleTemplate_HostImageNum = @<Space><SpaceItem><Icon Type="picture" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>托管图片总数</SpaceItem></Space>;
-    RenderFragment TitleTemplate_DiskOccupancy = @<Space><SpaceItem><Icon Type="database" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>磁盘存储占用</SpaceItem></Space>;
-    RenderFragment TitleTemplate_RunningMemUse = @<Space><SpaceItem><Icon Type="fund-projection-screen" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>运行内存占用</SpaceItem></Space>;
-    RenderFragment TitleTemplate_CpuUse = @<Space><SpaceItem><Icon Type="dashboard" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>系统运行时长</SpaceItem></Space>
-    ;
-
-    public static Timer? t;
-
-    int HostImageNums { get; set; } = 0;
-    string DiskOccupancy { get; set; } = "MB";
-    string RunningMemUsage { get; set; } = "MB";
-    string SysRunningTime { get; set; } = "00:00:00";
-
-    List<object> SysRecords = new();
-
-    protected override void OnInitialized()
-    {
-        if(GlobalValues.appSetting?.Record?.RefreshRealTime ?? true)
-        {
-            InitTimer();
-        }
-        RefreshChart();
-        RefreshDashboard(null, null);
-    }
-
-
-    void InitTimer()
-    {
-        t = new Timer(1000);
-        t.Elapsed += RefreshDashboard;
-        t.AutoReset = true;
-        t.Enabled = true;
-    }
-
-
-    async void RefreshDashboard(Object? source, ElapsedEventArgs? e)
-    {
-        using (var context = new OurDbContext())
-        {
-            var sqlImageData = new SQLImageData(context);
-            List<ImageEntity> images = await sqlImageData.GetAsync();
-
-            // 获取托管图片总数
-            HostImageNums = images.Count;
-
-            // 获取托管图片所占磁盘存储总量
-            double diskOccupancyKB = 0;
-            images.ForEach(image =>
-            {
-                diskOccupancyKB += UnitNameGenerator.ParseFileSize(image.Size ?? "0B");
-            });
-            DiskOccupancy = $"{(diskOccupancyKB / 1024.0).ToString("f3")} MB";
-
-            // 获取该进程占用的运行内存
-            Process mainProcess = Process.GetCurrentProcess();
-            mainProcess.Refresh();
-            RunningMemUsage = $"{mainProcess.WorkingSet64 / (1024*1024)} MB";
-
-            // 获取应用运行时长
-            TimeSpan SysRunningTimeSpan = DateTime.Now - mainProcess.StartTime;
-            SysRunningTime = $"{(int)SysRunningTimeSpan.TotalHours}:{((int)SysRunningTimeSpan.TotalMinutes) % 60}:{((int)SysRunningTimeSpan.TotalSeconds) % 60}";
-
-            await InvokeAsync(new Action(() => { StateHasChanged(); }));
-        } 
-    }
-
-
-    async void RefreshChart()
-    {
-        using (var context = new OurDbContext())
-        {
-            var sqlRecordData = new SQLRecordData(context);
-            SysRecords.Clear();
-            foreach(var record in await sqlRecordData.GetAsync())
-            {
-                SysRecords.Add(new
-                {
-                    date = record.Date,
-                    type = "图片上传数量",
-                    value = record.UploadImageNum
-                });
-
-                SysRecords.Add(new
-                {
-                    date = record.Date,
-                    type = "图片磁盘占用(MB)",
-                    value = record.UploadImageSize
-                });
-
-                SysRecords.Add(new
-                {
-                    date = record.Date,
-                    type = "图片请求次数",
-                    value = record.RequestNum
-                });
-            }
-        }
-    }
-
-    public void Dispose()
-    {
-        t?.Stop();
-        t?.Dispose();
-    }
-
-
-    LineConfig SysRecordConfig = new LineConfig
-    {
-        Padding = "auto",
-        XField = "date",
-        YField = "value",
-        YAxis = new ValueAxis
-        {
-            Label = new BaseAxisLabel()
-        },
-        Legend = new Legend
-        {
-            Position = "right-top"
-        },
-        SeriesField = "type",
-        Color = new string[] { "#1979C9", "#D62A0D", "#FAA219" },
-        Responsive = true,
-        Smooth = true
-    };
+        RenderFragment TitleTemplate_HostImageNum = @<Space><SpaceItem><Icon Type = "picture" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>托管图片总数</SpaceItem></Space>;
+        RenderFragment TitleTemplate_DiskOccupancy = @<Space><SpaceItem><Icon Type = "database" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>磁盘存储占用</SpaceItem></Space>;
+        RenderFragment TitleTemplate_RunningMemUse = @<Space><SpaceItem><Icon Type = "fund-projection-screen" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>运行内存占用</SpaceItem></Space>;
+        RenderFragment TitleTemplate_CpuUse = @<Space><SpaceItem><Icon Type = "dashboard" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>系统运行时长</SpaceItem></Space>;
 }

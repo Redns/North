@@ -50,28 +50,3 @@
             </Button>
         </FormItem>
 </Form>
-@code
-{
-    string imageDir = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "";
-    bool RefreshDashboardRealTime = GlobalValues.appSetting?.Record?.RefreshRealTime ?? true;
-    RenameFormat renameFormat = GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat ?? RenameFormat.MD5;
-
-    private void OnFinish(EditContext editContext)
-    {
-        if((renameFormat != GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat) ||
-           (RefreshDashboardRealTime != GlobalValues.appSetting?.Record?.RefreshRealTime))
-        {
-            GlobalValues.appSetting.Data.Resources.Images.RenameFormat = renameFormat;
-            GlobalValues.appSetting.Record.RefreshRealTime = RefreshDashboardRealTime;
-            AppSetting.Save(GlobalValues.appSetting, "appsettings.json");
-        }
-        _message.Success("设置完成！");
-    }
-
-
-    private void OnFinishFailed(EditContext editContext)
-    {
-        GlobalValues.appSetting = AppSetting.Parse();
-        _message.Error("设置失败！");
-    }
-}

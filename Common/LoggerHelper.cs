@@ -12,7 +12,7 @@ namespace ImageBed.Common
         /// </summary>
         private readonly NLog.Logger _logger = LogManager.GetCurrentClassLogger();
 
-        private static LoggerHelper _obj;
+        private static LoggerHelper? _obj;
 
         public static LoggerHelper _
         {

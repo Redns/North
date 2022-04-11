@@ -4,11 +4,16 @@
 @using Image = AntDesign.Image
 
 @inject IJSRuntime JS
-@using Tewr.Blazor.FileReader
 @inject MessageService _message
 @inject NavigationManager NavigationManager
-@inject IFileReaderService fileReaderService;
 
+<style type="text/css">
+	.upload{
+		width: 550px;
+		margin:auto;
+        left:10px;
+	}
+</style>
 
 <div class="upload">
     <Upload Multiple
@@ -22,11 +27,3 @@
     </Upload>
     <Progress Percent=_progress_percent StrokeWidth=progress_stroke_width ShowInfo=progress_showInfo/>
 </div>
-
-<style type="text/css">
-		.upload{
-			width: 550px;
-			margin:auto;
-            left:10px;
-		}
-</style>

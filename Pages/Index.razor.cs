@@ -6,18 +6,17 @@ namespace ImageBed.Pages
 {
     partial class Index
     {
-        List<UploadFileItem> fileList = new List<UploadFileItem>();
-        Dictionary<string, object> attrs = new Dictionary<string, object>
-    {
-        {"accept", "image/*"},
-        {"Action", "/api/image" },
-        {"Name", "files" },
-        {"Multiple", true }
-    };
+        List<UploadFileItem> fileList = new();
+        Dictionary<string, object> attrs = new()
+        {
+            {"accept", "image/*"},
+            {"Action", "/api/image" },
+            {"Name", "files" },
+            {"Multiple", true }
+        };
 
         int image_total = 0;                        // 待上传的图片总数
         int image_uploaded = 0;                     // 上传完成的图片数
-
         int _progress_percent = 0;                  // 上传完成的图片的百分比
         int progress_percent
         {
@@ -44,6 +43,9 @@ namespace ImageBed.Pages
         bool progress_showInfo = false;             // 是否显示进度条信息
 
 
+        /// <summary>
+        /// 更新进度条
+        /// </summary>
         void UpdateProgress()
         {
             progress_percent = (int)(image_uploaded * 100.0 / image_total);
@@ -51,6 +53,10 @@ namespace ImageBed.Pages
 
 
         bool uploadRunning = false;
+        /// <summary>
+        /// 图片上传前调用
+        /// </summary>
+        /// <param name="imageInfo">待上传的图片信息</param>
         void CheckImages(UploadInfo imageInfo)
         {
             if (!uploadRunning)
@@ -63,12 +69,20 @@ namespace ImageBed.Pages
         }
 
 
+        /// <summary>
+        /// 任何一张图片上传完成后均会调用
+        /// </summary>
+        /// <param name="fileinfo">所有图片的上传信息</param>
         void UploadImage(UploadInfo fileinfo)
         {
             image_uploaded = fileList.Where(file => file.State == UploadState.Success && !string.IsNullOrWhiteSpace(file.Response)).Count();
             UpdateProgress();
         }
 
+
+        /// <summary>
+        /// 上传完成后调用
+        /// </summary>
         async void UploadFinished()
         {
             progress_percent = 0;
@@ -91,6 +105,7 @@ namespace ImageBed.Pages
                 }
             });
             fileList.Clear();
+
             await JS.InvokeVoidAsync("CopyToClip", urls);
             _ = _message.Success("图片上传完成！");
         }
