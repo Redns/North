@@ -106,5 +106,7 @@ namespace ImageBed.Data.Entity
     public class Record
     {
         public bool RefreshRealTime { get; set; }
+        public int RefreshStartTime { get; set; }
+        public int RefreshInterval { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace ImageBed.Data.Entity
         }
 
         // 反馈信息
-        private string _Message;
+        private string _Message = string.Empty;
         public string Message
         {
             get { return _Message; }

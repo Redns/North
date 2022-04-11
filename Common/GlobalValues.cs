@@ -39,9 +39,10 @@ namespace ImageBed.Common
         /// <param name="e"></param>
         private static async void RefreshSysRecord(Object? source, ElapsedEventArgs? e)
         {
-            // 检测时间是否为 00:00 ~ 06:00
+            // 检测时间是否为设置的时间段
             DateTime today = DateTime.Now;
-            if((today.Hour >= 0) && (today.Hour <= 6))
+            int refreshStartTime = appSetting.Record.RefreshStartTime;
+            if((today.Hour >= refreshStartTime) && (today.Hour <= refreshStartTime + 6))
             {
                 Logger.Info("Refreshing sys record");
                 using (var context = new OurDbContext())
