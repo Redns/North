@@ -3,3 +3,4 @@
 .config
 .vs
 version.xlsx
+Properties/PublishProfiles/*

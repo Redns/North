@@ -50,11 +50,14 @@
 
 ## VersionTable
 
+> 在这里可快速选择适合自己的版本，表格中的格式为 "最小版本/ 推荐版本"
 
+|     功 能      |                         ImageBed版本                         |                 picgo-plugin-imagebed版本                 |
+| :------------: | :----------------------------------------------------------: | :-------------------------------------------------------: |
+| 图片上传与下载 | [v1.0.0+](https://github.com/Redns/ImageBed/releases/tag/v1.0.0) / [v1.1.4+](https://github.com/Redns/ImageBed/releases/tag/v1.1.4) | [v1.1.1+](https://github.com/Redns/picgo-plugin-imagebed) |
+|    图库管理    | [v2.0.0+](https://github.com/Redns/ImageBed/releases/tag/v1.1.4) / [v2.1.4+](https://github.com/Redns/ImageBed/releases/tag/v2.1.4) |                                                           |
 
-
-
-
+<br>
 
 ## Usage
 

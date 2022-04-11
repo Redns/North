@@ -5,6 +5,6 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>D:\Project\ImageBed\bin\Release\net6.0\publish\linux-x64</_PublishTargetUrl>
-    <History>True|2022-04-09T17:13:09.8148138Z;True|2022-04-10T00:29:29.7577177+08:00;True|2022-04-10T00:27:37.0505831+08:00;</History>
+    <History>True|2022-04-11T14:46:54.4874942Z;True|2022-04-10T01:13:09.8148138+08:00;True|2022-04-10T00:29:29.7577177+08:00;True|2022-04-10T00:27:37.0505831+08:00;</History>
   </PropertyGroup>
 </Project>
