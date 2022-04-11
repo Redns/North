@@ -19,6 +19,32 @@
               OnFinish="OnFinish" 
               OnFinishFailed="OnFinishFailed"
               Style="margin-top:80px;">
+              <FormItem Label="图片尺寸限制">
+                    <Tooltip Title="@("设置为 0 则不限制图片尺寸")">
+                        <Space>
+                            <SpaceItem>
+                                <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value="ImageMaxSize" />
+                            </SpaceItem>
+                            <SpaceItem>
+                                MB
+                            </SpaceItem>
+                        </Space>
+                        
+                    </Tooltip>
+                </FormItem>
+                <FormItem Label="单次上传数量">
+                    <Tooltip Title="@("设置为 0 则不限制单次上传图片数")">
+                        <Space>
+                            <SpaceItem>
+                                <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value="ImageMaxNum" />
+                            </SpaceItem>
+                            <SpaceItem>
+                                张
+                            </SpaceItem>
+                        </Space>
+                        
+                    </Tooltip>
+                </FormItem>
                 <FormItem Label="重命名方式">
                     <Tooltip Title="@("若不开启重命名, 图片名冲突时将覆盖原图片")">
                         <Select @bind-Value="@renameFormat"

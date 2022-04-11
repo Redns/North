@@ -93,6 +93,8 @@ namespace ImageBed.Data.Entity
     {
         public string? Path { get; set; }
         public RenameFormat RenameFormat { get; set; }
+        public int MaxSize { get; set; }
+        public int MaxNum { get; set; }
     }
 
 

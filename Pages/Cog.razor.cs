@@ -19,6 +19,12 @@ namespace ImageBed.Pages
         // 系统资源统计开始时间
         private double RefreshStartTime = GlobalValues.appSetting?.Record?.RefreshStartTime ?? 0;
 
+        // 图片尺寸限制
+        private double ImageMaxSize = GlobalValues.appSetting?.Data.Resources.Images.MaxSize ?? 0;
+
+        // 单次上传数量限制
+        private double ImageMaxNum = GlobalValues.appSetting?.Data.Resources.Images.MaxNum ?? 0;
+
 
         /// <summary>
         /// 修改设置文件
@@ -28,7 +34,9 @@ namespace ImageBed.Pages
         {
             if ((renameFormat != GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat) ||
                (RefreshDashboardRealTime != GlobalValues.appSetting?.Record?.RefreshRealTime) ||
-               (RefreshStartTime != GlobalValues.appSetting?.Record?.RefreshStartTime))
+               (RefreshStartTime != GlobalValues.appSetting?.Record?.RefreshStartTime) ||
+               (ImageMaxSize != GlobalValues.appSetting?.Data?.Resources?.Images?.MaxSize) ||
+               (ImageMaxNum != GlobalValues.appSetting?.Data?.Resources?.Images?.MaxNum))
             {
                 GlobalValues.appSetting.Data.Resources.Images.RenameFormat = renameFormat;
                 GlobalValues.appSetting.Record.RefreshRealTime = RefreshDashboardRealTime;
@@ -36,6 +44,14 @@ namespace ImageBed.Pages
                 if(RefreshStartTime < 0) { RefreshStartTime = 0; }
                 else if(RefreshStartTime > 18) { RefreshStartTime = 18; }
                 GlobalValues.appSetting.Record.RefreshStartTime = (int)RefreshStartTime;
+
+                if(ImageMaxSize < 0) { ImageMaxSize = 0; }  
+                else if(ImageMaxSize > 99999) { ImageMaxSize = 99999; }
+                GlobalValues.appSetting.Data.Resources.Images.MaxSize = (int)ImageMaxSize;
+
+                if(ImageMaxNum < 0) { ImageMaxNum = 0; }
+                else if(ImageMaxNum > 99999) { ImageMaxNum = 99999; }
+                GlobalValues.appSetting.Data.Resources.Images.MaxNum = (int)ImageMaxNum;
 
                 AppSetting.Save(GlobalValues.appSetting, "appsettings.json");
             }

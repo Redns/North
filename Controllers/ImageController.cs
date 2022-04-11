@@ -36,7 +36,16 @@ namespace ImageBed.Controllers
                     }
 
                     var sqlImageData = new SQLImageData(context);
-                    foreach (IFormFile fileReader in (FormFileCollection)formCollection.Files)
+                    var uploadImages = (FormFileCollection)formCollection.Files;
+                    var imageMaxNumLimit = GlobalValues.appSetting?.Data?.Resources?.Images?.MaxNum ?? 0;
+                    if((imageMaxNumLimit > 0) && (uploadImages.Count > imageMaxNumLimit))
+                    {
+                        int indexStart = imageMaxNumLimit;
+                        int indexCount = uploadImages.Count - imageMaxNumLimit;
+                        uploadImages.RemoveRange(indexStart, indexCount);
+                    }
+
+                    foreach (IFormFile fileReader in uploadImages)
                     {
                         try
                         {
@@ -54,9 +63,17 @@ namespace ImageBed.Controllers
                             }
                             else
                             {
-                                var image = await FileOperator.SaveImage(fileReader.OpenReadStream(), fileReader.FileName, imageDir);
-                                images.Add(image);
-                                imageUrls.Add($"{image.Url}");
+                                int imageMaxSizeLimit = GlobalValues.appSetting.Data.Resources.Images.MaxSize;
+                                if((imageMaxSizeLimit <= 0) || fileReader.Length <= imageMaxSizeLimit*1024*1024)
+                                {
+                                    var image = await FileOperator.SaveImage(fileReader.OpenReadStream(), fileReader.FileName, imageDir);
+                                    images.Add(image);
+                                    imageUrls.Add($"{image.Url}");
+                                }
+                                else
+                                {
+                                    imageUrls.Add(string.Empty);
+                                }
                             }
                         }
                         catch (Exception)
