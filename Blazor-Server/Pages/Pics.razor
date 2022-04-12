@@ -26,7 +26,7 @@
             <Button Type="@ButtonType.Primary" Ghost>导  入</Button>
         </Upload>
     </SpaceItem>
-    @if ((imagesSelected != null ) && (imagesSelected.Any()))
+    @if ((imagesSelected != null ) && (imagesSelected.Count() > 0))
     {
         <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick=@ExportSelectedImages>导  出</Button></SpaceItem>
         <SpaceItem><Button Danger Ghost OnClick=@RemoveSelectedImages>删 除</Button></SpaceItem>
@@ -36,25 +36,24 @@
 <br/>
 <Table @ref="table"
        TItem="ImageEntity"
-       DataSource="@imagesShow"
+       DataSource="@imagesAll"
        @bind-PageSize="_pageSize"
-       @bind-Total="_total"
        @bind-SelectedRows="@imagesSelected"
 >
         <Selection Key="@(context.Id?.ToString())" />
         <Column @bind-Field="@context.Name" Align="@ColumnAlign.Center" Sortable>
             <a href=@context.Url>@context.Name</a>
         </Column>
-        <Column @bind-Field="@context.Dpi" Sortable Align="@ColumnAlign.Center"/>
-        <Column @bind-Field="@context.Size" Sortable Align="@ColumnAlign.Center"/>
-        <Column @bind-Field="@context.UploadTime" Sortable Align="@ColumnAlign.Center"/>
-        <Column @bind-Field="@context.RequestNum" Sortable Align="@ColumnAlign.Center"/>
-        <Column @bind-Field="@context.Owner" Sortable Align="@ColumnAlign.Center"/>
+        <Column @bind-Field="@context.Dpi" Align="@ColumnAlign.Center"/>
+        <Column @bind-Field="@context.Size" Align="@ColumnAlign.Center" Sortable/>
+        <Column @bind-Field="@context.UploadTime" Align="@ColumnAlign.Center" Sortable/>
+        <Column @bind-Field="@context.RequestNum" Align="@ColumnAlign.Center" Sortable/>
+        <Column @bind-Field="@context.Owner" Align="@ColumnAlign.Center" Sortable/>
         <ActionColumn Align="@ColumnAlign.Center">
             <Space>
                 <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{CopyUrlToClip(NavigationManager.BaseUri + context.Url);}">复 制</Button></SpaceItem>
                 <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{DownloadFile(NavigationManager.BaseUri + context.Url, context.Name);}">下 载</Button></SpaceItem>
-                <SpaceItem><Button Danger OnClick="()=>{RemoveImage(context);}">删 除</Button></SpaceItem>
+                <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick="()=>{RemoveImage(context);}">删 除</Button></SpaceItem>
             </Space>
         </ActionColumn>
 </Table>

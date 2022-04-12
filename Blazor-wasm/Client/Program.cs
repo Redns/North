@@ -1,4 +1,4 @@
-using ImageBed.Client;
+using ImageBed_wasm.Client;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 

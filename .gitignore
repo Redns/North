@@ -16,3 +16,4 @@ Blazor-wasm/Server/bin/*
 Blazor-wasm/Server/obj/*
 Blazor-wasm/Shared/bin/*
 Blazor-wasm/Shared/obj/*
+# Blazor WASM End

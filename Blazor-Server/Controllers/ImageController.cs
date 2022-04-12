@@ -166,7 +166,7 @@ namespace ImageBed.Controllers
                 var image = await sqlImageData.GetAsync(ImageFilter.NAME, imageName);
                 if(image != null)
                 {
-                    _ = sqlImageData.RemovaAsync(image);
+                    _ = sqlImageData.RemoveAsync(image);
                 }
             }
             return new ApiResult<object>(200, "Delete image success", null);

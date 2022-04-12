@@ -142,6 +142,20 @@ namespace ImageBed.Data.Access
 
 
         /// <summary>
+        /// 获取数据库中的所有图片信息
+        /// </summary>
+        /// <returns>获取到的全部信息</returns>
+        public async Task<ImageEntity[]> GetArrayAsync()
+        {
+            if ((_context != null) && (_context.Images != null))
+            {
+                return await _context.Images.ToArrayAsync();
+            }
+            return new ImageEntity[1];
+        }
+
+
+        /// <summary>
         /// 获取图片信息
         /// </summary>
         /// <param name="filter">过滤器类型</param>
@@ -204,7 +218,7 @@ namespace ImageBed.Data.Access
         /// </summary>
         /// <param name="image">图片实体</param>
         /// <returns>移除成功返回true， 否则返回false</returns>
-        public async Task<bool> RemovaAsync(ImageEntity image)
+        public async Task<bool> RemoveAsync(ImageEntity image)
         {
             if((_context != null) && (_context.Images != null))
             {
@@ -222,6 +236,37 @@ namespace ImageBed.Data.Access
                     return true;
                 }
                 catch(Exception ex)
+                {
+                    GlobalValues.Logger.Error($"Remove image failed, {ex.Message}");
+                }
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// 移除图片信息
+        /// </summary>
+        /// <param name="image">图片实体</param>
+        /// <returns>移除成功返回true， 否则返回false</returns>
+        public bool Remove(ImageEntity image)
+        {
+            if ((_context != null) && (_context.Images != null))
+            {
+                try
+                {
+                    // 删除磁盘上的文件
+                    string? imageFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}";
+                    if (File.Exists(imageFullPath))
+                    {
+                        File.Delete(imageFullPath);
+                    }
+
+                    _context.Images.Remove(image);
+                    _context.SaveChanges();
+                    return true;
+                }
+                catch (Exception ex)
                 {
                     GlobalValues.Logger.Error($"Remove image failed, {ex.Message}");
                 }

@@ -1,7 +1,7 @@
-using ImageBed.Shared;
+using ImageBed_wasm.Shared;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ImageBed.Server.Controllers
+namespace ImageBed_wasm.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]

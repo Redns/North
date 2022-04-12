@@ -1,4 +1,4 @@
-namespace ImageBed.Shared
+namespace ImageBed_wasm.Shared
 {
     public class WeatherForecast
     {

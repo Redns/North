@@ -18,14 +18,26 @@ namespace ImageBed.Pages
         /// <summary>
         /// 根据搜索框内容检索图片
         /// </summary>
-        public void OnSearch()
+        public async Task OnSearch()
         {
             searchRunning = true;
 
-            imagesShow.Clear();
-            imagesShow.AddRange(imagesAll.Where(image => (searchText == null) ||
-                                               (image.Name ?? "").Contains(searchText) ||
-                                               (image.Owner ?? "").Contains(searchText)));
+            if(searchText != null)
+            {
+                imagesAll = imagesAll.Where(i => i.Name.Contains(searchText) ||
+                                             i.Dpi.Contains(searchText) ||
+                                             i.Size.Contains(searchText) ||
+                                             i.UploadTime.Contains(searchText) ||
+                                             i.Owner.Contains(searchText)).ToArray();
+            }
+            else
+            {
+                using(var context = new OurDbContext())
+                {
+                    imagesAll = await new SQLImageData(context).GetArrayAsync();
+                }
+            }
+            
             searchRunning = false;
         }
 
@@ -69,9 +81,7 @@ namespace ImageBed.Pages
         {
             using (var context = new OurDbContext())
             {
-                var sqlImageData = new SQLImageData(context);
-                imagesAll = await sqlImageData.GetAsync();
-                OnSearch();
+                imagesAll = await new SQLImageData(context).GetArrayAsync();
 
                 _ = _notice.Open(new NotificationConfig()
                 {
@@ -97,8 +107,7 @@ namespace ImageBed.Pages
                     await sqlImageData.RemoveRangeAsync(imagesSelectedList);
                     foreach (var image in imagesSelected)
                     {
-                        imagesAll.Remove(image);
-                        imagesShow.Remove(image);
+                        imagesAll = imagesAll.Remove(image);
                     }
                 }
                 await _message.Success("图片已删除!");
@@ -139,11 +148,9 @@ namespace ImageBed.Pages
 
 
         ITable? table;
-        int _total;
         int _pageSize = 8;
 
-        List<ImageEntity> imagesShow = new();
-        List<ImageEntity> imagesAll = new();
+        ImageEntity[] imagesAll;
         IEnumerable<ImageEntity>? imagesSelected;
 
 
@@ -155,8 +162,7 @@ namespace ImageBed.Pages
         {
             using (var context = new OurDbContext())
             {
-                imagesAll = await new SQLImageData(context).GetAsync();
-                OnSearch();
+                imagesAll = await new SQLImageData(context).GetArrayAsync();
             }
         }
 
@@ -201,15 +207,18 @@ namespace ImageBed.Pages
         /// 移除单个图片
         /// </summary>
         /// <param name="image">待移除的图片实体</param>
-        async void RemoveImage(ImageEntity image)
+        public async Task RemoveImage(ImageEntity image)
         {
-            using (var context = new OurDbContext())
+            GlobalValues.Logger.Info($"Removing image {image.Name}...");
+            
+            using(var context = new OurDbContext())
             {
-                await new SQLImageData(context).RemovaAsync(image);
-                imagesAll.Remove(image);
-                imagesShow.Remove(image);
-                await _message.Success("图片已删除！");
+                _ = new SQLImageData(context).RemoveAsync(image);
             }
+            imagesAll = imagesAll.Remove(image);
+            await _message.Success("图片已删除!");
+
+            GlobalValues.Logger.Info($"Remove image {image.Name} done");
         }
     }
 }

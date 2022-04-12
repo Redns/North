@@ -4,6 +4,8 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>ImageBed-wasm.Server</RootNamespace>
+    <AssemblyName>$(AssemblyName.Replace(' ', '_'))</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\ImageBed.Client.csproj" />
-    <ProjectReference Include="..\Shared\ImageBed.Shared.csproj" />
+    <ProjectReference Include="..\Client\ImageBed-wasm.Client.csproj" />
+    <ProjectReference Include="..\Shared\ImageBed-wasm.Shared.csproj" />
   </ItemGroup>
 
 

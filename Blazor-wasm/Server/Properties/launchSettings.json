@@ -3,17 +3,17 @@
       "windowsAuthentication": false,
       "anonymousAuthentication": true,
       "iisExpress": {
-        "applicationUrl": "http://localhost:63695",
+        "applicationUrl": "http://localhost:19447",
         "sslPort": 0
       }
     },
     "profiles": {
-      "ImageBed.Server": {
+      "ImageBed-wasm.Server": {
         "commandName": "Project",
-        "dotnetRunMessages": true,
+        "dotnetRunMessages": false,
         "launchBrowser": true,
         "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
-        "applicationUrl": "http://localhost:5291",
+        "applicationUrl": "http://localhost:5085",
         "environmentVariables": {
           "ASPNETCORE_ENVIRONMENT": "Development"
         }
