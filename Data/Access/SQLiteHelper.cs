@@ -1,6 +1,5 @@
 ﻿using ImageBed.Common;
 using ImageBed.Data.Entity;
-using System.Data.SQLite;
 
 namespace ImageBed.Data.Access
 {
