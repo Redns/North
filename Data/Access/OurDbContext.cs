@@ -54,7 +54,7 @@ namespace ImageBed.Data.Access
                 try
                 {
                     await _context.Images.AddAsync(image);
-                    _ = _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                     return true;
                 }
                 catch(Exception ex) 
@@ -80,7 +80,7 @@ namespace ImageBed.Data.Access
                 try
                 {
                     await _context.Images.AddRangeAsync(images);
-                    _ = _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                 }
                 catch(Exception ex) 
                 {
@@ -179,7 +179,7 @@ namespace ImageBed.Data.Access
                     if(image != null)
                     {
                         _context.Images.Remove(image);
-                        _ = _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync();
                     }
 
                     // 删除磁盘上的文件
@@ -341,7 +341,7 @@ namespace ImageBed.Data.Access
                     if(record != null)
                     {
                         _context.Records.Update(newRecord);
-                        _ = _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync();
                         return true;
                     }
                 }
@@ -366,7 +366,7 @@ namespace ImageBed.Data.Access
                 try
                 {
                     await _context.Records.AddAsync(newRecord);
-                    _ = _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                     return true;
                 }
                 catch (Exception ex) 

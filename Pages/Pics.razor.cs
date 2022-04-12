@@ -94,7 +94,7 @@ namespace ImageBed.Pages
                 var imagesSelectedList = imagesSelected?.ToList();
                 if((imagesSelectedList != null) && (imagesSelectedList.Count > 0))
                 {
-                    _ = sqlImageData.RemoveRangeAsync(imagesSelectedList);
+                    await sqlImageData.RemoveRangeAsync(imagesSelectedList);
                     foreach (var image in imagesSelected)
                     {
                         imagesAll.Remove(image);
@@ -205,10 +205,9 @@ namespace ImageBed.Pages
         {
             using (var context = new OurDbContext())
             {
-                _ = new SQLImageData(context).RemovaAsync(image);
+                await new SQLImageData(context).RemovaAsync(image);
                 imagesAll.Remove(image);
                 imagesShow.Remove(image);
-
                 await _message.Success("图片已删除！");
             }
         }

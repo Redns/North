@@ -1,4 +1,5 @@
 ﻿using AntDesign;
+using ImageBed.Common;
 using ImageBed.Data.Entity;
 using Microsoft.JSInterop;
 
@@ -107,7 +108,7 @@ namespace ImageBed.Pages
             fileList.Clear();
 
             await JS.InvokeVoidAsync("CopyToClip", urls);
-            _ = _message.Success("图片上传完成！");
+            _ = _message.Success("图片上传完成!");
         }
     }
 }

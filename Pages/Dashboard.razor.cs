@@ -52,7 +52,7 @@ namespace ImageBed.Pages
         /// </summary>
         /// <param name="source"></param>
         /// <param name="e"></param>
-        async void RefreshDashboard(Object? source, ElapsedEventArgs? e)
+        async void RefreshDashboard(object? source, ElapsedEventArgs? e)
         {
             using (var context = new OurDbContext())
             {
