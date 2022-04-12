@@ -1,6 +1,18 @@
-/bin/*
-/obj/*
-.config
+# Blazor Server Start
 .vs
-version.xlsx
-Properties/PublishProfiles/*
+Blazor-Server/bin/*
+Blazor-Server/obj/*
+Blazor-Server/.config
+Blazor-Server/.vs
+Blazor-Server/version.xlsx
+Blazor-Server/Properties/PublishProfiles/*
+# Blazor Server End
+
+
+# Blazor WASM Start
+Blazor-wasm/Client/bin/*
+Blazor-wasm/Client/obj/*
+Blazor-wasm/Server/bin/*
+Blazor-wasm/Server/obj/*
+Blazor-wasm/Shared/bin/*
+Blazor-wasm/Shared/obj/*
