@@ -163,9 +163,10 @@ namespace ImageBed.Common
                     // 解压压缩包
                     // 录入解压出的所有图片信息, 并将其移动至 importDir 文件夹下
                     DeCompressMulti(zipFullPath, tempDir);
-                    foreach (string tempFileFullpath in Directory.GetFiles(tempDir))
+                    foreach (FileInfo imageInfo in new DirectoryInfo(tempDir).GetFiles())
                     {
-                        var tempFileName = tempFileFullpath.Split('\\').Last();
+                        var tempFileName = imageInfo.Name;
+                        var tempFileFullpath = imageInfo.FullName;
                         if(GetFileType(GetFileExtension(tempFileName) ?? "") == FileType.IMAGE)
                         {
                             using (var imageReader = new FileStream(tempFileFullpath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
