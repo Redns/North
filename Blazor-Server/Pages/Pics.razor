@@ -19,10 +19,9 @@
     <SpaceItem>
         <Upload Multiple
             @attributes=attrs
-            FileList=fileList
             ShowUploadList=false
-            OnChange="StartImport"
-            OnCompleted="UploadFinished">
+            BeforeAllUploadAsync=@StartImport
+            OnCompleted=@ImportFinished>
             <Button Type="@ButtonType.Primary" Ghost>导  入</Button>
         </Upload>
     </SpaceItem>

@@ -45,7 +45,6 @@ namespace ImageBed.Pages
         /// <summary>
         /// 表格部分
         /// </summary>
-        List<UploadFileItem> fileList = new();
         readonly Dictionary<string, object> attrs = new()
         {
             {"accept", "image/*,.zip"},
@@ -54,30 +53,26 @@ namespace ImageBed.Pages
             {"Multiple", true }
         };
 
-        bool uploadRunning = false;
 
         /// <summary>
         /// 图片导入前调用
         /// </summary>
         /// <param name="imageInfo">待导入的图片信息</param>
-        void StartImport(UploadInfo imageInfo)
+        async Task<bool> StartImport(List<UploadFileItem> images)
         {
-            if (!uploadRunning)
+            await _notice.Open(new NotificationConfig()
             {
-                _notice.Open(new NotificationConfig()
-                {
-                    Message = "图片开始导入",
-                    Description = "图片后台导入中，导入完成前请勿再次导入！"
-                });
-                uploadRunning = true;
-            }
+                Message = "图片开始导入",
+                Description = "图片后台导入中，导入完成前请勿再次导入！"
+            });
+            return true;
         }
 
 
         /// <summary>
         /// 图片导入完成后调用
         /// </summary>
-        async Task UploadFinished()
+        async Task ImportFinished()
         {
             using (var context = new OurDbContext())
             {

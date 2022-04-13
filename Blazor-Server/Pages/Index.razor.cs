@@ -65,30 +65,32 @@ namespace ImageBed.Pages
             int imageUploadSizeLimit = GlobalValues.appSetting.Data.Resources.Images.MaxSize;
             int imageUploadNumLimit = GlobalValues.appSetting.Data.Resources.Images.MaxNum;
 
+            imageSuccessNum = 0;
             imageTotalNum = images.Count;
 
-            // 移除尺寸超出限制的图片
             if (imageUploadSizeLimit > 0)
             {
+                // 移除尺寸超出限制的图片
                 images.RemoveAll(i => i.Size > imageUploadSizeLimit * 1024 * 1024);
             }
 
-            // 移除多余图片
             if ((images.Count > imageUploadNumLimit) && (imageUploadNumLimit > 0))
             {
+                // 移除多余图片
                 int indexStart = imageUploadNumLimit;
                 int redunCount = images.Count - indexStart;
                 images.RemoveRange(indexStart, redunCount);
             }
 
-            // 初始化相关参数，用于进度条更新
             if(images.Count > 0)
             {
+                // 初始化相关参数，用于进度条更新
+                imageTotalSize = 0;
+                imageUploadedSize = 0;
                 foreach (var image in images)
                 {
                     imageTotalSize += image.Size;
                 }
-                imageUploadedSize = 0;
 
                 UpdateProgress();
 
@@ -109,12 +111,15 @@ namespace ImageBed.Pages
         void ImageStateChanged(UploadInfo uploadInfo)
         {
             var image = uploadInfo.File;
-            if(image.State == UploadState.Success)
+            if(image.State != UploadState.Uploading)
             {
-                image.Url = image.GetResponse<ApiResult<List<string>>>()?.Res?.FirstOrDefault();
-            }
-            imageUploadedSize += image.Size;
-            UpdateProgress();
+                if(image.State == UploadState.Success)
+                {
+                    image.Url = image.GetResponse<ApiResult<List<string>>>()?.Res?.FirstOrDefault();
+                }
+                imageUploadedSize += image.Size;
+                UpdateProgress();
+            } 
         }
 
 
@@ -127,8 +132,8 @@ namespace ImageBed.Pages
 
             // 获取图片链接
             string urls = string.Empty;
+
             var images = uploadInfo.FileList;
-            
             foreach(var image in images)
             {
                 if (!string.IsNullOrEmpty(image.Url))
@@ -138,6 +143,8 @@ namespace ImageBed.Pages
                 }
             }
             urls = urls.Remove(urls.Length - 1);
+
+            images.Clear();
 
             await JS.InvokeVoidAsync("CopyToClip", urls);
             _ = _message.Success($"图片上传完成, {imageSuccessNum}个成功, {imageTotalNum - imageSuccessNum}个失败!"); ;
