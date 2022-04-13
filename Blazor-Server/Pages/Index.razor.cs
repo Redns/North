@@ -70,13 +70,11 @@ namespace ImageBed.Pages
 
             if (imageUploadSizeLimit > 0)
             {
-                // 移除尺寸超出限制的图片
                 images.RemoveAll(i => i.Size > imageUploadSizeLimit * 1024 * 1024);
             }
 
             if ((images.Count > imageUploadNumLimit) && (imageUploadNumLimit > 0))
             {
-                // 移除多余图片
                 int indexStart = imageUploadNumLimit;
                 int redunCount = images.Count - indexStart;
                 images.RemoveRange(indexStart, redunCount);
@@ -84,7 +82,6 @@ namespace ImageBed.Pages
 
             if(images.Count > 0)
             {
-                // 初始化相关参数，用于进度条更新
                 imageTotalSize = 0;
                 imageUploadedSize = 0;
                 foreach (var image in images)
@@ -130,7 +127,6 @@ namespace ImageBed.Pages
         {
             progress_percent = 0;
 
-            // 获取图片链接
             string urls = string.Empty;
 
             var images = uploadInfo.FileList;

@@ -88,13 +88,15 @@
 
 3. 双击 `ImageBed.exe` 运行服务
 
-   ![image-20220327212743452](http://imagebed.krins.cloud/api/image/3453F13C3C4085B5C959950F68389446.png)
+   ![image-20220413164439910](http://imagebed.krins.cloud/api/image/4462V24Z.png)
+
+   ![image-20220413164519948](http://imagebed.krins.cloud/api/image/XVT8TFX4.png)
 
 <br>
 
 4. 打开浏览器，输入 `localhost:12121`
 
-   ![image-20220410201954327](http://imagebed.krins.cloud/api/image/E6FE45489B288F1956E5EF34BD6F4089.png)
+   ![image-20220413164645810](http://imagebed.krins.cloud/api/image/628BDHR4.png)
 
 
 
@@ -102,7 +104,9 @@
 
 5. 点击绿色区域即可上传图片，上传完成后会有弹窗提示并将链接复制到剪贴板
 
-   ![image-20220410202028674](http://imagebed.krins.cloud/api/image/CC9CEA389A43DB3B1A8EF62064D8B815.png)
+   ![image-20220413164706563](http://imagebed.krins.cloud/api/image/4DP20D6L.png)
+
+   ![image-20220413164740988](http://imagebed.krins.cloud/api/image/6D6FH2T0.png)
 
 <br>
 
@@ -116,7 +120,7 @@
 
 1. 将资源包解压后上传至云服务器
 
-   ![image-20220327213013364](http://imagebed.krins.cloud/api/image/29519474D012465D3682702CD05B1146.png)
+   ![image-20220413164853193](http://imagebed.krins.cloud/api/image/0Z4P4424.png)
 
     <br>
 
