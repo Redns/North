@@ -44,6 +44,10 @@ namespace ImageBed.Pages
         int progress_stroke_width = 0;                  // 进度条宽度
         bool progress_showInfo = false;                 // 是否显示进度条信息
 
+        // 图片最大上传尺寸(MB)
+        // 图片单次最大上传数量(张)
+        int imageUploadSizeLimit = GlobalValues.appSetting.Data.Resources.Images.MaxSize;
+        int imageUploadNumLimit = GlobalValues.appSetting.Data.Resources.Images.MaxNum;
 
         /// <summary>
         /// 更新进度条
@@ -60,11 +64,6 @@ namespace ImageBed.Pages
         /// <param name="images">待上传的图片列表</param>
         bool CheckImages(List<UploadFileItem> images)
         {
-            // 图片最大上传尺寸(MB)
-            // 图片单次最大上传数量(张)
-            int imageUploadSizeLimit = GlobalValues.appSetting.Data.Resources.Images.MaxSize;
-            int imageUploadNumLimit = GlobalValues.appSetting.Data.Resources.Images.MaxNum;
-
             imageSuccessNum = 0;
             imageTotalNum = images.Count;
 
@@ -149,7 +148,8 @@ namespace ImageBed.Pages
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-             await JS.InvokeVoidAsync("BindPasteEvent");
+
+             await JS.InvokeVoidAsync("BindPasteEvent", imageUploadSizeLimit, imageUploadNumLimit);
         }
     }
 }

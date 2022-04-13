@@ -30,19 +30,25 @@ async function downloadFileFromStream(filename, url) {
 /**
  * 上传剪贴板图片
  * */
-async function BindPasteEvent() {
+async function BindPasteEvent(imageUploadSizeLimit, imageUploadNumLimit) {
     document.addEventListener('paste', function (event) {
         var items = event.clipboardData && event.clipboardData.items;
-        var imageUrls = "";
 
+        var imageUrls = "";
+        var uploadImageNum = 0;
         var formdata = new FormData();
 
         // 遍历剪贴板，获取图片
         if (items && items.length) {
             for (var i = 0; i < items.length; i++) {
-                if (items[i].type.indexOf('image') !== -1) {
-                    var image = items[i].getAsFile();
-                    formdata.append("images", image, image.name);
+                if ((imageUploadNumLimit <= 0) || (uploadImageNum < imageUploadNumLimit)) {
+                    if (items[i].type.indexOf('image') !== -1) {
+                        var image = items[i].getAsFile();
+                        if ((imageUploadSizeLimit <= 0) || (image.size <= imageUploadSizeLimit * 1024 * 1024)) {
+                            formdata.append("images", image, image.name);
+                            uploadImageNum++;
+                        }
+                    }
                 }
             }
         }
