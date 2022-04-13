@@ -53,7 +53,7 @@
             <Space>
                 <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{CopyUrlToClip(NavigationManager.BaseUri + context.Url);}">复 制</Button></SpaceItem>
                 <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{DownloadFile(NavigationManager.BaseUri + context.Url, context.Name);}">下 载</Button></SpaceItem>
-                <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick="()=>{RemoveImage(context);}">删 除</Button></SpaceItem>
+                <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick="()=>{ RemoveImage(context); }">删 除</Button></SpaceItem>
             </Space>
         </ActionColumn>
 </Table>

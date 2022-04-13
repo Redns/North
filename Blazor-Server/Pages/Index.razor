@@ -18,11 +18,10 @@
 <div class="upload">
     <Upload Multiple
             @attributes=attrs
-            FileList=fileList
             ShowUploadList=false
-            OnChange="CheckImages"
-            OnSingleCompleted="UploadImage"
-            OnCompleted="UploadFinished">
+            BeforeAllUpload=@CheckImages
+            OnChange=@ImageStateChanged
+            OnCompleted=@UploadFinished>
         <Image Id="upload" Width="100%" Src="images/upload.png" Preview=false Style="position:center;margin-top:130px;"/>
     </Upload>
     <Progress Percent=_progress_percent StrokeWidth=progress_stroke_width ShowInfo=progress_showInfo/>

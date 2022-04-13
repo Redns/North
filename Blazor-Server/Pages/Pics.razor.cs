@@ -207,7 +207,7 @@ namespace ImageBed.Pages
         /// 移除单个图片
         /// </summary>
         /// <param name="image">待移除的图片实体</param>
-        public async Task RemoveImage(ImageEntity image)
+        public async void RemoveImage(ImageEntity image)
         {
             GlobalValues.Logger.Info($"Removing image {image.Name}...");
             

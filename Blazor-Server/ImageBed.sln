@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F8D240FD-0892-4550-B40E-91B55F63258E}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		..\..\..\Download\BlazorFileUpload-master\BlazorFileUpload.sln = ..\..\..\Download\BlazorFileUpload-master\BlazorFileUpload.sln
 	EndProjectSection
 EndProject
 Global

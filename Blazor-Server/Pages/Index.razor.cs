@@ -7,7 +7,6 @@ namespace ImageBed.Pages
 {
     partial class Index
     {
-        List<UploadFileItem> fileList = new();
         Dictionary<string, object> attrs = new()
         {
             {"accept", "image/*"},
@@ -16,9 +15,11 @@ namespace ImageBed.Pages
             {"Multiple", true }
         };
 
-        int image_total = 0;                        // 待上传的图片总数
-        int image_uploaded = 0;                     // 上传完成的图片数
-        int _progress_percent = 0;                  // 上传完成的图片的百分比
+        int imageTotalNum = 0;                          // 用户选择的总图片数量
+        int imageSuccessNum = 0;                        // 上传成功的图片数量(获取到链接)
+        long imageTotalSize = 0;                        // 待上传的图片总尺寸(Byte)
+        long imageUploadedSize = 0;                     // 上传完成的图片尺寸(Byte)
+        int _progress_percent = 0;                      // 上传完成的图片的百分比
         int progress_percent
         {
             get
@@ -40,8 +41,8 @@ namespace ImageBed.Pages
                 _progress_percent = value;
             }
         }
-        int progress_stroke_width = 0;              // 进度条宽度
-        bool progress_showInfo = false;             // 是否显示进度条信息
+        int progress_stroke_width = 0;                  // 进度条宽度
+        bool progress_showInfo = false;                 // 是否显示进度条信息
 
 
         /// <summary>
@@ -49,34 +50,70 @@ namespace ImageBed.Pages
         /// </summary>
         void UpdateProgress()
         {
-            progress_percent = (int)(image_uploaded * 100.0 / image_total);
+            progress_percent = (int)(imageUploadedSize * 100.0 / imageTotalSize);
         }
 
 
-        bool uploadRunning = false;
         /// <summary>
         /// 图片上传前调用
         /// </summary>
-        /// <param name="imageInfo">待上传的图片信息</param>
-        void CheckImages(UploadInfo imageInfo)
+        /// <param name="images">待上传的图片列表</param>
+        bool CheckImages(List<UploadFileItem> images)
         {
-            if (!uploadRunning)
+            // 图片最大上传尺寸(MB)
+            // 图片单次最大上传数量(张)
+            int imageUploadSizeLimit = GlobalValues.appSetting.Data.Resources.Images.MaxSize;
+            int imageUploadNumLimit = GlobalValues.appSetting.Data.Resources.Images.MaxNum;
+
+            imageTotalNum = images.Count;
+
+            // 移除尺寸超出限制的图片
+            if (imageUploadSizeLimit > 0)
             {
-                image_total = fileList.Count;
-                image_uploaded = 0;
+                images.RemoveAll(i => i.Size > imageUploadSizeLimit * 1024 * 1024);
+            }
+
+            // 移除多余图片
+            if ((images.Count > imageUploadNumLimit) && (imageUploadNumLimit > 0))
+            {
+                int indexStart = imageUploadNumLimit;
+                int redunCount = images.Count - indexStart;
+                images.RemoveRange(indexStart, redunCount);
+            }
+
+            // 初始化相关参数，用于进度条更新
+            if(images.Count > 0)
+            {
+                foreach (var image in images)
+                {
+                    imageTotalSize += image.Size;
+                }
+                imageUploadedSize = 0;
+
                 UpdateProgress();
-                uploadRunning = true;
+
+                return true;
+            }
+            else
+            {
+                _message.Error("上传失败, 图片尺寸或数量超出限制!");
+                return false;
             }
         }
 
 
         /// <summary>
-        /// 任何一张图片上传完成后均会调用
+        /// 图片状态改变时调用
         /// </summary>
         /// <param name="fileinfo">所有图片的上传信息</param>
-        void UploadImage(UploadInfo fileinfo)
+        void ImageStateChanged(UploadInfo uploadInfo)
         {
-            image_uploaded = fileList.Where(file => file.State == UploadState.Success && !string.IsNullOrWhiteSpace(file.Response)).Count();
+            var image = uploadInfo.File;
+            if(image.State == UploadState.Success)
+            {
+                image.Url = image.GetResponse<ApiResult<List<string>>>()?.Res?.FirstOrDefault();
+            }
+            imageUploadedSize += image.Size;
             UpdateProgress();
         }
 
@@ -84,31 +121,26 @@ namespace ImageBed.Pages
         /// <summary>
         /// 上传完成后调用
         /// </summary>
-        async void UploadFinished()
+        async void UploadFinished(UploadInfo uploadInfo)
         {
             progress_percent = 0;
 
             // 获取图片链接
             string urls = string.Empty;
-            fileList.ForEach(file =>
+            var images = uploadInfo.FileList;
+            
+            foreach(var image in images)
             {
-                string url = file.GetResponse<ApiResult<List<string>>>()?.Res?.First() ?? string.Empty;
-                if (url != string.Empty)
+                if (!string.IsNullOrEmpty(image.Url))
                 {
-                    if (file == fileList.Last())
-                    {
-                        urls += $"{NavigationManager.BaseUri}{url}";
-                    }
-                    else
-                    {
-                        urls += $"{NavigationManager.BaseUri}{url}\n";
-                    }
+                    urls += $"{NavigationManager.BaseUri}{image.Url}\n";
+                    imageSuccessNum++;
                 }
-            });
-            fileList.Clear();
+            }
+            urls = urls.Remove(urls.Length - 1);
 
             await JS.InvokeVoidAsync("CopyToClip", urls);
-            _ = _message.Success("图片上传完成!");
+            _ = _message.Success($"图片上传完成, {imageSuccessNum}个成功, {imageTotalNum - imageSuccessNum}个失败!"); ;
         }
     }
 }
