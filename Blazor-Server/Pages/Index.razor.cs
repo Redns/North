@@ -145,5 +145,11 @@ namespace ImageBed.Pages
             await JS.InvokeVoidAsync("CopyToClip", urls);
             _ = _message.Success($"图片上传完成, {imageSuccessNum}个成功, {imageTotalNum - imageSuccessNum}个失败!"); ;
         }
+
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+             await JS.InvokeVoidAsync("BindPasteEvent");
+        }
     }
 }
