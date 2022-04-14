@@ -224,5 +224,35 @@
                 return dstName;
             }
         }
+
+
+        /// <summary>
+        /// 链接格式
+        /// </summary>
+        public enum UrlFormat
+        {
+            Markdown = 0,
+            Html,
+            Url,
+            UBB
+        }
+
+
+        /// <summary>
+        /// 按指定形式构造图片URL
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static string UrlBuild(UrlFormat format, string url)
+        {
+            return format switch
+            {
+                UrlFormat.Markdown => $"![{url.Split("/").Last()}]({url})",
+                UrlFormat.Html => $"<img src=\"{url}\">",
+                UrlFormat.UBB => $"[img]{url}[/img]",
+                _ => url
+            };
+        }
     }
 }

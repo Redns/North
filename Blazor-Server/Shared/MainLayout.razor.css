@@ -54,6 +54,7 @@ main {
         width: 250px;
         height: 100vh;
         position: sticky;
+        text-align:center;
         top: 0;
     }
 

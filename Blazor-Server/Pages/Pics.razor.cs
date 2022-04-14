@@ -45,13 +45,8 @@ namespace ImageBed.Pages
         /// <summary>
         /// 表格部分
         /// </summary>
-        readonly Dictionary<string, object> attrs = new()
-        {
-            {"accept", "image/*,.zip"},
-            {"Action", "/api/image" },
-            {"Name", "files" },
-            {"Multiple", true }
-        };
+        string imageFormatFilter = "";
+        Dictionary<string, object> attrs = new();
 
 
         /// <summary>
@@ -107,6 +102,7 @@ namespace ImageBed.Pages
                         imagesShow = imagesShow.Remove(image);
                     }
                 }
+                imagesSelected = null;
                 _ = _message.Success("图片已删除!");
             }
         }
@@ -146,11 +142,13 @@ namespace ImageBed.Pages
 
         ITable? table;
         int _pageSize = 8;
+        bool loading = true;
 
         ImageEntity[] imagesAll = Array.Empty<ImageEntity>();
         ImageEntity[] imagesShow = Array.Empty<ImageEntity>();
 
         IEnumerable<ImageEntity>? imagesSelected;
+
 
 
         /// <summary>
@@ -159,11 +157,31 @@ namespace ImageBed.Pages
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
+            loading = true;
+
+            // 加载数据库信息
             using (var context = new OurDbContext())
             {
                 imagesAll = await new SQLImageData(context).GetArrayAsync();
                 imagesShow = (ImageEntity[])imagesAll.Clone();
             }
+
+            // 设置文件选择过滤器
+            string[] imageFormats = GlobalValues.appSetting.Data.Resources.Images.Format.Split(",");
+            for (int i = 0; i < imageFormats.Length; i++)
+            {
+                imageFormatFilter += $".{imageFormats[i]},";
+            }
+            imageFormatFilter += ".zip";
+
+            attrs = new Dictionary<string, object>{
+                { "accept", imageFormatFilter},
+                { "Action", "/api/image" },
+                { "Name", "files" },
+                { "Multiple", true }
+            };
+
+            loading = false;
         }
 
 

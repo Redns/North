@@ -63,10 +63,28 @@
                         </Select>
                     </Tooltip>
                 </FormItem>
+                <FormItem Label="图片链接格式">
+                    <Select @bind-Value="@urlFormat"
+                            DefaultValue="@UrlFormat.Markdown"
+		                    TItemValue="UrlFormat"
+                            TItem="string"
+                            LabelInValue="true"
+		                    Style="width: 200px;">
+		                <SelectOptions>
+			                <SelectOption TItemValue="UrlFormat" TItem="string" Value="@UrlFormat.Markdown" Label="Markdown"/>
+			                <SelectOption TItemValue="UrlFormat" TItem="string" Value="@UrlFormat.Html" Label="Html"/>
+                            <SelectOption TItemValue="UrlFormat" TItem="string" Value="@UrlFormat.Url" Label="Url"/>
+                            <SelectOption TItemValue="UrlFormat" TItem="string" Value="@UrlFormat.UBB" Label="UBB"/>
+		                </SelectOptions>
+                    </Select>
+                </FormItem>
                 <FormItem Label="图片存储路径">
                     <Tooltip Title="@("相对路径, 目前不支持修改")">
                         <Input Style="width:200px;" @bind-Value="@imageDir"  />
                     </Tooltip>
+                </FormItem>
+                <FormItem Label="图片上传格式">
+                    <CheckboxGroup Options="@imageFormatOptions" @bind-Value="@imageFormatChoose" OnChange="SetImageFormat" />
                 </FormItem>
                 <FormItem WrapperColOffset="8" WrapperColSpan="16">
                     <Button Type="@ButtonType.Primary" HtmlType="submit">
@@ -106,6 +124,30 @@
                             </SpaceItem>
                         </Space>
                         
+                    </Tooltip>
+                </FormItem>
+                <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                    <Button Type="@ButtonType.Primary" HtmlType="submit">
+                        保 存
+                    </Button>
+                </FormItem>
+            </Form>
+        </ChildContent>
+    </TabPane>
+    <TabPane Key="3">
+        <TabTemplate>
+            <Space><Icon Type="appstore" Width=25 Height=25/>其 它</Space>
+        </TabTemplate>
+        <ChildContent>
+            <Form Model="@GlobalValues.appSetting" 
+              LabelColSpan="8"
+              WrapperColSpan="16"
+              OnFinish="OnFinish" 
+              OnFinishFailed="OnFinishFailed"
+              Style="margin-top:80px;">
+                <FormItem Label="页 脚">
+                    <Tooltip Title="@("填写备案号等信息")">
+                        <Input Style="width:400px;" @bind-Value="@footer"/>
                     </Tooltip>
                 </FormItem>
                 <FormItem WrapperColOffset="8" WrapperColSpan="16">

@@ -8,6 +8,7 @@ namespace ImageBed.Data.Entity
     {
         public Data? Data { get; set; }
         public Record? Record { get; set; }
+        public string footer { get; set; } = string.Empty;
 
 
         /// <summary>
@@ -19,7 +20,7 @@ namespace ImageBed.Data.Entity
             GlobalValues.Logger.Info("Parsing appsettings.json...");
             try
             {
-                AppSetting? appSetting = JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText("appsettings.json"));
+                AppSetting? appSetting = JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText("appsettings.json", System.Text.Encoding.Default));
                 
                 GlobalValues.Logger.Info("Parse done");
 
@@ -95,6 +96,8 @@ namespace ImageBed.Data.Entity
         public RenameFormat RenameFormat { get; set; }
         public int MaxSize { get; set; }
         public int MaxNum { get; set; }
+        public string Format { get; set; } = "jpg,jpeg,png,gif,bmp,svg";
+        public UrlFormat UrlFormat { get; set; } = UrlFormat.Markdown;
     }
 
 

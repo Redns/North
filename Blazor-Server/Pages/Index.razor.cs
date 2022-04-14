@@ -7,13 +7,28 @@ namespace ImageBed.Pages
 {
     partial class Index
     {
-        Dictionary<string, object> attrs = new()
+        string imageFormatFilter = "";
+        Dictionary<string, object> attrs = new();
+
+        protected override void OnInitialized()
         {
-            {"accept", "image/*"},
-            {"Action", "/api/image" },
-            {"Name", "files" },
-            {"Multiple", true }
-        };
+            string[] imageFormats = GlobalValues.appSetting.Data.Resources.Images.Format.Split(",");
+            for (int i = 0; i < imageFormats.Length; i++)
+            {
+                imageFormatFilter += $".{imageFormats[i]},";
+            }
+
+            attrs = new()
+            {
+                { "accept", imageFormatFilter },
+                { "Action", "/api/image" },
+                { "Name", "files" },
+                { "Multiple", true }
+            };
+
+            base.OnInitialized();
+        }
+
 
         int imageTotalNum = 0;                          // 用户选择的总图片数量
         int imageSuccessNum = 0;                        // 上传成功的图片数量(获取到链接)
@@ -48,6 +63,7 @@ namespace ImageBed.Pages
         // 图片单次最大上传数量(张)
         int imageUploadSizeLimit = GlobalValues.appSetting.Data.Resources.Images.MaxSize;
         int imageUploadNumLimit = GlobalValues.appSetting.Data.Resources.Images.MaxNum;
+
 
         /// <summary>
         /// 更新进度条
@@ -122,6 +138,7 @@ namespace ImageBed.Pages
         /// <summary>
         /// 上传完成后调用
         /// </summary>
+        /// 
         async void UploadFinished(UploadInfo uploadInfo)
         {
             progress_percent = 0;
@@ -129,11 +146,12 @@ namespace ImageBed.Pages
             string urls = string.Empty;
 
             var images = uploadInfo.FileList;
-            foreach(var image in images)
+            var urlFormat = GlobalValues.appSetting.Data.Resources.Images.UrlFormat;
+            foreach (var image in images)
             {
                 if (!string.IsNullOrEmpty(image.Url))
                 {
-                    urls += $"{NavigationManager.BaseUri}{image.Url}\n";
+                    urls += $"{UnitNameGenerator.UrlBuild(urlFormat, $"{NavigationManager.BaseUri}{image.Url}")}\n";
                     imageSuccessNum++;
                 }
             }

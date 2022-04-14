@@ -16,6 +16,14 @@
     <SpaceItem>
         <Search Placeholder="Search what you want..." EnterButton="true" @bind-Value="searchText" Loading=@searchRunning OnSearch=@OnSearch/>
     </SpaceItem>
+    @if(imagesSelected?.Count() != imagesShow.Count())
+        {
+            <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick=@(() => { imagesSelected = imagesShow; })>全 选</Button></SpaceItem>
+        }
+        else
+        {
+            <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick=@(() => { imagesSelected = null; } )>全不选</Button></SpaceItem>
+        }
     <SpaceItem>
         <Upload Multiple
             @attributes=attrs
@@ -33,7 +41,8 @@
 </Space>
 <br/>
 <br/>
-<Table @ref="table"
+<Spin Spinning=@loading>
+    <Table @ref="table"
        TItem="ImageEntity"
        DataSource="@imagesShow"
        @bind-PageSize="_pageSize"
@@ -44,7 +53,7 @@
             <a href=@context.Url>@context.Name</a>
         </Column>
         <Column @bind-Field="@context.Dpi" Align="@ColumnAlign.Center"/>
-        <Column @bind-Field="@context.Size" Align="@ColumnAlign.Center" Sortable/>
+        <Column @bind-Field="@context.Size" Align="@ColumnAlign.Center"/>
         <Column @bind-Field="@context.UploadTime" Align="@ColumnAlign.Center" Sortable/>
         <Column @bind-Field="@context.RequestNum" Align="@ColumnAlign.Center" Sortable/>
         <Column @bind-Field="@context.Owner" Align="@ColumnAlign.Center" Sortable/>
@@ -55,4 +64,5 @@
                 <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick="()=>{ RemoveImage(context); }">删 除</Button></SpaceItem>
             </Space>
         </ActionColumn>
-</Table>
+    </Table>
+</Spin>

@@ -125,7 +125,7 @@ namespace ImageBed.Common
                 Url = $"api/image/{unitImageName}",
                 Dpi = $"{imageInfo.Width}*{imageInfo.Height}",
                 Size = RebuildFileSize(fileInfo.Length),
-                UploadTime = fileInfo.LastAccessTime.ToString(),
+                UploadTime = DateTime.Now.ToString(),
                 Owner = "Admin"
             };
             imageInfo.Close();
