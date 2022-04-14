@@ -55,7 +55,7 @@ async function BindPasteEvent(imageUploadSizeLimit, imageUploadNumLimit) {
 
         // 构造上传参数
         if (formdata.get("images") != null) {
-            alert("开始上传！");
+            alert("开始上传!");
 
             var requestOptions = {
                 method: 'POST',
@@ -64,7 +64,7 @@ async function BindPasteEvent(imageUploadSizeLimit, imageUploadNumLimit) {
             };
 
             // 上传图片
-            fetch(`http://${window.location.host}/api/image`, requestOptions)
+            fetch(`api/image`, requestOptions)
                 .then(response => {
                     response.json().then(data => {
                         for (var i in data.res) {

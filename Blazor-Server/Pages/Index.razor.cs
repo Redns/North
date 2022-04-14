@@ -148,7 +148,6 @@ namespace ImageBed.Pages
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-
              await JS.InvokeVoidAsync("BindPasteEvent", imageUploadSizeLimit, imageUploadNumLimit);
         }
     }
