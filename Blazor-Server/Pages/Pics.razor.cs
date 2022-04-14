@@ -8,6 +8,34 @@ namespace ImageBed.Pages
 {
     partial class Pics
     {
+        // 视图切换按钮图标(列表/卡片)
+        string imageFormatChangeButtonIcon = IconType.Outline.UnorderedList;
+        void ChangeTableFormat()
+        {
+            if(imageFormatChangeButtonIcon == IconType.Outline.UnorderedList)
+            {
+                imageFormatChangeButtonIcon = IconType.Outline.Appstore;
+            }
+            else
+            {
+                imageFormatChangeButtonIcon = IconType.Outline.UnorderedList;
+            }
+        }
+
+
+        // 图片卡片
+        ListGridType grid = new()
+        {
+            Gutter = 16,
+            Xs = 1,
+            Sm = 2,
+            Md = 4,
+            Lg = 4,
+            Xl = 6,
+            Xxl = 6,
+        };
+
+
         /// <summary>
         /// 搜索框部分
         /// </summary>
@@ -180,7 +208,6 @@ namespace ImageBed.Pages
                 { "Name", "files" },
                 { "Multiple", true }
             };
-
             loading = false;
         }
 

@@ -198,9 +198,14 @@ namespace ImageBed.Data.Access
 
                     // 删除磁盘上的文件
                     string? imageFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}";
+                    string? imageThumbnailsFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/thumbnails_{image.Name}";
                     if (File.Exists(imageFullPath))
                     {
                         File.Delete(imageFullPath);
+                    }
+                    if (File.Exists(imageThumbnailsFullPath))
+                    {
+                        File.Delete(imageThumbnailsFullPath);
                     }
                     return true;
                 }
@@ -225,10 +230,16 @@ namespace ImageBed.Data.Access
                 try
                 {
                     // 删除磁盘上的文件
+                    // 删除磁盘上的文件
                     string? imageFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}";
+                    string? imageThumbnailsFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/thumbnails_{image.Name}";
                     if (File.Exists(imageFullPath))
                     {
                         File.Delete(imageFullPath);
+                    }
+                    if (File.Exists(imageThumbnailsFullPath))
+                    {
+                        File.Delete(imageThumbnailsFullPath);
                     }
 
                     _context.Images.Remove(image);
@@ -256,10 +267,16 @@ namespace ImageBed.Data.Access
                 try
                 {
                     // 删除磁盘上的文件
+                    // 删除磁盘上的文件
                     string? imageFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}";
+                    string? imageThumbnailsFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/thumbnails_{image.Name}";
                     if (File.Exists(imageFullPath))
                     {
                         File.Delete(imageFullPath);
+                    }
+                    if (File.Exists(imageThumbnailsFullPath))
+                    {
+                        File.Delete(imageThumbnailsFullPath);
                     }
 
                     _context.Images.Remove(image);
@@ -289,10 +306,16 @@ namespace ImageBed.Data.Access
                     string imageDir = $"{GlobalValues.appSetting.Data.Resources.Images.Path}";
                     foreach(var image in images)
                     {
-                        string imageFullPath = $"{imageDir}/{image.Name}";
+                        // 删除磁盘上的文件
+                        string? imageFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}";
+                        string? imageThumbnailsFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/thumbnails_{image.Name}";
                         if (File.Exists(imageFullPath))
                         {
                             File.Delete(imageFullPath);
+                        }
+                        if (File.Exists(imageThumbnailsFullPath))
+                        {
+                            File.Delete(imageThumbnailsFullPath);
                         }
                     }
                     _context.Images.RemoveRange(images);

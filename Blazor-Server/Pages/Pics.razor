@@ -14,9 +14,19 @@
 
 <Space>
     <SpaceItem>
-        <Search Placeholder="Search what you want..." EnterButton="true" @bind-Value="searchText" Loading=@searchRunning OnSearch=@OnSearch/>
+        <Tooltip Title=@("切换视图")>
+            <Button Type="@ButtonType.Primary"
+                Ghost
+                Icon=@imageFormatChangeButtonIcon
+                OnClick=@ChangeTableFormat/>
+        </Tooltip>
     </SpaceItem>
-    @if(imagesSelected?.Count() != imagesShow.Count())
+    <SpaceItem>
+        <Search Placeholder="Search what you want..." EnterButton="true" @bind-Value="searchText" Loading=@searchRunning OnSearch=@OnSearch Style="width:220px"/>
+    </SpaceItem>
+    @if((imagesShow.Length > 0) && (imageFormatChangeButtonIcon == IconType.Outline.UnorderedList))
+    {
+        if((imagesSelected?.Count() != imagesShow.Count()))
         {
             <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick=@(() => { imagesSelected = imagesShow; })>全 选</Button></SpaceItem>
         }
@@ -24,6 +34,7 @@
         {
             <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick=@(() => { imagesSelected = null; } )>全不选</Button></SpaceItem>
         }
+    }
     <SpaceItem>
         <Upload Multiple
             @attributes=attrs
@@ -33,7 +44,7 @@
             <Button Type="@ButtonType.Primary" Ghost>导  入</Button>
         </Upload>
     </SpaceItem>
-    @if ((imagesSelected != null ) && (imagesSelected.Count() > 0))
+    @if ((imagesSelected != null ) && (imagesSelected.Count() > 0) && (imageFormatChangeButtonIcon == IconType.Outline.UnorderedList))
     {
         <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick=@ExportSelectedImages>导  出</Button></SpaceItem>
         <SpaceItem><Button Danger Ghost OnClick=@RemoveSelectedImages>删 除</Button></SpaceItem>
@@ -42,27 +53,55 @@
 <br/>
 <br/>
 <Spin Spinning=@loading>
-    <Table @ref="table"
-       TItem="ImageEntity"
-       DataSource="@imagesShow"
-       @bind-PageSize="_pageSize"
-       @bind-SelectedRows="@imagesSelected"
->
-        <Selection Key="@(context.Id?.ToString())" />
-        <Column @bind-Field="@context.Name" Align="@ColumnAlign.Center" Sortable>
-            <a href=@context.Url>@context.Name</a>
-        </Column>
-        <Column @bind-Field="@context.Dpi" Align="@ColumnAlign.Center"/>
-        <Column @bind-Field="@context.Size" Align="@ColumnAlign.Center"/>
-        <Column @bind-Field="@context.UploadTime" Align="@ColumnAlign.Center" Sortable/>
-        <Column @bind-Field="@context.RequestNum" Align="@ColumnAlign.Center" Sortable/>
-        <Column @bind-Field="@context.Owner" Align="@ColumnAlign.Center" Sortable/>
-        <ActionColumn Align="@ColumnAlign.Center">
-            <Space>
-                <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{CopyUrlToClip(NavigationManager.BaseUri + context.Url);}">复 制</Button></SpaceItem>
-                <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{DownloadFile(NavigationManager.BaseUri + context.Url, context.Name);}">下 载</Button></SpaceItem>
-                <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick="()=>{ RemoveImage(context); }">删 除</Button></SpaceItem>
-            </Space>
-        </ActionColumn>
-    </Table>
+    @if(imageFormatChangeButtonIcon == IconType.Outline.UnorderedList)
+    {
+        <Table @ref="table"
+           TItem="ImageEntity"
+           DataSource="@imagesShow"
+           @bind-PageSize="_pageSize"
+           @bind-SelectedRows="@imagesSelected"
+        >
+            <Selection Key="@(context.Id?.ToString())" />
+            <Column @bind-Field="@context.Name" Align="@ColumnAlign.Center" Sortable>
+                <a href=@context.Url>@context.Name</a>
+            </Column>
+            <Column @bind-Field="@context.Dpi" Align="@ColumnAlign.Center"/>
+            <Column @bind-Field="@context.Size" Align="@ColumnAlign.Center" Sortable/>
+            <Column @bind-Field="@context.UploadTime" Align="@ColumnAlign.Center" Sortable/>
+            <Column @bind-Field="@context.RequestNum" Align="@ColumnAlign.Center" Sortable/>
+            <Column @bind-Field="@context.Owner" Align="@ColumnAlign.Center" Sortable/>
+            <ActionColumn Align="@ColumnAlign.Center">
+                <Space>
+                    <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{CopyUrlToClip(UnitNameGenerator.UrlBuild(GlobalValues.appSetting.Data.Resources.Images.UrlFormat, NavigationManager.BaseUri + context.Url));}">复 制</Button></SpaceItem>
+                    <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{DownloadFile(NavigationManager.BaseUri + context.Url, context.Name);}">下 载</Button></SpaceItem>
+                    <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick="()=>{ RemoveImage(context); }">删 除</Button></SpaceItem>
+                </Space>
+            </ActionColumn>
+        </Table>
+    }
+    else
+    {
+        <AntList Grid="grid" DataSource="@imagesShow">
+            <ListItem >
+                <Tooltip Title=@($"{context.Size}〔{context.Dpi}〕")>
+                    <Card Bordered  Hoverable 
+                          Actions="@(new[] {
+                            actionSetting(() => CopyUrlToClip(UnitNameGenerator.UrlBuild(GlobalValues.appSetting.Data.Resources.Images.UrlFormat, NavigationManager.BaseUri + context.Url))) ,
+                            actionEdit(()=> DownloadFile(NavigationManager.BaseUri + context.Url, context.Name)),
+                            actionEllipsis(()=> RemoveImage(context)) })">
+                            <Cover>
+                                <Image alt="example" Src=@($"api/image/thumbnails_{context.Name}") Width=180 Height=135/>
+                            </Cover>
+                    </Card>
+                </Tooltip>
+            </ListItem>
+        </AntList>
+
+        @code
+        {
+            RenderFragment actionSetting(Action clickAction) =>@<Icon Type="copy" OnClick="@clickAction" />;
+            RenderFragment actionEdit(Action clickAction) =>@<Icon Type="download" OnClick="@clickAction" />;
+            RenderFragment actionEllipsis(Action clickAction) => @<Icon Type="delete" OnClick="@clickAction" />;
+        }
+    }
 </Spin>

@@ -154,9 +154,14 @@ namespace ImageBed.Controllers
 
             // 删除磁盘上的文件
             string? imageFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{imageName}";
+            string? imageThumbnailsFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/thumbnails_{imageName}";
             if (System.IO.File.Exists(imageFullPath))
             {
                 System.IO.File.Delete(imageFullPath);
+            }
+            if (System.IO.File.Exists(imageThumbnailsFullPath))
+            {
+                System.IO.File.Delete(imageThumbnailsFullPath);
             }
 
             // 删除数据库信息

@@ -115,9 +115,12 @@ namespace ImageBed.Common
                 await imageReader.DisposeAsync();
             }
 
+            // 生成缩略图
+            var imageInfo = NetVips.Image.NewFromFile(unitImageFullPath);
+            imageInfo.ThumbnailImage(180, 135).WriteToFile($"{imageDir}/thumbnails_{unitImageName}");
+
             // 录入数据库
             var fileInfo = new FileInfo(unitImageFullPath);
-            var imageInfo = NetVips.Image.NewFromFile(unitImageFullPath);
             ImageEntity image = new()
             {
                 Id = EncryptAndDecrypt.Encrypt_MD5(unitImageName),
