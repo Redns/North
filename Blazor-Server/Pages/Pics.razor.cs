@@ -30,9 +30,9 @@ namespace ImageBed.Pages
             Gutter = 16,
             Xs = 1,
             Sm = 2,
-            Md = 4,
+            Md = 3,
             Lg = 4,
-            Xl = 6,
+            Xl = 5,
             Xxl = 6,
         };
 
@@ -84,7 +84,7 @@ namespace ImageBed.Pages
         /// <param name="imageInfo">待导入的图片信息</param>
         async Task<bool> StartImport(List<UploadFileItem> images)
         {
-            await _notice.Open(new NotificationConfig()
+            _ = _notice.Open(new NotificationConfig()
             {
                 Message = "图片开始导入",
                 Description = "图片后台导入中，导入完成前请勿再次导入！"
@@ -132,7 +132,7 @@ namespace ImageBed.Pages
                     }
                 }
                 imagesSelected = null;
-                _ = _message.Success("图片已删除!");
+                _ = _message.Success("图片已删除 !");
             }
         }
 
@@ -164,7 +164,7 @@ namespace ImageBed.Pages
             
             // 这里压缩完成后可以先弹窗提示, 然后子线程再去启动下载
             // 调用 JS 下载后不建议删除 Images.zip，因为这时并不一定下载完成
-            _ = _message.Success("导出成功!");
+            _ = _message.Success("导出成功 !");
             await JS.InvokeVoidAsync("downloadFileFromStream", "Images.zip", "api/image/Images.zip");
         }
 
@@ -209,7 +209,14 @@ namespace ImageBed.Pages
                 { "Name", "files" },
                 { "Multiple", true }
             };
+        }
+
+
+        protected override void OnAfterRender(bool firstRender)
+        {
             loading = false;
+            base.OnAfterRender(firstRender);
+            StateHasChanged();
         }
 
 
@@ -222,11 +229,11 @@ namespace ImageBed.Pages
             if (!string.IsNullOrEmpty(content))
             {
                 await JS.InvokeVoidAsync("CopyToClip", content);
-                _ = _message.Success("已拷贝链接到剪贴板！");
+                _ = _message.Success("已拷贝链接到剪贴板 !");
             }
             else
             {
-                _ = _message.Error("拷贝链接失败！");
+                _ = _message.Error("拷贝链接失败 !");
             }
         }
 
@@ -264,9 +271,26 @@ namespace ImageBed.Pages
             imagesAll = imagesAll.Remove(image);
             imagesShow = imagesShow.Remove(image);
 
-            _ = _message.Success("图片已删除!");
+            _ = _message.Success("图片已删除 !");
 
             GlobalValues.Logger.Info($"Remove image {image.Name} done");
+        }
+
+
+        void ImageCardPageChange(PaginationEventArgs args)
+        {
+            int index = (args.Page - 1) * args.PageSize;
+            int count;
+            if(imagesAll.Length - args.Page * args.PageSize >= 0)
+            {
+                count = args.PageSize;
+            }
+            else
+            {
+                count = imagesAll.Length - index;
+            }
+
+            imagesShow = imagesAll.Skip(index).Take(count).ToArray();
         }
     }
 }

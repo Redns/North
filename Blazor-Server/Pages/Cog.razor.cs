@@ -44,6 +44,16 @@ namespace ImageBed.Pages
         Email emailConfig = GlobalValues.appSetting.Notify.Email;
         Condition emailSendCondition = GlobalValues.appSetting.Notify.Condition;
 
+        bool loading = true;
+
+
+        protected override void OnAfterRender(bool firstRender)
+        {
+            loading = false;
+            base.OnAfterRender(firstRender);
+            StateHasChanged();
+        }
+
 
         /// <summary>
         /// 设置上传图片格式限制
@@ -83,7 +93,7 @@ namespace ImageBed.Pages
 
             if(imageFormatChoose.Length == 0)
             {
-                _message.Error("请至少选择一种图片格式！");
+                _message.Error("请至少选择一种图片格式 !");
                 return;
             }
             else
@@ -101,7 +111,7 @@ namespace ImageBed.Pages
 
             AppSetting.Save(GlobalValues.appSetting, "appsettings.json");
 
-            _message.Success("设置完成！");
+            _message.Success("设置完成 !");
         }
 
 
@@ -112,7 +122,7 @@ namespace ImageBed.Pages
         private void OnFinishFailed(EditContext editContext)
         {
             GlobalValues.appSetting = AppSetting.Parse();
-            _message.Error("设置失败！");
+            _message.Error("设置失败 !");
         }
 
 
@@ -131,18 +141,18 @@ namespace ImageBed.Pages
                     FromPerson = emailConfig.From,
                     RecipientArry = emailConfig.To.Split(","),
                     MailTitle = "ImageBed",
-                    MailBody = "这是一封测试邮件, 您的邮箱配置成功!",
+                    MailBody = "这是一封测试邮件, 您的邮箱配置成功 !",
                     Code = emailConfig.Code,
                     IsBodyHtml = false
                 });
 
                 TestRunning = false;
 
-                _ = _message.Success("测试邮件发送成功, 请注意查收!");
+                _ = _message.Success("测试邮件发送成功, 请注意查收 !");
             }
             else
             {
-                _ = _message.Error("请检查邮件配置是否正确!");
+                _ = _message.Error("请检查邮件配置是否正确 !");
             }
         }
     }

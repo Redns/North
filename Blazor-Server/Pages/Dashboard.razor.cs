@@ -20,18 +20,28 @@ namespace ImageBed.Pages
 
         List<object> SysRecords = new();
 
+        bool loading = true;
 
         /// <summary>
         /// 初始化界面
         /// </summary>
         protected override void OnInitialized()
         {
+            loading = true;
             if (GlobalValues.appSetting?.Record?.RefreshRealTime ?? true)
             {
                 InitTimer();
             }
             RefreshChart();
             RefreshDashboard(null, null);
+        }
+
+
+        protected override void OnAfterRender(bool firstRender)
+        {
+            loading = false;
+            base.OnAfterRender(firstRender);
+            StateHasChanged();
         }
 
 

@@ -110,7 +110,7 @@ namespace ImageBed.Pages
             }
             else
             {
-                _message.Error("上传失败, 图片尺寸或数量超出限制!");
+                _message.Error("上传失败, 图片尺寸或数量超出限制 !");
                 return false;
             }
         }
@@ -160,7 +160,7 @@ namespace ImageBed.Pages
             images.Clear();
 
             await JS.InvokeVoidAsync("CopyToClip", urls);
-            _ = _message.Success($"图片上传完成, {imageSuccessNum}个成功, {imageTotalNum - imageSuccessNum}个失败!"); ;
+            _ = _message.Success($"图片上传完成, {imageSuccessNum}个成功, {imageTotalNum - imageSuccessNum}个失败 !"); ;
         }
 
 

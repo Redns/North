@@ -51,7 +51,7 @@
     }
 </Space>
 <br/>
-<br/>
+<br />
 <Spin Spinning=@loading>
     @if(imageFormatChangeButtonIcon == IconType.Outline.UnorderedList)
     {
@@ -82,6 +82,15 @@
     else
     {
         imagesSelected = null;
+        if(imagesShow.Length > 12)
+        {
+            imagesShow = imagesAll.Skip(0).Take(12).ToArray();
+        }
+        else
+        {
+            imagesShow = imagesAll.Skip(0).Take(imagesShow.Length).ToArray();
+        }
+
         <AntList Grid="grid" DataSource="@imagesShow">
             <ListItem >
                 <Tooltip Title=@($"{context.Size}〔{context.Dpi}〕")>
@@ -97,7 +106,7 @@
                 </Tooltip>
             </ListItem>
         </AntList>
-
+        <Pagination PageSize="12" OnChange=@ImageCardPageChange Total=@imagesAll.Length />
         @code
         {
             RenderFragment actionSetting(Action clickAction) =>@<Icon Type="copy" OnClick="@clickAction" />;

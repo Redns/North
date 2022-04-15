@@ -12,48 +12,50 @@
 @implements IDisposable
 
 <div>
-    <Row Gutter=32 Style="position:center;margin-top:20px;">
-        <Col Span=6>
-            <Card TitleTemplate=TitleTemplate_HostImageNum>
-                <Body>
-                    <h4>@HostImageNums</h4>
-                </Body>
-            </Card>
-        </Col>
-        <Col Span=6>
-            <Card TitleTemplate=TitleTemplate_DiskOccupancy>
-                <Body>
-                    <h4>@DiskOccupancy</h4>
-                </Body>
-            </Card>
-        </Col>
-        <Col Span=6>
-            <Card TitleTemplate=TitleTemplate_RunningMemUse>
-                <Body>
-                    <h4>@RunningMemUsage</h4>
-                </Body>
-            </Card>
-        </Col>
-        <Col Span=6>
-            <Card TitleTemplate=TitleTemplate_CpuUse>
-                <Body>
-                    <h4>@SysRunningTime</h4>
-                </Body>
-            </Card>
-        </Col>
-    </Row>
-    <Row Style="margin-top:50px;">
-        <Col Span=22>
-            @if(SysRecords.Count > 0)
-            {
-                <Line Data="SysRecords" Config="SysRecordConfig" />
-            }
-            else
-            {
-                <Empty Style="margin-top:100px;"/>
-            }
-        </Col>
-    </Row>
+    <Spin Spinning=@loading>
+        <Row Gutter=32 Style="position:center;margin-top:20px;">
+            <Col Span=6>
+                <Card TitleTemplate=TitleTemplate_HostImageNum>
+                    <Body>
+                        <h4>@HostImageNums</h4>
+                    </Body>
+                </Card>
+            </Col>
+            <Col Span=6>
+                <Card TitleTemplate=TitleTemplate_DiskOccupancy>
+                    <Body>
+                        <h4>@DiskOccupancy</h4>
+                    </Body>
+                </Card>
+            </Col>
+            <Col Span=6>
+                <Card TitleTemplate=TitleTemplate_RunningMemUse>
+                    <Body>
+                        <h4>@RunningMemUsage</h4>
+                    </Body>
+                </Card>
+            </Col>
+            <Col Span=6>
+                <Card TitleTemplate=TitleTemplate_CpuUse>
+                    <Body>
+                        <h4>@SysRunningTime</h4>
+                    </Body>
+                </Card>
+            </Col>
+        </Row>
+        <Row Style="margin-top:50px;">
+            <Col Span=22>
+                @if(SysRecords.Count > 0)
+                {
+                    <Line Data="SysRecords" Config="SysRecordConfig" />
+                }
+                else
+                {
+                    <Empty Style="margin-top:100px;"/>
+                }
+            </Col>
+        </Row>
+    </Spin>
 </div>
 @code{
         RenderFragment TitleTemplate_HostImageNum = @<Space><SpaceItem><Icon Type = "picture" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>托管图片总数</SpaceItem></Space>;

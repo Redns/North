@@ -1,11 +1,18 @@
-# 使用运行时镜像
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 
-# 设置工作目录
-WORKDIR /app
+# Create dir in image
+RUN mkdir /ImageBed
+#RUN mkdir /ImageBed/Data
+#RUN mkdir /ImageBed/Data/Logs
+#RUN mkdir /ImageBed/Data/Database
+#RUN mkdir /ImageBed/Data/Resources
+#RUN mkdir /ImageBed/Data/Resources/Images
 
-# 把目录下的内容都复制到当前目录下
-COPY . .
+# Redefine the expose port
+ENV ASPNETCORE_URLS=http://+:12121
 
-# 运行镜像入口命令和可执行文件名称
-ENTRYPOINT ["dotnet", "ImageBed.dll"]
+# Copy files to ImageBed dir
+COPY ./ /ImageBed
+EXPOSE 12121
+WORKDIR /ImageBed
+CMD ["/bin/bash","-c","./ImageBed"]
