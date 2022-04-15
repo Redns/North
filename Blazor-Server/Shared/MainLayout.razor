@@ -10,10 +10,10 @@
         <Content Style="background-color:#ffffff;" class="content px-4">
             @Body
         </Content>
-        @if (!string.IsNullOrEmpty(GlobalValues.appSetting.footer))
+        @if (!string.IsNullOrEmpty(GlobalValues.appSetting.Footer.Content))
             {
                 <Footer Style="text-align:center; background-color:#ffffff;">
-                    @GlobalValues.appSetting.footer
+                    @GlobalValues.appSetting.Footer.Content
                 </Footer>
             }
         

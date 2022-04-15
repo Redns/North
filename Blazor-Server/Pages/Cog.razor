@@ -1,273 +1,262 @@
 ﻿@page "/Cog"
 
-@using System.ComponentModel.DataAnnotations;
 @using System.Text.Json;
 @using ImageBed.Data.Entity
+@using System.ComponentModel.DataAnnotations;
 @using static ImageBed.Common.UnitNameGenerator
 
 @inject MessageService _message
 
-<Spin Spinning=@loading>
+<Spin Spinning=@spinning>
 	<Tabs DefaultActiveKey="1">
-    <TabPane Key="1">
-        <TabTemplate>
-            <Space><Icon Type="cloud-upload" Width=25 Height=25/>上传与存储</Space>
-        </TabTemplate>
-        <ChildContent>
-            <Form Model="@GlobalValues.appSetting" 
-              LabelColSpan="8"
-              WrapperColSpan="16"
-              OnFinish="OnFinish" 
-              OnFinishFailed="OnFinishFailed"
-              Style="margin-top:80px;">
-              <FormItem Label="图片尺寸限制">
-                    <Tooltip Title="@("设置为 0 则不限制图片尺寸")">
-                        <Space>
-                            <SpaceItem>
-                                <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value="ImageMaxSize" />
-                            </SpaceItem>
-                            <SpaceItem>
-                                MB
-                            </SpaceItem>
-                        </Space>
-                        
-                    </Tooltip>
-                </FormItem>
-                <FormItem Label="单次上传数量">
-                    <Tooltip Title="@("设置为 0 则不限制单次上传图片数")">
-                        <Space>
-                            <SpaceItem>
-                                <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value="ImageMaxNum" />
-                            </SpaceItem>
-                            <SpaceItem>
-                                张
-                            </SpaceItem>
-                        </Space>
-                        
-                    </Tooltip>
-                </FormItem>
-                <FormItem Label="重命名方式">
-                    <Tooltip Title="@("若不开启重命名, 图片名冲突时将覆盖原图片")">
-                        <Select @bind-Value="@renameFormat"
-                                DefaultValue="@RenameFormat.MD5"
-		                        TItemValue="RenameFormat"
+        <TabPane Key="1">
+            <TabTemplate>
+                <Space><Icon Type="cloud-upload" Width=25 Height=25/>上传与存储</Space>
+            </TabTemplate>
+            <ChildContent>
+                <Form Model="@GlobalValues.appSetting" 
+                  LabelColSpan="8"
+                  WrapperColSpan="16"
+                  OnFinish="OnFinish" 
+                  OnFinishFailed="OnFinishFailed"
+                  Style="margin-top:80px;">
+                    <FormItem Label="大小限制">
+                        <Tooltip Title="@("设置为 0 则不限制图片大小")">
+                            <Space>
+                                <SpaceItem>
+                                    <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value=@imageConfig.MaxSize />
+                                </SpaceItem>
+                                <SpaceItem>
+                                    MB
+                                </SpaceItem>
+                            </Space>
+                        </Tooltip>
+                    </FormItem>
+                    <FormItem Label="单次上传数量">
+                        <Tooltip Title="@("设置为 0 则不限制单次上传图片数量")">
+                            <Space>
+                                <SpaceItem>
+                                    <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value=@imageConfig.MaxNum />
+                                </SpaceItem>
+                                <SpaceItem>
+                                    张
+                                </SpaceItem>
+                            </Space>
+                        </Tooltip>
+                    </FormItem>
+                    <FormItem Label="重命名格式">
+                        <Tooltip Title="@("若不开启重命名, 图片名冲突时将覆盖原图片")">
+                            <Select @bind-Value=@imageConfig.RenameFormat
+                                    DefaultValue="@RenameFormat.MD5"
+		                            TItemValue="RenameFormat"
+                                    TItem="string"
+                                    LabelInValue="true"
+		                            Style="width: 200px;">
+		                        <SelectOptions>
+			                        <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.NONE" Label="不重命名 (不推荐)"/>
+			                        <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.MD5" Label="MD5字符串 (32位)"/>
+                                    <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.TIME" Label="上传时间"/>
+                                    <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.TIMESTAMP" Label="上传时间戳"/>
+                                    <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.RANDOM_STRING" Label="随机字符串"/>
+		                        </SelectOptions>
+                            </Select>
+                        </Tooltip>
+                    </FormItem>
+                    <FormItem Label="链接格式">
+                        <Select @bind-Value=@imageConfig.UrlFormat
+                                DefaultValue="@UrlFormat.Markdown"
+		                        TItemValue="UrlFormat"
                                 TItem="string"
                                 LabelInValue="true"
 		                        Style="width: 200px;">
 		                    <SelectOptions>
-			                    <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.NONE" Label="不重命名 (不推荐)"/>
-			                    <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.MD5" Label="MD5字符串 (32位)"/>
-                                <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.TIME" Label="上传时间"/>
-                                <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.TIMESTAMP" Label="上传时间戳"/>
-                                <SelectOption TItemValue="RenameFormat" TItem="string" Value="@RenameFormat.RANDOM_STRING" Label="随机字符串"/>
+			                    <SelectOption TItemValue="UrlFormat" TItem="string" Value="@UrlFormat.Markdown" Label="Markdown"/>
+			                    <SelectOption TItemValue="UrlFormat" TItem="string" Value="@UrlFormat.Html" Label="Html"/>
+                                <SelectOption TItemValue="UrlFormat" TItem="string" Value="@UrlFormat.Url" Label="Url"/>
+                                <SelectOption TItemValue="UrlFormat" TItem="string" Value="@UrlFormat.UBB" Label="UBB"/>
 		                    </SelectOptions>
                         </Select>
-                    </Tooltip>
-                </FormItem>
-                <FormItem Label="图片链接格式">
-                    <Select @bind-Value="@urlFormat"
-                            DefaultValue="@UrlFormat.Markdown"
-		                    TItemValue="UrlFormat"
-                            TItem="string"
-                            LabelInValue="true"
-		                    Style="width: 200px;">
-		                <SelectOptions>
-			                <SelectOption TItemValue="UrlFormat" TItem="string" Value="@UrlFormat.Markdown" Label="Markdown"/>
-			                <SelectOption TItemValue="UrlFormat" TItem="string" Value="@UrlFormat.Html" Label="Html"/>
-                            <SelectOption TItemValue="UrlFormat" TItem="string" Value="@UrlFormat.Url" Label="Url"/>
-                            <SelectOption TItemValue="UrlFormat" TItem="string" Value="@UrlFormat.UBB" Label="UBB"/>
-		                </SelectOptions>
-                    </Select>
-                </FormItem>
-                <FormItem Label="图片存储路径">
-                    <Tooltip Title="@("相对路径, 目前不支持修改")">
-                        <Input Style="width:200px;" @bind-Value="@imageDir"  />
-                    </Tooltip>
-                </FormItem>
-                <FormItem Label="图片上传格式">
-                    <CheckboxGroup Options="@imageFormatOptions" @bind-Value="@imageFormatChoose" OnChange="SetImageFormat" />
-                </FormItem>
-                <FormItem WrapperColOffset="8" WrapperColSpan="16">
-                    <Button Type="@ButtonType.Primary" HtmlType="submit">
-                        保 存
-                    </Button>
-                </FormItem>
-            </Form>
-        </ChildContent>
-    </TabPane>
-    <TabPane Key="2">
-        <TabTemplate>
-            <Space><Icon Type="dashboard" Width=25 Height=25/>仪表盘</Space>
-        </TabTemplate>
-        <ChildContent>
-            <Form Model="@GlobalValues.appSetting" 
-              LabelColSpan="8"
-              WrapperColSpan="16"
-              OnFinish="OnFinish" 
-              OnFinishFailed="OnFinishFailed"
-              Style="margin-top:80px;">
-                <FormItem Label="实时刷新仪表盘">
-                    <Tooltip Title="@("开启实时刷新将占用更多的资源")">
-                        <RadioGroup @bind-Value="RefreshDashboardRealTime">
+                    </FormItem>
+                    <FormItem Label="上传格式">
+                        <CheckboxGroup Options="@imageFormatOptions" @bind-Value=@imageFormatChoose OnChange="SetImageFormat" />
+                    </FormItem>
+                    <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                        <Button Type="@ButtonType.Primary" HtmlType="submit">
+                            保 存
+                        </Button>
+                    </FormItem>
+                </Form>
+            </ChildContent>
+        </TabPane>
+        <TabPane Key="2">
+            <TabTemplate>
+                <Space><Icon Type="dashboard" Width=25 Height=25/>仪表盘</Space>
+            </TabTemplate>
+            <ChildContent>
+                <Form Model="@GlobalValues.appSetting" 
+                  LabelColSpan="8"
+                  WrapperColSpan="16"
+                  OnFinish="OnFinish" 
+                  OnFinishFailed="OnFinishFailed"
+                  Style="margin-top:80px;">
+                    <FormItem Label="实时刷新">
+                        <RadioGroup @bind-Value=@recordConfig.RefreshRealTime>
                             <Radio RadioButton Value="@true">开启</Radio>
                             <Radio RadioButton Value="@false">关闭</Radio>
                         </RadioGroup>
-                    </Tooltip>
-                </FormItem>
-                <FormItem Label="资源统计时间段">
-                    <Tooltip Title="@($"系统将在 {RefreshStartTime}:00 ~ {RefreshStartTime + 6}:00 统计昨日的相关数据，建议设置在空闲时间段")">
-                        <Space>
-                            <SpaceItem>
-                                <AntDesign.InputNumber Step="1" Min="0" Max="18" @bind-Value="RefreshStartTime" />
-                            </SpaceItem>
-                            <SpaceItem>
-                                @($"~ {RefreshStartTime + 6}:00")
-                            </SpaceItem>
-                        </Space>
-                        
-                    </Tooltip>
-                </FormItem>
-                <FormItem WrapperColOffset="8" WrapperColSpan="16">
-                    <Button Type="@ButtonType.Primary" HtmlType="submit">
-                        保 存
-                    </Button>
-                </FormItem>
-            </Form>
-        </ChildContent>
-    </TabPane>
-    <TabPane Key="3">
-        <TabTemplate>
-            <Space><Icon Type="picture" Width=25 Height=25/>图 库</Space>
-        </TabTemplate>
-        <ChildContent>
-            <Form Model="@GlobalValues.appSetting" 
-              LabelColSpan="8"
-              WrapperColSpan="16"
-              OnFinish="OnFinish" 
-              OnFinishFailed="OnFinishFailed"
-              Style="margin-top:80px;">
-                <FormItem Label="默认视图">
-                    <RadioGroup @bind-Value="ViewList">
-                            <Radio RadioButton Value="@true">表 格</Radio>
-                            <Radio RadioButton Value="@false">卡 片</Radio>
-                    </RadioGroup>
-                </FormItem>
-                <FormItem WrapperColOffset="8" WrapperColSpan="16">
-                    <Button Type="@ButtonType.Primary" HtmlType="submit">
-                        保 存
-                    </Button>
-                </FormItem>
-            </Form>
-        </ChildContent>
-    </TabPane>
-    <TabPane Key="4">
-        <TabTemplate>
-            <Space><Icon Type="bell" Width=25 Height=25/>通 知</Space>
-        </TabTemplate>
-        <ChildContent>
-            <Form Model="@GlobalValues.appSetting" 
-              LabelColSpan="8"
-              WrapperColSpan="16"
-              OnFinish="OnFinish" 
-              OnFinishFailed="OnFinishFailed"
-              Style="margin-top:80px;">
-                <FormItem Label="发件人邮箱">
-                    <Input Style="width:200px;" @bind-Value="@emailConfig.From"/>
-                </FormItem>
-                <FormItem Label="授权码">
-                    <Space>
-                        <SpaceItem>
-                            <Input Style="width:200px;" @bind-Value="@emailConfig.Code"/>
-                        </SpaceItem>
-                        <SpaceItem>
-                            <Tooltip Title=@("点击发送测试邮件")>
-                                <Button Type=@ButtonType.Primary Ghost Icon=@IconType.Outline.Api OnClick=@TestEmailConfig Loading=@TestRunning/>
-                            </Tooltip>
-                        </SpaceItem>
-                    </Space>
-                </FormItem>
-                <FormItem Label="收件人邮箱">
-                    <Input Style="width:200px;" @bind-Value="@emailConfig.To"/>
-                </FormItem>
-                <FormItem Label="每日统计">
-                    <Tooltip Title="@("开启则系统每天会通过邮件发送昨日的相关统计数据")">
-                        <RadioGroup @bind-Value="emailSendCondition.SysRefresh">
-                            <Radio RadioButton Value="@true">开启</Radio>
-                            <Radio RadioButton Value="@false">关闭</Radio>
+                    </FormItem>
+                    <FormItem Label="资源统计时间段">
+                        <Tooltip Title="@($"系统将在 {recordConfig.RefreshStartTime}:00 ~ {recordConfig.RefreshStartTime + 6}:00 统计昨日的上传数据")">
+                            <Space>
+                                <SpaceItem>
+                                    <AntDesign.InputNumber Step="1" Min="0" Max="18" @bind-Value=@recordConfig.RefreshStartTime />
+                                </SpaceItem>
+                                <SpaceItem>
+                                    @($"~ {recordConfig.RefreshStartTime + 6}:00")
+                                </SpaceItem>
+                            </Space> 
+                        </Tooltip>
+                    </FormItem>
+                    <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                        <Button Type="@ButtonType.Primary" HtmlType="submit">
+                            保 存
+                        </Button>
+                    </FormItem>
+                </Form>
+            </ChildContent>
+        </TabPane>
+        <TabPane Key="3">
+            <TabTemplate>
+                <Space><Icon Type="picture" Width=25 Height=25/>图 库</Space>
+            </TabTemplate>
+            <ChildContent>
+                <Form Model="@GlobalValues.appSetting" 
+                  LabelColSpan="8"
+                  WrapperColSpan="16"
+                  OnFinish="OnFinish" 
+                  OnFinishFailed="OnFinishFailed"
+                  Style="margin-top:80px;">
+                    <FormItem Label="默认视图">
+                        <RadioGroup @bind-Value=@picsConfig.ViewList>
+                                <Radio RadioButton Value="@true">表 格</Radio>
+                                <Radio RadioButton Value="@false">卡 片</Radio>
                         </RadioGroup>
-                    </Tooltip>
-                </FormItem>
-                <FormItem Label="存储空间预警">
-                    <Tooltip Title="@("在图片存储占用超过限制时发送邮件")">
+                    </FormItem>
+                    <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                        <Button Type="@ButtonType.Primary" HtmlType="submit">
+                            保 存
+                        </Button>
+                    </FormItem>
+                </Form>
+            </ChildContent>
+        </TabPane>
+        <TabPane Key="4">
+            <TabTemplate>
+                <Space><Icon Type="bell" Width=25 Height=25/>通 知</Space>
+            </TabTemplate>
+            <ChildContent>
+                <Form Model="@GlobalValues.appSetting" 
+                  LabelColSpan="8"
+                  WrapperColSpan="16"
+                  OnFinish="OnFinish" 
+                  OnFinishFailed="OnFinishFailed"
+                  Style="margin-top:80px;">
+                    <FormItem Label="发件人邮箱">
+                        <Input Style="width:200px;" @bind-Value="@notifyConfig.Email.From"/>
+                    </FormItem>
+                    <FormItem Label="授权码">
                         <Space>
                             <SpaceItem>
-                                <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value="emailSendCondition.OverDiskOccupy" />
+                                <Input Style="width:200px;" @bind-Value=@notifyConfig.Email.Code/>
                             </SpaceItem>
                             <SpaceItem>
-                                MB
+                                <Tooltip Title=@("点击发送测试邮件")>
+                                    <Button Type=@ButtonType.Primary Ghost Icon=@IconType.Outline.Api OnClick=@TestEmailConfig Loading=@emailTestRunning/>
+                                </Tooltip>
                             </SpaceItem>
                         </Space>
+                    </FormItem>
+                    <FormItem Label="收件人邮箱">
+                        <Input Style="width:200px;" @bind-Value=@notifyConfig.Email.To/>
+                    </FormItem>
+                    <FormItem Label="每日统计">
+                        <Tooltip Title="@("开启则系统每天会通过邮件发送昨日的数据")">
+                            <RadioGroup @bind-Value=@notifyConfig.Condition.SysRefresh>
+                                <Radio RadioButton Value="@true">开启</Radio>
+                                <Radio RadioButton Value="@false">关闭</Radio>
+                            </RadioGroup>
+                        </Tooltip>
+                    </FormItem>
+                    <FormItem Label="存储空间预警">
+                        <Tooltip Title="@("图片存储占用超过限制时发送邮件")">
+                            <Space>
+                                <SpaceItem>
+                                    <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value=@notifyConfig.Condition.OverDiskOccupy />
+                                </SpaceItem>
+                                <SpaceItem>
+                                    MB
+                                </SpaceItem>
+                            </Space>
                         
-                    </Tooltip>
-                </FormItem>
-                <FormItem Label="内存占用预警">
-                    <Tooltip Title="@("在系统运行内存占用超出限制时发送邮件")">
-                        <Space>
-                            <SpaceItem>
-                                <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value="emailSendCondition.OverMemory" />
-                            </SpaceItem>
-                            <SpaceItem>
-                                MB
-                            </SpaceItem>
-                        </Space>
+                        </Tooltip>
+                    </FormItem>
+                    <FormItem Label="内存占用预警">
+                        <Tooltip Title="@("系统运行内存占用超出限制时发送邮件")">
+                            <Space>
+                                <SpaceItem>
+                                    <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value=@notifyConfig.Condition.OverMemory />
+                                </SpaceItem>
+                                <SpaceItem>
+                                    MB
+                                </SpaceItem>
+                            </Space>
                         
-                    </Tooltip>
-                </FormItem>
-                <FormItem Label="图片数量预警">
-                    <Tooltip Title="@("在托管图片数量超出限制时发送邮件")">
-                        <Space>
-                            <SpaceItem>
-                                <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value="emailSendCondition.OverNum" />
-                            </SpaceItem>
-                            <SpaceItem>
-                                张
-                            </SpaceItem>
-                        </Space>
-                        
-                    </Tooltip>
-                </FormItem>
-                <FormItem WrapperColOffset="8" WrapperColSpan="16">
-                    <Button Type="@ButtonType.Primary" HtmlType="submit">
-                        保 存
-                    </Button>
-                </FormItem>
-            </Form>
-        </ChildContent>
-    </TabPane>
-    <TabPane Key="5">
-        <TabTemplate>
-            <Space><Icon Type="appstore" Width=25 Height=25/>其 它</Space>
-        </TabTemplate>
-        <ChildContent>
-            <Form Model="@GlobalValues.appSetting" 
-              LabelColSpan="8"
-              WrapperColSpan="16"
-              OnFinish="OnFinish" 
-              OnFinishFailed="OnFinishFailed"
-              Style="margin-top:80px;">
-                <FormItem Label="页 脚">
-                    <Tooltip Title="@("填写备案号等信息")">
-                        <Input Style="width:400px;" @bind-Value="@footer"/>
-                    </Tooltip>
-                </FormItem>
-                <FormItem WrapperColOffset="8" WrapperColSpan="16">
-                    <Button Type="@ButtonType.Primary" HtmlType="submit">
-                        保 存
-                    </Button>
-                </FormItem>
-            </Form>
-        </ChildContent>
-    </TabPane>
-</Tabs>
+                        </Tooltip>
+                    </FormItem>
+                    <FormItem Label="图片数量预警">
+                        <Tooltip Title="@("托管图片数量超出限制时发送邮件")">
+                            <Space>
+                                <SpaceItem>
+                                    <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value=@notifyConfig.Condition.OverNum />
+                                </SpaceItem>
+                                <SpaceItem>
+                                    张
+                                </SpaceItem>
+                            </Space>
+                        </Tooltip>
+                    </FormItem>
+                    <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                        <Button Type="@ButtonType.Primary" HtmlType="submit">
+                            保 存
+                        </Button>
+                    </FormItem>
+                </Form>
+            </ChildContent>
+        </TabPane>
+        <TabPane Key="5">
+            <TabTemplate>
+                <Space><Icon Type="appstore" Width=25 Height=25/>其 它</Space>
+            </TabTemplate>
+            <ChildContent>
+                <Form Model="@GlobalValues.appSetting" 
+                  LabelColSpan="8"
+                  WrapperColSpan="16"
+                  OnFinish="OnFinish" 
+                  OnFinishFailed="OnFinishFailed"
+                  Style="margin-top:80px;">
+                    <FormItem Label="页 脚">
+                        <Tooltip Title="@("填写备案号等信息")">
+                            <Input Style="width:400px;" @bind-Value=@footerConfig.Content/>
+                        </Tooltip>
+                    </FormItem>
+                    <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                        <Button Type="@ButtonType.Primary" HtmlType="submit">
+                            保 存
+                        </Button>
+                    </FormItem>
+                </Form>
+            </ChildContent>
+        </TabPane>
+    </Tabs>
 </Spin>
 

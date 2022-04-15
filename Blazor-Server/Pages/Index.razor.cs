@@ -7,40 +7,32 @@ namespace ImageBed.Pages
 {
     partial class Index
     {
-        string imageFormatFilter = "";
-        Dictionary<string, object> attrs = new();
+        bool spining;                               // 页面加载标志
 
-        protected override void OnInitialized()
+        int  imageTotalNum;                         // 总图片数量
+        int  imageSuccessNum;                       // 上传成功的图片数量
+        long imageTotalSize;                        // 待上传的图片总尺寸(Byte)
+        long _imageUploadedSize;                    // 上传完成的图片尺寸(Byte)
+        long ImageUploadedSize
         {
-            string[] imageFormats = GlobalValues.appSetting.Data.Resources.Images.Format.Split(",");
-            for (int i = 0; i < imageFormats.Length; i++)
+            get { return _imageUploadedSize; }
+            set
             {
-                imageFormatFilter += $".{imageFormats[i]},";
+                _imageUploadedSize = value;
+                if(imageTotalSize != 0)
+                {
+                    ProgressPercent = (int)(_imageUploadedSize * 100.0 / imageTotalSize);
+                }
             }
-
-            attrs = new()
-            {
-                { "accept", imageFormatFilter },
-                { "Action", "/api/image" },
-                { "Name", "files" },
-                { "Multiple", true }
-            };
-
-            base.OnInitialized();
         }
 
+        int  progress_stroke_width;                 // 进度条宽度
+        bool progress_showInfo;                     // 是否显示进度条信息
 
-        int imageTotalNum = 0;                          // 用户选择的总图片数量
-        int imageSuccessNum = 0;                        // 上传成功的图片数量(获取到链接)
-        long imageTotalSize = 0;                        // 待上传的图片总尺寸(Byte)
-        long imageUploadedSize = 0;                     // 上传完成的图片尺寸(Byte)
-        int _progress_percent = 0;                      // 上传完成的图片的百分比
-        int progress_percent
+        int _ProgressPercent;                       // 进度条百分比            
+        int ProgressPercent
         {
-            get
-            {
-                return _progress_percent;
-            }
+            get { return _ProgressPercent; }
             set
             {
                 if (value == 0)
@@ -53,42 +45,81 @@ namespace ImageBed.Pages
                     progress_stroke_width = 10;
                     progress_showInfo = true;
                 }
-                _progress_percent = value;
+                _ProgressPercent = value;
             }
         }
-        int progress_stroke_width = 0;                  // 进度条宽度
-        bool progress_showInfo = false;                 // 是否显示进度条信息
 
-        // 图片最大上传尺寸(MB)
-        // 图片单次最大上传数量(张)
-        int imageUploadSizeLimit = GlobalValues.appSetting.Data.Resources.Images.MaxSize;
-        int imageUploadNumLimit = GlobalValues.appSetting.Data.Resources.Images.MaxNum;
+        int imageUploadSizeLimit;                   // 图片最大上传尺寸(MB)
+        int imageUploadNumLimit;                    // 图片单次最大上传数量(张)
+
+        Data.Entity.Image? imageConfig;             // 图片设置
 
 
         /// <summary>
-        /// 更新进度条
+        /// 初始化加载界面
         /// </summary>
-        void UpdateProgress()
+        protected override void OnInitialized()
         {
-            progress_percent = (int)(imageUploadedSize * 100.0 / imageTotalSize);
+            spining = true;
+            base.OnInitialized();
         }
 
 
         /// <summary>
-        /// 图片上传前调用
+        /// 初始化变量
+        /// </summary>
+        protected override void OnParametersSet()
+        {
+            imageTotalNum = 0;
+            imageSuccessNum = 0;
+            imageTotalSize = 0;
+            ImageUploadedSize = 0;
+
+            progress_stroke_width = 0;
+            progress_showInfo = false;
+
+            ProgressPercent = 0;
+
+            imageConfig = GlobalValues.appSetting.Data.Resources.Images;
+            imageUploadSizeLimit = imageConfig.MaxSize;
+            imageUploadNumLimit = imageConfig.MaxNum;
+
+            base.OnParametersSet();
+        }
+
+
+        /// <summary>
+        /// 页面渲染完成后调用
+        /// </summary>
+        /// <param name="firstRender"></param>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            spining = false;
+            await InvokeAsync(() => { StateHasChanged(); });
+            await JS.InvokeVoidAsync("BindPasteEvent", imageUploadSizeLimit, imageUploadNumLimit);
+        }
+
+
+        /// <summary>
+        /// 图片上传前调用(检查图片尺寸、数量是否符合规则)
         /// </summary>
         /// <param name="images">待上传的图片列表</param>
         bool CheckImages(List<UploadFileItem> images)
         {
-            imageSuccessNum = 0;
+            // 初始化上传变量
             imageTotalNum = images.Count;
-
-            if (imageUploadSizeLimit > 0)
+            imageSuccessNum = 0;
+            imageTotalSize = 0;
+            ImageUploadedSize = 0;
+            
+            // 移除尺寸超出限制的图片
+            if (imageUploadSizeLimit != 0)
             {
-                images.RemoveAll(i => i.Size > imageUploadSizeLimit * 1024 * 1024);
+                images.RemoveAll(image => image.Size > imageUploadSizeLimit * UnitNameGenerator.FILESIZE_1MB);
             }
 
-            if ((images.Count > imageUploadNumLimit) && (imageUploadNumLimit > 0))
+            // 移除多余的图片
+            if ((imageUploadNumLimit != 0) && (images.Count > imageUploadNumLimit))
             {
                 int indexStart = imageUploadNumLimit;
                 int redunCount = images.Count - indexStart;
@@ -97,15 +128,10 @@ namespace ImageBed.Pages
 
             if(images.Count > 0)
             {
-                imageTotalSize = 0;
-                imageUploadedSize = 0;
-                foreach (var image in images)
+                images.ForEach(image =>
                 {
                     imageTotalSize += image.Size;
-                }
-
-                UpdateProgress();
-
+                });
                 return true;
             }
             else
@@ -117,7 +143,7 @@ namespace ImageBed.Pages
 
 
         /// <summary>
-        /// 图片状态改变时调用
+        /// 图片状态改变时调用(调整进度条)
         /// </summary>
         /// <param name="fileinfo">所有图片的上传信息</param>
         void ImageStateChanged(UploadInfo uploadInfo)
@@ -125,48 +151,38 @@ namespace ImageBed.Pages
             var image = uploadInfo.File;
             if(image.State != UploadState.Uploading)
             {
-                if(image.State == UploadState.Success)
-                {
-                    image.Url = image.GetResponse<ApiResult<List<string>>>()?.Res?.FirstOrDefault();
-                }
-                imageUploadedSize += image.Size;
-                UpdateProgress();
+                ImageUploadedSize += image.Size;
             } 
         }
 
 
         /// <summary>
-        /// 上传完成后调用
+        /// 上传完成后调用(统计成功上传的图片数、复制链接)
         /// </summary>
-        /// 
         async void UploadFinished(UploadInfo uploadInfo)
         {
-            progress_percent = 0;
+            // 隐藏进度条
+            ProgressPercent = 0;
 
-            string urls = string.Empty;
-
-            var images = uploadInfo.FileList;
-            var urlFormat = GlobalValues.appSetting.Data.Resources.Images.UrlFormat;
-            foreach (var image in images)
+            // 获取所有成功上传的图片的链接
+            var urls = string.Empty;
+            uploadInfo.FileList.ForEach((image) =>
             {
-                if (!string.IsNullOrEmpty(image.Url))
+                var url = image.GetResponse<ApiResult<List<string>>>()?.Res?.FirstOrDefault();
+                if (!string.IsNullOrEmpty(url))
                 {
-                    urls += $"{UnitNameGenerator.UrlBuild(urlFormat, $"{NavigationManager.BaseUri}{image.Url}")}\n";
+                    urls += $"{UnitNameGenerator.UrlBuild(imageConfig.UrlFormat, $"{NavigationManager.BaseUri}{image.Url}")}\n";
                     imageSuccessNum++;
                 }
-            }
+            });
             urls = urls.Remove(urls.Length - 1);
 
-            images.Clear();
+            // 清空已上传的图片列表
+            uploadInfo.FileList.Clear();
 
+            // 复制链接到剪贴板
             await JS.InvokeVoidAsync("CopyToClip", urls);
             _ = _message.Success($"图片上传完成, {imageSuccessNum}个成功, {imageTotalNum - imageSuccessNum}个失败 !"); ;
-        }
-
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-             await JS.InvokeVoidAsync("BindPasteEvent", imageUploadSizeLimit, imageUploadNumLimit);
         }
     }
 }

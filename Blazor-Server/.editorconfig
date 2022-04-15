@@ -73,6 +73,12 @@ dotnet_diagnostic.CA1707.severity = none
 # IDE0052: 删除未读的私有成员
 dotnet_diagnostic.IDE0052.severity = none
 
+# CS8618: 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+dotnet_diagnostic.CS8618.severity = silent
+
+# CA1822: 将成员标记为 static
+dotnet_diagnostic.CA1822.severity = silent
+
 [*.vb]
 #### 命名样式 ####
 

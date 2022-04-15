@@ -1,57 +1,73 @@
 ﻿using ImageBed.Common;
+using Newtonsoft.Json;
 using ImageBed.Data.Entity;
-using Microsoft.AspNetCore.Components.Forms;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Components.Forms;
 using static ImageBed.Common.UnitNameGenerator;
 
 namespace ImageBed.Pages
 {
     partial class Cog
     {
-        // 图片存储路径
-        string imageDir = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? "";
+        bool spinning;                          // 页面加载标志
+        bool emailTestRunning;                  // 邮箱测试中标志
 
-        // 是否实时刷新仪表盘
-        bool RefreshDashboardRealTime = GlobalValues.appSetting?.Record?.RefreshRealTime ?? true;
-
-        // 图片重命名状态
-        RenameFormat renameFormat = GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat ?? RenameFormat.MD5;
-
-        // 系统资源统计开始时间
-        double RefreshStartTime = GlobalValues.appSetting?.Record?.RefreshStartTime ?? 0;
-
-        // 图片尺寸限制
-        double ImageMaxSize = GlobalValues.appSetting?.Data.Resources.Images.MaxSize ?? 0;
-
-        // 单次上传数量限制
-        double ImageMaxNum = GlobalValues.appSetting?.Data.Resources.Images.MaxNum ?? 0;
-
-        // 图库界面默认视图
-        bool ViewList = GlobalValues.appSetting.Pics.ViewList;
-
-        // 网页页脚
-        string footer = GlobalValues.appSetting?.footer ?? "";
+        Image? imageConfig;                     // 图片设置
+        Record? recordConfig;                   // 系统资源记录设置
+        Data.Entity.Pics? picsConfig;           // 图库设置
+        Notify? notifyConfig;                   // 消息设置
+        Footer? footerConfig;                   // 页脚设置
 
         // 上传图片格式限制
+        string[] imageFormatChoose;
         string[] imageFormatOptions = { "jpg", "jpeg", "png", "gif", "bmp", "svg", "raw" };
-        string[] imageFormatChoose = GlobalValues.appSetting.Data.Resources.Images.Format.Split(",");
-
-        // 复制链接格式
-        UrlFormat urlFormat = GlobalValues.appSetting.Data.Resources.Images.UrlFormat;
-
-        // 邮件设置
-        bool TestRunning = false;
-        Email emailConfig = GlobalValues.appSetting.Notify.Email;
-        Condition emailSendCondition = GlobalValues.appSetting.Notify.Condition;
-
-        bool loading = true;
 
 
-        protected override void OnAfterRender(bool firstRender)
+        /// <summary>
+        /// 初始化页面
+        /// </summary>
+        /// <returns></returns>
+        protected override Task OnInitializedAsync()
         {
-            loading = false;
-            base.OnAfterRender(firstRender);
-            StateHasChanged();
+            spinning = true;
+            return base.OnInitializedAsync();
+        }
+
+
+        /// <summary>
+        /// 初始化变量
+        /// </summary>
+        /// <returns></returns>
+        protected override Task OnParametersSetAsync()
+        {
+            emailTestRunning = false;
+
+            var appConfig = JsonConvert.DeserializeObject<AppSetting>(JsonConvert.SerializeObject(GlobalValues.appSetting));
+            if(appConfig != null)
+            {
+                imageConfig = appConfig.Data.Resources.Images;
+                recordConfig = appConfig.Record;
+                picsConfig = appConfig.Pics;
+                notifyConfig = appConfig.Notify;
+                footerConfig = appConfig.Footer;
+            }
+
+            imageFormatChoose = imageConfig.Format.Split('.', ',').Where(suffix => !string.IsNullOrEmpty(suffix)).ToArray();
+
+            return base.OnParametersSetAsync();
+        }
+
+
+        /// <summary>
+        /// 结束页面渲染
+        /// </summary>
+        /// <param name="firstRender"></param>
+        /// <returns></returns>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            spinning = false;
+            await InvokeAsync(() => { StateHasChanged(); });
+            await base.OnAfterRenderAsync(firstRender);
         }
 
 
@@ -69,49 +85,36 @@ namespace ImageBed.Pages
         /// 修改设置文件
         /// </summary>
         /// <param name="editContext"></param>
-        private void OnFinish(EditContext editContext)
+        async Task OnFinish(EditContext editContext)
         {
-            GlobalValues.appSetting.Data.Resources.Images.RenameFormat = renameFormat;
-            GlobalValues.appSetting.Record.RefreshRealTime = RefreshDashboardRealTime;
-
-            if (RefreshStartTime < 0) { RefreshStartTime = 0; }
-            else if (RefreshStartTime > 18) { RefreshStartTime = 18; }
-            GlobalValues.appSetting.Record.RefreshStartTime = (int)RefreshStartTime;
-
-            if (ImageMaxSize < 0) { ImageMaxSize = 0; }
-            else if (ImageMaxSize > 99999) { ImageMaxSize = 99999; }
-            GlobalValues.appSetting.Data.Resources.Images.MaxSize = (int)ImageMaxSize;
-
-            if (ImageMaxNum < 0) { ImageMaxNum = 0; }
-            else if (ImageMaxNum > 99999) { ImageMaxNum = 99999; }
-            GlobalValues.appSetting.Data.Resources.Images.MaxNum = (int)ImageMaxNum;
-
-            GlobalValues.appSetting.Notify.Email = emailConfig;
-            GlobalValues.appSetting.Notify.Condition = emailSendCondition;
-
-            GlobalValues.appSetting.footer = footer;
-
             if(imageFormatChoose.Length == 0)
             {
-                _message.Error("请至少选择一种图片格式 !");
-                return;
+                await _message.Error("请至少选择一种图片格式 !");
             }
             else
             {
-                string formatStr = "";
+                // 格式化文件筛选列表
+                string formatStr = string.Empty;
                 foreach (string format in imageFormatChoose)
                 {
-                    formatStr += $"{format},";
+                    formatStr += $".{format},";
                 }
-                GlobalValues.appSetting.Data.Resources.Images.Format = formatStr;
+                imageConfig.Format = formatStr.Remove(formatStr.Length - 1);
+
+                // 修改全局设置
+                GlobalValues.appSetting.Data.Resources.Images = imageConfig;
+                GlobalValues.appSetting.Record = recordConfig;
+                GlobalValues.appSetting.Pics = picsConfig;
+                GlobalValues.appSetting.Notify = notifyConfig;
+                GlobalValues.appSetting.Footer = footerConfig;
+
+                // 重新加载设置
+                // 这里是为了避免当页面销毁时, 全局设置 appSetting 引用为 null
+                AppSetting.Save(GlobalValues.appSetting, "appsettings.json");
+                GlobalValues.appSetting = AppSetting.Parse();
+
+                _ = _message.Success("设置完成 !");
             }
-
-            GlobalValues.appSetting.Data.Resources.Images.UrlFormat = urlFormat;
-            GlobalValues.appSetting.Pics.ViewList = ViewList;
-
-            AppSetting.Save(GlobalValues.appSetting, "appsettings.json");
-
-            _message.Success("设置完成 !");
         }
 
 
@@ -119,40 +122,40 @@ namespace ImageBed.Pages
         /// 修改设置失败后调用
         /// </summary>
         /// <param name="editContext"></param>
-        private void OnFinishFailed(EditContext editContext)
+        async Task OnFinishFailed(EditContext editContext)
         {
             GlobalValues.appSetting = AppSetting.Parse();
-            _message.Error("设置失败 !");
+            await _message.Error("设置失败 !");
         }
 
 
         /// <summary>
-        /// 测试邮箱和验证码
+        /// 测试邮箱和验证码是否正确
         /// </summary>
-        private async Task TestEmailConfig()
+        async Task TestEmailConfig()
         {
-            TestRunning = true;
+            emailTestRunning = true;
 
             Regex emailRegex = new(@"^\w+@\w+.com$");
-            if(emailRegex.IsMatch(emailConfig.From) && (emailRegex.IsMatch(emailConfig.To)))
+            if(emailRegex.IsMatch(notifyConfig.Email.From) && (emailRegex.IsMatch(notifyConfig.Email.To)))
             {
                 await MailHelper.PostEmails(new MailEntity
                 {
-                    FromPerson = emailConfig.From,
-                    RecipientArry = emailConfig.To.Split(","),
+                    FromPerson = notifyConfig.Email.From,
+                    RecipientArry = notifyConfig.Email.To.Split(","),
                     MailTitle = "ImageBed",
                     MailBody = "这是一封测试邮件, 您的邮箱配置成功 !",
-                    Code = emailConfig.Code,
+                    Code = notifyConfig.Email.Code,
                     IsBodyHtml = false
                 });
 
-                TestRunning = false;
+                emailTestRunning = false;
 
-                _ = _message.Success("测试邮件发送成功, 请注意查收 !");
+                _ = _message.Success("测试邮件已发送, 请注意查收 !");
             }
             else
             {
-                _ = _message.Error("请检查邮件配置是否正确 !");
+                _ = _message.Error("测试邮件发送失败, 请检查邮件配置是否正确 !");
             }
         }
     }

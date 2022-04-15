@@ -10,7 +10,7 @@ namespace ImageBed.Data.Entity
         public Record? Record { get; set; }
         public Pics? Pics { get; set; }
         public Notify? Notify { get; set; }
-        public string footer { get; set; } = string.Empty;
+        public Footer? Footer { get; set; }
 
 
         /// <summary>
@@ -119,6 +119,12 @@ namespace ImageBed.Data.Entity
         public double OverDiskOccupy { get; set; }
         public double OverMemory { get; set; }
         public double OverNum { get; set; }
+    }
+
+
+    public class Footer
+    {
+        public string Content { get; set; }
     }
 
 

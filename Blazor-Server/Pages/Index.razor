@@ -16,13 +16,16 @@
 </style>
 
 <div class="upload">
-    <Upload Multiple
-            @attributes=attrs
+    <Spin Spinning=@spining>
+		<Upload Multiple
+            Action=@("api/image")
+            Accept=@imageConfig.Format
             ShowUploadList=false
             BeforeAllUpload=@CheckImages
             OnChange=@ImageStateChanged
             OnCompleted=@UploadFinished>
-        <Image Id="upload" Width="100%" Src="images/upload.png" Preview=false Style="position:center;margin-top:130px;"/>
-    </Upload>
-    <Progress Percent=_progress_percent StrokeWidth=progress_stroke_width ShowInfo=progress_showInfo/>
+            <Image Id="upload" Width="100%" Src="images/upload.png" Preview=false Style="position:center;margin-top:130px;"/>
+        </Upload>
+        <Progress Percent=@ProgressPercent StrokeWidth=progress_stroke_width ShowInfo=progress_showInfo/>
+    </Spin>
 </div>
