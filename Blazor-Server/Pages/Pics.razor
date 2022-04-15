@@ -37,7 +37,7 @@
     }
     <SpaceItem>
         <Upload Multiple
-            @attributes=attrs
+            Action="api/image"
             ShowUploadList=false
             BeforeAllUploadAsync=@StartImport
             OnCompleted=@ImportFinished>

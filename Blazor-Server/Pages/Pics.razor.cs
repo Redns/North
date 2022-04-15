@@ -6,7 +6,7 @@ using Microsoft.JSInterop;
 
 namespace ImageBed.Pages
 {
-    partial class Pics
+    partial class Pics : IDisposable
     {
         // 视图切换按钮图标(列表/卡片)
         string imageFormatChangeButtonIcon = GlobalValues.appSetting.Pics.ViewList ? IconType.Outline.UnorderedList : IconType.Outline.Appstore;
@@ -68,6 +68,38 @@ namespace ImageBed.Pages
             }
             
             searchRunning = false;
+        }
+
+
+        /// <summary>
+        /// 初始化界面
+        /// </summary>
+        /// <returns></returns>
+        protected override async Task OnInitializedAsync()
+        {
+            loading = true;
+
+            // 加载数据库信息
+            using (var context = new OurDbContext())
+            {
+                imagesAll = await new SQLImageData(context).GetArrayAsync();
+                imagesShow = (ImageEntity[])imagesAll.Clone();
+            }
+        }
+
+
+        /// <summary>
+        /// 页面渲染完成后调用
+        /// </summary>
+        /// <param name="firstRender"></param>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                loading = false;
+                await InvokeAsync(() => { StateHasChanged(); });
+            }
+            await base.OnAfterRenderAsync(firstRender);
         }
 
 
@@ -179,47 +211,6 @@ namespace ImageBed.Pages
         IEnumerable<ImageEntity>? imagesSelected;
 
 
-
-        /// <summary>
-        /// 初始化界面
-        /// </summary>
-        /// <returns></returns>
-        protected override async Task OnInitializedAsync()
-        {
-            loading = true;
-
-            // 加载数据库信息
-            using (var context = new OurDbContext())
-            {
-                imagesAll = await new SQLImageData(context).GetArrayAsync();
-                imagesShow = (ImageEntity[])imagesAll.Clone();
-            }
-
-            // 设置文件选择过滤器
-            string[] imageFormats = GlobalValues.appSetting.Data.Resources.Images.Format.Split(",");
-            for (int i = 0; i < imageFormats.Length; i++)
-            {
-                imageFormatFilter += $".{imageFormats[i]},";
-            }
-            imageFormatFilter += ".zip";
-
-            attrs = new Dictionary<string, object>{
-                { "accept", imageFormatFilter},
-                { "Action", "/api/image" },
-                { "Name", "files" },
-                { "Multiple", true }
-            };
-        }
-
-
-        protected override void OnAfterRender(bool firstRender)
-        {
-            loading = false;
-            base.OnAfterRender(firstRender);
-            StateHasChanged();
-        }
-
-
         /// <summary>
         /// 复制图片链接到剪贴板
         /// </summary>
@@ -291,6 +282,12 @@ namespace ImageBed.Pages
             }
 
             imagesShow = imagesAll.Skip(index).Take(count).ToArray();
+        }
+
+        public void Dispose()
+        {
+            GC.Collect();
+            GC.SuppressFinalize(this);
         }
     }
 }

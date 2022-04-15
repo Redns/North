@@ -9,10 +9,8 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 
-@implements IDisposable
-
 <div>
-    <Spin Spinning=@loading>
+    <Spin Spinning=@spinning>
         <Row Gutter=32 Style="position:center;margin-top:20px;">
             <Col Span=6>
                 <Card TitleTemplate=TitleTemplate_HostImageNum>

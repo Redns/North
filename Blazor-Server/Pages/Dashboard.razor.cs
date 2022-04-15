@@ -9,39 +9,66 @@ using AntDesign.Charts;
 
 namespace ImageBed.Pages
 {
-    partial class Dashboard
+    partial class Dashboard : IDisposable
     {
-        private static System.Timers.Timer? t;
+        bool spinning;                                  // 页面加载标志
 
-        int HostImageNums { get; set; } = 0;
-        string DiskOccupancy { get; set; } = "MB";
-        string RunningMemUsage { get; set; } = "MB";
-        string SysRunningTime { get; set; } = "00:00:00";
+        Record? recordConfig;                           // 仪表盘设置
+        
+        Process? process;                               // 当前进程
+        System.Timers.Timer? t;                         // 资源刷新定时器
 
-        List<object> SysRecords = new();
+        List<object>? SysRecords { get; set; }          // 统计数据
+        List<ImageEntity>? Images { get; set; }         // 图片信息
+        int HostImageNums { get; set; }                 // 托管图片总数
+        string DiskOccupancy { get; set; }              // 磁盘存储占用
+        string RunningMemUsage { get; set; }            // 运行内存占用
+        string SysRunningTime { get; set; }             // 系统运行时间
 
-        bool loading = true;
-
+        
         /// <summary>
         /// 初始化界面
         /// </summary>
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            loading = true;
-            if (GlobalValues.appSetting?.Record?.RefreshRealTime ?? true)
+            spinning = true;
+
+            HostImageNums = 0;
+            DiskOccupancy = "MB";
+            RunningMemUsage = "MB";
+            SysRunningTime = "00:00:00";
+
+            SysRecords = new();
+            Images = new();
+
+            process = Process.GetCurrentProcess();
+            recordConfig = GlobalValues.appSetting.Record;
+            if (recordConfig.RefreshRealTime)
             {
                 InitTimer();
             }
+
+            // 刷新界面
             RefreshChart();
             RefreshDashboard(null, null);
+
+            await base.OnInitializedAsync();
         }
 
 
-        protected override void OnAfterRender(bool firstRender)
+        /// <summary>
+        /// 结束页面渲染
+        /// </summary>
+        /// <param name="firstRender"></param>
+        /// <returns></returns>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            loading = false;
-            base.OnAfterRender(firstRender);
-            StateHasChanged();
+            if (firstRender)
+            {
+                spinning = false;
+                await InvokeAsync(() => { StateHasChanged(); });
+            }
+            await base.OnAfterRenderAsync(firstRender);
         }
 
 
@@ -58,39 +85,38 @@ namespace ImageBed.Pages
 
 
         /// <summary>
-        /// 每隔 1s 刷新仪表盘
+        /// 刷新仪表盘
         /// </summary>
         /// <param name="source"></param>
         /// <param name="e"></param>
         async void RefreshDashboard(object? source, ElapsedEventArgs? e)
         {
-            using (var context = new OurDbContext())
+            using(var context = new OurDbContext())
             {
-                var sqlImageData = new SQLImageData(context);
-                List<ImageEntity> images = await sqlImageData.GetAsync();
+                Images.Clear();
+                Images = await new SQLImageData(context).GetAsync();
 
                 // 获取托管图片总数
-                HostImageNums = images.Count;
+                HostImageNums = Images.Count;
 
                 // 获取托管图片所占磁盘存储总量
                 double diskOccupancyKB = 0;
-                images.ForEach(image =>
+                Images.ForEach(image =>
                 {
                     diskOccupancyKB += UnitNameGenerator.ParseFileSize(image.Size ?? "0B");
                 });
                 DiskOccupancy = $"{diskOccupancyKB / 1024.0:f3} MB";
-
-                // 获取该进程占用的运行内存
-                Process mainProcess = Process.GetCurrentProcess();
-                mainProcess.Refresh();
-                RunningMemUsage = $"{mainProcess.WorkingSet64 / (1024 * 1024)} MB";
-
-                // 获取应用运行时长
-                TimeSpan SysRunningTimeSpan = DateTime.Now - mainProcess.StartTime;
-                SysRunningTime = $"{(int)SysRunningTimeSpan.TotalHours}:{((int)SysRunningTimeSpan.TotalMinutes) % 60}:{((int)SysRunningTimeSpan.TotalSeconds) % 60}";
-
-                await InvokeAsync(new Action(() => { StateHasChanged(); }));
             }
+
+            // 获取该进程占用的运行内存
+            process.Refresh();
+            RunningMemUsage = $"{process.WorkingSet64 / (1024 * 1024)} MB";
+
+            // 获取应用运行时长
+            TimeSpan SysRunningTimeSpan = DateTime.Now - process.StartTime;
+            SysRunningTime = $"{(int)SysRunningTimeSpan.TotalHours}:{((int)SysRunningTimeSpan.TotalMinutes) % 60}:{((int)SysRunningTimeSpan.TotalSeconds) % 60}";
+
+            await InvokeAsync(new Action(() => { StateHasChanged(); }));
         }
 
 
@@ -99,11 +125,10 @@ namespace ImageBed.Pages
         /// </summary>
         async void RefreshChart()
         {
-            using (var context = new OurDbContext())
+            SysRecords.Clear();
+            using(var context = new OurDbContext())
             {
-                var sqlRecordData = new SQLRecordData(context);
-                SysRecords.Clear();
-                foreach (var record in await sqlRecordData.GetAsync())
+                foreach (var record in await new SQLRecordData(context).GetAsync())
                 {
                     SysRecords.Add(new
                     {
@@ -139,7 +164,16 @@ namespace ImageBed.Pages
             {
                 t?.Stop();
                 t?.Dispose();
+                t = null;
             }
+
+            recordConfig = null;
+            process = null;
+            SysRecords = null;
+            Images = null;
+
+
+            GC.Collect();
             GC.SuppressFinalize(this);
         }
 

@@ -133,6 +133,8 @@ namespace ImageBed.Common
             };
             imageInfo.Close();
             imageInfo.Dispose();
+            imageInfo = null;
+            GC.Collect();
 
             return image;
         }

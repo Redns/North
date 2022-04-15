@@ -1,11 +1,12 @@
 ﻿using AntDesign;
 using ImageBed.Common;
 using ImageBed.Data.Entity;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace ImageBed.Pages
 {
-    partial class Index
+    partial class Index : IDisposable
     {
         bool spining;                               // 页面加载标志
 
@@ -58,18 +59,10 @@ namespace ImageBed.Pages
         /// <summary>
         /// 初始化加载界面
         /// </summary>
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             spining = true;
-            base.OnInitialized();
-        }
 
-
-        /// <summary>
-        /// 初始化变量
-        /// </summary>
-        protected override void OnParametersSet()
-        {
             imageTotalNum = 0;
             imageSuccessNum = 0;
             imageTotalSize = 0;
@@ -84,19 +77,25 @@ namespace ImageBed.Pages
             imageUploadSizeLimit = imageConfig.MaxSize;
             imageUploadNumLimit = imageConfig.MaxNum;
 
-            base.OnParametersSet();
+            _ = JS.InvokeVoidAsync("BindPasteEvent", imageUploadSizeLimit, imageUploadNumLimit);
+
+            await base.OnInitializedAsync();
         }
 
 
         /// <summary>
-        /// 页面渲染完成后调用
+        /// 渲染完成后调用
         /// </summary>
-        /// <param name="firstRender"></param>
+        /// <param name="firstRender">是否为第一次渲染</param>
+        /// <returns></returns>
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            spining = false;
-            await InvokeAsync(() => { StateHasChanged(); });
-            await JS.InvokeVoidAsync("BindPasteEvent", imageUploadSizeLimit, imageUploadNumLimit);
+            if (firstRender)
+            {
+                spining = false;
+                await InvokeAsync(() => { StateHasChanged(); });
+            }
+            await base.OnAfterRenderAsync(firstRender);
         }
 
 
@@ -183,6 +182,19 @@ namespace ImageBed.Pages
             // 复制链接到剪贴板
             await JS.InvokeVoidAsync("CopyToClip", urls);
             _ = _message.Success($"图片上传完成, {imageSuccessNum}个成功, {imageTotalNum - imageSuccessNum}个失败 !"); ;
+        }
+
+
+        /// <summary>
+        /// 释放资源
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        public void Dispose()
+        {
+            imageConfig = null;
+
+            GC.Collect();   
+            GC.SuppressFinalize(this);
         }
     }
 }

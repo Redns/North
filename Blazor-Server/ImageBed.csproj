@@ -46,12 +46,6 @@
     <Folder Include="Data\Database\" />
     <Folder Include="Data\Logs\" />
   </ItemGroup>
-	
-  <ItemGroup>
-    <None Update="Dockerfile">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 

@@ -7,7 +7,7 @@ using static ImageBed.Common.UnitNameGenerator;
 
 namespace ImageBed.Pages
 {
-    partial class Cog
+    partial class Cog : IDisposable
     {
         bool spinning;                          // 页面加载标志
         bool emailTestRunning;                  // 邮箱测试中标志
@@ -27,23 +27,14 @@ namespace ImageBed.Pages
         /// 初始化页面
         /// </summary>
         /// <returns></returns>
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
             spinning = true;
-            return base.OnInitializedAsync();
-        }
 
-
-        /// <summary>
-        /// 初始化变量
-        /// </summary>
-        /// <returns></returns>
-        protected override Task OnParametersSetAsync()
-        {
             emailTestRunning = false;
 
             var appConfig = JsonConvert.DeserializeObject<AppSetting>(JsonConvert.SerializeObject(GlobalValues.appSetting));
-            if(appConfig != null)
+            if (appConfig != null)
             {
                 imageConfig = appConfig.Data.Resources.Images;
                 recordConfig = appConfig.Record;
@@ -54,19 +45,22 @@ namespace ImageBed.Pages
 
             imageFormatChoose = imageConfig.Format.Split('.', ',').Where(suffix => !string.IsNullOrEmpty(suffix)).ToArray();
 
-            return base.OnParametersSetAsync();
+            await base.OnInitializedAsync();
         }
 
 
         /// <summary>
-        /// 结束页面渲染
+        /// 页面渲染结束后调用
         /// </summary>
         /// <param name="firstRender"></param>
         /// <returns></returns>
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            spinning = false;
-            await InvokeAsync(() => { StateHasChanged(); });
+            if (firstRender)
+            {
+                spinning = false;
+                await InvokeAsync(() => { StateHasChanged(); });
+            }
             await base.OnAfterRenderAsync(firstRender);
         }
 
@@ -157,6 +151,22 @@ namespace ImageBed.Pages
             {
                 _ = _message.Error("测试邮件发送失败, 请检查邮件配置是否正确 !");
             }
+        }
+
+
+        /// <summary>
+        /// 释放页面资源
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        public void Dispose()
+        {
+            imageConfig = null;
+            recordConfig = null;
+            picsConfig = null;
+            notifyConfig = null;
+            footerConfig = null;
+            GC.Collect();
+            GC.SuppressFinalize(this);
         }
     }
 }
