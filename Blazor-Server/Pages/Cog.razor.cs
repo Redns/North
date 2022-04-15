@@ -1,6 +1,7 @@
 ﻿using ImageBed.Common;
 using ImageBed.Data.Entity;
 using Microsoft.AspNetCore.Components.Forms;
+using System.Text.RegularExpressions;
 using static ImageBed.Common.UnitNameGenerator;
 
 namespace ImageBed.Pages
@@ -25,6 +26,9 @@ namespace ImageBed.Pages
         // 单次上传数量限制
         double ImageMaxNum = GlobalValues.appSetting?.Data.Resources.Images.MaxNum ?? 0;
 
+        // 图库界面默认视图
+        bool ViewList = GlobalValues.appSetting.Pics.ViewList;
+
         // 网页页脚
         string footer = GlobalValues.appSetting?.footer ?? "";
 
@@ -34,6 +38,11 @@ namespace ImageBed.Pages
 
         // 复制链接格式
         UrlFormat urlFormat = GlobalValues.appSetting.Data.Resources.Images.UrlFormat;
+
+        // 邮件设置
+        bool TestRunning = false;
+        Email emailConfig = GlobalValues.appSetting.Notify.Email;
+        Condition emailSendCondition = GlobalValues.appSetting.Notify.Condition;
 
 
         /// <summary>
@@ -67,6 +76,9 @@ namespace ImageBed.Pages
             else if (ImageMaxNum > 99999) { ImageMaxNum = 99999; }
             GlobalValues.appSetting.Data.Resources.Images.MaxNum = (int)ImageMaxNum;
 
+            GlobalValues.appSetting.Notify.Email = emailConfig;
+            GlobalValues.appSetting.Notify.Condition = emailSendCondition;
+
             GlobalValues.appSetting.footer = footer;
 
             if(imageFormatChoose.Length == 0)
@@ -85,7 +97,8 @@ namespace ImageBed.Pages
             }
 
             GlobalValues.appSetting.Data.Resources.Images.UrlFormat = urlFormat;
-            
+            GlobalValues.appSetting.Pics.ViewList = ViewList;
+
             AppSetting.Save(GlobalValues.appSetting, "appsettings.json");
 
             _message.Success("设置完成！");
@@ -100,6 +113,37 @@ namespace ImageBed.Pages
         {
             GlobalValues.appSetting = AppSetting.Parse();
             _message.Error("设置失败！");
+        }
+
+
+        /// <summary>
+        /// 测试邮箱和验证码
+        /// </summary>
+        private async Task TestEmailConfig()
+        {
+            TestRunning = true;
+
+            Regex emailRegex = new(@"^\w+@\w+.com$");
+            if(emailRegex.IsMatch(emailConfig.From) && (emailRegex.IsMatch(emailConfig.To)))
+            {
+                await MailHelper.PostEmails(new MailEntity
+                {
+                    FromPerson = emailConfig.From,
+                    RecipientArry = emailConfig.To.Split(","),
+                    MailTitle = "ImageBed",
+                    MailBody = "这是一封测试邮件, 您的邮箱配置成功!",
+                    Code = emailConfig.Code,
+                    IsBodyHtml = false
+                });
+
+                TestRunning = false;
+
+                _ = _message.Success("测试邮件发送成功, 请注意查收!");
+            }
+            else
+            {
+                _ = _message.Error("请检查邮件配置是否正确!");
+            }
         }
     }
 }

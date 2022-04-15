@@ -8,6 +8,8 @@ namespace ImageBed.Data.Entity
     {
         public Data? Data { get; set; }
         public Record? Record { get; set; }
+        public Pics? Pics { get; set; }
+        public Notify? Notify { get; set; }
         public string footer { get; set; } = string.Empty;
 
 
@@ -87,6 +89,36 @@ namespace ImageBed.Data.Entity
     {
         public Image? Images { get; set; }
         public Database? Database { get; set; }
+    }
+
+
+    public class Pics
+    {
+        public bool ViewList { get; set; }
+    }
+
+
+    public class Notify
+    {
+        public Email Email { get; set; }
+        public Condition Condition { get; set; }
+    }
+
+
+    public class Email
+    {
+        public string From { get; set; } = string.Empty;
+        public string To { get; set; } = string.Empty;
+        public string Code { get; set; } = string.Empty;
+    }
+
+
+    public class Condition
+    {
+        public bool SysRefresh { get; set; }
+        public double OverDiskOccupy { get; set; }
+        public double OverMemory { get; set; }
+        public double OverNum { get; set; }
     }
 
 

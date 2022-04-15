@@ -9,7 +9,7 @@ namespace ImageBed.Pages
     partial class Pics
     {
         // 视图切换按钮图标(列表/卡片)
-        string imageFormatChangeButtonIcon = IconType.Outline.UnorderedList;
+        string imageFormatChangeButtonIcon = GlobalValues.appSetting.Pics.ViewList ? IconType.Outline.UnorderedList : IconType.Outline.Appstore;
         void ChangeTableFormat()
         {
             if(imageFormatChangeButtonIcon == IconType.Outline.UnorderedList)
@@ -18,6 +18,7 @@ namespace ImageBed.Pages
             }
             else
             {
+
                 imageFormatChangeButtonIcon = IconType.Outline.UnorderedList;
             }
         }

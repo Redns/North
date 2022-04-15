@@ -96,7 +96,7 @@
     </TabPane>
     <TabPane Key="2">
         <TabTemplate>
-            <Space><Icon Type="fund-projection-screen" Width=25 Height=25/>仪表盘</Space>
+            <Space><Icon Type="dashboard" Width=25 Height=25/>仪表盘</Space>
         </TabTemplate>
         <ChildContent>
             <Form Model="@GlobalValues.appSetting" 
@@ -108,8 +108,8 @@
                 <FormItem Label="实时刷新仪表盘">
                     <Tooltip Title="@("开启实时刷新将占用更多的资源")">
                         <RadioGroup @bind-Value="RefreshDashboardRealTime">
-                            <Radio RadioButton Value="@true">是</Radio>
-                            <Radio RadioButton Value="@false">否</Radio>
+                            <Radio RadioButton Value="@true">开启</Radio>
+                            <Radio RadioButton Value="@false">关闭</Radio>
                         </RadioGroup>
                     </Tooltip>
                 </FormItem>
@@ -135,6 +135,115 @@
         </ChildContent>
     </TabPane>
     <TabPane Key="3">
+        <TabTemplate>
+            <Space><Icon Type="picture" Width=25 Height=25/>图 库</Space>
+        </TabTemplate>
+        <ChildContent>
+            <Form Model="@GlobalValues.appSetting" 
+              LabelColSpan="8"
+              WrapperColSpan="16"
+              OnFinish="OnFinish" 
+              OnFinishFailed="OnFinishFailed"
+              Style="margin-top:80px;">
+                <FormItem Label="默认视图">
+                    <RadioGroup @bind-Value="ViewList">
+                            <Radio RadioButton Value="@true">表 格</Radio>
+                            <Radio RadioButton Value="@false">卡 片</Radio>
+                    </RadioGroup>
+                </FormItem>
+                <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                    <Button Type="@ButtonType.Primary" HtmlType="submit">
+                        保 存
+                    </Button>
+                </FormItem>
+            </Form>
+        </ChildContent>
+    </TabPane>
+    <TabPane Key="4">
+        <TabTemplate>
+            <Space><Icon Type="bell" Width=25 Height=25/>通 知</Space>
+        </TabTemplate>
+        <ChildContent>
+            <Form Model="@GlobalValues.appSetting" 
+              LabelColSpan="8"
+              WrapperColSpan="16"
+              OnFinish="OnFinish" 
+              OnFinishFailed="OnFinishFailed"
+              Style="margin-top:80px;">
+                <FormItem Label="发件人邮箱">
+                    <Input Style="width:200px;" @bind-Value="@emailConfig.From"/>
+                </FormItem>
+                <FormItem Label="授权码">
+                    <Space>
+                        <SpaceItem>
+                            <Input Style="width:200px;" @bind-Value="@emailConfig.Code"/>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <Tooltip Title=@("点击发送测试邮件")>
+                                <Button Type=@ButtonType.Primary Ghost Icon=@IconType.Outline.Api OnClick=@TestEmailConfig Loading=@TestRunning/>
+                            </Tooltip>
+                        </SpaceItem>
+                    </Space>
+                </FormItem>
+                <FormItem Label="收件人邮箱">
+                    <Input Style="width:200px;" @bind-Value="@emailConfig.To"/>
+                </FormItem>
+                <FormItem Label="每日统计">
+                    <Tooltip Title="@("开启则系统每天会通过邮件发送昨日的相关统计数据")">
+                        <RadioGroup @bind-Value="emailSendCondition.SysRefresh">
+                            <Radio RadioButton Value="@true">开启</Radio>
+                            <Radio RadioButton Value="@false">关闭</Radio>
+                        </RadioGroup>
+                    </Tooltip>
+                </FormItem>
+                <FormItem Label="存储空间预警">
+                    <Tooltip Title="@("在图片存储占用超过限制时发送邮件")">
+                        <Space>
+                            <SpaceItem>
+                                <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value="emailSendCondition.OverDiskOccupy" />
+                            </SpaceItem>
+                            <SpaceItem>
+                                MB
+                            </SpaceItem>
+                        </Space>
+                        
+                    </Tooltip>
+                </FormItem>
+                <FormItem Label="内存占用预警">
+                    <Tooltip Title="@("在系统运行内存占用超出限制时发送邮件")">
+                        <Space>
+                            <SpaceItem>
+                                <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value="emailSendCondition.OverMemory" />
+                            </SpaceItem>
+                            <SpaceItem>
+                                MB
+                            </SpaceItem>
+                        </Space>
+                        
+                    </Tooltip>
+                </FormItem>
+                <FormItem Label="图片数量预警">
+                    <Tooltip Title="@("在托管图片数量超出限制时发送邮件")">
+                        <Space>
+                            <SpaceItem>
+                                <AntDesign.InputNumber Step="1" Min="0" Max="99999" @bind-Value="emailSendCondition.OverNum" />
+                            </SpaceItem>
+                            <SpaceItem>
+                                张
+                            </SpaceItem>
+                        </Space>
+                        
+                    </Tooltip>
+                </FormItem>
+                <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                    <Button Type="@ButtonType.Primary" HtmlType="submit">
+                        保 存
+                    </Button>
+                </FormItem>
+            </Form>
+        </ChildContent>
+    </TabPane>
+    <TabPane Key="5">
         <TabTemplate>
             <Space><Icon Type="appstore" Width=25 Height=25/>其 它</Space>
         </TabTemplate>
