@@ -22,9 +22,9 @@
         </Tooltip>
     </SpaceItem>
     <SpaceItem>
-        <Search Placeholder="Search what you want..." EnterButton="true" @bind-Value="searchText" Loading=@searchRunning OnSearch=@OnSearch Style="width:220px"/>
+        <Search Placeholder="Search what you want..." EnterButton="true" @bind-Value="searchText" Loading=@searching OnSearch=@OnSearch Style="width:220px"/>
     </SpaceItem>
-    @if((imagesShow.Length > 0) && (imageFormatChangeButtonIcon == IconType.Outline.UnorderedList))
+    @if((imagesShow.Length > 0) && (ImageViewFormat == ViewFormat.List))
     {
         if((imagesSelected?.Count() != imagesShow.Count()))
         {
@@ -44,7 +44,7 @@
             <Button Type="@ButtonType.Primary" Ghost>导  入</Button>
         </Upload>
     </SpaceItem>
-    @if ((imagesSelected != null ) && (imagesSelected.Count() > 0) && (imageFormatChangeButtonIcon == IconType.Outline.UnorderedList))
+    @if ((imagesSelected != null ) && (imagesSelected.Any()) && (ImageViewFormat == ViewFormat.List))
     {
         <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick=@ExportSelectedImages>导  出</Button></SpaceItem>
         <SpaceItem><Button Danger Ghost OnClick=@RemoveSelectedImages>删 除</Button></SpaceItem>
@@ -52,66 +52,72 @@
 </Space>
 <br/>
 <br />
-<Spin Spinning=@loading>
-    @if(imageFormatChangeButtonIcon == IconType.Outline.UnorderedList)
+<Spin Spinning=@spinning>
+    @if(ImageViewFormat == ViewFormat.List)
     {
         <Table @ref="table"
-           TItem="ImageEntity"
-           DataSource="@imagesShow"
-           @bind-PageSize="_pageSize"
-           @bind-SelectedRows="@imagesSelected"
-        >
+            TItem="ImageEntity"
+            DataSource="@imagesShow"
+            @bind-PageSize="pageSize"
+            @bind-SelectedRows="@imagesSelected">
             <Selection Key="@(context.Id?.ToString())" />
             <Column @bind-Field="@context.Name" Align="@ColumnAlign.Center" Sortable>
                 <a href=@context.Url>@context.Name</a>
             </Column>
-            <Column @bind-Field="@context.Dpi" Align="@ColumnAlign.Center"/>
-            <Column @bind-Field="@context.Size" Align="@ColumnAlign.Center" Sortable/>
+            <Column @bind-Field="@context.Dpi" Align="@ColumnAlign.Center" />
+            <Column @bind-Field="@context.Size" Align="@ColumnAlign.Center" Sortable 
+                    SorterCompare="@((v1, v2) => 
+                    {
+                        double v1Size = UnitNameGenerator.ParseFileSize(v1);
+                        double v2Size = UnitNameGenerator.ParseFileSize(v2);
+                        if(v1Size > v2Size){ return 1; }
+                        else if(v1Size < v2Size){ return -1; }
+                        else{ return 0; }
+                    })"/>
             <Column @bind-Field="@context.UploadTime" Align="@ColumnAlign.Center" Sortable/>
             <Column @bind-Field="@context.RequestNum" Align="@ColumnAlign.Center" Sortable/>
             <Column @bind-Field="@context.Owner" Align="@ColumnAlign.Center" Sortable/>
             <ActionColumn Align="@ColumnAlign.Center">
                 <Space>
-                    <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{CopyUrlToClip(UnitNameGenerator.UrlBuild(GlobalValues.appSetting.Data.Resources.Images.UrlFormat, NavigationManager.BaseUri + context.Url));}">复 制</Button></SpaceItem>
-                    <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{DownloadFile(NavigationManager.BaseUri + context.Url, context.Name);}">下 载</Button></SpaceItem>
-                    <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick="()=>{ RemoveImage(context); }">删 除</Button></SpaceItem>
+                    <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{ _ = CopyUrlToClip(UnitNameGenerator.UrlBuild(imageConfig.UrlFormat, NavigationManager.BaseUri + context.Url));}">复 制</Button></SpaceItem>
+                    <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{ _ = DownloadFile(NavigationManager.BaseUri + context.Url, context.Name);}">下 载</Button></SpaceItem>
+                    <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick="()=>{ _ = RemoveImage(context); }">删 除</Button></SpaceItem>
                 </Space>
             </ActionColumn>
         </Table>
     }
+    else if(imagesShow.Length == 0)
+    {
+        <Empty Style="margin-top:130px;"></Empty>
+    }
     else
     {
-        imagesSelected = null;
-        if(imagesShow.Length > 12)
-        {
-            imagesShow = imagesAll.Skip(0).Take(12).ToArray();
-        }
-        else
-        {
-            imagesShow = imagesAll.Skip(0).Take(imagesShow.Length).ToArray();
-        }
-
-        <AntList Grid="grid" DataSource="@imagesShow">
-            <ListItem >
-                <Tooltip Title=@($"{context.Size}〔{context.Dpi}〕")>
-                    <Card Bordered  Hoverable 
-                          Actions="@(new[] {
-                            actionSetting(() => CopyUrlToClip(UnitNameGenerator.UrlBuild(GlobalValues.appSetting.Data.Resources.Images.UrlFormat, NavigationManager.BaseUri + context.Url))) ,
-                            actionEdit(()=> DownloadFile(NavigationManager.BaseUri + context.Url, context.Name)),
-                            actionEllipsis(()=> RemoveImage(context)) })">
-                            <Cover>
-                                <Image alt="example" Src=@($"api/image/thumbnails_{context.Name}") Width=180 Height=135/>
-                            </Cover>
-                    </Card>
-                </Tooltip>
-            </ListItem>
-        </AntList>
-        <Pagination PageSize="12" OnChange=@ImageCardPageChange Total=@imagesAll.Length />
-        @code
-        {
-            RenderFragment actionSetting(Action clickAction) =>@<Icon Type="copy" OnClick="@clickAction" />;
-            RenderFragment actionEdit(Action clickAction) =>@<Icon Type="download" OnClick="@clickAction" />;
-            RenderFragment actionEllipsis(Action clickAction) => @<Icon Type="delete" OnClick="@clickAction" />;
-        }
+        <AntList Grid="grid" DataSource="@imagesShow" Style="overflow:scroll; overflow-x:hidden; height:550px;" Id="imageCard">
+                <ListItem>
+                    <Tooltip Title=@($"{context.Size}〔{context.Dpi}〕")>
+                        <Card Bordered  Hoverable 
+                              Actions="@(new[] {
+                                actionSetting(() => _ = CopyUrlToClip(UnitNameGenerator.UrlBuild(GlobalValues.appSetting.Data.Resources.Images.UrlFormat, NavigationManager.BaseUri + context.Url))) ,
+                                actionEdit(()=> _ = DownloadFile(NavigationManager.BaseUri + context.Url, context.Name)),
+                                actionEllipsis(()=> _ = RemoveImage(context)) })">
+                                <Cover>
+                                    <AntDesign.Image alt="example" Src=@($"api/image/thumbnails_{context.Name}") Width=180 Height=135/>
+                                </Cover>
+                        </Card>
+                    </Tooltip>
+                </ListItem>
+            </AntList>
     }
 </Spin>
+@code
+{
+    RenderFragment actionSetting(Action clickAction) =>@<Icon Type="copy" OnClick="@clickAction" />;
+    RenderFragment actionEdit(Action clickAction) =>@<Icon Type="download" OnClick="@clickAction" />;
+    RenderFragment actionEllipsis(Action clickAction) => @<Icon Type="delete" OnClick="@clickAction" />;
+}
+
+<style>
+    #imageCard::-webkit-scrollbar {
+        display: none;
+    }
+</style>

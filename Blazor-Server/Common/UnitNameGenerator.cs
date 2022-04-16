@@ -195,12 +195,9 @@
         /// <returns></returns>
         public static string RenameFile(string dir, string srcName, RenameFormat format)
         {
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
+            Directory.CreateDirectory(dir);
 
-            if(format == RenameFormat.NONE) { return srcName; }
+            if (format == RenameFormat.NONE) { return srcName; }
             string dstName = format switch
             {
                 RenameFormat.MD5 => EncryptAndDecrypt.Encrypt_MD5(srcName),
@@ -214,7 +211,7 @@
             };
             dstName += $".{GetFileExtension(srcName)}";
 
-            if (File.Exists(dstName))
+            if ((format != RenameFormat.NONE) && File.Exists(dstName))
             {
                 dstName = RenameFile(dir, dstName, format);
                 return dstName;

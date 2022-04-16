@@ -6,69 +6,59 @@ using Microsoft.JSInterop;
 
 namespace ImageBed.Pages
 {
-    partial class Pics : IDisposable
+    public enum ViewFormat
     {
-        // 视图切换按钮图标(列表/卡片)
-        string imageFormatChangeButtonIcon = GlobalValues.appSetting.Pics.ViewList ? IconType.Outline.UnorderedList : IconType.Outline.Appstore;
-        void ChangeTableFormat()
-        {
-            if(imageFormatChangeButtonIcon == IconType.Outline.UnorderedList)
-            {
-                imageFormatChangeButtonIcon = IconType.Outline.Appstore;
-            }
-            else
-            {
+        List = 0,       // 列表视图
+        Card            // 卡片视图
+    }
 
-                imageFormatChangeButtonIcon = IconType.Outline.UnorderedList;
-            }
-        }
-
-
-        // 图片卡片
-        ListGridType grid = new()
-        {
-            Gutter = 16,
-            Xs = 1,
-            Sm = 2,
-            Md = 3,
-            Lg = 4,
-            Xl = 5,
-            Xxl = 6,
-        };
-
-
-        /// <summary>
-        /// 搜索框部分
-        /// </summary>
+    partial class Pics
+    {
+        bool spinning;
+        bool searching;
         string? searchText;
-        bool searchRunning = false;
 
+        ITable? table;
+        int pageSize;
 
-        /// <summary>
-        /// 根据搜索框内容检索图片
-        /// </summary>
-        public void OnSearch()
+        ImageEntity[] imagesAll = Array.Empty<ImageEntity>();
+        ImageEntity[] imagesShow = Array.Empty<ImageEntity>();
+        IEnumerable<ImageEntity>? imagesSelected;
+
+        Data.Entity.Image? imageConfig;         // 图片相关设置
+        Data.Entity.Pics?  picsConfig;          // 图库界面相关设置
+
+        string imageFormatChangeButtonIcon;     // 视图切换按钮图标  
+
+        ViewFormat _imageViewFormat;            // 图库界面视图
+        ViewFormat ImageViewFormat
         {
-            searchRunning = true;
-
-            if(searchText != null)
+            get { return _imageViewFormat; }
+            set
             {
-                imagesShow = imagesAll.Where(i => i.Name.Contains(searchText) ||
-                                                  i.Dpi.Contains(searchText) ||
-                                                  i.Size.Contains(searchText) ||
-                                                  i.UploadTime.Contains(searchText) ||
-                                                  i.Owner.Contains(searchText)).ToArray();
-            }
-            else
-            {
-                using(var context = new OurDbContext())
+                _imageViewFormat = value;
+                if(value == ViewFormat.List)
                 {
-                    imagesShow = (ImageEntity[])imagesAll.Clone();
+                    imageFormatChangeButtonIcon = IconType.Outline.UnorderedList;
+                }
+                else
+                {
+                    imageFormatChangeButtonIcon = IconType.Outline.Appstore;
                 }
             }
-            
-            searchRunning = false;
         }
+
+        // 卡片视图时相关参数
+        ListGridType grid = new()               
+        {
+            Gutter = 16,    // 栅格间距
+            Xs = 1,         // < 576px 展示的列数
+            Sm = 2,         // ≥ 576px 展示的列数
+            Md = 3,         // ≥ 768px 展示的列数
+            Lg = 4,         // ≥ 992px 展示的列数
+            Xl = 5,         // ≥ 1200px 展示的列数
+            Xxl = 6,        // ≥ 1600px 展示的列数 
+        };
 
 
         /// <summary>
@@ -77,9 +67,18 @@ namespace ImageBed.Pages
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
-            loading = true;
+            spinning = true;
 
-            // 加载数据库信息
+            searching = false;
+            searchText = null;
+
+            pageSize = 8;
+
+            imageConfig = GlobalValues.appSetting.Data.Resources.Images;
+            picsConfig  = GlobalValues.appSetting.Pics;
+
+            ImageViewFormat = picsConfig.ViewFormat;
+
             using (var context = new OurDbContext())
             {
                 imagesAll = await new SQLImageData(context).GetArrayAsync();
@@ -96,7 +95,7 @@ namespace ImageBed.Pages
         {
             if (firstRender)
             {
-                loading = false;
+                spinning = false;
                 await InvokeAsync(() => { StateHasChanged(); });
             }
             await base.OnAfterRenderAsync(firstRender);
@@ -104,15 +103,49 @@ namespace ImageBed.Pages
 
 
         /// <summary>
-        /// 表格部分
+        /// 切换视图
         /// </summary>
-        Dictionary<string, object> attrs = new();
+        void ChangeTableFormat()
+        {
+            if(ImageViewFormat == ViewFormat.List)
+            {
+                ImageViewFormat = ViewFormat.Card;
+            }
+            else
+            {
+                ImageViewFormat = ViewFormat.List;
+            }
+        }
+
+
+        /// <summary>
+        /// 检索图片
+        /// </summary>
+        public void OnSearch()
+        {
+            searching = true;
+
+            if(searchText != null)
+            {
+                imagesShow = imagesAll.Where(i => i.Name.Contains(searchText) ||
+                                                  i.Dpi.Contains(searchText) ||
+                                                  i.Size.Contains(searchText) ||
+                                                  i.UploadTime.Contains(searchText) ||
+                                                  i.Owner.Contains(searchText)).ToArray();
+            }
+            else
+            {
+                imagesShow = (ImageEntity[])imagesAll.Clone();
+            }
+            
+            searching = false;
+        }
 
 
         /// <summary>
         /// 图片导入前调用
         /// </summary>
-        /// <param name="imageInfo">待导入的图片信息</param>
+        /// <param name="images">待导入的图片</param>
         async Task<bool> StartImport(List<UploadFileItem> images)
         {
             await _notice.Open(new NotificationConfig()
@@ -132,12 +165,13 @@ namespace ImageBed.Pages
             using (var context = new OurDbContext())
             {
                 imagesAll = await new SQLImageData(context).GetArrayAsync();
-                imagesShow = (ImageEntity[])imagesAll.Clone();
+                
+                OnSearch();
 
                 _ = _notice.Open(new NotificationConfig()
                 {
                     Message = "图片导入完成",
-                    Description = "图片已成功导入至服务器！"
+                    Description = $"图片已成功导入至服务器, 现有 {imagesAll.Length} 张图片！"
                 });
             }
         }
@@ -151,11 +185,9 @@ namespace ImageBed.Pages
         {
             using (var context = new OurDbContext())
             {
-                var sqlImageData = new SQLImageData(context);
-                var imagesSelectedList = imagesSelected?.ToList();
-                if((imagesSelectedList != null) && (imagesSelectedList.Count > 0))
+                if((imagesSelected != null) && (imagesSelected.Any()))
                 {
-                    await sqlImageData.RemoveRangeAsync(imagesSelectedList);
+                    await new SQLImageData(context).RemoveRangeAsync(imagesSelected);
                     foreach (var image in imagesSelected)
                     {
                         imagesAll = imagesAll.Remove(image);
@@ -163,7 +195,8 @@ namespace ImageBed.Pages
                     }
                 }
                 imagesSelected = null;
-                _ = _message.Success("图片已删除 !");
+
+                _ = _message.Success("图片已删除! ");
             }
         }
 
@@ -175,46 +208,33 @@ namespace ImageBed.Pages
         async Task ExportSelectedImages()
         {
             List<string> imageFullpaths = new();
-            string imageDir = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}";
-            if (GlobalValues.appSetting != null)
+
+            if((imagesSelected != null) && imagesSelected.Any())
             {
-                foreach (var image in imagesSelected)
+                imagesSelected.ForEach(image =>
                 {
-                    imageFullpaths.Add($"{imageDir}/{image.Name}");
-                }
+                    imageFullpaths.Add($"{imageConfig.Path}/{image.Name}");
+                });
             }
 
             // 打包压缩文件
             // 压缩文件路径为 {ImagesDir}/Imaged.zip
-            string zipFullPath = $"{imageDir}/Images.zip";
-            if (File.Exists(zipFullPath))
-            {
-                File.Delete(zipFullPath);
-            }
-            await FileOperator.CompressMulti(imageFullpaths, $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/Images.zip");
+            string zipFullPath = $"{imageConfig.Path}/Images.zip";
+            if (File.Exists(zipFullPath)){ File.Delete(zipFullPath); }
+            await FileOperator.CompressMulti(imageFullpaths, $"{imageConfig.Path}/Images.zip");
             
             // 这里压缩完成后可以先弹窗提示, 然后子线程再去启动下载
-            // 调用 JS 下载后不建议删除 Images.zip，因为这时并不一定下载完成
+            // 调用 JS 下载后不建议删除 Images.zip
             _ = _message.Success("导出成功 !");
-            await JS.InvokeVoidAsync("downloadFileFromStream", "Images.zip", "api/image/Images.zip");
+            _ = JS.InvokeVoidAsync("downloadFileFromStream", "Images.zip", "api/image/Images.zip");
         }
-
-
-        ITable? table;
-        int _pageSize = 8;
-        bool loading = true;
-
-        ImageEntity[] imagesAll = Array.Empty<ImageEntity>();
-        ImageEntity[] imagesShow = Array.Empty<ImageEntity>();
-
-        IEnumerable<ImageEntity>? imagesSelected;
 
 
         /// <summary>
         /// 复制图片链接到剪贴板
         /// </summary>
         /// <param name="content">图片链接</param>
-        async void CopyUrlToClip(string? content)
+        async Task CopyUrlToClip(string? content)
         {
             if (!string.IsNullOrEmpty(content))
             {
@@ -223,7 +243,7 @@ namespace ImageBed.Pages
             }
             else
             {
-                _ = _message.Error("拷贝链接失败 !");
+                _ = _message.Error("拷贝链接失败, 链接为空 !");
             }
         }
 
@@ -233,7 +253,7 @@ namespace ImageBed.Pages
         /// </summary>
         /// <param name="url">文件url</param>
         /// <param name="imagename">下载时的文件名称</param>
-        async void DownloadFile(string url, string? imagename)
+        async Task DownloadFile(string url, string? imagename)
         {
             if (string.IsNullOrEmpty(imagename))
             {
@@ -250,10 +270,8 @@ namespace ImageBed.Pages
         /// 移除单个图片
         /// </summary>
         /// <param name="image">待移除的图片实体</param>
-        public async void RemoveImage(ImageEntity image)
+        async Task RemoveImage(ImageEntity image)
         {
-            GlobalValues.Logger.Info($"Removing image {image.Name}...");
-            
             using(var context = new OurDbContext())
             {
                 await new SQLImageData(context).RemoveAsync(image);
@@ -262,31 +280,6 @@ namespace ImageBed.Pages
             imagesShow = imagesShow.Remove(image);
 
             _ = _message.Success("图片已删除 !");
-
-            GlobalValues.Logger.Info($"Remove image {image.Name} done");
-        }
-
-
-        void ImageCardPageChange(PaginationEventArgs args)
-        {
-            int index = (args.Page - 1) * args.PageSize;
-            int count;
-            if(imagesAll.Length - args.Page * args.PageSize >= 0)
-            {
-                count = args.PageSize;
-            }
-            else
-            {
-                count = imagesAll.Length - index;
-            }
-
-            imagesShow = imagesAll.Skip(index).Take(count).ToArray();
-        }
-
-        public void Dispose()
-        {
-            GC.Collect();
-            GC.SuppressFinalize(this);
         }
     }
 }

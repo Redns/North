@@ -3,7 +3,7 @@ using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
 using NLog.Extensions.Logging;
 
-FileOperator.ScaleImage("Data/Resources/Images/imageNotFound.jpg", 0, 0, 100);
+
 var builder = WebApplication.CreateBuilder(args);
 
 

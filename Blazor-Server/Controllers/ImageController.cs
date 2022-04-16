@@ -14,35 +14,33 @@ namespace ImageBed.Controllers
         /// <summary>
         /// 上传图片
         /// </summary>
-        /// <param name="token">用户令牌</param>
         /// <returns></returns>
         [HttpPost]
         public async Task<ApiResult<object>> Post([FromForm] IFormCollection formCollection)
         {
-            List<string> imageUrls = new();
-            List<ImageEntity> images = new();
+            var imageConfig = GlobalValues.appSetting.Data.Resources.Images;
+
+            List<string> imageUrls = new();             // 图片url(相对路径)
+            List<ImageEntity> images = new();           // 图片信息
+
+            GlobalValues.Logger.Info("Uploading images...");
 
             try
             {
-                GlobalValues.Logger.Info("Uploading images...");
                 using (var context = new OurDbContext())
                 {
                     // 获取图片存储路径
-                    // 若文件夹不存在则创建
-                    string imageDir = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}";
-                    if (!Directory.Exists(imageDir))
-                    {
-                        Directory.CreateDirectory(imageDir);
-                    }
+                    string imageDir = $"{imageConfig.Path}";
+                    Directory.CreateDirectory(imageDir);
 
                     var sqlImageData = new SQLImageData(context);
                     var uploadImages = (FormFileCollection)formCollection.Files;
                     
-                    var imageMaxNumLimit = GlobalValues.appSetting?.Data?.Resources?.Images?.MaxNum ?? 0;
-                    if((imageMaxNumLimit > 0) && (uploadImages.Count > imageMaxNumLimit))
+                    // 检查上传图片是否满足数量限制
+                    if((imageConfig.MaxNum > 0) && (uploadImages.Count > imageConfig.MaxNum))
                     {
-                        int indexStart = imageMaxNumLimit;
-                        int indexCount = uploadImages.Count - imageMaxNumLimit;
+                        int indexStart = imageConfig.MaxNum;
+                        int indexCount = uploadImages.Count - imageConfig.MaxNum;
                         uploadImages.RemoveRange(indexStart, indexCount);
                     }
 
@@ -52,12 +50,14 @@ namespace ImageBed.Controllers
                         {
                             if (GetFileType(GetFileExtension(fileReader.FileName) ?? "") == FileType.COMPRESS)
                             {
+                                // 上传文件为压缩包
                                 GlobalValues.Logger.Info("Importing images...");
 
                                 string importFullPath = $"{imageDir}/Import.zip";
                                 using(var fileReadStream = fileReader.OpenReadStream())
                                 {
                                     await FileOperator.SaveFile(fileReadStream, importFullPath);
+                                    _ = fileReadStream.FlushAsync();
                                 }
                                 
                                 foreach(var image in await FileOperator.ImportImages(importFullPath, imageDir))
@@ -68,13 +68,13 @@ namespace ImageBed.Controllers
                             }
                             else
                             {
-                                int imageMaxSizeLimit = GlobalValues.appSetting.Data.Resources.Images.MaxSize;
-                                if((imageMaxSizeLimit <= 0) || fileReader.Length <= imageMaxSizeLimit*1024*1024)
+                                if((imageConfig.MaxSize <= 0) || fileReader.Length <= imageConfig.MaxSize * 1024*1024)
                                 {
                                     ImageEntity image;
-                                    using(var imageReader = fileReader.OpenReadStream())
+                                    using(var imageReadStream = fileReader.OpenReadStream())
                                     {
-                                        image = await FileOperator.SaveImage(imageReader, fileReader.FileName, imageDir);
+                                        image = await FileOperator.SaveImage(imageReadStream, fileReader.FileName, imageDir);
+                                        await imageReadStream.FlushAsync();
                                     }
                                     images.Add(image);
                                     imageUrls.Add($"{image.Url}");
@@ -87,8 +87,8 @@ namespace ImageBed.Controllers
                         }
                         catch (Exception)
                         {
-                            GlobalValues.Logger.Error($"Upload failed, imageName: {fileReader.FileName}");
                             imageUrls.Add(string.Empty);
+                            GlobalValues.Logger.Error($"Upload failed, imageName: {fileReader.FileName}");
                         }
                     }
                     await sqlImageData.AddRangeAsync(images);
@@ -116,12 +116,12 @@ namespace ImageBed.Controllers
             // 构造图片路径
             // 图片存储路径为 Data/Resources/Images
             // 当图片不存在时返回 "imageNotFound.jpg"
-            string imageDir = GlobalValues.appSetting?.Data?.Resources?.Images?.Path ?? string.Empty;
-            string imageFullPath = $"{imageDir}/{imageName}";
+            var imageConfig = GlobalValues.appSetting.Data.Resources.Images;
+            string imageFullPath = $"{imageConfig.Path}/{imageName}";
             string imageExtension = GetFileExtension(imageName) ?? string.Empty;
             if (!System.IO.File.Exists(imageFullPath))
             {
-                return File(System.IO.File.ReadAllBytes($"{imageDir}/imageNotFound.jpg"), $"image/{imageExtension}");
+                return File(System.IO.File.ReadAllBytes($"{imageConfig.Path}/imageNotFound.jpg"), $"image/{imageExtension}");
             }
             else
             {
@@ -162,27 +162,32 @@ namespace ImageBed.Controllers
             GlobalValues.Logger.Info($"Del image {imageName}");
 
             // 删除磁盘上的文件
-            string? imageFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{imageName}";
-            string? imageThumbnailsFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/thumbnails_{imageName}";
-            if (System.IO.File.Exists(imageFullPath))
-            {
-                System.IO.File.Delete(imageFullPath);
-            }
-            if (System.IO.File.Exists(imageThumbnailsFullPath))
-            {
-                System.IO.File.Delete(imageThumbnailsFullPath);
-            }
+            var imageConfig = GlobalValues.appSetting.Data.Resources.Images;
+            string? imageFullPath = $"{imageConfig.Path}/{imageName}";
+            string? imageThumbnailsFullPath = $"{imageConfig.Path}/thumbnails_{imageName}";
 
-            // 删除数据库信息
-            using (var context = new OurDbContext())
+            try
             {
-                var sqlImageData = new SQLImageData(context);
-                var image = await sqlImageData.GetAsync(ImageFilter.NAME, imageName);
-                if(image != null)
+                // 删除磁盘文件
+                if (System.IO.File.Exists(imageFullPath)) { System.IO.File.Delete(imageFullPath); }
+                if (System.IO.File.Exists(imageThumbnailsFullPath)) { System.IO.File.Delete(imageThumbnailsFullPath); }
+
+                // 删除数据库信息
+                using (var context = new OurDbContext())
                 {
-                    await sqlImageData.RemoveAsync(image);
+                    var sqlImageData = new SQLImageData(context);
+                    var image = await sqlImageData.GetAsync(ImageFilter.NAME, imageName);
+                    if (image != null)
+                    {
+                        await sqlImageData.RemoveAsync(image);
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                GlobalValues.Logger.Error($"Del image failed, {ex.Message}");
+            }
+            
             return new ApiResult<object>(200, "Delete image success", null);
         }
     }

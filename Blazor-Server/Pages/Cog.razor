@@ -137,9 +137,9 @@
                   OnFinishFailed="OnFinishFailed"
                   Style="margin-top:80px;">
                     <FormItem Label="默认视图">
-                        <RadioGroup @bind-Value=@picsConfig.ViewList>
-                                <Radio RadioButton Value="@true">表 格</Radio>
-                                <Radio RadioButton Value="@false">卡 片</Radio>
+                        <RadioGroup @bind-Value=@picsConfig.ViewFormat>
+                                <Radio RadioButton Value="@ViewFormat.List">表 格</Radio>
+                                <Radio RadioButton Value="@ViewFormat.Card">卡 片</Radio>
                         </RadioGroup>
                     </FormItem>
                     <FormItem WrapperColOffset="8" WrapperColSpan="16">

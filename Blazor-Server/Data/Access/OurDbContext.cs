@@ -297,7 +297,7 @@ namespace ImageBed.Data.Access
         /// </summary>
         /// <param name="images">待移除的图片列表</param>
         /// <returns>移除成功返回true， 否则返回false</returns>
-        public async Task<bool> RemoveRangeAsync(List<ImageEntity> images)
+        public async Task<bool> RemoveRangeAsync(IEnumerable<ImageEntity> images)
         {
             if ((_context != null) && (_context.Images != null))
             {
@@ -307,19 +307,15 @@ namespace ImageBed.Data.Access
                     foreach(var image in images)
                     {
                         // 删除磁盘上的文件
-                        string? imageFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/{image.Name}";
-                        string? imageThumbnailsFullPath = $"{GlobalValues.appSetting?.Data?.Resources?.Images?.Path}/thumbnails_{image.Name}";
-                        if (File.Exists(imageFullPath))
-                        {
-                            File.Delete(imageFullPath);
-                        }
-                        if (File.Exists(imageThumbnailsFullPath))
-                        {
-                            File.Delete(imageThumbnailsFullPath);
-                        }
+                        string? imageFullPath = $"{imageDir}/{image.Name}";
+                        string? imageThumbnailsFullPath = $"{imageDir}/thumbnails_{image.Name}";
+                        if (File.Exists(imageFullPath)) { File.Delete(imageFullPath); }
+                        if (File.Exists(imageThumbnailsFullPath)) { File.Delete(imageThumbnailsFullPath); }
                     }
+
                     _context.Images.RemoveRange(images);
                     await _context.SaveChangesAsync();
+
                     return true;
                 }
                 catch (Exception ex)

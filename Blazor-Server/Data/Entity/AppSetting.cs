@@ -1,4 +1,5 @@
 ﻿using ImageBed.Common;
+using ImageBed.Pages;
 using Newtonsoft.Json;
 using static ImageBed.Common.UnitNameGenerator;
 
@@ -94,7 +95,7 @@ namespace ImageBed.Data.Entity
 
     public class Pics
     {
-        public bool ViewList { get; set; }
+        public ViewFormat ViewFormat { get; set; }
     }
 
 

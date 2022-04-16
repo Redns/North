@@ -1,6 +1,5 @@
 ﻿using ImageBed.Data.Entity;
 using System.IO.Compression;
-using SkiaSharp;
 using static ImageBed.Common.UnitNameGenerator;
 
 namespace ImageBed.Common
@@ -17,23 +16,27 @@ namespace ImageBed.Common
 
             try
             {
-                string ExportTempDir = $"{GlobalValues.appSetting.Data.Resources.Images.Path}/ExportTempDir";
-                if (Directory.Exists(ExportTempDir))
-                {
-                    Directory.Delete(ExportTempDir, true);
-                }
+                var imageConfig = GlobalValues.appSetting.Data.Resources.Images;
+                string ExportTempDir = $"{imageConfig.Path}/ExportTempDir";
+
+                // 创建文件夹用于存储导出文件
                 Directory.CreateDirectory(ExportTempDir);
 
+                // 添加所有导入文件至文件夹
                 foreach(string srcFilepath in srcFilepaths)
                 {
                     var srcFileName = srcFilepath.Split("/").Last();
                     using(var fileReadStream = new FileStream(srcFilepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
                         await SaveFile(fileReadStream, $"{ExportTempDir}/{srcFileName}");
+                        _ = fileReadStream.FlushAsync();
                     }
                 }
+
+                // 压缩文件夹
                 ZipFile.CreateFromDirectory(ExportTempDir, zipFilepath);
 
+                // 删除文件夹
                 Directory.Delete(ExportTempDir, true);
             }
             catch (Exception ex)
@@ -75,15 +78,10 @@ namespace ImageBed.Common
         /// <returns></returns>
         public static async Task SaveFile(Stream fileReader, string dstPath)
         {
-            if (File.Exists(dstPath))
-            {
-                File.Delete(dstPath);
-            }
-
             using (FileStream fileWriter = File.Create(dstPath))
             {
                 await fileReader.CopyToAsync(fileWriter);
-                await fileReader.FlushAsync();
+                await fileWriter.FlushAsync();
             }
         }
 
@@ -109,7 +107,6 @@ namespace ImageBed.Common
             {
                 await imageReadStream.CopyToAsync(imageWriteStream);
                 await imageWriteStream.FlushAsync();
-                await imageReadStream.FlushAsync();
             }
 
             ImageEntity imageInfo;
@@ -119,6 +116,7 @@ namespace ImageBed.Common
                 using (var thumbnailImage = image.ThumbnailImage(180))
                 {
                     thumbnailImage.WriteToFile($"{imageDir}/thumbnails_{unitImageName}");
+                    thumbnailImage.Close();
                 }
 
                 // 构造图片信息
@@ -132,7 +130,10 @@ namespace ImageBed.Common
                     UploadTime = DateTime.Now.ToString(),
                     Owner = "Admin"
                 };
+
+                image.Close();
             }
+            
             return imageInfo;
         }
 
@@ -150,17 +151,10 @@ namespace ImageBed.Common
             {
                 if(GetFileType(GetFileExtension(zipFullPath) ?? "") == FileType.COMPRESS)
                 {
-                    // 创建临时文件夹
+                    // 创建临时文件夹, 存储解压后的图片
+                    // 这里不直接解压至 Images 文件夹下, 是为了方便导入图片信息至数据库 
                     string tempDir = $"{importDir}/Temp";
-                    if (!Directory.Exists(importDir))
-                    {
-                        Directory.CreateDirectory(importDir);
-                        Directory.CreateDirectory(tempDir);
-                    }
-                    else if (!Directory.Exists(tempDir))
-                    {
-                        Directory.CreateDirectory(tempDir);
-                    }
+                    Directory.CreateDirectory(tempDir);
 
                     // 解压压缩包
                     // 录入解压出的所有图片信息, 并将其移动至 importDir 文件夹下
@@ -174,11 +168,14 @@ namespace ImageBed.Common
                             using (var imageReadStream = new FileStream(tempFileFullpath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                             {
                                 images.Add(await SaveImage(imageReadStream, tempFileName, importDir));
+                                _ = imageReadStream.FlushAsync();
                             }
                         }
                     }
-                    Directory.Delete(tempDir, true);
+
+                    // 删除解压文件夹、压缩包文件
                     File.Delete(zipFullPath);
+                    Directory.Delete(tempDir, true);
                 }
                 else
                 {
@@ -190,21 +187,6 @@ namespace ImageBed.Common
                 GlobalValues.Logger.Error($"Import package failed, {ex.Message}");
             }
             return images;
-        }
-
-
-        public static void ScaleImage(string imagePath, int height=0, int width=0, int quality=0)
-        {
-            using(var input = File.OpenRead(imagePath))
-            {
-                using(var inputStream = new SKManagedStream(input))
-                {
-                    using (var origin = SKBitmap.Decode(inputStream))
-                    {
-
-                    }
-                }
-            }
         }
     }
 }
