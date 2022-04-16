@@ -89,7 +89,7 @@ namespace ImageBed.Common
                         }
                     }
 
-                    _ = sqlRecordData.AddAsync(new RecordEntity
+                    await sqlRecordData.AddAsync(new RecordEntity
                     {
                         Date = dateYestoday,
                         UploadImageNum = hostImageNumTotal - hostImageNumRecord,
@@ -105,7 +105,7 @@ namespace ImageBed.Common
                     Condition emailSendCondition = appSetting.Notify.Condition;
                     if (emailSendCondition.SysRefresh)
                     {
-                        _ = MailHelper.PostEmails(new MailEntity
+                        await MailHelper.PostEmails(new MailEntity
                         {
                             FromPerson = emailConfig.From,
                             RecipientArry = emailConfig.To.Split(","),
@@ -125,7 +125,7 @@ namespace ImageBed.Common
                     }
                     if((emailSendCondition.OverDiskOccupy > 0) && (hostImageDiskOccupyTotal > emailSendCondition.OverDiskOccupy))
                     {
-                        _ = MailHelper.PostEmails(new MailEntity
+                        await MailHelper.PostEmails(new MailEntity
                         {
                             FromPerson = emailConfig.From,
                             RecipientArry = emailConfig.To.Split(","),
@@ -140,7 +140,7 @@ namespace ImageBed.Common
                     long memoryUsage = Process.GetCurrentProcess().WorkingSet64 / (1024 * 1024);
                     if ((emailSendCondition.OverMemory > 0) && (memoryUsage > emailSendCondition.OverMemory))
                     {
-                        _ = MailHelper.PostEmails(new MailEntity
+                        await MailHelper.PostEmails(new MailEntity
                         {
                             FromPerson = emailConfig.From,
                             RecipientArry = emailConfig.To.Split(","),
@@ -154,7 +154,7 @@ namespace ImageBed.Common
 
                     if((emailSendCondition.OverNum > 0) && (hostImageNumTotal > emailSendCondition.OverNum))
                     {
-                        _ = MailHelper.PostEmails(new MailEntity
+                        await MailHelper.PostEmails(new MailEntity
                         {
                             FromPerson = emailConfig.From,
                             RecipientArry = emailConfig.To.Split(","),

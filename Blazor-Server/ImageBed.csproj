@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Logs\**" />
+    <Content Remove="Data\Logs\**" />
+    <EmbeddedResource Remove="Data\Logs\**" />
+    <None Remove="Data\Logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="wwwroot\upload.png" />
   </ItemGroup>
 
@@ -22,6 +29,7 @@
     <PackageReference Include="NetVips.Native" Version="8.12.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.14.0" />
+    <PackageReference Include="SkiaSharp" Version="2.80.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,7 +52,6 @@
 	
   <ItemGroup>
     <Folder Include="Data\Database\" />
-    <Folder Include="Data\Logs\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

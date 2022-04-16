@@ -11,11 +11,10 @@
             @Body
         </Content>
         @if (!string.IsNullOrEmpty(GlobalValues.appSetting.Footer.Content))
-            {
-                <Footer Style="text-align:center; background-color:#ffffff;">
-                    @GlobalValues.appSetting.Footer.Content
-                </Footer>
-            }
-        
+        {
+            <Footer Style="text-align:center; background-color:#ffffff;">
+                <a href="https://beian.miit.gov.cn/#/Integrated/index">@GlobalValues.appSetting.Footer.Content</a>
+            </Footer>
+        }
     </Layout>
 </Layout>

@@ -1,5 +1,6 @@
 ﻿using ImageBed.Data.Entity;
 using System.IO.Compression;
+using SkiaSharp;
 using static ImageBed.Common.UnitNameGenerator;
 
 namespace ImageBed.Common
@@ -26,9 +27,13 @@ namespace ImageBed.Common
                 foreach(string srcFilepath in srcFilepaths)
                 {
                     var srcFileName = srcFilepath.Split("/").Last();
-                    await SaveFile(new FileStream(srcFilepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), $"{ExportTempDir}/{srcFileName}");
+                    using(var fileReadStream = new FileStream(srcFilepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        await SaveFile(fileReadStream, $"{ExportTempDir}/{srcFileName}");
+                    }
                 }
                 ZipFile.CreateFromDirectory(ExportTempDir, zipFilepath);
+
                 Directory.Delete(ExportTempDir, true);
             }
             catch (Exception ex)
@@ -79,7 +84,6 @@ namespace ImageBed.Common
             {
                 await fileReader.CopyToAsync(fileWriter);
                 await fileReader.FlushAsync();
-                fileReader.Dispose();
             }
         }
 
@@ -87,56 +91,49 @@ namespace ImageBed.Common
         /// <summary>
         /// 保存图片
         /// </summary>
-        /// <param name="imageReader">待写入的图片流</param>
+        /// <param name="imageReadStream">源图片流</param>
         /// <param name="imageName">图片原名称</param>
         /// <param name="imageDir">图片存储文件夹</param>
         /// <returns></returns>
-        public static async Task<ImageEntity> SaveImage(Stream imageReader, string imageName, string imageDir)
+        public static async Task<ImageEntity> SaveImage(Stream imageReadStream, string imageName, string imageDir)
         {
-            // 格式化文件名
             GlobalValues.Logger.Info($"Rename image... Current rename format is {GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat}");
-            
-            RenameFormat renameFormat = GlobalValues.appSetting?.Data?.Resources?.Images?.RenameFormat ?? RenameFormat.MD5;
-            string unitImageName = RenameFile(imageDir, imageName, renameFormat);
+
+            // 格式化文件名
+            var imageConfig = GlobalValues.appSetting?.Data?.Resources?.Images;
+            string unitImageName = RenameFile(imageDir, imageName, imageConfig.RenameFormat);
             string unitImageFullPath = $"{imageDir}/{unitImageName}";
 
-            // 检查是否命名冲突
-            if ((renameFormat == RenameFormat.NONE) && File.Exists(unitImageFullPath))
+            // 保存图片至磁盘
+            using (FileStream imageWriteStream = File.Create(unitImageFullPath))
             {
-                File.Delete(unitImageFullPath);
+                await imageReadStream.CopyToAsync(imageWriteStream);
+                await imageWriteStream.FlushAsync();
+                await imageReadStream.FlushAsync();
             }
 
-            // 保存图片
-            using (FileStream imageWriter = File.Create(unitImageFullPath))
+            ImageEntity imageInfo;
+            using (var image = NetVips.Image.NewFromFile(unitImageFullPath))
             {
-                await imageReader.CopyToAsync(imageWriter);
-                await imageWriter.FlushAsync();
-                await imageReader.FlushAsync();
-                await imageReader.DisposeAsync();
+                // 生成缩略图
+                using (var thumbnailImage = image.ThumbnailImage(180))
+                {
+                    thumbnailImage.WriteToFile($"{imageDir}/thumbnails_{unitImageName}");
+                }
+
+                // 构造图片信息
+                imageInfo = new()
+                {
+                    Id = EncryptAndDecrypt.Encrypt_MD5(unitImageName),
+                    Name = unitImageName,
+                    Url = $"api/image/{unitImageName}",
+                    Dpi = $"{image.Width}*{image.Height}",
+                    Size = RebuildFileSize(imageReadStream.Length),
+                    UploadTime = DateTime.Now.ToString(),
+                    Owner = "Admin"
+                };
             }
-
-            // 生成缩略图
-            var imageInfo = NetVips.Image.NewFromFile(unitImageFullPath);
-            imageInfo.ThumbnailImage(180, 135).WriteToFile($"{imageDir}/thumbnails_{unitImageName}");
-
-            // 录入数据库
-            var fileInfo = new FileInfo(unitImageFullPath);
-            ImageEntity image = new()
-            {
-                Id = EncryptAndDecrypt.Encrypt_MD5(unitImageName),
-                Name = unitImageName,
-                Url = $"api/image/{unitImageName}",
-                Dpi = $"{imageInfo.Width}*{imageInfo.Height}",
-                Size = RebuildFileSize(fileInfo.Length),
-                UploadTime = DateTime.Now.ToString(),
-                Owner = "Admin"
-            };
-            imageInfo.Close();
-            imageInfo.Dispose();
-            imageInfo = null;
-            GC.Collect();
-
-            return image;
+            return imageInfo;
         }
 
 
@@ -174,9 +171,9 @@ namespace ImageBed.Common
                         var tempFileFullpath = imageInfo.FullName;
                         if(GetFileType(GetFileExtension(tempFileName) ?? "") == FileType.IMAGE)
                         {
-                            using (var imageReader = new FileStream(tempFileFullpath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            using (var imageReadStream = new FileStream(tempFileFullpath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                             {
-                                images.Add(await SaveImage(imageReader, tempFileName, importDir));
+                                images.Add(await SaveImage(imageReadStream, tempFileName, importDir));
                             }
                         }
                     }
@@ -193,6 +190,21 @@ namespace ImageBed.Common
                 GlobalValues.Logger.Error($"Import package failed, {ex.Message}");
             }
             return images;
+        }
+
+
+        public static void ScaleImage(string imagePath, int height=0, int width=0, int quality=0)
+        {
+            using(var input = File.OpenRead(imagePath))
+            {
+                using(var inputStream = new SKManagedStream(input))
+                {
+                    using (var origin = SKBitmap.Decode(inputStream))
+                    {
+
+                    }
+                }
+            }
         }
     }
 }

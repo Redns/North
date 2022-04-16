@@ -77,8 +77,6 @@ namespace ImageBed.Pages
             imageUploadSizeLimit = imageConfig.MaxSize;
             imageUploadNumLimit = imageConfig.MaxNum;
 
-            _ = JS.InvokeVoidAsync("BindPasteEvent", imageUploadSizeLimit, imageUploadNumLimit);
-
             await base.OnInitializedAsync();
         }
 
@@ -93,6 +91,7 @@ namespace ImageBed.Pages
             if (firstRender)
             {
                 spining = false;
+                _ = JS.InvokeVoidAsync("BindPasteEvent", imageUploadSizeLimit, imageUploadNumLimit);
                 await InvokeAsync(() => { StateHasChanged(); });
             }
             await base.OnAfterRenderAsync(firstRender);

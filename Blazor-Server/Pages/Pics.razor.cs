@@ -106,7 +106,6 @@ namespace ImageBed.Pages
         /// <summary>
         /// 表格部分
         /// </summary>
-        string imageFormatFilter = "";
         Dictionary<string, object> attrs = new();
 
 
@@ -116,7 +115,7 @@ namespace ImageBed.Pages
         /// <param name="imageInfo">待导入的图片信息</param>
         async Task<bool> StartImport(List<UploadFileItem> images)
         {
-            _ = _notice.Open(new NotificationConfig()
+            await _notice.Open(new NotificationConfig()
             {
                 Message = "图片开始导入",
                 Description = "图片后台导入中，导入完成前请勿再次导入！"

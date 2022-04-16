@@ -37,6 +37,7 @@ namespace ImageBed.Controllers
 
                     var sqlImageData = new SQLImageData(context);
                     var uploadImages = (FormFileCollection)formCollection.Files;
+                    
                     var imageMaxNumLimit = GlobalValues.appSetting?.Data?.Resources?.Images?.MaxNum ?? 0;
                     if((imageMaxNumLimit > 0) && (uploadImages.Count > imageMaxNumLimit))
                     {
@@ -54,7 +55,11 @@ namespace ImageBed.Controllers
                                 GlobalValues.Logger.Info("Importing images...");
 
                                 string importFullPath = $"{imageDir}/Import.zip";
-                                await FileOperator.SaveFile(fileReader.OpenReadStream(), importFullPath);
+                                using(var fileReadStream = fileReader.OpenReadStream())
+                                {
+                                    await FileOperator.SaveFile(fileReadStream, importFullPath);
+                                }
+                                
                                 foreach(var image in await FileOperator.ImportImages(importFullPath, imageDir))
                                 {
                                     images.Add(image);
@@ -66,7 +71,11 @@ namespace ImageBed.Controllers
                                 int imageMaxSizeLimit = GlobalValues.appSetting.Data.Resources.Images.MaxSize;
                                 if((imageMaxSizeLimit <= 0) || fileReader.Length <= imageMaxSizeLimit*1024*1024)
                                 {
-                                    var image = await FileOperator.SaveImage(fileReader.OpenReadStream(), fileReader.FileName, imageDir);
+                                    ImageEntity image;
+                                    using(var imageReader = fileReader.OpenReadStream())
+                                    {
+                                        image = await FileOperator.SaveImage(imageReader, fileReader.FileName, imageDir);
+                                    }
                                     images.Add(image);
                                     imageUrls.Add($"{image.Url}");
                                 }
@@ -82,7 +91,7 @@ namespace ImageBed.Controllers
                             imageUrls.Add(string.Empty);
                         }
                     }
-                    _ = sqlImageData.AddRangeAsync(images);
+                    await sqlImageData.AddRangeAsync(images);
                 }
                 GlobalValues.Logger.Info("Upload finished");
             }
@@ -132,7 +141,7 @@ namespace ImageBed.Controllers
                         if (image != null)
                         {
                             image.RequestNum++;
-                            _ = sqlImageData.UpdateAsync(image);
+                            await sqlImageData.UpdateAsync(image);
                         }
                     }
                     return File(System.IO.File.ReadAllBytes(imageFullPath), $"image/{imageExtension}");
@@ -171,7 +180,7 @@ namespace ImageBed.Controllers
                 var image = await sqlImageData.GetAsync(ImageFilter.NAME, imageName);
                 if(image != null)
                 {
-                    _ = sqlImageData.RemoveAsync(image);
+                    await sqlImageData.RemoveAsync(image);
                 }
             }
             return new ApiResult<object>(200, "Delete image success", null);
