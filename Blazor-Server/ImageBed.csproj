@@ -51,6 +51,18 @@
   <ItemGroup>
     <Folder Include="Data\Database\" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <None Update="Data\Database\imagebed-blank.sqlite">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Database\imagebed.sqlite">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Resources\Images\imageNotFound.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 

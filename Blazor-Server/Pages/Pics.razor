@@ -38,6 +38,7 @@
     <SpaceItem>
         <Upload Multiple
             Action="api/image"
+            Accept=@($"{imageConfig.Format},.zip")
             ShowUploadList=false
             BeforeAllUploadAsync=@StartImport
             OnCompleted=@ImportFinished>
