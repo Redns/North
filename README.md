@@ -254,19 +254,19 @@
 
 **web 界面上传**
 
-![web界面上传](images/上传图片.gif)
+![web界面上传](Images/上传图片.gif)
 
 <br>
 
 **剪贴板上传**
 
-![剪贴板上传](images/剪贴板上传.gif)
+![剪贴板上传](Images/剪贴板上传.gif)
 
 <br>
 
 #### 删除
 
-![删除图片](images/删除图片.gif)
+![删除图片](Images/删除图片.gif)
 
 <br>
 
@@ -274,19 +274,19 @@
 
 **导入图片**
 
-![导入图片](images/导入图片.gif)
+![导入图片](Images/导入图片.gif)
 
 <br>
 
 **导出图片**
 
-![导出图片](images/导出图片.gif)
+![导出图片](Images/导出图片.gif)
 
 <br>
 
 #### 视图切换
 
-![视图切换](images/视图切换.gif)
+![视图切换](Images/视图切换.gif)
 
 <br>
 
