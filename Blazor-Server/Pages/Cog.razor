@@ -235,6 +235,60 @@
         </TabPane>
         <TabPane Key="5">
             <TabTemplate>
+                <Space><Icon Type="sync" Width=25 Height=25/>更 新</Space>
+            </TabTemplate>
+            <ChildContent>
+                <Form Model="@GlobalValues.appSetting" 
+                  LabelColSpan="8"
+                  WrapperColSpan="16"
+                  OnFinish="OnFinish" 
+                  OnFinishFailed="OnFinishFailed"
+                  Style="margin-top:80px;">
+                    <FormItem Label="版本号">
+                        @updateConfig.Version
+                    </FormItem>
+                    <FormItem Label="自动更新">
+                        <RadioGroup @bind-Value=@updateConfig.AutoUpdate>
+                            <Radio RadioButton Value="@true">开启</Radio>
+                            <Radio RadioButton Value="@false">关闭</Radio>
+                        </RadioGroup>
+                    </FormItem>
+                    <FormItem Label="更新模式">
+                        <Space>
+                            <SpaceItem>
+                                <Tooltip Title="@("全量更新会删除全部文件, 增量更新则会保留数据")">
+                                    <Select @bind-Value=@updateConfig.Pattern
+                                            DefaultValue="@UpdatePattern.INCREMENT"
+		                                    TItemValue="UpdatePattern"
+                                            TItem="string"
+                                            LabelInValue="true"
+		                                    Style="width: 150px;">
+		                                <SelectOptions>
+			                                <SelectOption TItemValue="UpdatePattern" TItem="string" Value="@UpdatePattern.INCREMENT" Label="增量更新"/>
+			                                <SelectOption TItemValue="UpdatePattern" TItem="string" Value="@UpdatePattern.FULL" Label="全量更新"/>
+		                                </SelectOptions>
+                                    </Select>
+                                </Tooltip>
+                            </SpaceItem>
+                            <SpaceItem>
+                                <Tooltip Title=@("检查更新")>
+                                    <Button Type=@ButtonType.Primary
+                                            Icon=@IconType.Outline.Sync
+                                            OnClick=@(async () => {await CheckUpdate();})/>
+                                </Tooltip>
+                            </SpaceItem>
+                        </Space>
+                    </FormItem>
+                    <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                        <Button Type="@ButtonType.Primary" HtmlType="submit">
+                            保 存
+                        </Button>
+                    </FormItem>
+                </Form>
+            </ChildContent>
+        </TabPane>
+        <TabPane Key="6">
+            <TabTemplate>
                 <Space><Icon Type="appstore" Width=25 Height=25/>其 它</Space>
             </TabTemplate>
             <ChildContent>

@@ -168,6 +168,16 @@ namespace ImageBed.Common
                 }
                 Logger.Info("Refresh finished");
             }
+
+            // 检查更新
+            if (appSetting.Update.AutoUpdate)
+            {
+                string latestVersion = await UpdateHelper.GetLatestVersion();
+                if (!string.IsNullOrEmpty(latestVersion) && (latestVersion.ToLower() != appSetting.Update.Version.ToLower()))
+                {
+                    await UpdateHelper.SysUpdate(appSetting.Update.Pattern, $"{UpdateHelper.releaseDownloadBaseUrl}/{latestVersion}/{UpdateHelper.CheckOSPlatform()}.zip");
+                }
+            }
         }
 
 

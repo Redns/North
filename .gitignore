@@ -17,3 +17,9 @@ Blazor-wasm/Server/obj/*
 Blazor-wasm/Shared/bin/*
 Blazor-wasm/Shared/obj/*
 # Blazor WASM End
+
+# Updater Start
+Updater/bin/*
+Updater/obj/*
+Updater/Properties/*
+# Updater End

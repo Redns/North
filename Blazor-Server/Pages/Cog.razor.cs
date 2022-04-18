@@ -17,6 +17,8 @@ namespace ImageBed.Pages
         Data.Entity.Pics? picsConfig;           // 图库设置
         Notify? notifyConfig;                   // 消息设置
         Footer? footerConfig;                   // 页脚设置
+        Update? updateConfig;                   // 更新设置
+
 
         // 上传图片格式限制
         string[] imageFormatChoose;
@@ -41,6 +43,7 @@ namespace ImageBed.Pages
                 picsConfig = appConfig.Pics;
                 notifyConfig = appConfig.Notify;
                 footerConfig = appConfig.Footer;
+                updateConfig = appConfig.Update;
             }
 
             imageFormatChoose = imageConfig.Format.Split('.', ',').Where(suffix => !string.IsNullOrEmpty(suffix)).ToArray();
@@ -101,6 +104,7 @@ namespace ImageBed.Pages
                 GlobalValues.appSetting.Pics = picsConfig;
                 GlobalValues.appSetting.Notify = notifyConfig;
                 GlobalValues.appSetting.Footer = footerConfig;
+                GlobalValues.appSetting.Update = updateConfig;
 
                 // 重新加载设置
                 // 这里是为了避免当页面销毁时, 全局设置 appSetting 引用为 null
@@ -150,6 +154,27 @@ namespace ImageBed.Pages
             else
             {
                 _ = _message.Error("测试邮件发送失败, 请检查邮件配置是否正确 !");
+            }
+        }
+
+
+        /// <summary>
+        /// 检查更新
+        /// </summary>
+        /// <returns></returns>
+        async Task CheckUpdate()
+        {
+            _ = _message.Info("检查更新中...");
+
+            string latestVersion = await UpdateHelper.GetLatestVersion();
+            if(!string.IsNullOrEmpty(latestVersion) && (latestVersion.ToLower() != updateConfig.Version.ToLower()))
+            {
+                _ = _message.Info($"发现新版本 {latestVersion}, 正在下载更新文件...更新文件下载完成后将关闭该程序");
+                await UpdateHelper.SysUpdate(updateConfig.Pattern, $"{UpdateHelper.releaseDownloadBaseUrl}/{latestVersion}/{UpdateHelper.CheckOSPlatform()}.zip");
+            }
+            else
+            {
+                _ = _message.Info("已是最新版本, 无需更新! ");
             }
         }
 

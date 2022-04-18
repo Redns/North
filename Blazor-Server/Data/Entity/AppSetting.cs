@@ -12,6 +12,7 @@ namespace ImageBed.Data.Entity
         public Pics? Pics { get; set; }
         public Notify? Notify { get; set; }
         public Footer? Footer { get; set; }
+        public Update? Update { get; set; }
 
 
         /// <summary>
@@ -127,6 +128,21 @@ namespace ImageBed.Data.Entity
     {
         public string Content { get; set; }
         public string RegisterNumber { get; set; }
+    }
+
+
+    public class Update
+    {
+        public string Version { get; set; }
+        public bool AutoUpdate { get; set; }
+        public UpdatePattern Pattern { get; set; }
+    }
+
+
+    public enum UpdatePattern
+    {
+        INCREMENT = 0,      // 增量更新
+        FULL                // 全量更新
     }
 
 
