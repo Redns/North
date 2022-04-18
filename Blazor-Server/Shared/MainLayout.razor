@@ -10,11 +10,22 @@
         <Content Style="background-color:#ffffff;" class="content px-4">
             @Body
         </Content>
-        @if (!string.IsNullOrEmpty(GlobalValues.appSetting.Footer.Content))
-        {
-            <Footer Style="text-align:center; background-color:#ffffff;">
-                <a href="https://beian.miit.gov.cn/#/Integrated/index">@GlobalValues.appSetting.Footer.Content</a>
-            </Footer>
-        }
+        <Footer Style="text-align:center; background-color:#ffffff;">
+            <Space>
+                <SpaceItem>
+                    @if (!string.IsNullOrEmpty(GlobalValues.appSetting.Footer.Content))
+                    {
+                        <a href="https://beian.miit.gov.cn/#/Integrated/index">@GlobalValues.appSetting.Footer.Content</a>
+                    }
+                </SpaceItem>
+                <SpaceItem>
+                    @if (!string.IsNullOrEmpty(GlobalValues.appSetting.Footer.RegisterNumber))
+                    {
+                        <img src="images/beian.png"/>@GlobalValues.appSetting.Footer.RegisterNumber
+                    }
+                </SpaceItem>
+            </Space>
+        </Footer>
+        
     </Layout>
 </Layout>

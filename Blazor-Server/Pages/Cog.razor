@@ -249,6 +249,11 @@
                             <Input Style="width:400px;" @bind-Value=@footerConfig.Content/>
                         </Tooltip>
                     </FormItem>
+                    <FormItem Label="公安备案号">
+                        <Tooltip Title="@("填写公安联网备案号")">
+                            <Input Style="width:400px;" @bind-Value=@footerConfig.RegisterNumber/>
+                        </Tooltip>
+                    </FormItem>
                     <FormItem WrapperColOffset="8" WrapperColSpan="16">
                         <Button Type="@ButtonType.Primary" HtmlType="submit">
                             保 存

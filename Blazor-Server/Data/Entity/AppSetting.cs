@@ -126,6 +126,7 @@ namespace ImageBed.Data.Entity
     public class Footer
     {
         public string Content { get; set; }
+        public string RegisterNumber { get; set; }
     }
 
 

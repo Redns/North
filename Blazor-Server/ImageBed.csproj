@@ -40,6 +40,9 @@
     <Content Update="nlog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Update="wwwroot\images\beian.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\images\upload.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
