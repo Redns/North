@@ -133,9 +133,10 @@ namespace ImageBed.Data.Entity
 
     public class Update
     {
-        public string Version { get; set; }
         public bool AutoUpdate { get; set; }
         public UpdatePattern Pattern { get; set; }
+        public string CheckUrl { get; set; }
+        public string DownloadUrl { get; set; }
     }
 
 

@@ -245,7 +245,7 @@
                   OnFinishFailed="OnFinishFailed"
                   Style="margin-top:80px;">
                     <FormItem Label="版本号">
-                        @updateConfig.Version
+                        @UpdateHelper.GetLocalVersion()
                     </FormItem>
                     <FormItem Label="自动更新">
                         <RadioGroup @bind-Value=@updateConfig.AutoUpdate>
@@ -278,6 +278,16 @@
                                 </Tooltip>
                             </SpaceItem>
                         </Space>
+                    </FormItem>
+                    <FormItem Label="更新接口">
+                        <Tooltip Title="@("该接口用于检查是否有更新")">
+                            <Input Style="width:400px;" @bind-Value=@updateConfig.CheckUrl/>
+                        </Tooltip>
+                    </FormItem>
+                    <FormItem Label="下载接口">
+                        <Tooltip Title="@("该接口用于下载更新文件")">
+                            <Input Style="width:400px;" @bind-Value=@updateConfig.DownloadUrl/>
+                        </Tooltip>
                     </FormItem>
                     <FormItem WrapperColOffset="8" WrapperColSpan="16">
                         <Button Type="@ButtonType.Primary" HtmlType="submit">
@@ -318,4 +328,11 @@
         </TabPane>
     </Tabs>
 </Spin>
+
+<Modal Title="@("应用更新")"
+       Visible=@updateEnsureModelVisibile
+       OnOk=@UpdateSoftware
+       OnCancel=@CancelUpdate>
+    <p>@updateMessage</p>
+</Modal>
 

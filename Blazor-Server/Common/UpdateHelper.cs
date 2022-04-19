@@ -3,13 +3,25 @@ using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace ImageBed.Common
 {
     public class UpdateHelper
     {
-        public const string tagGetUrl = "https://api.github.com/repos/Redns/ImageBed/tags?per_page=10&page=1";
-        public const string releaseDownloadBaseUrl = "https://github.com/Redns/ImageBed/releases/download";
+        /// <summary>
+        /// 获取当前版本号
+        /// </summary>
+        /// <returns></returns>
+        public static string GetLocalVersion()
+        {
+            var assembly = Assembly.GetEntryAssembly();
+            if(assembly != null)
+            {
+                return $"v{assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion}";
+            }
+            return string.Empty;
+        }
 
 
         /// <summary>
@@ -17,13 +29,13 @@ namespace ImageBed.Common
         /// </summary>
         /// <param name="checkUrl">数据源</param>
         /// <returns>获取成功返回最新版本号, 否则返回空字符串</returns>
-        public static async Task<string> GetLatestVersion()
+        public static async Task<string> GetLatestVersion(string checkUrl)
         {
             var tagsRequest = new HttpClient();
             tagsRequest.DefaultRequestHeaders.Add("User-Agent", "PostmanRuntime/7.29.0");
             tagsRequest.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
 
-            List<GithubTag>? tags = await tagsRequest.GetFromJsonAsync<List<GithubTag>>(tagGetUrl);
+            List<GithubTag>? tags = await tagsRequest.GetFromJsonAsync<List<GithubTag>>(checkUrl);
             if ((tags != null) && (tags.Any()))
             {
                 return tags.First().name;
@@ -43,33 +55,34 @@ namespace ImageBed.Common
         /// <returns></returns>
         public static async Task SysUpdate(UpdatePattern pattern, string downloadUrl)
         {
-            // 下载文件
-            using (Stream updateDownloadStream = new FileStream("Update.zip", FileMode.Create, FileAccess.Write))
-            {
-                byte[] buffer = await new HttpClient().GetByteArrayAsync(downloadUrl);
-                await updateDownloadStream.WriteAsync(buffer);
-            }
-
-            // 解压文件
-            FileOperator.DeCompressMulti("Update.zip", "Update");
-            File.Delete("Update.zip");
+            string platform = CheckOSPlatform();
 
             try
             {
-                string cmd = string.Empty;
-                if(pattern == UpdatePattern.INCREMENT)
+                // 下载文件
+                using (Stream updateDownloadStream = new FileStream("Update.zip", FileMode.Create, FileAccess.Write))
                 {
-                    cmd = "Updater.dll inc";
+                    byte[] buffer = await new HttpClient().GetByteArrayAsync(downloadUrl);
+                    await updateDownloadStream.WriteAsync(buffer);
+                }
+
+                // 解压文件, 更新文件路径为 Update/{platform}
+                FileOperator.DeCompressMulti("Update.zip", "Update");
+                File.Delete("Update.zip");
+
+                // 提取 Updater.dll 和 updater.config
+                new FileInfo($"Update/{platform}/Updater.dll").MoveTo("Updater.dll", true);
+                new FileInfo($"Update/{platform}/updater.config").MoveTo("updater.config", true);
+
+                // 调用 Updater.dll 更新
+                if (pattern == UpdatePattern.INCREMENT)
+                {
+                    Process.Start(new ProcessStartInfo("dotnet", $"Updater.dll inc Update/{platform}"));
                 }
                 else
                 {
-                    cmd = "Updater.dll full";
+                    Process.Start(new ProcessStartInfo("dotnet", $"Updater.dll full Update/{platform}"));
                 }
-
-                // 调用 Updater 替换文件
-                Process.Start(new ProcessStartInfo("dotnet", cmd));
-
-                // 结束当前进程
                 Process.GetCurrentProcess().Kill();
             }
             catch (Exception ex)

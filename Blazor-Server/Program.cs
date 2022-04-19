@@ -2,6 +2,7 @@ using ImageBed.Common;
 using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
 using NLog.Extensions.Logging;
+using System.Reflection;
 
 
 var builder = WebApplication.CreateBuilder(args);

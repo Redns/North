@@ -4,6 +4,7 @@ using ImageBed.Data.Entity;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Components.Forms;
 using static ImageBed.Common.UnitNameGenerator;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace ImageBed.Pages
 {
@@ -19,10 +20,13 @@ namespace ImageBed.Pages
         Footer? footerConfig;                   // 页脚设置
         Update? updateConfig;                   // 更新设置
 
-
         // 上传图片格式限制
         string[] imageFormatChoose;
         string[] imageFormatOptions = { "jpg", "jpeg", "png", "gif", "bmp", "svg", "raw" };
+
+        bool updateEnsureModelVisibile;
+        string updateMessage;
+        string latestVersion;
 
 
         /// <summary>
@@ -34,6 +38,8 @@ namespace ImageBed.Pages
             spinning = true;
 
             emailTestRunning = false;
+            updateEnsureModelVisibile = false;
+            updateMessage = string.Empty;
 
             var appConfig = JsonConvert.DeserializeObject<AppSetting>(JsonConvert.SerializeObject(GlobalValues.appSetting));
             if (appConfig != null)
@@ -166,17 +172,41 @@ namespace ImageBed.Pages
         {
             _ = _message.Info("检查更新中...");
 
-            string latestVersion = await UpdateHelper.GetLatestVersion();
-            if(!string.IsNullOrEmpty(latestVersion) && (latestVersion.ToLower() != updateConfig.Version.ToLower()))
+            latestVersion = await UpdateHelper.GetLatestVersion(updateConfig.CheckUrl);
+            if(!string.IsNullOrEmpty(latestVersion) && (latestVersion.ToLower() != UpdateHelper.GetLocalVersion().ToLower()))
             {
-                _ = _message.Info($"发现新版本 {latestVersion}, 正在下载更新文件...更新文件下载完成后将关闭该程序");
-                await UpdateHelper.SysUpdate(updateConfig.Pattern, $"{UpdateHelper.releaseDownloadBaseUrl}/{latestVersion}/{UpdateHelper.CheckOSPlatform()}.zip");
+                updateMessage = $"发现新版本 {latestVersion}, 是否立即更新?";
+                updateEnsureModelVisibile = true;
             }
             else
             {
                 _ = _message.Info("已是最新版本, 无需更新! ");
             }
         }
+
+
+        /// <summary>
+        /// 更新程序
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        async Task UpdateSoftware(MouseEventArgs e)
+        {
+            _ = _message.Info($"正在下载更新文件...更新文件下载完成后将关闭该程序");
+            updateEnsureModelVisibile = false;
+            await UpdateHelper.SysUpdate(updateConfig.Pattern, $"{updateConfig.DownloadUrl}/{latestVersion}/{UpdateHelper.CheckOSPlatform()}.zip");
+        } 
+
+
+        /// <summary>
+        /// 取消更新
+        /// </summary>
+        /// <param name="e"></param>
+        void CancelUpdate(MouseEventArgs e)
+        {
+            updateEnsureModelVisibile = false;
+        }
+
 
 
         /// <summary>

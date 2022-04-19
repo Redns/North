@@ -172,10 +172,10 @@ namespace ImageBed.Common
             // 检查更新
             if (appSetting.Update.AutoUpdate)
             {
-                string latestVersion = await UpdateHelper.GetLatestVersion();
-                if (!string.IsNullOrEmpty(latestVersion) && (latestVersion.ToLower() != appSetting.Update.Version.ToLower()))
+                string latestVersion = await UpdateHelper.GetLatestVersion(appSetting.Update.CheckUrl);
+                if (!string.IsNullOrEmpty(latestVersion) && (latestVersion.ToLower() != UpdateHelper.GetLocalVersion().ToLower()))
                 {
-                    await UpdateHelper.SysUpdate(appSetting.Update.Pattern, $"{UpdateHelper.releaseDownloadBaseUrl}/{latestVersion}/{UpdateHelper.CheckOSPlatform()}.zip");
+                    await UpdateHelper.SysUpdate(appSetting.Update.Pattern, $"{appSetting.Update.DownloadUrl}/{latestVersion}/{UpdateHelper.CheckOSPlatform()}.zip");
                 }
             }
         }
