@@ -45,7 +45,8 @@
 |     功 能      |                         ImageBed版本                         |                picgo-plugin-imagebed版本                 |
 | :------------: | :----------------------------------------------------------: | :------------------------------------------------------: |
 | 图片上传与下载 | [v1.0.0](https://github.com/Redns/ImageBed/releases/tag/v1.0.0) / [v1.1.4](https://github.com/Redns/ImageBed/releases/tag/v1.1.4) | [v1.1.1](https://github.com/Redns/picgo-plugin-imagebed) |
-|    图库管理    | [v2.0.0](https://github.com/Redns/ImageBed/releases/tag/v1.1.4) / [v2.2.13](https://github.com/Redns/ImageBed/releases/tag/v2.2.13) |                                                          |
+|    图库管理    | [v2.0.0](https://github.com/Redns/ImageBed/releases/tag/v2.0.0) / [v2.2.13](https://github.com/Redns/ImageBed/releases/tag/v2.2.13) |                                                          |
+|    自动更新    | [v2.3.14](https://github.com/Redns/ImageBed/releases/tag/v2.3.14) / [v2.3.14](https://github.com/Redns/ImageBed/releases/tag/v2.3.14) |                                                          |
 
 <br>
 
