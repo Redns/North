@@ -109,18 +109,20 @@ namespace ImageBed.Common
                 await imageWriteStream.FlushAsync();
             }
 
-            ImageEntity imageInfo;
             using (var image = NetVips.Image.NewFromFile(unitImageFullPath))
             {
                 // 生成缩略图
-                using (var thumbnailImage = image.ThumbnailImage(180))
+                using (var thumbnailImage = ImageHelper.ImageCut(image))
                 {
-                    thumbnailImage.WriteToFile($"{imageDir}/thumbnails_{unitImageName}");
-                    thumbnailImage.Close();
+                    if(thumbnailImage != null)
+                    {
+                        ImageHelper.ImageWaterMark(thumbnailImage, unitImageName, fontSize:25, leftEdge: 8, bottomEdge: 30)
+                                   .WriteToFile($"{imageDir}/thumbnails_{unitImageName}");
+                    }
                 }
 
                 // 构造图片信息
-                imageInfo = new()
+                return new()
                 {
                     Id = EncryptAndDecrypt.Encrypt_MD5(unitImageName),
                     Name = unitImageName,
@@ -130,11 +132,7 @@ namespace ImageBed.Common
                     UploadTime = DateTime.Now.ToString(),
                     Owner = "Admin"
                 };
-
-                image.Close();
             }
-            
-            return imageInfo;
         }
 
 

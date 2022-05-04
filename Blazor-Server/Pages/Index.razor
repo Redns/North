@@ -7,15 +7,7 @@
 @inject MessageService _message
 @inject NavigationManager NavigationManager
 
-<style type="text/css">
-	.upload{
-		width: 550px;
-		margin:auto;
-        left:10px;
-	}
-</style>
-
-<div class="upload">
+<div style="position:center; width:100%; max-width:500px; transform:translateY(45%); margin:auto;">
     <Spin Spinning=@spining>
 		<Upload Multiple
             Action=@("api/image")
@@ -24,7 +16,7 @@
             BeforeAllUpload=@CheckImages
             OnChange=@ImageStateChanged
             OnCompleted=@UploadFinished>
-            <Image Id="upload" Width="100%" Src="images/upload.png" Preview=false Style="position:center;margin-top:130px;"/>
+            <Image Src="images/upload.png" Preview=false Style=""/>
         </Upload>
         <Progress Percent=@ProgressPercent StrokeWidth=progress_stroke_width ShowInfo=progress_showInfo/>
     </Spin>

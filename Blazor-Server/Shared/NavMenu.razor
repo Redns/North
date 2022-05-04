@@ -1,6 +1,9 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">ImageBed</a>
+        <Space>
+            <Image Src="images/imagebed.svg" Preview=false style="width:28px; margin-right:10px; cursor:pointer;"/>
+            <a class="navbar-brand" href="">LANMovie</a>
+        </Space>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -27,11 +30,6 @@
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="/Cog">
                 <Space><Icon Type="setting" Theme="outline" Width=25 Height=25 Style="margin-right:15px;"/>设 置</Space>
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="https://github.com/Redns/ImageBed">
-                <Space><Icon Type="github" Theme="outline" Width=25 Height=25 Style="margin-right:15px;"/>Github</Space>
             </NavLink>
         </div>
     </nav>

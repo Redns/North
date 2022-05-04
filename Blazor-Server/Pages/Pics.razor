@@ -22,7 +22,7 @@
         </Tooltip>
     </SpaceItem>
     <SpaceItem>
-        <Search Placeholder="Search what you want..." EnterButton="true" @bind-Value="searchText" Loading=@searching OnSearch=@OnSearch Style="width:220px"/>
+        <Search Placeholder="Search what you want..." EnterButton="true" @bind-Value="searchText" Loading=@searching OnSearch=@OnSearch Style="width:100%; max-width:220px;"/>
     </SpaceItem>
     @if((imagesShow.Length > 0) && (ImageViewFormat == ViewFormat.List))
     {
@@ -54,60 +54,62 @@
 <br/>
 <br />
 <Spin Spinning=@spinning>
-    @if(ImageViewFormat == ViewFormat.List)
+    @if(imagesShow.Length == 0)
+    {
+        <Empty Style="transform:translateY(100%);"></Empty>
+    }
+    else if(ImageViewFormat == ViewFormat.List)
     {
         <Table @ref="table"
-            TItem="ImageEntity"
-            DataSource="@imagesShow"
-            @bind-PageSize="pageSize"
-            @bind-SelectedRows="@imagesSelected">
-            <Selection Key="@(context.Id?.ToString())" />
-            <Column @bind-Field="@context.Name" Align="@ColumnAlign.Center" Sortable>
-                <a href=@context.Url>@context.Name</a>
-            </Column>
-            <Column @bind-Field="@context.Dpi" Align="@ColumnAlign.Center" />
-            <Column @bind-Field="@context.Size" Align="@ColumnAlign.Center" Sortable 
-                    SorterCompare="@((v1, v2) => 
-                    {
-                        double v1Size = UnitNameGenerator.ParseFileSize(v1);
-                        double v2Size = UnitNameGenerator.ParseFileSize(v2);
-                        if(v1Size > v2Size){ return 1; }
-                        else if(v1Size < v2Size){ return -1; }
-                        else{ return 0; }
-                    })"/>
-            <Column @bind-Field="@context.UploadTime" Align="@ColumnAlign.Center" Sortable/>
-            <Column @bind-Field="@context.RequestNum" Align="@ColumnAlign.Center" Sortable/>
-            <Column @bind-Field="@context.Owner" Align="@ColumnAlign.Center" Sortable/>
-            <ActionColumn Align="@ColumnAlign.Center">
-                <Space>
-                    <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{ _ = CopyUrlToClip(UnitNameGenerator.UrlBuild(imageConfig.UrlFormat, NavigationManager.BaseUri + context.Url));}">复 制</Button></SpaceItem>
-                    <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{ _ = DownloadFile(NavigationManager.BaseUri + context.Url, context.Name);}">下 载</Button></SpaceItem>
-                    <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick="()=>{ _ = RemoveImage(context); }">删 除</Button></SpaceItem>
-                </Space>
-            </ActionColumn>
+               @bind-PageSize="pageSize"
+               @bind-SelectedRows="@imagesSelected"
+               TItem="ImageEntity"
+               DataSource="@imagesShow"
+               Style="width:100%;">
+                    <Selection Key="@(context.Id?.ToString())" />
+                    <Column @bind-Field="@context.Name" Align="@ColumnAlign.Center" Sortable>
+                        <a href=@context.Url>@context.Name</a>
+                    </Column>
+                    <Column @bind-Field="@context.Dpi" Align="@ColumnAlign.Center" />
+                    <Column @bind-Field="@context.Size" Align="@ColumnAlign.Center" Sortable 
+                            SorterCompare="@((v1, v2) => 
+                            {
+                                double v1Size = UnitNameGenerator.ParseFileSize(v1);
+                                double v2Size = UnitNameGenerator.ParseFileSize(v2);
+                                if(v1Size > v2Size){ return 1; }
+                                else if(v1Size < v2Size){ return -1; }
+                                else{ return 0; }
+                            })"/>
+                    <Column @bind-Field="@context.UploadTime" Align="@ColumnAlign.Center" Sortable/>
+                    <Column @bind-Field="@context.RequestNum" Align="@ColumnAlign.Center" Sortable/>
+                    <Column @bind-Field="@context.Owner" Align="@ColumnAlign.Center" Sortable/>
+                    <ActionColumn Align="@ColumnAlign.Center">
+                        <Space>
+                            <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{ _ = CopyUrlToClip(UnitNameGenerator.UrlBuild(imageConfig.UrlFormat, NavigationManager.BaseUri + context.Url));}">复 制</Button></SpaceItem>
+                            <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{ _ = DownloadFile(NavigationManager.BaseUri + context.Url, context.Name);}">下 载</Button></SpaceItem>
+                            <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick="()=>{ _ = RemoveImage(context); }">删 除</Button></SpaceItem>
+                        </Space>
+                    </ActionColumn>
         </Table>
-    }
-    else if(imagesShow.Length == 0)
-    {
-        <Empty Style="margin-top:130px;"></Empty>
     }
     else
     {
-        <AntList Grid="grid" DataSource="@imagesShow" Style="overflow:scroll; overflow-x:hidden; height:550px;" Id="imageCard">
-                <ListItem>
-                    <Tooltip Title=@($"{context.Size}〔{context.Dpi}〕")>
-                        <Card Bordered  Hoverable 
-                              Actions="@(new[] {
-                                actionSetting(() => _ = CopyUrlToClip(UnitNameGenerator.UrlBuild(GlobalValues.appSetting.Data.Resources.Images.UrlFormat, NavigationManager.BaseUri + context.Url))) ,
-                                actionEdit(()=> _ = DownloadFile(NavigationManager.BaseUri + context.Url, context.Name)),
-                                actionEllipsis(()=> _ = RemoveImage(context)) })">
-                                <Cover>
-                                    <AntDesign.Image alt="example" Src=@($"api/image/thumbnails_{context.Name}") Width=180 Height=135/>
-                                </Cover>
-                        </Card>
-                    </Tooltip>
-                </ListItem>
-            </AntList>
+        <AntList Grid="grid" DataSource="@imagesShow" Style="overflow:scroll; overflow-x:hidden; height:100%; max-height:570px;" Id="imageCard">
+            <ListItem>
+                <Popover Placement="Placement.Right">
+                    <ContentTemplate>
+                        <Space Direction="DirectionVHType.Vertical">
+                            <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{ _ = CopyUrlToClip(UnitNameGenerator.UrlBuild(imageConfig.UrlFormat, NavigationManager.BaseUri + context.Url));}">复 制</Button></SpaceItem>
+                            <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{ _ = DownloadFile(NavigationManager.BaseUri + context.Url, context.Name);}">下 载</Button></SpaceItem>
+                            <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick="()=>{ _ = RemoveImage(context); }">删 除</Button></SpaceItem>
+                        </Space>
+                    </ContentTemplate>
+                    <ChildContent>
+                        <img alt="Cover" src=@($"api/image/thumbnails_{context.Name}") class="zoomImage" style="border-radius:10px; cursor:pointer;"/>
+                    </ChildContent>
+                </Popover>
+            </ListItem>
+        </AntList>
     }
 </Spin>
 @code
@@ -120,5 +122,18 @@
 <style>
     #imageCard::-webkit-scrollbar {
         display: none;
+    }
+
+    .zoomImage{
+        width:100%;
+        border-radius:10px;
+        background-color:yellow;
+    }
+
+    .zoomImage:hover{
+        cursor:pointer;
+        box-shadow: 0 6px 6px rgba(0, 0, 0, .2);
+        border-color: #eee;
+        transition: all .2s ease-in-out;
     }
 </style>
