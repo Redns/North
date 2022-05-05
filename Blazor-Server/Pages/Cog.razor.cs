@@ -202,12 +202,7 @@ namespace ImageBed.Pages
         /// <exception cref="NotImplementedException"></exception>
         public void Dispose()
         {
-            imageConfig = null;
-            recordConfig = null;
-            picsConfig = null;
-            notifyConfig = null;
-            footerConfig = null;
-            GC.Collect();
+            appConfig = null;
             GC.SuppressFinalize(this);
         }
     }

@@ -12,7 +12,7 @@ namespace ImageBed.Pages
         Card            // 卡片视图
     }
 
-    partial class Pics
+    partial class Pics : IDisposable
     {
         bool spinning = true;
         bool searching = false;
@@ -21,8 +21,8 @@ namespace ImageBed.Pages
         ITable? table;
         int pageSize = 8;
 
-        ImageEntity[] imagesAll = Array.Empty<ImageEntity>();
-        ImageEntity[] imagesShow = Array.Empty<ImageEntity>();
+        ImageEntity[]? imagesAll = Array.Empty<ImageEntity>();
+        ImageEntity[]? imagesShow = Array.Empty<ImageEntity>();
         IEnumerable<ImageEntity>? imagesSelected;
 
         Data.Entity.Image? imageConfig = GlobalValues.appSetting.Data.Resources.Images;         // 图片相关设置
@@ -49,7 +49,7 @@ namespace ImageBed.Pages
         }
 
         // 卡片视图时相关参数
-        ListGridType grid = new()               
+        ListGridType? grid = new()               
         {
             Gutter = 16,    // 栅格间距
             Xs = 2,         // < 576px 展示的列数
@@ -109,7 +109,7 @@ namespace ImageBed.Pages
 
             if(searchText != null)
             {
-                imagesShow = imagesAll.Where(i => i.Name.Contains(searchText) ||
+                imagesShow = imagesAll?.Where(i => i.Name.Contains(searchText) ||
                                                   i.Dpi.Contains(searchText) ||
                                                   i.Size.Contains(searchText) ||
                                                   i.UploadTime.Contains(searchText) ||
@@ -262,6 +262,17 @@ namespace ImageBed.Pages
             imagesShow = imagesShow.Remove(image);
 
             _ = _message.Success("图片已删除 !", 1.5);
+        }
+
+        public void Dispose()
+        {
+            imagesAll = null;
+            imagesShow = null;
+            imagesSelected = null;
+
+            grid = null;
+
+            GC.SuppressFinalize(this);
         }
     }
 }

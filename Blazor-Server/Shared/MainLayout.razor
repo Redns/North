@@ -5,18 +5,18 @@
 
 <PageTitle>ImageBed</PageTitle>
 
-<div class="page" style="height:auto;">
+<div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
 
     <Layout Class="site-layout" >
-        <Content Style="background-color:#ffffff;" class="content px-4">
+        <Content class="content px-4" Style="background-color:#f0f2f5;">
             @Body
         </Content>
         @if (showFooter)
         {
-            <Footer Style="text-align:center; background-color:#ffffff;" class="myfooter">
+            <Footer Style="text-align:center; background-color:#f0f2f5;" class="myfooter">
                 <Space>
                     <SpaceItem>
                         @if (!string.IsNullOrEmpty(GlobalValues.appSetting.Footer.Content))

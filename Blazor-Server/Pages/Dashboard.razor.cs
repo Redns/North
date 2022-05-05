@@ -29,7 +29,7 @@ namespace ImageBed.Pages
         /// <summary>
         /// 资源统计表格相关属性
         /// </summary>
-        LineConfig SysRecordConfig = new()
+        LineConfig? SysRecordConfig = new()
         {
             Padding = "auto",
             XField = "date",
@@ -49,7 +49,7 @@ namespace ImageBed.Pages
         };
 
         // 卡片视图时相关参数
-        readonly ListGridType grid = new()
+        ListGridType? grid = new()
         {
             Gutter = 16,    // 栅格间距
             Xs = 1,         // < 576px 展示的列数
@@ -57,7 +57,7 @@ namespace ImageBed.Pages
             Xl = 3,         // ≥ 1200px 展示的列数
             Xxl = 4,        // ≥ 1600px 展示的列数 
         };
-        SysRunningInfoCard[] sysRunningInfoCards = new[]
+        SysRunningInfoCard[]? sysRunningInfoCards = new[]
         {
             new SysRunningInfoCard("托管图片总数", "picture", "0 张"),
             new SysRunningInfoCard("磁盘存储占用", "database", "0 MB"),
@@ -191,6 +191,15 @@ namespace ImageBed.Pages
                 t?.Dispose();
                 t = null;
             }
+
+            SysRecords.Clear();
+            SysRecords = null;
+
+            Images.Clear();
+            Images = null;
+
+            grid = null;
+
             GC.SuppressFinalize(this);
         }
     }

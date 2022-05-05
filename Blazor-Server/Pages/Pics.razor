@@ -113,7 +113,7 @@
                         </Space>
                     </ContentTemplate>
                     <ChildContent>
-                        <img alt="Cover" src=@($"api/image/thumbnails_{context.Name}") class="zoomImage" style="border-radius:10px; cursor:pointer;"/>
+                        <img alt="Cover" src=@($"api/image/thumbnails_{context.Name}") class="zoomImage" style="border-radius:10px; cursor:pointer;" loading="lazy"/>
                     </ChildContent>
                 </Popover>
             </ListItem>
