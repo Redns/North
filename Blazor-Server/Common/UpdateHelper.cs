@@ -48,6 +48,44 @@ namespace ImageBed.Common
 
 
         /// <summary>
+        /// 版本号格式为 A.B.C
+        /// A：指大版本号，程序大量修改/更换架构时改变
+        /// B：新增/删除功能
+        /// C：Bug修复/功能优化
+        /// </summary>
+        /// <param name="v1">版本号1</param>
+        /// <param name="v2">版本号2</param>
+        /// <returns>相同返回0，v1 > v2返回大于0，v1 < v2返回小于0，输入参数错误返回null</returns>
+        public static int? VersionCompare(string v1, string v2)
+        {
+            int virtualDimensionA = 100000, virtualDimensionB = 1000, virtualDimensionC = 1;
+
+            string[] v1Pics = v1.Split(".");
+            string[] v2Pics = v2.Split(".");
+
+            if ((v1Pics.Length != 3) || (v2Pics.Length != 3))
+            {
+                return null;
+            }
+            else
+            {
+                int v1A = int.Parse(v1Pics[0]);
+                int v1B = int.Parse(v1Pics[1]);
+                int v1C = int.Parse(v1Pics[2]);
+
+                int v2A = int.Parse(v2Pics[0]);
+                int v2B = int.Parse(v2Pics[1]);
+                int v2C = int.Parse(v2Pics[2]);
+
+                int v1Total = v1A * virtualDimensionA + v1B * virtualDimensionB + v1C * virtualDimensionC;
+                int v2Total = v2A * virtualDimensionA + v2B * virtualDimensionB + v2C * virtualDimensionC;
+
+                return v1Total - v2Total;
+            }
+        }
+
+
+        /// <summary>
         /// 启动更新进程
         /// </summary>
         /// <param name="pattern">更新模式</param>

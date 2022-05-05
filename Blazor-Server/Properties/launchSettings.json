@@ -29,6 +29,10 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "publishAllPorts": true
+    },
+    "配置文件 1": {
+      "commandName": "Project",
+      "remoteDebugEnabled": true
     }
   }
 }
