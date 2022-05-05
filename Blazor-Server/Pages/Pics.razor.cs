@@ -14,23 +14,23 @@ namespace ImageBed.Pages
 
     partial class Pics
     {
-        bool spinning;
-        bool searching;
-        string? searchText;
+        bool spinning = true;
+        bool searching = false;
+        string? searchText = null;
 
         ITable? table;
-        int pageSize;
+        int pageSize = 8;
 
         ImageEntity[] imagesAll = Array.Empty<ImageEntity>();
         ImageEntity[] imagesShow = Array.Empty<ImageEntity>();
         IEnumerable<ImageEntity>? imagesSelected;
 
-        Data.Entity.Image? imageConfig;         // 图片相关设置
-        Data.Entity.Pics?  picsConfig;          // 图库界面相关设置
+        Data.Entity.Image? imageConfig = GlobalValues.appSetting.Data.Resources.Images;         // 图片相关设置
+        Data.Entity.Pics?  picsConfig = GlobalValues.appSetting.Pics;          // 图库界面相关设置
 
         string imageFormatChangeButtonIcon;     // 视图切换按钮图标  
 
-        ViewFormat _imageViewFormat;            // 图库界面视图
+        ViewFormat _imageViewFormat = GlobalValues.appSetting.Pics.ViewFormat;            // 图库界面视图
         ViewFormat ImageViewFormat
         {
             get { return _imageViewFormat; }
@@ -52,39 +52,13 @@ namespace ImageBed.Pages
         ListGridType grid = new()               
         {
             Gutter = 16,    // 栅格间距
-            Xs = 1,         // < 576px 展示的列数
+            Xs = 2,         // < 576px 展示的列数
             Sm = 2,         // ≥ 576px 展示的列数
-            Md = 2,         // ≥ 768px 展示的列数
+            Md = 3,         // ≥ 768px 展示的列数
             Lg = 3,         // ≥ 992px 展示的列数
             Xl = 4,         // ≥ 1200px 展示的列数
             Xxl = 5,        // ≥ 1600px 展示的列数 
         };
-
-
-        /// <summary>
-        /// 初始化界面
-        /// </summary>
-        /// <returns></returns>
-        protected override async Task OnInitializedAsync()
-        {
-            spinning = true;
-
-            searching = false;
-            searchText = null;
-
-            pageSize = 8;
-
-            imageConfig = GlobalValues.appSetting.Data.Resources.Images;
-            picsConfig  = GlobalValues.appSetting.Pics;
-
-            ImageViewFormat = picsConfig.ViewFormat;
-
-            using (var context = new OurDbContext())
-            {
-                imagesAll = await new SQLImageData(context).GetArrayAsync();
-                imagesShow = (ImageEntity[])imagesAll.Clone();
-            }
-        }
 
 
         /// <summary>
@@ -96,7 +70,15 @@ namespace ImageBed.Pages
             if (firstRender)
             {
                 spinning = false;
-                await InvokeAsync(() => { StateHasChanged(); });
+
+                ImageViewFormat = GlobalValues.appSetting.Pics.ViewFormat;
+                using (var context = new OurDbContext())
+                {
+                    imagesAll = await new SQLImageData(context).GetArrayAsync();
+                    imagesShow = (ImageEntity[])imagesAll.Clone();
+                }
+
+                StateHasChanged();
             }
             await base.OnAfterRenderAsync(firstRender);
         }
@@ -148,7 +130,7 @@ namespace ImageBed.Pages
         /// <param name="images">待导入的图片</param>
         async Task<bool> StartImport(List<UploadFileItem> images)
         {
-            await _notice.Open(new NotificationConfig()
+            _ = _notice.Open(new NotificationConfig()
             {
                 Message = "图片开始导入",
                 Description = "图片后台导入中，导入完成前请勿再次导入！"
@@ -196,7 +178,7 @@ namespace ImageBed.Pages
                 }
                 imagesSelected = null;
 
-                _ = _message.Success("图片已删除! ");
+                _ = _message.Success("图片已删除! ", 1.5);
             }
         }
 
@@ -225,7 +207,7 @@ namespace ImageBed.Pages
             
             // 这里压缩完成后可以先弹窗提示, 然后子线程再去启动下载
             // 调用 JS 下载后不建议删除 Images.zip
-            _ = _message.Success("导出成功 !");
+            _ = _message.Success("导出成功 !", 1.5);
             _ = JS.InvokeVoidAsync("downloadFileFromStream", "Images.zip", "api/image/Images.zip");
         }
 
@@ -239,11 +221,11 @@ namespace ImageBed.Pages
             if (!string.IsNullOrEmpty(content))
             {
                 await JS.InvokeVoidAsync("CopyToClip", content);
-                _ = _message.Success("已拷贝链接到剪贴板 !");
+                _ = _message.Success("已拷贝链接到剪贴板 !", 1.5);
             }
             else
             {
-                _ = _message.Error("拷贝链接失败, 链接为空 !");
+                _ = _message.Error("拷贝链接失败, 链接为空 !", 1.5);
             }
         }
 
@@ -279,7 +261,7 @@ namespace ImageBed.Pages
             imagesAll = imagesAll.Remove(image);
             imagesShow = imagesShow.Remove(image);
 
-            _ = _message.Success("图片已删除 !");
+            _ = _message.Success("图片已删除 !", 1.5);
         }
     }
 }

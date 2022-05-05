@@ -7,9 +7,9 @@
 @inject MessageService _message
 @inject NavigationManager NavigationManager
 
-<div style="position:center; width:100%; max-width:500px; transform:translateY(45%); margin:auto;">
+<div style="position:center; width:100%; max-width:550px; transform:translateY(40%); margin:auto; height:auto;">
     <Spin Spinning=@spining>
-		<Upload Multiple
+	    <Upload Multiple
             Action=@("api/image")
             Accept=@imageConfig.Format
             ShowUploadList=false

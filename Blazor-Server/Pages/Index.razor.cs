@@ -8,12 +8,12 @@ namespace ImageBed.Pages
 {
     partial class Index : IDisposable
     {
-        bool spining;                               // 页面加载标志
+        bool spining = true;                        // 页面加载标志
 
-        int  imageTotalNum;                         // 总图片数量
-        int  imageSuccessNum;                       // 上传成功的图片数量
-        long imageTotalSize;                        // 待上传的图片总尺寸(Byte)
-        long _imageUploadedSize;                    // 上传完成的图片尺寸(Byte)
+        int  imageTotalNum = 0;                     // 总图片数量
+        int  imageSuccessNum = 0;                   // 上传成功的图片数量
+        long imageTotalSize = 0;                    // 待上传的图片总尺寸(Byte)
+        long _imageUploadedSize = 0;                // 上传完成的图片尺寸(Byte)
         long ImageUploadedSize
         {
             get { return _imageUploadedSize; }
@@ -27,10 +27,10 @@ namespace ImageBed.Pages
             }
         }
 
-        int  progress_stroke_width;                 // 进度条宽度
-        bool progress_showInfo;                     // 是否显示进度条信息
+        int  progress_stroke_width = 0;             // 进度条宽度
+        bool progress_showInfo = false;             // 是否显示进度条信息
 
-        int _ProgressPercent;                       // 进度条百分比            
+        int _ProgressPercent = 0;                   // 进度条百分比            
         int ProgressPercent
         {
             get { return _ProgressPercent; }
@@ -50,35 +50,10 @@ namespace ImageBed.Pages
             }
         }
 
-        int imageUploadSizeLimit;                   // 图片最大上传尺寸(MB)
-        int imageUploadNumLimit;                    // 图片单次最大上传数量(张)
+        int imageUploadSizeLimit = GlobalValues.appSetting.Data.Resources.Images.MaxSize;                   // 图片最大上传尺寸(MB)
+        int imageUploadNumLimit = GlobalValues.appSetting.Data.Resources.Images.MaxNum;                    // 图片单次最大上传数量(张)
 
-        Data.Entity.Image? imageConfig;             // 图片设置
-
-
-        /// <summary>
-        /// 初始化加载界面
-        /// </summary>
-        protected override async Task OnInitializedAsync()
-        {
-            spining = true;
-
-            imageTotalNum = 0;
-            imageSuccessNum = 0;
-            imageTotalSize = 0;
-            ImageUploadedSize = 0;
-
-            progress_stroke_width = 0;
-            progress_showInfo = false;
-
-            ProgressPercent = 0;
-
-            imageConfig = GlobalValues.appSetting.Data.Resources.Images;
-            imageUploadSizeLimit = imageConfig.MaxSize;
-            imageUploadNumLimit = imageConfig.MaxNum;
-
-            await base.OnInitializedAsync();
-        }
+        Data.Entity.Image? imageConfig = GlobalValues.appSetting.Data.Resources.Images;             // 图片设置
 
 
         /// <summary>
@@ -91,8 +66,11 @@ namespace ImageBed.Pages
             if (firstRender)
             {
                 spining = false;
+
+                // 监听 Ctrl + V 快捷键
                 _ = JS.InvokeVoidAsync("BindPasteEvent", imageUploadSizeLimit, imageUploadNumLimit);
-                await InvokeAsync(() => { StateHasChanged(); });
+                
+                StateHasChanged();
             }
             await base.OnAfterRenderAsync(firstRender);
         }
@@ -134,7 +112,7 @@ namespace ImageBed.Pages
             }
             else
             {
-                _message.Error("上传失败, 图片尺寸或数量超出限制 !");
+                _ = _message.Error("上传失败, 图片尺寸或数量超出限制 !", 1.5);
                 return false;
             }
         }
@@ -169,7 +147,7 @@ namespace ImageBed.Pages
                 var url = image.GetResponse<ApiResult<List<string>>>()?.Res?.FirstOrDefault();
                 if (!string.IsNullOrEmpty(url))
                 {
-                    urls += $"{UnitNameGenerator.UrlBuild(imageConfig.UrlFormat, $"{NavigationManager.BaseUri}{image.Url}")}\n";
+                    urls += $"{UnitNameGenerator.UrlBuild(imageConfig.UrlFormat, $"{NavigationManager.BaseUri}{url}")}\n";
                     imageSuccessNum++;
                 }
             });
@@ -180,7 +158,7 @@ namespace ImageBed.Pages
 
             // 复制链接到剪贴板
             await JS.InvokeVoidAsync("CopyToClip", urls);
-            _ = _message.Success($"图片上传完成, {imageSuccessNum}个成功, {imageTotalNum - imageSuccessNum}个失败 !"); ;
+            _ = _message.Success($"图片上传完成, {imageSuccessNum}个成功, {imageTotalNum - imageSuccessNum}个失败 !", 1.5); ;
         }
 
 

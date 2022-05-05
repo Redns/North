@@ -11,49 +11,59 @@ namespace ImageBed.Pages
 {
     partial class Dashboard : IDisposable
     {
-        bool spinning;                                  // 页面加载标志
+        bool spinning = true;                                   // 页面加载标志
 
-        Record? recordConfig;                           // 仪表盘设置
+        Record? recordConfig = GlobalValues.appSetting.Record;  // 仪表盘设置
         
-        Process? process;                               // 当前进程
-        System.Timers.Timer? t;                         // 资源刷新定时器
+        Process process = Process.GetCurrentProcess();          // 当前进程
+        System.Timers.Timer? t;                                 // 资源刷新定时器
 
-        List<object>? SysRecords { get; set; }          // 统计数据
-        List<ImageEntity>? Images { get; set; }         // 图片信息
-        int HostImageNums { get; set; }                 // 托管图片总数
-        string DiskOccupancy { get; set; }              // 磁盘存储占用
-        string RunningMemUsage { get; set; }            // 运行内存占用
-        string SysRunningTime { get; set; }             // 系统运行时间
+        List<object>? SysRecords { get; set; } = new();         // 统计数据
+        List<ImageEntity>? Images { get; set; } = new();        // 图片信息
+        int HostImageNums { get; set; } = 0;                    // 托管图片总数
+        string DiskOccupancy { get; set; } = "MB";              // 磁盘存储占用
+        string RunningMemUsage { get; set; } = "MB";            // 运行内存占用
+        string SysRunningTime { get; set; } = "00:00:00";       // 系统运行时间
 
-        
+
         /// <summary>
-        /// 初始化界面
+        /// 资源统计表格相关属性
         /// </summary>
-        protected override async Task OnInitializedAsync()
+        LineConfig SysRecordConfig = new()
         {
-            spinning = true;
-
-            HostImageNums = 0;
-            DiskOccupancy = "MB";
-            RunningMemUsage = "MB";
-            SysRunningTime = "00:00:00";
-
-            SysRecords = new();
-            Images = new();
-
-            process = Process.GetCurrentProcess();
-            recordConfig = GlobalValues.appSetting.Record;
-            if (recordConfig.RefreshRealTime)
+            Padding = "auto",
+            XField = "date",
+            YField = "value",
+            YAxis = new ValueAxis
             {
-                InitTimer();
-            }
+                Label = new BaseAxisLabel()
+            },
+            Legend = new Legend
+            {
+                Position = "right-top"
+            },
+            SeriesField = "type",
+            Color = new string[] { "#1979C9", "#D62A0D", "#FAA219" },
+            Responsive = true,
+            Smooth = true
+        };
 
-            // 刷新界面
-            RefreshChart();
-            RefreshDashboard(null, null);
-
-            await base.OnInitializedAsync();
-        }
+        // 卡片视图时相关参数
+        readonly ListGridType grid = new()
+        {
+            Gutter = 16,    // 栅格间距
+            Xs = 1,         // < 576px 展示的列数
+            Lg = 2,         // ≥ 992px 展示的列数
+            Xl = 3,         // ≥ 1200px 展示的列数
+            Xxl = 4,        // ≥ 1600px 展示的列数 
+        };
+        SysRunningInfoCard[] sysRunningInfoCards = new[]
+        {
+            new SysRunningInfoCard("托管图片总数", "picture", "0 张"),
+            new SysRunningInfoCard("磁盘存储占用", "database", "0 MB"),
+            new SysRunningInfoCard("运行内存占用", "fund-projection-screen", "0 MB"),
+            new SysRunningInfoCard("系统运行时长", "dashboard", "00:00:00")
+        };
 
 
         /// <summary>
@@ -66,7 +76,17 @@ namespace ImageBed.Pages
             if (firstRender)
             {
                 spinning = false;
-                await InvokeAsync(() => { StateHasChanged(); });
+
+                if ((recordConfig != null) && recordConfig.RefreshRealTime)
+                {
+                    InitTimer();
+                }
+
+                // 刷新界面
+                RefreshChart();
+                RefreshDashboard(null, null);
+
+                StateHasChanged();
             }
             await base.OnAfterRenderAsync(firstRender);
         }
@@ -115,6 +135,11 @@ namespace ImageBed.Pages
             // 获取应用运行时长
             TimeSpan SysRunningTimeSpan = DateTime.Now - process.StartTime;
             SysRunningTime = $"{(int)SysRunningTimeSpan.TotalHours}:{((int)SysRunningTimeSpan.TotalMinutes) % 60}:{((int)SysRunningTimeSpan.TotalSeconds) % 60}";
+
+            sysRunningInfoCards[0].Description = HostImageNums.ToString();
+            sysRunningInfoCards[1].Description = DiskOccupancy;
+            sysRunningInfoCards[2].Description = RunningMemUsage;
+            sysRunningInfoCards[3].Description = SysRunningTime;
 
             await InvokeAsync(new Action(() => { StateHasChanged(); }));
         }
@@ -166,38 +191,21 @@ namespace ImageBed.Pages
                 t?.Dispose();
                 t = null;
             }
-
-            recordConfig = null;
-            process = null;
-            SysRecords = null;
-            Images = null;
-
-
-            GC.Collect();
             GC.SuppressFinalize(this);
         }
+    }
 
+    public class SysRunningInfoCard
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Icon { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
 
-        /// <summary>
-        /// 资源统计表格相关属性
-        /// </summary>
-        LineConfig SysRecordConfig = new()
+        public SysRunningInfoCard(string title, string icon, string description)
         {
-            Padding = "auto",
-            XField = "date",
-            YField = "value",
-            YAxis = new ValueAxis
-            {
-                Label = new BaseAxisLabel()
-            },
-            Legend = new Legend
-            {
-                Position = "right-top"
-            },
-            SeriesField = "type",
-            Color = new string[] { "#1979C9", "#D62A0D", "#FAA219" },
-            Responsive = true,
-            Smooth = true
-        };
+            Title = title;
+            Icon = icon;
+            Description = description;
+        }
     }
 }

@@ -84,3 +84,11 @@ async function BindPasteEvent(imageUploadSizeLimit, imageUploadNumLimit) {
         }
     });
 }
+
+
+/**
+ * 获取当前屏幕宽度
+ * */
+function GetScreenWidth() {
+    return screen.width;
+}

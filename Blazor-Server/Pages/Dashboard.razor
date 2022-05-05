@@ -9,55 +9,49 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 
-<div>
+<div style="overflow:scroll; overflow-x:hidden; height:100%; max-height:650px;" Id="imageCard">
     <Spin Spinning=@spinning>
-        <Row Gutter=32 Style="position:center;margin-top:20px;">
-            <Col Span=6>
-                <Card TitleTemplate=TitleTemplate_HostImageNum>
+        <AntList Grid="grid" DataSource="@sysRunningInfoCards">
+            <ListItem>
+                <Card Style="border-radius:10px;">
+                    <TitleTemplate>
+                        <Space>
+                            <SpaceItem>
+                                <Icon Type = "@context.Icon" Theme="outline" Width=30 Height=30/>
+                            </SpaceItem>
+                            <SpaceItem>@context.Title</SpaceItem>
+                        </Space>
+                    </TitleTemplate>
                     <Body>
-                        <h4>@HostImageNums</h4>
+                        <h4>@context.Description</h4>
                     </Body>
                 </Card>
-            </Col>
-            <Col Span=6>
-                <Card TitleTemplate=TitleTemplate_DiskOccupancy>
-                    <Body>
-                        <h4>@DiskOccupancy</h4>
-                    </Body>
-                </Card>
-            </Col>
-            <Col Span=6>
-                <Card TitleTemplate=TitleTemplate_RunningMemUse>
-                    <Body>
-                        <h4>@RunningMemUsage</h4>
-                    </Body>
-                </Card>
-            </Col>
-            <Col Span=6>
-                <Card TitleTemplate=TitleTemplate_CpuUse>
-                    <Body>
-                        <h4>@SysRunningTime</h4>
-                    </Body>
-                </Card>
-            </Col>
-        </Row>
-        <Row Style="margin-top:50px;">
-            <Col Span=22>
-                @if(SysRecords.Count > 0)
-                {
-                    <Line Data="SysRecords" Config="SysRecordConfig" />
-                }
-                else
-                {
-                    <Empty Style="margin-top:100px;"/>
-                }
-            </Col>
-        </Row>
+            </ListItem>
+        </AntList>
+        @if(SysRecords.Count > 0)
+        {
+            <Line Data="SysRecords" Config="SysRecordConfig"/>
+        }
+        else
+        {
+            <Empty Style="margin-top:80px;"/>
+        }
     </Spin>
 </div>
-@code{
-        RenderFragment TitleTemplate_HostImageNum = @<Space><SpaceItem><Icon Type = "picture" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>托管图片总数</SpaceItem></Space>;
-        RenderFragment TitleTemplate_DiskOccupancy = @<Space><SpaceItem><Icon Type = "database" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>磁盘存储占用</SpaceItem></Space>;
-        RenderFragment TitleTemplate_RunningMemUse = @<Space><SpaceItem><Icon Type = "fund-projection-screen" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>运行内存占用</SpaceItem></Space>;
-        RenderFragment TitleTemplate_CpuUse = @<Space><SpaceItem><Icon Type = "dashboard" Theme="outline" Width=30 Height=30/></SpaceItem><SpaceItem>系统运行时长</SpaceItem></Space>;
-}
+
+<style>
+    #imageCard::-webkit-scrollbar {
+        display: none;
+    }
+    .zoomImage{
+        width:100%;
+        border-radius:10px;
+        background-color:yellow;
+    }
+    .zoomImage:hover{
+        cursor:pointer;
+        box-shadow: 0 6px 6px rgba(0, 0, 0, .2);
+        border-color: #eee;
+        transition: all .2s ease-in-out;
+    }
+</style>

@@ -127,9 +127,9 @@ namespace ImageBed.Common
                     Id = EncryptAndDecrypt.Encrypt_MD5(unitImageName),
                     Name = unitImageName,
                     Url = $"api/image/{unitImageName}",
-                    Dpi = $"{image.Width}*{image.Height}",
+                    Dpi = $"{image.Width}×{image.Height}",
                     Size = RebuildFileSize(imageReadStream.Length),
-                    UploadTime = DateTime.Now.ToString(),
+                    UploadTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"),
                     Owner = "Admin"
                 };
             }

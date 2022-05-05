@@ -14,7 +14,7 @@
 
 <Space>
     <SpaceItem>
-        <Tooltip Title=@("切换视图")>
+        <Tooltip Title=@("切换视图") Placement="Placement.Right">
             <Button Type="@ButtonType.Primary"
                 Ghost
                 Icon=@imageFormatChangeButtonIcon
@@ -22,7 +22,7 @@
         </Tooltip>
     </SpaceItem>
     <SpaceItem>
-        <Search Placeholder="Search what you want..." EnterButton="true" @bind-Value="searchText" Loading=@searching OnSearch=@OnSearch Style="width:100%; max-width:220px;"/>
+        <Search Placeholder="Search what you want..." EnterButton="true" @bind-Value="searchText" Loading=@searching OnSearch=@OnSearch />
     </SpaceItem>
     @if((imagesShow.Length > 0) && (ImageViewFormat == ViewFormat.List))
     {
@@ -74,8 +74,8 @@
                     <Column @bind-Field="@context.Size" Align="@ColumnAlign.Center" Sortable 
                             SorterCompare="@((v1, v2) => 
                             {
-                                double v1Size = UnitNameGenerator.ParseFileSize(v1);
-                                double v2Size = UnitNameGenerator.ParseFileSize(v2);
+                                double v1Size = UnitNameGenerator.ParseFileSize(v1 ?? "0");
+                                double v2Size = UnitNameGenerator.ParseFileSize(v2 ?? "0");
                                 if(v1Size > v2Size){ return 1; }
                                 else if(v1Size < v2Size){ return -1; }
                                 else{ return 0; }
@@ -96,12 +96,20 @@
     {
         <AntList Grid="grid" DataSource="@imagesShow" Style="overflow:scroll; overflow-x:hidden; height:100%; max-height:570px;" Id="imageCard">
             <ListItem>
-                <Popover Placement="Placement.Right">
+                <Popover Placement="Placement.Right" Trigger="@(new AntDesign.Trigger[] { AntDesign.Trigger.ContextMenu})">
                     <ContentTemplate>
                         <Space Direction="DirectionVHType.Vertical">
-                            <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{ _ = CopyUrlToClip(UnitNameGenerator.UrlBuild(imageConfig.UrlFormat, NavigationManager.BaseUri + context.Url));}">复 制</Button></SpaceItem>
-                            <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{ _ = DownloadFile(NavigationManager.BaseUri + context.Url, context.Name);}">下 载</Button></SpaceItem>
-                            <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick="()=>{ _ = RemoveImage(context); }">删 除</Button></SpaceItem>
+                            <p>【名 称】@context.Name</p>
+                            <p>【大 小】@context.Size</p>
+                            <p>【分辨率】@context.Dpi</p>
+                            <p>【来 源】@context.Owner</p>
+                            <p>【请求次数】@context.RequestNum</p>
+                            <p>【上传时间】@context.UploadTime</p>
+                            <Space>
+                                <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{ _ = CopyUrlToClip(UnitNameGenerator.UrlBuild(imageConfig.UrlFormat, NavigationManager.BaseUri + context.Url));}">复 制</Button></SpaceItem>
+                                <SpaceItem><Button Type="@ButtonType.Primary" Ghost OnClick="()=>{ _ = DownloadFile(NavigationManager.BaseUri + context.Url, context.Name);}">下 载</Button></SpaceItem>
+                                <SpaceItem><Button Type="@ButtonType.Primary" Danger Ghost OnClick="()=>{ _ = RemoveImage(context); }">删 除</Button></SpaceItem>
+                            </Space>
                         </Space>
                     </ContentTemplate>
                     <ChildContent>

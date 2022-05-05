@@ -10,8 +10,10 @@ namespace ImageBed.Pages
 {
     partial class Cog : IDisposable
     {
-        bool spinning;                          // 页面加载标志
-        bool emailTestRunning;                  // 邮箱测试中标志
+        bool spinning = true;                   // 页面加载标志
+        bool emailTestRunning = false;          // 邮箱测试中标志
+
+        AppSetting? appConfig = JsonConvert.DeserializeObject<AppSetting>(JsonConvert.SerializeObject(GlobalValues.appSetting));
 
         Image? imageConfig;                     // 图片设置
         Record? recordConfig;                   // 系统资源记录设置
@@ -24,38 +26,9 @@ namespace ImageBed.Pages
         string[] imageFormatChoose;
         string[] imageFormatOptions = { "jpg", "jpeg", "png", "gif", "bmp", "svg", "raw" };
 
-        bool updateEnsureModelVisibile;
-        string updateMessage;
-        string latestVersion;
-
-
-        /// <summary>
-        /// 初始化页面
-        /// </summary>
-        /// <returns></returns>
-        protected override async Task OnInitializedAsync()
-        {
-            spinning = true;
-
-            emailTestRunning = false;
-            updateEnsureModelVisibile = false;
-            updateMessage = string.Empty;
-
-            var appConfig = JsonConvert.DeserializeObject<AppSetting>(JsonConvert.SerializeObject(GlobalValues.appSetting));
-            if (appConfig != null)
-            {
-                imageConfig = appConfig.Data.Resources.Images;
-                recordConfig = appConfig.Record;
-                picsConfig = appConfig.Pics;
-                notifyConfig = appConfig.Notify;
-                footerConfig = appConfig.Footer;
-                updateConfig = appConfig.Update;
-            }
-
-            imageFormatChoose = imageConfig.Format.Split('.', ',').Where(suffix => !string.IsNullOrEmpty(suffix)).ToArray();
-
-            await base.OnInitializedAsync();
-        }
+        bool updateEnsureModelVisibile = false;
+        string updateMessage = string.Empty;
+        string latestVersion = string.Empty;
 
 
         /// <summary>
@@ -68,7 +41,21 @@ namespace ImageBed.Pages
             if (firstRender)
             {
                 spinning = false;
-                await InvokeAsync(() => { StateHasChanged(); });
+
+                var appConfig = JsonConvert.DeserializeObject<AppSetting>(JsonConvert.SerializeObject(GlobalValues.appSetting));
+                if (appConfig != null)
+                {
+                    imageConfig = appConfig.Data.Resources.Images;
+                    recordConfig = appConfig.Record;
+                    picsConfig = appConfig.Pics;
+                    notifyConfig = appConfig.Notify;
+                    footerConfig = appConfig.Footer;
+                    updateConfig = appConfig.Update;
+                }
+
+                imageFormatChoose = imageConfig.Format.Split('.', ',').Where(suffix => !string.IsNullOrEmpty(suffix)).ToArray();
+
+                StateHasChanged();
             }
             await base.OnAfterRenderAsync(firstRender);
         }
@@ -92,7 +79,7 @@ namespace ImageBed.Pages
         {
             if(imageFormatChoose.Length == 0)
             {
-                await _message.Error("请至少选择一种图片格式 !");
+                _ = _message.Error("请至少选择一种图片格式 !", 1.5);
             }
             else
             {
@@ -117,7 +104,7 @@ namespace ImageBed.Pages
                 AppSetting.Save(GlobalValues.appSetting, "appsettings.json");
                 GlobalValues.appSetting = AppSetting.Parse();
 
-                _ = _message.Success("设置完成 !");
+                _ = _message.Success("设置完成 !", 1.5);
             }
         }
 
@@ -126,10 +113,10 @@ namespace ImageBed.Pages
         /// 修改设置失败后调用
         /// </summary>
         /// <param name="editContext"></param>
-        async Task OnFinishFailed(EditContext editContext)
+        void OnFinishFailed(EditContext editContext)
         {
             GlobalValues.appSetting = AppSetting.Parse();
-            await _message.Error("设置失败 !");
+            _ = _message.Error("设置失败 !", 1.5);
         }
 
 
@@ -155,11 +142,11 @@ namespace ImageBed.Pages
 
                 emailTestRunning = false;
 
-                _ = _message.Success("测试邮件已发送, 请注意查收 !");
+                _ = _message.Success("测试邮件已发送, 请注意查收 !", 1.5);
             }
             else
             {
-                _ = _message.Error("测试邮件发送失败, 请检查邮件配置是否正确 !");
+                _ = _message.Error("测试邮件发送失败, 请检查邮件配置是否正确 !", 1.5);
             }
         }
 
@@ -170,7 +157,7 @@ namespace ImageBed.Pages
         /// <returns></returns>
         async Task CheckUpdate()
         {
-            _ = _message.Info("检查更新中...");
+            _ = _message.Info("检查更新中...", 1.5);
 
             latestVersion = await UpdateHelper.GetLatestVersion(updateConfig.CheckUrl);
             if(!string.IsNullOrEmpty(latestVersion) && (latestVersion.ToLower() != UpdateHelper.GetLocalVersion().ToLower()))
@@ -180,7 +167,7 @@ namespace ImageBed.Pages
             }
             else
             {
-                _ = _message.Info("已是最新版本, 无需更新! ");
+                _ = _message.Info("已是最新版本, 无需更新! ", 1.5);
             }
         }
 
@@ -192,7 +179,7 @@ namespace ImageBed.Pages
         /// <returns></returns>
         async Task UpdateSoftware(MouseEventArgs e)
         {
-            _ = _message.Info($"正在下载更新文件...更新文件下载完成后将关闭该程序");
+            _ = _message.Info($"正在下载更新文件...更新文件下载完成后将关闭该程序", 1.5);
             updateEnsureModelVisibile = false;
             await UpdateHelper.SysUpdate(updateConfig.Pattern, $"{updateConfig.DownloadUrl}/{latestVersion}/{UpdateHelper.CheckOSPlatform()}.zip");
         } 

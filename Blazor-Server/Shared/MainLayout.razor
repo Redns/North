@@ -1,15 +1,62 @@
 ﻿@inherits LayoutComponentBase
 
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
 <PageTitle>ImageBed</PageTitle>
 
-<div class="page">
+<div class="page" style="height:auto;">
     <div class="sidebar">
         <NavMenu />
     </div>
 
-    <main>
-        <article class="content px-4">
+    <Layout Class="site-layout" >
+        <Content Style="background-color:#ffffff;" class="content px-4">
             @Body
-        </article>
-    </main>
+        </Content>
+        @if (showFooter)
+        {
+            <Footer Style="text-align:center; background-color:#ffffff;" class="myfooter">
+                <Space>
+                    <SpaceItem>
+                        @if (!string.IsNullOrEmpty(GlobalValues.appSetting.Footer.Content))
+                        {
+                            <a href="https://beian.miit.gov.cn/#/Integrated/index">@GlobalValues.appSetting.Footer.Content</a>
+                        }
+                    </SpaceItem>
+                    <SpaceItem>
+                        @if (!string.IsNullOrEmpty(GlobalValues.appSetting.Footer.RegisterNumber))
+                        {
+                            <img src="images/beian.png"/>@GlobalValues.appSetting.Footer.RegisterNumber
+                        }
+                    </SpaceItem>
+                </Space>
+            </Footer>
+        }
+    </Layout>
 </div>
+
+@code{
+    bool showFooter = false;
+
+    async Task<double> GetScW()
+    {
+        return await JS.InvokeAsync<double>("GetScreenWidth");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            if(await JS.InvokeAsync<double>("GetScreenWidth") > 500)
+            {
+                showFooter = true;
+
+                StateHasChanged();
+            }
+        }
+        
+    }
+}
