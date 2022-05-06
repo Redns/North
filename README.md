@@ -68,33 +68,33 @@
 
 1. 前往 [ImageBed主页](https://github.com/Redns/ImageBed/releases) 下载资源包
 
-   ![image-20220417170506154](http://imagebed.krins.cloud/api/image/VP8PT0P4.png)
+   ![image-20220506144854125](https://jing-image.oss-cn-chengdu.aliyuncs.com/image-20220506144854125.png)
 
    <br>
 
 2. 解压资源包 (图片存储路径为 `Data/Resources/Images`)
 
-   ![image-20220417170612240](http://imagebed.krins.cloud/api/image/Z62J08FN.png)
+   ![Z62J08FN](https://jing-image.oss-cn-chengdu.aliyuncs.com/Z62J08FN.png)
 
    <br>
 
 3. 双击 `ImageBed.exe` 运行服务
 
-   ![image-20220417170701856](http://imagebed.krins.cloud/api/image/V6X4644N.png)
+   ![V6X4644N](https://jing-image.oss-cn-chengdu.aliyuncs.com/V6X4644N.png)
 
    <br>
 
 4. 浏览器地址栏输入 `localhost:12121`
 
-   ![image-20220417170909596](http://imagebed.krins.cloud/api/image/8PD0X4VR.png)
+   ![8PD0X4VR](https://jing-image.oss-cn-chengdu.aliyuncs.com/8PD0X4VR.png)
 
    <br>
 
 5. 点击上传图片
 
-   ![image-20220417171012297](http://imagebed.krins.cloud/api/image/RJ6V26VJ.png)
+   ![RJ6V26VJ](https://jing-image.oss-cn-chengdu.aliyuncs.com/RJ6V26VJ.png)
 
-   ![image-20220417171031150](http://imagebed.krins.cloud/api/image/F4TNFTTD.png)
+   ![F4TNFTTD](https://jing-image.oss-cn-chengdu.aliyuncs.com/F4TNFTTD.png)
 
    <br>
 
@@ -108,7 +108,7 @@
 
 1. 将资源包解压后上传至云服务器
 
-   ![image-20220417171201514](http://imagebed.krins.cloud/api/image/08HLTD88.png)
+   ![08HLTD88](https://jing-image.oss-cn-chengdu.aliyuncs.com/08HLTD88.png)
 
    <br>
 
@@ -378,7 +378,7 @@
 
 仪表盘正常显示时的界面如下
 
-![image-20220417173941411](http://imagebed.krins.cloud/api/image/2F4TD6N2.png)
+![2F4TD6N2](https://jing-image.oss-cn-chengdu.aliyuncs.com/2F4TD6N2.png)
 
 <br>
 
