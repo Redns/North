@@ -6,12 +6,14 @@ using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
 using System.Diagnostics;
 using AntDesign.Charts;
+using Microsoft.JSInterop;
 
 namespace ImageBed.Pages
 {
     partial class Dashboard : IDisposable
     {
         bool spinning = true;                                   // 页面加载标志
+        bool showChart = false;
 
         Record? recordConfig = GlobalValues.appSetting.Record;  // 仪表盘设置
         
@@ -54,7 +56,7 @@ namespace ImageBed.Pages
             Gutter = 16,    // 栅格间距
             Xs = 1,         // < 576px 展示的列数
             Lg = 2,         // ≥ 992px 展示的列数
-            Xl = 3,         // ≥ 1200px 展示的列数
+            Xl = 4,         // ≥ 1200px 展示的列数
             Xxl = 4,        // ≥ 1600px 展示的列数 
         };
         SysRunningInfoCard[]? sysRunningInfoCards = new[]
@@ -83,7 +85,11 @@ namespace ImageBed.Pages
                 }
 
                 // 刷新界面
-                RefreshChart();
+                if(await JS.InvokeAsync<double>("GetScreenWidth") > 500)
+                {
+                    showChart = true;
+                    RefreshChart();
+                }
                 RefreshDashboard(null, null);
 
                 StateHasChanged();
@@ -151,7 +157,7 @@ namespace ImageBed.Pages
         async void RefreshChart()
         {
             SysRecords.Clear();
-            using(var context = new OurDbContext())
+            using (var context = new OurDbContext())
             {
                 foreach (var record in await new SQLRecordData(context).GetAsync())
                 {

@@ -7,6 +7,7 @@
 @using ImageBed.Data.Entity
 
 @inject HttpClient HttpClient
+@inject IJSRuntime JS
 @inject NavigationManager NavigationManager
 
 <div style="overflow:scroll; overflow-x:hidden; height:100%; max-height:650px;" Id="imageCard">
@@ -28,13 +29,16 @@
                 </Card>
             </ListItem>
         </AntList>
-        @if(SysRecords.Count > 0)
+        @if(showChart)
         {
-            <Line Data="SysRecords" Config="SysRecordConfig"/>
-        }
-        else
-        {
-            <Empty Style="margin-top:80px;"/>
+            if(SysRecords.Count > 0)
+            {
+                <Line Data="SysRecords" Config="SysRecordConfig"/>
+            }
+            else
+            {
+                <Empty Style="margin-top:80px;" Description=@("暂无数据")/>
+            }
         }
     </Spin>
 </div>
