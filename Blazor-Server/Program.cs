@@ -1,8 +1,8 @@
+using Blazored.LocalStorage;
 using ImageBed.Common;
 using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
 using NLog.Extensions.Logging;
-using System.Reflection;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +24,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddHttpClient();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContext<OurDbContext>();
+
+// Nlog日志服务
 builder.Services.AddLogging(logger =>
 {
     logger.ClearProviders();
@@ -33,15 +35,18 @@ builder.Services.AddLogging(logger =>
     logger.AddNLog();
 });
 
-var app = builder.Build();
-
-app.Urls.Add("http://0.0.0.0:12121");
-app.UseStaticFiles();
+// LocalStorage鉴权服务
+builder.Services.AddBlazoredLocalStorage();
 
 
 /// <summary>
-/// 启用路由
+/// 启用组件
 /// </summary>
+var app = builder.Build();
+
+app.UseStaticFiles();
+app.Urls.Add("http://0.0.0.0:12121");
+
 app.UseRouting();
 app.MapControllers();
 app.MapBlazorHub();

@@ -10,11 +10,15 @@ namespace ImageBed.Common
         // 全局设置
         public static AppSetting? appSetting { get; set; }
 
+        public const double SCREEN_BOUND = 500.0F;
+
         // 资源数据记录刷新定时器(6h)
         public static System.Timers.Timer? SysRecordTimer { get; set; }
 
         // 日志记录器
         public static LoggerHelper Logger { get; set; } = new LoggerHelper();
+
+        public const string LOCALSTORE_KEY_TOKEN = "IMAGEBED_TOKEN"; 
 
 
         /// <summary>

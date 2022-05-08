@@ -1,4 +1,4 @@
-﻿@page "/Pics"
+﻿@page "/pics"
 
 @using System.ComponentModel
 @using AntDesign.TableModels
@@ -14,12 +14,10 @@
 
 <Space>
     <SpaceItem>
-        <Tooltip Title=@("切换视图") Placement="Placement.Right">
-            <Button Type="@ButtonType.Primary"
+        <Button Type="@ButtonType.Primary"
                 Ghost
                 Icon=@imageFormatChangeButtonIcon
                 OnClick=@ChangeTableFormat/>
-        </Tooltip>
     </SpaceItem>
     <SpaceItem>
         <Search Placeholder="Search what you want..." EnterButton="true" @bind-Value="searchText" Loading=@searching OnSearch=@OnSearch />
@@ -53,8 +51,10 @@
 </Space>
 <br/>
 <br />
-<Spin Spinning=@spinning>
-    @if(imagesShow.Length == 0)
+<Spin Spinning=@spinning Style="width:100%; height:50%; margin-top:10%; background-color:#f0f2f5;"/>
+@if (!spinning)
+{
+    @if((imagesShow != null) && (!imagesShow.Any()))
     {
         <Empty Style="transform:translateY(100%);"></Empty>
     }
@@ -113,13 +113,13 @@
                         </Space>
                     </ContentTemplate>
                     <ChildContent>
-                        <img alt="Cover" src=@($"api/image/thumbnails_{context.Name}") class="zoomImage" style="border-radius:10px; cursor:pointer;" loading="lazy"/>
+                        <a href=@($"api/image/{context.Name}") target="_blank"><img alt="Cover" src=@($"api/image/thumbnails_{context.Name}") class="zoomImage" style="border-radius:10px; cursor:pointer;" loading="lazy"/></a>
                     </ChildContent>
                 </Popover>
             </ListItem>
         </AntList>
     }
-</Spin>
+}
 @code
 {
     RenderFragment actionSetting(Action clickAction) =>@<Icon Type="copy" OnClick="@clickAction" />;

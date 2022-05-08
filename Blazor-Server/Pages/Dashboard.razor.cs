@@ -59,13 +59,9 @@ namespace ImageBed.Pages
             Xl = 4,         // ≥ 1200px 展示的列数
             Xxl = 4,        // ≥ 1600px 展示的列数 
         };
-        SysRunningInfoCard[]? sysRunningInfoCards = new[]
-        {
-            new SysRunningInfoCard("托管图片总数", "picture", "0 张"),
-            new SysRunningInfoCard("磁盘存储占用", "database", "0 MB"),
-            new SysRunningInfoCard("运行内存占用", "fund-projection-screen", "0 MB"),
-            new SysRunningInfoCard("系统运行时长", "dashboard", "00:00:00")
-        };
+
+        // 卡片数组
+        SysRunningInfoCard[]? sysRunningInfoCards = null;
 
 
         /// <summary>
@@ -131,21 +127,34 @@ namespace ImageBed.Pages
                 {
                     diskOccupancyKB += UnitNameGenerator.ParseFileSize(image.Size ?? "0B");
                 });
-                DiskOccupancy = $"{diskOccupancyKB / 1024.0:f3} MB";
+                DiskOccupancy = $"{diskOccupancyKB / 1024.0:f3}";
             }
 
             // 获取该进程占用的运行内存
             process.Refresh();
-            RunningMemUsage = $"{process.WorkingSet64 / (1024 * 1024)} MB";
+            RunningMemUsage = $"{process.WorkingSet64 / (1024 * 1024)}";
 
             // 获取应用运行时长
             TimeSpan SysRunningTimeSpan = DateTime.Now - process.StartTime;
             SysRunningTime = $"{(int)SysRunningTimeSpan.TotalHours}:{((int)SysRunningTimeSpan.TotalMinutes) % 60}:{((int)SysRunningTimeSpan.TotalSeconds) % 60}";
 
-            sysRunningInfoCards[0].Description = HostImageNums.ToString();
-            sysRunningInfoCards[1].Description = DiskOccupancy;
-            sysRunningInfoCards[2].Description = RunningMemUsage;
-            sysRunningInfoCards[3].Description = SysRunningTime;
+            if((sysRunningInfoCards == null) || (!sysRunningInfoCards.Any()))
+            {
+                sysRunningInfoCards = new[]
+                {
+                    new SysRunningInfoCard("托管图片总数", "picture", $"{HostImageNums} 张"),
+                    new SysRunningInfoCard("磁盘存储占用", "database", $"{DiskOccupancy} MB"),
+                    new SysRunningInfoCard("运行内存占用", "fund-projection-screen", $"{RunningMemUsage} MB"),
+                    new SysRunningInfoCard("系统运行时长", "dashboard", $"{SysRunningTime}")
+                };
+            }
+            else
+            {
+                sysRunningInfoCards[0].Description = $"{HostImageNums} 张";
+                sysRunningInfoCards[1].Description = $"{DiskOccupancy} MB";
+                sysRunningInfoCards[2].Description = $"{RunningMemUsage} MB";
+                sysRunningInfoCards[3].Description = $"{SysRunningTime}";
+            }
 
             await InvokeAsync(new Action(() => { StateHasChanged(); }));
         }

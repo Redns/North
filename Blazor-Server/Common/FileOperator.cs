@@ -124,7 +124,7 @@ namespace ImageBed.Common
                 // 构造图片信息
                 return new()
                 {
-                    Id = EncryptAndDecrypt.Encrypt_MD5(unitImageName),
+                    Id = EncryptAndDecrypt.MD5Encrypt32(unitImageName),
                     Name = unitImageName,
                     Url = $"api/image/{unitImageName}",
                     Dpi = $"{image.Width}×{image.Height}",

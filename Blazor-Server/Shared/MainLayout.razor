@@ -1,6 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using Blazored.LocalStorage
+
+@inherits LayoutComponentBase
 
 @inject IJSRuntime JS
+@inject ILocalStorageService storage 
 @inject NavigationManager NavigationManager
 
 <PageTitle>ImageBed</PageTitle>
@@ -11,7 +14,7 @@
     </div>
 
     <Layout Class="site-layout" >
-        <Content class="content px-4" Style="background-color:#f0f2f5;">
+        <Content class="content px-4" Style="background-color:#f0f2f5; width:100%; height:100%;">
             @Body
         </Content>
         @if (showFooter)
@@ -35,24 +38,3 @@
         }
     </Layout>
 </div>
-
-@code{
-    bool showFooter = false;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-
-        if (firstRender && !showFooter)
-        {
-            if(await JS.InvokeAsync<double>("GetScreenWidth") > 500)
-            {
-                showFooter = true;
-
-                StateHasChanged();
-            }
-
-        }
-        
-    }
-}

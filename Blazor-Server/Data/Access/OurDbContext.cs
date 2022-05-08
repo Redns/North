@@ -11,6 +11,7 @@ namespace ImageBed.Data.Access
 
         public DbSet<ImageEntity>? Images { get; set; }
         public DbSet<RecordEntity>? Records { get; set; }
+        public DbSet<UserEntity>? Users { get; set; }
 
 
         /// <summary>
@@ -436,6 +437,112 @@ namespace ImageBed.Data.Access
                 catch (Exception ex) 
                 {
                     GlobalValues.Logger.Error($"Add record of {newRecord.Date} failed, {ex.Message}");
+                }
+            }
+            return false;
+        }
+    }
+
+    public class SqlUserData
+    {
+        private OurDbContext _context { get; set; }
+
+        public SqlUserData(OurDbContext context)
+        {
+            _context = context;
+        }
+
+
+        /// <summary>
+        /// 获取数据库中的全部用户
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<UserEntity> Get()
+        {
+            if((_context != null) && (_context.Users != null))
+            {
+                return _context.Users.ToArray();
+            }
+            return Array.Empty<UserEntity>();
+        }
+
+
+        /// <summary>
+        /// 获取数据库中的全部用户
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<UserEntity>> GetAsync()
+        {
+            if ((_context != null) && (_context.Users != null))
+            {
+                return await _context.Users.ToArrayAsync();
+            }
+            return Array.Empty<UserEntity>();
+        }
+
+
+        /// <summary>
+        /// 获取指定用户名的用户
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public UserEntity? Get(string username)
+        {
+            if ((_context != null) && (_context.Users != null))
+            {
+                return _context.Users.FirstOrDefault(u => u.UserName == username);
+            }
+            return null;
+        }
+
+
+        /// <summary>
+        /// 获取指定用户名的用户
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public async Task<UserEntity?> GetAsync(string username)
+        {
+            if ((_context != null) && (_context.Users != null))
+            {
+                return await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            }
+            return null;
+        }
+
+
+        /// <summary>
+        /// 添加用户
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public bool Add(UserEntity user)
+        {
+            if ((_context != null) && (_context.Users != null))
+            {
+                _context.Users.Add(user);
+                if(_context.SaveChanges() > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// 添加用户
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public async Task<bool> AddAsync(UserEntity user)
+        {
+            if ((_context != null) && (_context.Users != null))
+            {
+                await _context.Users.AddAsync(user);
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    return true;
                 }
             }
             return false;

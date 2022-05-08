@@ -7,17 +7,28 @@
 @inject MessageService _message
 @inject NavigationManager NavigationManager
 
-<div style="position:center; width:100%; max-width:550px; transform:translateY(40%); margin:auto; height:auto;">
-    <Spin Spinning=@spining>
-	    <Upload Multiple
-            Action=@("api/image")
-            Accept=@imageConfig.Format
-            ShowUploadList=false
-            BeforeAllUpload=@CheckImages
-            OnChange=@ImageStateChanged
-            OnCompleted=@UploadFinished>
-            <Image Src="images/upload.png" Preview=false Style=""/>
-        </Upload>
-        <Progress Percent=@ProgressPercent StrokeWidth=progress_stroke_width ShowInfo=progress_showInfo/>
-    </Spin>
+<div id="div_upload">
+    <InputFile id="inputfile_upload" draggable multiple accept="image/*"/>
 </div>
+@*<Progress Percent=100 Style="width:100%; max-width:550px;"/>*@
+
+<style>
+    #div_upload{
+        width:100%; 
+        max-width:550px;
+        height:352px;
+        max-height:100%;
+        margin:auto;
+        margin-top:100px;
+        background-image:url(images/upload.png); 
+        background-repeat:no-repeat;
+        background-size:contain;
+    }
+
+    #inputfile_upload{
+        width:100%; 
+        height:100%; 
+        opacity:0;
+        cursor:pointer;
+    }
+</style>

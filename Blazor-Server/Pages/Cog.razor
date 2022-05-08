@@ -1,4 +1,4 @@
-﻿@page "/Cog"
+﻿@page "/cog"
 
 @using System.Text.Json;
 @using ImageBed.Data.Entity
@@ -7,8 +7,14 @@
 
 @inject MessageService _message
 
-<Spin Spinning=@spinning Style="margin-top:200px;">
-	<Tabs DefaultActiveKey="1">
+
+@if (spinning)
+{
+    <Spin Style="margin-top:200px; margin-left:50%;"/>
+}
+else
+{
+    <Tabs DefaultActiveKey="1">
         @if(imageConfig != null)
         {
             <TabPane Key="1">
@@ -350,7 +356,7 @@
             </TabPane>
         }
     </Tabs>
-</Spin>
+}
 
 <Modal Title="@("应用更新")"
        Visible=@updateEnsureModelVisibile

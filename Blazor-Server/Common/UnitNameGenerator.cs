@@ -13,7 +13,7 @@
         /// <returns></returns>
         public static long GetTimeStamp()
         {
-            return (long)(DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds);
+            return (long)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
         }
 
 
@@ -200,7 +200,7 @@
             if (format == RenameFormat.NONE) { return srcName; }
             string dstName = format switch
             {
-                RenameFormat.MD5 => EncryptAndDecrypt.Encrypt_MD5(srcName),
+                RenameFormat.MD5 => EncryptAndDecrypt.MD5Encrypt32(srcName),
                 RenameFormat.TIME => DateTime.Now.ToLocalTime()
                                                  .ToString()
                                                  .Replace(":", "-")

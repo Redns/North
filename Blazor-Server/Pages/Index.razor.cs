@@ -8,8 +8,6 @@ namespace ImageBed.Pages
 {
     partial class Index : IDisposable
     {
-        bool spining = true;                        // 页面加载标志
-
         int  imageTotalNum = 0;                     // 总图片数量
         int  imageSuccessNum = 0;                   // 上传成功的图片数量
         long imageTotalSize = 0;                    // 待上传的图片总尺寸(Byte)
@@ -63,16 +61,12 @@ namespace ImageBed.Pages
         /// <returns></returns>
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
+            await base.OnAfterRenderAsync(firstRender);
             if (firstRender)
             {
-                spining = false;
-
                 // 监听 Ctrl + V 快捷键
                 _ = JS.InvokeVoidAsync("BindPasteEvent", imageUploadSizeLimit, imageUploadNumLimit);
-                
-                StateHasChanged();
             }
-            await base.OnAfterRenderAsync(firstRender);
         }
 
 
