@@ -203,7 +203,7 @@ namespace ImageBed.Pages
             // 压缩文件路径为 {ImagesDir}/Imaged.zip
             string zipFullPath = $"{imageConfig.Path}/Images.zip";
             if (File.Exists(zipFullPath)){ File.Delete(zipFullPath); }
-            await FileOperator.CompressMulti(imageFullpaths, $"{imageConfig.Path}/Images.zip");
+            await FileHelper.CompressMulti(imageFullpaths, $"{imageConfig.Path}/Images.zip");
             
             // 这里压缩完成后可以先弹窗提示, 然后子线程再去启动下载
             // 调用 JS 下载后不建议删除 Images.zip

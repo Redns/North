@@ -48,7 +48,7 @@ namespace ImageBed.Common
 
 
         /// <summary>
-        /// 版本号格式为 A.B.C
+        /// 版本号格式为 v{A.B.C}
         /// A：指大版本号，程序大量修改/更换架构时改变
         /// B：新增/删除功能
         /// C：Bug修复/功能优化
@@ -60,8 +60,8 @@ namespace ImageBed.Common
         {
             int virtualDimensionA = 100000, virtualDimensionB = 1000, virtualDimensionC = 1;
 
-            string[] v1Pics = v1.Split(".");
-            string[] v2Pics = v2.Split(".");
+            string[] v1Pics = v1[1..].Split(".");
+            string[] v2Pics = v2[1..].Split(".");
 
             if ((v1Pics.Length != 3) || (v2Pics.Length != 3))
             {
@@ -88,10 +88,10 @@ namespace ImageBed.Common
         /// <summary>
         /// 启动更新进程
         /// </summary>
-        /// <param name="pattern">更新模式</param>
+        /// <param name="mode">更新模式</param>
         /// <param name="downloadUrl">下载地址</param>
         /// <returns></returns>
-        public static async Task SysUpdate(UpdatePattern pattern, string downloadUrl)
+        public static async Task SysUpdate(UpdateMode mode, string downloadUrl)
         {
             string platform = CheckOSPlatform();
 
@@ -105,7 +105,7 @@ namespace ImageBed.Common
                 }
 
                 // 解压文件, 更新文件路径为 Update/{platform}
-                FileOperator.DeCompressMulti("Update.zip", "Update");
+                FileHelper.DeCompressMulti("Update.zip", "Update");
                 File.Delete("Update.zip");
 
                 // 提取 Updater.dll 和 updater.config
@@ -113,7 +113,7 @@ namespace ImageBed.Common
                 new FileInfo($"Update/{platform}/updater.config").MoveTo("updater.config", true);
 
                 // 调用 Updater.dll 更新
-                if (pattern == UpdatePattern.INCREMENT)
+                if (mode == UpdateMode.INCREMENT)
                 {
                     Process.Start(new ProcessStartInfo("dotnet", $"Updater.dll inc Update/{platform}"));
                 }

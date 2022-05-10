@@ -2,15 +2,12 @@
 
 namespace ImageBed.Common
 {
-    /// <summary>
-    /// nLog使用帮助类
-    /// </summary>
     public class LoggerHelper
     {
         /// <summary>
         /// 实例化nLog，即为获取配置文件相关信息(获取以当前正在初始化的类命名的记录器)
         /// </summary>
-        private readonly NLog.Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         private static LoggerHelper? _obj;
 

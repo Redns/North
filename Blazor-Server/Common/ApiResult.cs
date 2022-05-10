@@ -1,25 +1,25 @@
 ﻿using Newtonsoft.Json;
 
-namespace ImageBed.Data.Entity
+namespace ImageBed.Common
 {
     public class ApiResult<T>
     {
         // 状态码
-        private int _StatusCode;
-        public int StatusCode
+        private ApiResultCode _ApiResultCode;
+        public ApiResultCode ApiResultCode
         {
-            get { return _StatusCode; }
+            get { return _ApiResultCode; }
             set
             {
                 if (value > 0)
                 {
-                    _StatusCode = value;
+                    _ApiResultCode = value;
                 }
             }
         }
 
-        // 反馈信息
-        private string _Message = string.Empty;
+        // 提示信息
+        private string _Message;
         public string Message
         {
             get { return _Message; }
@@ -44,11 +44,9 @@ namespace ImageBed.Data.Entity
             }
         }
 
-
-        public ApiResult() { }
-        public ApiResult(int statusCode, string message, T? res)
+        public ApiResult(ApiResultCode apiResultCode, string message, T? res)
         {
-            StatusCode = statusCode;
+            ApiResultCode = apiResultCode;
             Message = message;
             Res = res;
         }
@@ -62,27 +60,16 @@ namespace ImageBed.Data.Entity
         {
             return JsonConvert.SerializeObject(this);
         }
+    }
 
-
-        /// <summary>
-        /// 反序列化字符串生成ApiResult
-        /// </summary>
-        /// <param name="res">待反序列化的字符串</param>
-        /// <returns>反序列化成功返回实体类，否则返回null</returns>
-        public ApiResult<T>? Load(string res)
-        {
-            if (!string.IsNullOrEmpty(res))
-            {
-                try
-                {
-                    return JsonConvert.DeserializeObject<ApiResult<T>>(res);
-                }
-                catch (Exception)
-                {
-
-                }
-            }
-            return null;
-        }
+    public enum ApiResultCode
+    {
+        Success = 0,            // 成功
+        InternalError,          // 服务器内部错误
+        TokenGenerateFailed,    // 令牌生成失败
+        TokenDestroyFailed,     // 令牌销毁失败
+        TokenInvalid,           // 非法的令牌
+        AccessDenied,           // 权限不足
+        SpaceNotEnough,         // 存储空间不足
     }
 }

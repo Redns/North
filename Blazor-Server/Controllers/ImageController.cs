@@ -2,8 +2,6 @@
 using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
 using Microsoft.AspNetCore.Mvc;
-using static ImageBed.Common.UnitNameGenerator;
-using static ImageBed.Data.Access.SQLImageData;
 
 namespace ImageBed.Controllers
 {
@@ -15,180 +13,214 @@ namespace ImageBed.Controllers
         /// 上传图片
         /// </summary>
         /// <returns></returns>
-        [HttpPost]
-        public async Task<ApiResult<object>> Post([FromForm] IFormCollection formCollection)
+        [HttpPost("upload")]
+        public async Task<ApiResult<object>> Post([FromQuery] string UserName, [FromQuery] string Token, [FromForm] IFormCollection formCollection)
         {
-            var imageConfig = GlobalValues.appSetting.Data.Resources.Images;
-
-            List<string> imageUrls = new();             // 图片url(相对路径)
-            List<ImageEntity> images = new();           // 图片信息
-
-            GlobalValues.Logger.Info("Uploading images...");
+            var imageConfig = GlobalValues.AppSetting.Data.Image;   // 图片设置
+            var imageUrls = new List<string>();                     // 图片url(相对路径)
+            var images = new List<ImageEntity>();                   // 图片信息
 
             try
             {
                 using (var context = new OurDbContext())
                 {
-                    // 获取图片存储路径
-                    string imageDir = $"{imageConfig.Path}";
-                    Directory.CreateDirectory(imageDir);
+                    var sqlUserData = new SqlUserData(context);
+                    var sqlImageData = new SqlImageData(context);
+                    var sqlRecordData = new SqlRecordData(context);
 
-                    var sqlImageData = new SQLImageData(context);
+                    var user = await sqlUserData.GetFirstAsync(u => (u.UserName == UserName) && (u.Token == Token) && u.IsTokenValid());
+                    var record = await sqlRecordData.GetFirstAsync(r => r.Date == DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"));
+
                     var uploadImages = (FormFileCollection)formCollection.Files;
-                    
-                    // 检查上传图片是否满足数量限制
-                    if((imageConfig.MaxNum > 0) && (uploadImages.Count > imageConfig.MaxNum))
-                    {
-                        int indexStart = imageConfig.MaxNum;
-                        int indexCount = uploadImages.Count - imageConfig.MaxNum;
-                        uploadImages.RemoveRange(indexStart, indexCount);
-                    }
+                    var remainderNum = user.TotalUploadMaxNum - user.TotalUploadNum;
+                    var remainderSize = (user.TotalUploadMaxSize - user.TotalUploadSize) * FileHelper.FILESIZE_1MB;
 
-                    foreach (IFormFile fileReader in uploadImages)
+                    if (user != null)
                     {
-                        try
+                        // 检查图片尺寸
+                        uploadImages.RemoveAll(image => (user.SingleUploadMaxSize > 0) && (image.Length > user.SingleUploadMaxSize * FileHelper.FILESIZE_1MB));
+
+                        // 检查单次上传数量
+                        if ((user.SingleUploadMaxNum > 0) && (uploadImages.Count > user.SingleUploadMaxNum))
                         {
-                            if (GetFileType(GetFileExtension(fileReader.FileName) ?? "") == FileType.COMPRESS)
-                            {
-                                // 上传文件为压缩包
-                                GlobalValues.Logger.Info("Importing images...");
+                            uploadImages.RemoveRange(user.SingleUploadMaxNum, uploadImages.Count - user.SingleUploadMaxNum);
+                        }
 
-                                string importFullPath = $"{imageDir}/Import.zip";
-                                using(var fileReadStream = fileReader.OpenReadStream())
-                                {
-                                    await FileOperator.SaveFile(fileReadStream, importFullPath);
-                                    _ = fileReadStream.FlushAsync();
-                                }
-                                
-                                foreach(var image in await FileOperator.ImportImages(importFullPath, imageDir))
-                                {
-                                    images.Add(image);
-                                    imageUrls.Add($"{image.Url}");
-                                } 
-                            }
-                            else
+                        // 检查用户是否有剩余空间
+                        var uploadTotalSize = 0.0;
+                        uploadImages?.ForEach(image => uploadTotalSize += image.Length);
+                        if (((user.TotalUploadMaxSize > 0) && (uploadTotalSize > remainderSize)) || ((user.TotalUploadMaxNum > 0) && (uploadImages.Count > remainderNum)))
+                        {
+                            throw new ApiException(ApiResultCode.SpaceNotEnough);
+                        }
+
+                        // 上传图片
+                        foreach (IFormFile fileReader in uploadImages)
+                        {
+                            using (var imageReadStream = fileReader.OpenReadStream())
                             {
-                                if((imageConfig.MaxSize <= 0) || fileReader.Length <= imageConfig.MaxSize * 1024*1024)
-                                {
-                                    ImageEntity image;
-                                    using(var imageReadStream = fileReader.OpenReadStream())
-                                    {
-                                        image = await FileOperator.SaveImage(imageReadStream, fileReader.FileName, imageDir);
-                                        await imageReadStream.FlushAsync();
-                                    }
-                                    images.Add(image);
-                                    imageUrls.Add($"{image.Url}");
-                                }
-                                else
-                                {
-                                    imageUrls.Add(string.Empty);
-                                }
+                                var image = await FileHelper.SaveImage(imageReadStream, fileReader.FileName, GlobalValues.AppSetting.Data.Image.RootPath, UserName);
+                                images.Add(image);
+                                imageUrls.Add($"{image.Url}");
                             }
                         }
-                        catch (Exception)
+                        await sqlImageData.AddRangeAsync(images);
+
+                        // 更新Record数据库表
+                        if (record != null)
                         {
-                            imageUrls.Add(string.Empty);
-                            GlobalValues.Logger.Error($"Upload failed, imageName: {fileReader.FileName}");
+                            record.UploadImageSize += (int)(uploadTotalSize / FileHelper.FILESIZE_1MB);
+                            record.UploadImageNum += uploadImages.Count;
+                            _ = sqlRecordData.UpdateAsync(record);
                         }
+                        else
+                        {
+                            _ = sqlRecordData.AddAsync(new RecordEntity(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), uploadImages.Count, (int)uploadTotalSize, 0));
+                        }
+                        return new ApiResult<object>(ApiResultCode.Success, "Upload succes", imageUrls);
                     }
-                    await sqlImageData.AddRangeAsync(images);
+                    throw new ApiException(ApiResultCode.TokenInvalid);
                 }
-                GlobalValues.Logger.Info("Upload finished");
             }
-            catch (Exception ex)
+            catch (ApiException apiException)
             {
-                GlobalValues.Logger.Error($"Upload image failed, {ex.Message}");
+                var message = apiException.ApiResultCode switch
+                {
+                    ApiResultCode.TokenInvalid => "User not exist or token invalid",
+                    ApiResultCode.SpaceNotEnough => "Insufficient upload space, please delete some images and try again",
+                    _ => ""
+                };
+                return new ApiResult<object>(apiException.ApiResultCode, message, apiException.Param);
             }
-            return new ApiResult<object>(200, "Upload finished", imageUrls);
+            catch(Exception ex)
+            {
+                GlobalValues.Logger.Error($"Upload failed, {ex.Message}");
+                return new ApiResult<object>(ApiResultCode.InternalError, "Server internal error", null);
+            }
         }
 
 
         /// <summary>
-        /// 下载图片(或文件)
+        /// 下载图片
         /// </summary>
-        /// <param name="imageName">图片(或文件)名称</param>
+        /// <param name="imageName">图片名称</param>
         /// <returns></returns>
         [HttpGet("{imageName}")]
         public async Task<IActionResult> Get(string imageName)
         {
-            GlobalValues.Logger.Info($"Get image {imageName}");
-
-            // 构造图片路径
-            // 图片存储路径为 Data/Resources/Images
-            // 当图片不存在时返回 "imageNotFound.jpg"
-            var imageConfig = GlobalValues.appSetting.Data.Resources.Images;
-            string imageFullPath = $"{imageConfig.Path}/{imageName}";
-            string imageExtension = GetFileExtension(imageName) ?? string.Empty;
-            if (!System.IO.File.Exists(imageFullPath))
+            try
             {
-                return File(System.IO.File.ReadAllBytes($"{imageConfig.Path}/imageNotFound.jpg"), $"image/{imageExtension}");
-            }
-            else
-            {
-                // 为了实现代码公用, 这里的图片接口也会返回其他格式的文件
-                if (GetFileType(imageExtension) == FileType.COMPRESS)
+                string imageFullPath = $"{GlobalValues.AppSetting.Data.Image.RootPath}/{imageName}";
+                string imageExtension = FileHelper.GetFileExtension(imageName);
+                if (System.IO.File.Exists(imageFullPath))
                 {
-                    return File(System.IO.File.ReadAllBytes(imageFullPath), "application/octet-stream");
-                }
-                else
-                {
-                    // 修改图片请求次数
-                    // 更新图片的过程可以放在子线程中完成, 不需要等待
                     using (var context = new OurDbContext())
                     {
-                        var sqlImageData = new SQLImageData(context);
-                        var image = await sqlImageData.GetAsync(ImageFilter.NAME, imageName);
+                        var sqlImageData = new SqlImageData(context);
+                        var sqlRecordData = new SqlRecordData(context);
+                        
+                        var image = await sqlImageData.GetFirstAsync(i => i.Name == imageName);
+                        var record = await sqlRecordData.GetFirstAsync(r => r.Date == DateTime.Now.ToString("yyyy/MM/dd"));
+
                         if (image != null)
                         {
                             image.RequestNum++;
                             await sqlImageData.UpdateAsync(image);
                         }
+
+                        if (record != null)
+                        {
+                            record.RequestNum++;
+                            _ = sqlRecordData.UpdateAsync(record);
+                        }
+                        else
+                        {
+                            _ = sqlRecordData.AddAsync(new RecordEntity(DateTime.Now.ToString("yyyy/MM/dd"), 0, 0, 1));
+                        }
                     }
                     return File(System.IO.File.ReadAllBytes(imageFullPath), $"image/{imageExtension}");
                 }
             }
+            catch (Exception ex)
+            {
+                GlobalValues.Logger.Error($"Get {imageName} failed, {ex.Message}");
+            }
+            return File(System.IO.File.ReadAllBytes($"{GlobalValues.AppSetting.Data.Image.RootPath}/imageNotFound.jpg"), $"image/jpg");
         }
 
 
         /// <summary>
-        /// 删除指定图片(文件)
+        /// 删除指定图片
         /// </summary>
-        /// <param name="token">用户令牌</param>
-        /// <param name="imageName">待删除的图片名称</param>
+        /// <param name="UserName">用户账号</param>
+        /// <param name="Token">用户令牌</param>
+        /// <param name="imageName">图片名称</param>
         /// <returns></returns>
         [HttpDelete("{imageName}")]
-        public async Task<ApiResult<object>> Delete(string imageName)
+        public async Task<ApiResult<object>> Delete([FromQuery] string UserName, [FromQuery] string Token, string imageName)
         {
-            GlobalValues.Logger.Info($"Del image {imageName}");
-
-            // 删除磁盘上的文件
-            var imageConfig = GlobalValues.appSetting.Data.Resources.Images;
-            string? imageFullPath = $"{imageConfig.Path}/{imageName}";
-            string? imageThumbnailsFullPath = $"{imageConfig.Path}/thumbnails_{imageName}";
-
             try
             {
-                // 删除磁盘文件
-                if (System.IO.File.Exists(imageFullPath)) { System.IO.File.Delete(imageFullPath); }
-                if (System.IO.File.Exists(imageThumbnailsFullPath)) { System.IO.File.Delete(imageThumbnailsFullPath); }
-
-                // 删除数据库信息
-                using (var context = new OurDbContext())
+                using(var context = new OurDbContext())
                 {
-                    var sqlImageData = new SQLImageData(context);
-                    var image = await sqlImageData.GetAsync(ImageFilter.NAME, imageName);
-                    if (image != null)
+                    var sqlUserData = new SqlUserData(context);
+                    var sqlImageData = new SqlImageData(context);
+
+                    var user = await sqlUserData.GetFirstAsync(u => (u.UserName == UserName) && (u.Token == Token) && u.IsTokenValid());
+                    var image = await sqlImageData.GetFirstAsync(i => i.Name == imageName);
+                    var imageOwner = await sqlUserData.GetFirstAsync(u => u.UserName == image.Owner);
+
+                    // 验证用户
+                    if (user != null)
                     {
-                        await sqlImageData.RemoveAsync(image);
+                        if((imageOwner == null) || (imageOwner.UserName == UserName) || (user.UserType > imageOwner.UserType))
+                        {
+                            if (image != null)
+                            {
+                                System.IO.File.Delete($"{GlobalValues.AppSetting.Data.Image.RootPath}/{imageName}");
+                                System.IO.File.Delete($"{GlobalValues.AppSetting.Data.Image.RootPath}/thumbnails_{imageName}");
+                                
+                                if(imageOwner != null)
+                                {
+                                    imageOwner.TotalUploadNum--;
+                                    imageOwner.TotalUploadSize -= FileHelper.ParseFileSize(image.Size);
+
+                                    // 更新数据库表 Users
+                                    if (!sqlUserData.Update(imageOwner))
+                                    {
+                                        throw new ApiException(ApiResultCode.InternalError);
+                                    }
+                                }
+
+                                // 更新数据库表Images
+                                if (!await sqlImageData.RemoveAsync(image))
+                                {
+                                    throw new ApiException(ApiResultCode.InternalError);
+                                }
+                            }
+                            return new ApiResult<object>(ApiResultCode.Success, $"Remove {imageName} success", null);
+                        }
+                        throw new ApiException(ApiResultCode.AccessDenied);
                     }
+                    throw new ApiException(ApiResultCode.TokenInvalid);
                 }
+            }
+            catch(ApiException apiException)
+            {
+                var message = apiException.ApiResultCode switch
+                {
+                    ApiResultCode.TokenInvalid => "Token invalid",
+                    ApiResultCode.AccessDenied => "Access denied",
+                    ApiResultCode.InternalError => $"Remove {imageName} from database failed",
+                    _ => ""
+                };
+                return new ApiResult<object>(apiException.ApiResultCode, message, apiException.Param);
             }
             catch (Exception ex)
             {
-                GlobalValues.Logger.Error($"Del image failed, {ex.Message}");
+                GlobalValues.Logger.Error($"Remove {imageName} failed, {ex.Message}");
+                return new ApiResult<object>(ApiResultCode.InternalError, $"Remove {imageName} failed", null);
             }
-            
-            return new ApiResult<object>(200, "Delete image success", null);
         }
     }
 }

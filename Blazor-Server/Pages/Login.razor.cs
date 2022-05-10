@@ -6,7 +6,7 @@ namespace ImageBed.Pages
 {
     partial class Login
     {
-        LoginEntity login = new("Redns", "12345");
+        AuthEntity login = new("Redns", "12345");
 
 
         /// <summary>

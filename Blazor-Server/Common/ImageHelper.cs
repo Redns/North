@@ -10,20 +10,15 @@ namespace ImageBed.Common
         /// <param name="imageSrcPath">图片源地址</param>
         /// <param name="delSrcImage">是否删除源图片(默认保留)</param>
         /// <returns>裁剪成功返回true, 否则返回false</returns>
-        public static Image? ImageCut(string imageSrcPath, bool delSrcImage = false)
+        public static NetVips.Image? ImageCut(string imageSrcPath, bool delSrcImage = false)
         {
-            float dstWidth = 320.0F, dstHeight = 240.0F;
-            float ratio = dstWidth/dstHeight;
-            try
+            float dstWidth = 320.0F, dstHeight = 240.0F, ratio = dstWidth / dstHeight;
+            if (!string.IsNullOrEmpty(imageSrcPath) && File.Exists(imageSrcPath))
             {
-                if (string.IsNullOrEmpty(imageSrcPath) || !File.Exists(imageSrcPath))
-                {
-                    return null;
-                }
-                else
+                try
                 {
                     // 加载原图片
-                    var imageSrc = Image.NewFromFile(imageSrcPath);
+                    var imageSrc = NetVips.Image.NewFromFile(imageSrcPath);
 
                     // 删除源图片
                     if (delSrcImage) { File.Delete(imageSrcPath); }
@@ -57,11 +52,12 @@ namespace ImageBed.Common
                                         .Resize(dstWidth / imageDstWidth);
                     }
                 }
+                catch(Exception ex)
+                {
+                    GlobalValues.Logger.Error($"Cut image failed, {ex.Message}");
+                }
             }
-            catch
-            {
-                return null;
-            }
+            return null;
         }
 
 
@@ -70,21 +66,18 @@ namespace ImageBed.Common
         /// </summary>
         /// <param name="imageSrc">原图片</param>
         /// <returns>裁剪成功返回true, 否则返回false</returns>
-        public static Image? ImageCut(Image imageSrc)
+        public static NetVips.Image? ImageCut(NetVips.Image imageSrc)
         {
-            float dstWidth = 400.0F, dstHeight = 300.0F;
-            float ratio = dstWidth / dstHeight;
-            try
+            float dstWidth = 400.0F, dstHeight = 300.0F, ratio = dstWidth / dstHeight;
+            if ((imageSrc.Width == dstWidth) && (imageSrc.Height == dstHeight))
             {
-                var imageDstWidth = 0.0;
-                var imageDstHeight = 0.0;
-                if ((imageSrc.Width == dstWidth) && (imageSrc.Height == dstHeight))
+                return imageSrc;
+            }
+            else
+            {
+                try
                 {
-                    return imageSrc;
-                }
-                else
-                {
-                    var ratioSrc = imageSrc.Width * 1.0 / imageSrc.Height;
+                    float imageDstWidth = 0.0F, imageDstHeight = 0.0F, ratioSrc = imageSrc.Width * 1.0F / imageSrc.Height;
                     if (ratioSrc > ratio)
                     {
                         imageDstHeight = imageSrc.Height;
@@ -102,13 +95,14 @@ namespace ImageBed.Common
 
                     // 裁剪、放缩图片
                     return imageSrc.Crop((int)imageLeftEdge, (int)imageTopEdge, (int)imageDstWidth, (int)imageDstHeight)
-                                    .Resize(dstWidth / imageDstWidth);
+                                   .Resize(dstWidth / imageDstWidth);
+                }
+                catch (Exception ex)
+                {
+                    GlobalValues.Logger.Error($"Cut image failed, {ex.Message}");
                 }
             }
-            catch
-            {
-                return null;
-            }
+            return null;
         }
 
 
@@ -121,17 +115,25 @@ namespace ImageBed.Common
         /// <param name="leftEdge">水印距左侧边缘距离</param>
         /// <param name="bottomEdge">水印距右侧边缘距离</param>
         /// <returns></returns>
-        public static Image ImageWaterMark(Image image, string markText, int fontSize = 36, int leftEdge = 0, int bottomEdge = 0)
+        public static NetVips.Image ImageWaterMark(NetVips.Image image, string markText, int fontSize = 36, int leftEdge = 0, int bottomEdge = 0)
         {
-            using (var textImage = Image.Text(markText, $"Arial {fontSize}px", width: image.Width - 100))
+            try
             {
-                using (var overlay = textImage.NewFromImage(255, 255, 255)
-                                              .Copy(interpretation: Enums.Interpretation.Srgb)
-                                              .Bandjoin(textImage))
+                using (var textImage = NetVips.Image.Text(markText, $"Arial {fontSize}px", width: image.Width - 100))
                 {
-                    return image.Composite(overlay, Enums.BlendMode.Over, leftEdge, image.Height - bottomEdge);
+                    using (var overlay = textImage.NewFromImage(255, 255, 255)
+                                                  .Copy(interpretation: Enums.Interpretation.Srgb)
+                                                  .Bandjoin(textImage))
+                    {
+                        return image.Composite(overlay, Enums.BlendMode.Over, leftEdge, image.Height - bottomEdge);
+                    }
                 }
             }
+            catch(Exception ex)
+            {
+                GlobalValues.Logger.Error($"Watermark image failed, {ex.Message}");
+            }
+            return image;
         }
     }
 }

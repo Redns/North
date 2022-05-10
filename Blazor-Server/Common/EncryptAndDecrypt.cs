@@ -3,9 +3,6 @@ using System.Text;
 
 namespace ImageBed.Common
 {
-    /// <summary>
-    /// 加/解密类
-    /// </summary>
     public class EncryptAndDecrypt
     {
         /// <summary>
@@ -13,7 +10,7 @@ namespace ImageBed.Common
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static string MD5Encrypt16(string str)
+        public static string EncryptMD516(string str)
         {
             return BitConverter.ToString(MD5.Create()
                                             .ComputeHash(Encoding.Default.GetBytes(str)), 4, 8)
@@ -26,7 +23,7 @@ namespace ImageBed.Common
         /// </summary>
         /// <param name="str">源字符串</param>
         /// <returns></returns>
-        public static string MD5Encrypt32(string str)
+        public static string EncryptMD532(string str)
         {
             return BitConverter.ToString(MD5.Create()
                                             .ComputeHash(Encoding.UTF8.GetBytes(str)))

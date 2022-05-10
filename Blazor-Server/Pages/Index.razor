@@ -1,8 +1,5 @@
 ﻿@page "/"
 
-@using ImageBed.Data.Entity
-@using Image = AntDesign.Image
-
 @inject IJSRuntime JS
 @inject MessageService _message
 @inject NavigationManager NavigationManager
@@ -10,7 +7,6 @@
 <div id="div_upload">
     <InputFile id="inputfile_upload" draggable multiple accept="image/*"/>
 </div>
-@*<Progress Percent=100 Style="width:100%; max-width:550px;"/>*@
 
 <style>
     #div_upload{

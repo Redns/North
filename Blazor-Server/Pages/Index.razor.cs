@@ -1,6 +1,5 @@
 ﻿using AntDesign;
 using ImageBed.Common;
-using ImageBed.Data.Entity;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -8,10 +7,10 @@ namespace ImageBed.Pages
 {
     partial class Index : IDisposable
     {
-        int  imageTotalNum = 0;                     // 总图片数量
-        int  imageSuccessNum = 0;                   // 上传成功的图片数量
-        long imageTotalSize = 0;                    // 待上传的图片总尺寸(Byte)
-        long _imageUploadedSize = 0;                // 上传完成的图片尺寸(Byte)
+        int  imageTotalNum = 0;             // 总图片数量
+        int  imageSuccessNum = 0;           // 上传成功的图片数量
+        long imageTotalSize = 0;            // 待上传的图片总尺寸(Byte)
+        long _imageUploadedSize = 0;        // 上传完成的图片尺寸(Byte)
         long ImageUploadedSize
         {
             get { return _imageUploadedSize; }
@@ -25,46 +24,22 @@ namespace ImageBed.Pages
             }
         }
 
-        int  progress_stroke_width = 0;             // 进度条宽度
-        bool progress_showInfo = false;             // 是否显示进度条信息
+        int ProgressPercent = 0;            // 进度条百分比            
 
-        int _ProgressPercent = 0;                   // 进度条百分比            
-        int ProgressPercent
-        {
-            get { return _ProgressPercent; }
-            set
-            {
-                if (value == 0)
-                {
-                    progress_stroke_width = 0;
-                    progress_showInfo = false;
-                }
-                else
-                {
-                    progress_stroke_width = 10;
-                    progress_showInfo = true;
-                }
-                _ProgressPercent = value;
-            }
-        }
-
-        int imageUploadSizeLimit = GlobalValues.appSetting.Data.Resources.Images.MaxSize;                   // 图片最大上传尺寸(MB)
-        int imageUploadNumLimit = GlobalValues.appSetting.Data.Resources.Images.MaxNum;                    // 图片单次最大上传数量(张)
-
-        Data.Entity.Image? imageConfig = GlobalValues.appSetting.Data.Resources.Images;             // 图片设置
+        int imageUploadSizeLimit = GlobalValues.appSetting.Data.Image.SingleMaxSize;       // 图片最大上传尺寸(MB)
+        int imageUploadNumLimit = GlobalValues.appSetting.Data.Image.SingleMaxNum;         // 图片单次最大上传数量(张)
 
 
         /// <summary>
-        /// 渲染完成后调用
+        /// 监听 Ctrl + V 快捷键，实现快捷键伤处啊吧功能
         /// </summary>
-        /// <param name="firstRender">是否为第一次渲染</param>
+        /// <param name="firstRender"></param>
         /// <returns></returns>
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             await base.OnAfterRenderAsync(firstRender);
             if (firstRender)
             {
-                // 监听 Ctrl + V 快捷键
                 _ = JS.InvokeVoidAsync("BindPasteEvent", imageUploadSizeLimit, imageUploadNumLimit);
             }
         }
