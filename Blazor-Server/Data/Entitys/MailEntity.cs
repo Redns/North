@@ -40,5 +40,17 @@
         /// 接收文件
         /// </summary>
         public List<IFormFile> Files { get; set; }
+
+        public MailEntity(string fromPerson, string[] recipientArry, string mailTitle, string mailBody, string code, string host, bool isBodyHtml, List<IFormFile> files)
+        {
+            FromPerson = fromPerson;
+            RecipientArry = recipientArry;
+            MailTitle = mailTitle;
+            MailBody = mailBody;
+            Code = code;
+            Host = host;
+            IsBodyHtml = isBodyHtml;
+            Files = files;
+        }
     }
 }

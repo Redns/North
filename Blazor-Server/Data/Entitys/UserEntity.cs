@@ -9,6 +9,7 @@ namespace ImageBed.Data.Entity
     /// </summary>
     public enum UserType
     {
+        Visitor = 0,        // 游客
         User,               // 普通用户
         Admin,              // 管理员
         SuperAdmin          // 超级管理员
@@ -38,6 +39,23 @@ namespace ImageBed.Data.Entity
         public double TotalUploadMaxSize { get; set; }          // 最大上传总容量（单位：MB）
         public double SingleUploadMaxSize { get; set; }         // 单次最大上传尺寸(单位：MB)
         public int SingleUploadMaxNum { get; set; }             // 单次最大上传数量(单位：张)
+
+        public UserEntity()
+        {
+            UserName = string.Empty;
+            Password = string.Empty;
+            Token = string.Empty;
+            ExpireTime = 0;
+            UserType = UserType.Visitor;
+            Cover = string.Empty;
+            TotalUploadNum = 0;
+            TotalUploadSize = 0;
+            TotalUploadMaxNum = 0;
+            TotalUploadMaxSize = 0;
+            SingleUploadMaxSize = 0;
+            SingleUploadMaxNum = 0;
+        }
+
 
         public UserEntity(string userName, string password, string token, long expireTime, UserType userType, string cover, int totalUploadNum, double totalUploadSize, int totalUploadMaxNum, double totalUploadMaxSize, double singleUploadMaxSize, int singleUploadMaxNum)
         {
@@ -111,7 +129,7 @@ namespace ImageBed.Data.Entity
         /// <returns></returns>
         public UserDTOEntity DTO()
         {
-            return new UserDTOEntity(UserName, ExpireTime, UserType, Cover, TotalUploadNum, TotalUploadSize, TotalUploadMaxNum, TotalUploadMaxSize, SingleUploadMaxSize, SingleUploadMaxNum);
+            return new UserDTOEntity(UserName, Token, ExpireTime, UserType, Cover, TotalUploadNum, TotalUploadSize, TotalUploadMaxNum, TotalUploadMaxSize, SingleUploadMaxSize, SingleUploadMaxNum);
         }
 
 
@@ -130,6 +148,7 @@ namespace ImageBed.Data.Entity
     public class UserDTOEntity
     {
         public string UserName { get; set; }                    // 用户名（账号）
+        public string Token { get; set; }                       // 用户令牌
         public long ExpireTime { get; set; }                    // 到期时间
         public UserType UserType { get; set; }                  // 类型
         public string Cover { get; set; }                       // 封面
@@ -140,9 +159,10 @@ namespace ImageBed.Data.Entity
         public double SingleUploadMaxSize { get; set; }         // 单次最大上传尺寸(单位：MB)
         public int SingleUploadMaxNum { get; set; }             // 单次最大上传数量(单位：张)
 
-        public UserDTOEntity(string userName, long expireTime, UserType userType, string cover, int totalUploadNum, double totalUploadSize, int totalUploadMaxNum, double totalUploadMaxSize, double singleUploadMaxSize, int singleUploadMaxNum)
+        public UserDTOEntity(string userName, string token, long expireTime, UserType userType, string cover, int totalUploadNum, double totalUploadSize, int totalUploadMaxNum, double totalUploadMaxSize, double singleUploadMaxSize, int singleUploadMaxNum)
         {
             UserName = userName;
+            Token = token;
             ExpireTime = expireTime;
             UserType = userType;
             Cover = cover;
@@ -152,6 +172,20 @@ namespace ImageBed.Data.Entity
             TotalUploadMaxSize = totalUploadMaxSize;
             SingleUploadMaxSize = singleUploadMaxSize;
             SingleUploadMaxNum = singleUploadMaxNum;
+        }
+
+
+        /// <summary>
+        /// 检验Token是否有效
+        /// </summary>
+        /// <returns>有效返回True，否则返回False</returns>
+        public bool IsTokenValid()
+        {
+            if (!string.IsNullOrEmpty(Token) && (FileHelper.GetTimeStamp() < ExpireTime))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -71,5 +71,6 @@ namespace ImageBed.Common
         TokenInvalid,           // 非法的令牌
         AccessDenied,           // 权限不足
         SpaceNotEnough,         // 存储空间不足
+        UserNotFound,           // 用户不存在
     }
 }

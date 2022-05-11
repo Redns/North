@@ -112,6 +112,12 @@ namespace ImageBed.Common
         }
     }
 
+    public enum ViewFormat
+    {
+        List = 0,       // 列表视图
+        Card            // 卡片视图
+    }
+
     public class Footer
     {
         public string Content { get; set; }             // 页脚内容

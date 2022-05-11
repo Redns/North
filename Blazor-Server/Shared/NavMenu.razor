@@ -1,4 +1,8 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using ImageBed.Data.Entity;
+
+@inject NavigationManager NavigationManager
+
+@*<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <Space>
             <Image Src="images/imagebed.svg" Preview=false style="width:28px; margin-right:10px; cursor:pointer;"/>
@@ -12,31 +16,45 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <Space><Icon Type="cloud-upload" Theme="outline" Width=25 Height=25 Style="margin-right:15px;"/>上 传</Space>
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/dashboard">
-                <Space><Icon Type="dashboard" Theme="outline" Width=25 Height=25 Style="margin-right:15px;"/>仪表盘</Space>
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="pics">
-                <Space><Icon Type="picture" Theme="outline" Width=25 Height=25 Style="margin-right:15px;"/>图 库</Space>
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="plugin_store">
-                <Space><Icon Type="appstore" Theme="outline" Width=25 Height=25 Style="margin-right:15px;"/>插件商城</Space>
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="cog">
-                <Space><Icon Type="setting" Theme="outline" Width=25 Height=25 Style="margin-right:15px;"/>设 置</Space>
-            </NavLink>
-        </div>
+        @if(User.UserType >= UserType.User)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <Space><Icon Type="cloud-upload" Theme="outline" Width=25 Height=25 Style="margin-right:15px;"/>上 传</Space>
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="pics">
+                    <Space><Icon Type="picture" Theme="outline" Width=25 Height=25 Style="margin-right:15px;"/>图 库</Space>
+                </NavLink>
+            </div>
+        }
+        @if(User.UserType >= UserType.Admin)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/dashboard">
+                    <Space><Icon Type="dashboard" Theme="outline" Width=25 Height=25 Style="margin-right:15px;"/>仪表盘</Space>
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="users">
+                    <Space><Icon Type="user" Theme="outline" Width=25 Height=25 Style="margin-right:15px;"/>用户管理</Space>
+                </NavLink>
+            </div>
+        }
+        @if(User.UserType >= UserType.SuperAdmin)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="plugin_store">
+                    <Space><Icon Type="appstore" Theme="outline" Width=25 Height=25 Style="margin-right:15px;"/>插件商城</Space>
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="cog">
+                    <Space><Icon Type="setting" Theme="outline" Width=25 Height=25 Style="margin-right:15px;"/>设 置</Space>
+                </NavLink>
+            </div>
+        }
     </nav>
 </div>
 
@@ -49,4 +67,4 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
-}
+}*@

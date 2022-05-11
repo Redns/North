@@ -6,7 +6,7 @@
         <Space Style="margin-top:25px;">
             <SpaceItem>账 号</SpaceItem>
             <SpaceItem>
-                <Input @bind-Value="@LoginInfo.UserName" Style="width:260px; border-radius:5px;"/>
+                <Input @bind-Value="@User.UserName" Style="width:260px; border-radius:5px;"/>
             </SpaceItem>
         </Space>
     </SpaceItem>
@@ -14,7 +14,7 @@
         <Space Style="margin-top:25px;">
             <SpaceItem>密 码</SpaceItem>
             <SpaceItem>
-                <Input @bind-Value="@LoginInfo.Password" Style="width:260px; border-radius:5px;"/>
+                <Input @bind-Value="@User.Password" Style="width:260px; border-radius:5px;" OnPressEnter=@(async() => await OnLogin.InvokeAsync())/>
             </SpaceItem>
         </Space>
     </SpaceItem>
@@ -33,11 +33,6 @@
         </Space>
     </SpaceItem>
 </Space>
-
-@code{
-    [Parameter]
-    public AuthEntity LoginInfo { get; set; } = new("", "");
-}
 
 <style>
     #textArea-movieDescription::-webkit-scrollbar {

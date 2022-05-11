@@ -1,146 +1,147 @@
 ﻿using AntDesign;
 using ImageBed.Common;
+using ImageBed.Data.Access;
+using ImageBed.Data.Entity;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace ImageBed.Pages
 {
-    partial class Index : IDisposable
+    partial class Index
     {
-        int  imageTotalNum = 0;             // 总图片数量
-        int  imageSuccessNum = 0;           // 上传成功的图片数量
-        long imageTotalSize = 0;            // 待上传的图片总尺寸(Byte)
-        long _imageUploadedSize = 0;        // 上传完成的图片尺寸(Byte)
-        long ImageUploadedSize
-        {
-            get { return _imageUploadedSize; }
-            set
-            {
-                _imageUploadedSize = value;
-                if(imageTotalSize != 0)
-                {
-                    ProgressPercent = (int)(_imageUploadedSize * 100.0 / imageTotalSize);
-                }
-            }
-        }
-
-        int ProgressPercent = 0;            // 进度条百分比            
-
-        int imageUploadSizeLimit = GlobalValues.appSetting.Data.Image.SingleMaxSize;       // 图片最大上传尺寸(MB)
-        int imageUploadNumLimit = GlobalValues.appSetting.Data.Image.SingleMaxNum;         // 图片单次最大上传数量(张)
-
-
-        /// <summary>
-        /// 监听 Ctrl + V 快捷键，实现快捷键伤处啊吧功能
-        /// </summary>
-        /// <param name="firstRender"></param>
-        /// <returns></returns>
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             await base.OnAfterRenderAsync(firstRender);
             if (firstRender)
             {
-                _ = JS.InvokeVoidAsync("BindPasteEvent", imageUploadSizeLimit, imageUploadNumLimit);
+                // TODO 恢复CV上传功能
+                // 监听 Ctrl + V 快捷键，实现快捷键上传功能
+                // _ = JS.InvokeVoidAsync("BindPasteEvent", User.SingleUploadMaxSize, User.SingleUploadMaxNum);
             }
         }
 
 
         /// <summary>
-        /// 图片上传前调用(检查图片尺寸、数量是否符合规则)
+        /// 上传图片
         /// </summary>
-        /// <param name="images">待上传的图片列表</param>
-        bool CheckImages(List<UploadFileItem> images)
+        /// <param name="args"></param>
+        /// <returns></returns>
+        private async Task Upload(InputFileChangeEventArgs args)
         {
-            // 初始化上传变量
-            imageTotalNum = images.Count;
-            imageSuccessNum = 0;
-            imageTotalSize = 0;
-            ImageUploadedSize = 0;
-            
-            // 移除尺寸超出限制的图片
-            if (imageUploadSizeLimit != 0)
-            {
-                images.RemoveAll(image => image.Size > imageUploadSizeLimit * UnitNameGenerator.FILESIZE_1MB);
-            }
+            var imageTotalNum = 0;
+            var imageSuccessNum = 0;
+            var imageTotalSize = 0L;
+            var imageUploadedSize = 0L;
 
-            // 移除多余的图片
-            if ((imageUploadNumLimit != 0) && (images.Count > imageUploadNumLimit))
-            {
-                int indexStart = imageUploadNumLimit;
-                int redunCount = images.Count - indexStart;
-                images.RemoveRange(indexStart, redunCount);
-            }
+            var imageUrls = string.Empty;
+            var imageEntities = new List<ImageEntity>();
 
-            if(images.Count > 0)
+            using (var context = new OurDbContext())
             {
-                images.ForEach(image =>
+                var sqlUserData = new SqlUserData(context);
+                var sqlImageData = new SqlImageData(context);
+                var sqlRecordData = new SqlRecordData(context);
+
+                var token = await _storage.GetItemAsync<string>(GlobalValues.LOCALSTORE_KEY_TOKEN);
+                var username = await _storage.GetItemAsync<string>(GlobalValues.LOCALSTORE_KEY_USERNAME);
+                if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(username))
                 {
-                    imageTotalSize += image.Size;
-                });
-                return true;
-            }
-            else
-            {
-                _ = _message.Error("上传失败, 图片尺寸或数量超出限制 !", 1.5);
-                return false;
-            }
-        }
+                    var user = await sqlUserData.GetFirstAsync(u => (u.UserName == username) && (u.Token == token) && u.IsTokenValid());
+                    var record = await sqlRecordData.GetFirstAsync(r => r.Date == DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"));
 
+                    if (user != null)
+                    {
+                        // 移除尺寸超出限制的图片
+                        var images = args.GetMultipleFiles(9999)
+                                         .Where(i => (user.SingleUploadMaxSize <= 0) || (i.Size <= user.SingleUploadMaxSize * FileHelper.FILESIZE_1MB));
 
-        /// <summary>
-        /// 图片状态改变时调用(调整进度条)
-        /// </summary>
-        /// <param name="fileinfo">所有图片的上传信息</param>
-        void ImageStateChanged(UploadInfo uploadInfo)
-        {
-            var image = uploadInfo.File;
-            if(image.State != UploadState.Uploading)
-            {
-                ImageUploadedSize += image.Size;
-            } 
-        }
+                        // 检查上传数量是否超出单次限制
+                        if ((user.SingleUploadMaxNum > 0) && (images.Count() > user.SingleUploadMaxNum))
+                        {
+                            images = images.Take(user.SingleUploadMaxNum);
+                        }
 
+                        // 检查用户是否有剩余空间
+                        var remainNum = user.TotalUploadMaxNum - user.TotalUploadNum;
+                        var remainSize = user.TotalUploadMaxSize - user.TotalUploadSize;
 
-        /// <summary>
-        /// 上传完成后调用(统计成功上传的图片数、复制链接)
-        /// </summary>
-        async void UploadFinished(UploadInfo uploadInfo)
-        {
-            // 隐藏进度条
-            ProgressPercent = 0;
+                        imageTotalNum = images.Count();
+                        images.ForEach(i => { imageTotalSize += i.Size; });
+                        if (((user.TotalUploadMaxNum > 0) && (images.Count() > remainNum)) || (user.TotalUploadMaxSize > 0) && (imageTotalSize > remainSize))
+                        {
+                            _ = _message.Error("存储空间不足! ", 1.5);
+                            return;
+                        }
 
-            // 获取所有成功上传的图片的链接
-            var urls = string.Empty;
-            uploadInfo.FileList.ForEach((image) =>
-            {
-                var url = image.GetResponse<ApiResult<List<string>>>()?.Res?.FirstOrDefault();
-                if (!string.IsNullOrEmpty(url))
-                {
-                    urls += $"{UnitNameGenerator.UrlBuild(imageConfig.UrlFormat, $"{NavigationManager.BaseUri}{url}")}\n";
-                    imageSuccessNum++;
+                        // 上传图片
+                        if (images.Any())
+                        {
+                            var uploadModelProp = new ConfirmOptions()
+                            {
+                                Title = "0.00 %",
+                                Content = $"正在上传 {images.First().Name}",
+                            };
+                            var uploadModelRef = _modalService.Info(uploadModelProp);
+
+                            images.ForEach(async i =>
+                            {
+                                try
+                                {
+                                    using (var imageReadStream = i.OpenReadStream((long)(user.SingleUploadMaxSize * FileHelper.FILESIZE_1MB)))
+                                    {
+                                        var image = await FileHelper.SaveImage(imageReadStream, i.Name, GlobalValues.AppSetting.Data.Image.RootPath, user.UserName);
+
+                                        imageEntities.Add(image);
+                                        imageUrls += $"{image.Url}\n";
+
+                                        imageSuccessNum++;
+                                        imageUploadedSize += i.Size;
+
+                                        uploadModelProp.Title = $"{imageUploadedSize / imageTotalSize:f2} %";
+                                        uploadModelProp.Content = $"正在上传 {i.Name}";
+                                        await uploadModelRef.UpdateConfigAsync(uploadModelProp);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    GlobalValues.Logger.Error($"Upload {i.Name} failed, {ex.Message}");
+                                }
+                            });
+
+                            // 更新Images数据库表
+                            await sqlImageData.AddRangeAsync(imageEntities);
+
+                            // 更新Users数据库表
+                            user.TotalUploadNum += imageSuccessNum;
+                            user.TotalUploadSize += imageUploadedSize / FileHelper.FILESIZE_1MB;
+                            sqlUserData.Update(user);
+
+                            // 更新Record数据库表
+                            if (record != null)
+                            {
+                                record.UploadImageSize += (int)(imageUploadedSize / FileHelper.FILESIZE_1MB);
+                                record.UploadImageNum += imageSuccessNum;
+                                _ = sqlRecordData.UpdateAsync(record);
+                            }
+                            else
+                            {
+                                _ = sqlRecordData.AddAsync(new RecordEntity(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), imageSuccessNum, (int)(imageUploadedSize / FileHelper.FILESIZE_1MB), 0));
+                            }
+
+                            await _modalService.DestroyConfirmAsync(uploadModelRef);
+                        }
+                        _ = _message.Success($"上传完成, {imageSuccessNum} 张成功, {imageTotalNum} 张失败! ", 1.5);
+                    }
+                    else
+                    {
+                        NavigationManager.NavigateTo(GlobalValues.ROUTER_LOGIN, true);
+                    }
                 }
-            });
-            urls = urls.Remove(urls.Length - 1);
-
-            // 清空已上传的图片列表
-            uploadInfo.FileList.Clear();
-
-            // 复制链接到剪贴板
-            await JS.InvokeVoidAsync("CopyToClip", urls);
-            _ = _message.Success($"图片上传完成, {imageSuccessNum}个成功, {imageTotalNum - imageSuccessNum}个失败 !", 1.5); ;
-        }
-
-
-        /// <summary>
-        /// 释放资源
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        public void Dispose()
-        {
-            imageConfig = null;
-
-            GC.Collect();   
-            GC.SuppressFinalize(this);
+                else
+                {
+                    NavigationManager.NavigateTo(GlobalValues.ROUTER_LOGIN, true);
+                }
+            }
         }
     }
 }

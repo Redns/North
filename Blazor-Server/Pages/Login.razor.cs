@@ -1,43 +1,57 @@
 ﻿using ImageBed.Common;
 using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
+using Microsoft.AspNetCore.Components;
 
 namespace ImageBed.Pages
 {
     partial class Login
     {
-        AuthEntity login = new("Redns", "12345");
+        [CascadingParameter(Name = "CurrentUser")]
+        protected UserDTOEntity? User { get; set; }
+
+        private UserEntity UserForm { get; set; } = new();
 
 
-        /// <summary>
-        /// 用户注册
-        /// </summary>
-        async void UserRegister()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            using(var context = new OurDbContext())
+            await base.OnAfterRenderAsync(firstRender);
+
+            if (firstRender)
             {
-                var sqlUserData = new SqlUserData(context);
-                if((await sqlUserData.GetAsync(login.UserName)) != null)
+                if (User != null)
                 {
-                    _ = _message.Error("用户已存在 !", 1.5);
+                    UserForm.UserName = User.UserName;
+
+                    if (!User.IsTokenValid())
+                    {
+                        _ = _message.Info("授权已过期，请重新登录! ", 1);
+                    }
                 }
                 else
                 {
-                    UserEntity user = new UserEntity(login.UserName, EncryptAndDecrypt.MD5Encrypt16($"{login.UserName}/{login.Password}"), "", 0, UserType.User, "", 10, 10);
-                    if (await sqlUserData.AddAsync(user))
+                    string username, token;
+                    if (!string.IsNullOrEmpty(username = await _storage.GetItemAsync<string>(GlobalValues.LOCALSTORE_KEY_USERNAME)) && !string.IsNullOrEmpty(token = await _storage.GetItemAsync<string>(GlobalValues.LOCALSTORE_KEY_TOKEN)))
                     {
-                        user.GenerateToken();
-                        _ = _storage.SetItemAsync(GlobalValues.LOCALSTORE_KEY_TOKEN, user.Token);
-                        _ = _message.Success("注册成功 !", 1.5);
-                    }
-                    else
-                    {
-                        _ = _message.Error("注册失败 !", 1.5);
+                        using (var context = new OurDbContext())
+                        {
+                            var sqlUserData = new SqlUserData(context);
+                            var user = await sqlUserData.GetFirstAsync(u => (u.UserName == username) && (u.Token == token));
+
+                            if ((user != null) && user.IsTokenValid())
+                            {
+                                User = user.DTO();
+                                NavigationManager.NavigateTo(GlobalValues.ROUTER_INDEX);
+                            }
+                            else
+                            {
+                                _ = _message.Info("授权已过期，请重新登录! ", 1);
+                            }
+                        }
                     }
                 }
             }
         }
-
 
 
         /// <summary>
@@ -45,20 +59,27 @@ namespace ImageBed.Pages
         /// </summary>
         async void UserLogin()
         {
-            using(var context = new OurDbContext())
+            using (var context = new OurDbContext())
             {
                 var sqlUserData = new SqlUserData(context);
 
-                var user = await sqlUserData.GetAsync(login.UserName);
-                if((user != null) && (user.Password == EncryptAndDecrypt.MD5Encrypt16($"{login.UserName}/{login.Password}")))
+                var user = await sqlUserData.GetFirstAsync(u => (u.UserName == UserForm.UserName) && (u.Password == EncryptAndDecrypt.EncryptMD516($"{UserForm.UserName}/{UserForm.Password}")));
+                if (user != null)
                 {
                     user.GenerateToken();
-                    _ = _storage.SetItemAsync(GlobalValues.LOCALSTORE_KEY_TOKEN, user.Token);
-                    _ = _message.Success("登录成功 !", 1.5);
+                    sqlUserData.Update(user);
+
+                    User = user.DTO();
+
+                    await _storage.SetItemAsync(GlobalValues.LOCALSTORE_KEY_USERNAME, user.UserName);
+                    await _storage.SetItemAsync(GlobalValues.LOCALSTORE_KEY_TOKEN, user.Token);
+                    
+                    _ = _message.Success("登录成功 !", 1);
+                    NavigationManager.NavigateTo(GlobalValues.ROUTER_INDEX);
                 }
                 else
                 {
-                    _ = _message.Error("用户不存在 !", 1.5);
+                    _ = _message.Error("账号或密码错误 !", 1);
                 }
             }
         }

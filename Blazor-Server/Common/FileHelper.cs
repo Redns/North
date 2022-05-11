@@ -342,16 +342,14 @@ namespace ImageBed.Common
                 }
 
                 // 构造图片信息
-                return new()
-                {
-                    Id = EncryptAndDecrypt.EncryptMD532(unitImageName),
-                    Name = unitImageName,
-                    Url = $"api/image/{unitImageName}",
-                    Dpi = $"{image.Width}×{image.Height}",
-                    Size = RebuildFileSize(imageReadStream.Length),
-                    UploadTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"),
-                    Owner = owner
-                };
+                return new(EncryptAndDecrypt.EncryptMD532(unitImageName),
+                           unitImageName,
+                           $"api/image/{unitImageName}",
+                           $"{image.Width}×{image.Height}",
+                           RebuildFileSize(imageReadStream.Length),
+                           DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"),
+                           owner,
+                           0);
             }
         }
 

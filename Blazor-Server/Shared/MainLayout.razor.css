@@ -1,6 +1,7 @@
 .page {
-    position: relative;
+    position: center;
     display: flex;
+    width:100%;
     flex-direction: column;
 }
 

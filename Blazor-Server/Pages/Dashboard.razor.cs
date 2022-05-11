@@ -1,7 +1,6 @@
 ﻿using AntDesign;
 using System.Timers;
 using ImageBed.Common;
-using Microsoft.AspNetCore.Components;
 using ImageBed.Data.Access;
 using ImageBed.Data.Entity;
 using System.Diagnostics;
@@ -15,8 +14,8 @@ namespace ImageBed.Pages
         bool spinning = true;                                   // 页面加载标志
         bool showChart = false;
 
-        Record? recordConfig = GlobalValues.appSetting.Record;  // 仪表盘设置
-        
+        Common.Dashboard? dashboardConfig = GlobalValues.AppSetting.Views.Dashboard;  // 仪表盘设置
+
         Process process = Process.GetCurrentProcess();          // 当前进程
         System.Timers.Timer? t;                                 // 资源刷新定时器
 
@@ -75,13 +74,13 @@ namespace ImageBed.Pages
             {
                 spinning = false;
 
-                if ((recordConfig != null) && recordConfig.RefreshRealTime)
+                if ((dashboardConfig != null) && dashboardConfig.Refresh.RealTime)
                 {
                     InitTimer();
                 }
 
                 // 刷新界面
-                if(await JS.InvokeAsync<double>("GetScreenWidth") > 500)
+                if (await JS.InvokeAsync<double>("GetScreenWidth") > GlobalValues.SCREEN_BOUND)
                 {
                     showChart = true;
                     RefreshChart();
@@ -113,10 +112,10 @@ namespace ImageBed.Pages
         /// <param name="e"></param>
         async void RefreshDashboard(object? source, ElapsedEventArgs? e)
         {
-            using(var context = new OurDbContext())
+            using (var context = new OurDbContext())
             {
                 Images.Clear();
-                Images = await new SQLImageData(context).GetAsync();
+                Images = new SqlImageData(context).GetAll(i => true).ToList();
 
                 // 获取托管图片总数
                 HostImageNums = Images.Count;
@@ -125,7 +124,7 @@ namespace ImageBed.Pages
                 double diskOccupancyKB = 0;
                 Images.ForEach(image =>
                 {
-                    diskOccupancyKB += UnitNameGenerator.ParseFileSize(image.Size ?? "0B");
+                    diskOccupancyKB += FileHelper.ParseFileSize(image.Size ?? "0B");
                 });
                 DiskOccupancy = $"{diskOccupancyKB / 1024.0:f3}";
             }
@@ -138,7 +137,7 @@ namespace ImageBed.Pages
             TimeSpan SysRunningTimeSpan = DateTime.Now - process.StartTime;
             SysRunningTime = $"{(int)SysRunningTimeSpan.TotalHours}:{((int)SysRunningTimeSpan.TotalMinutes) % 60}:{((int)SysRunningTimeSpan.TotalSeconds) % 60}";
 
-            if((sysRunningInfoCards == null) || (!sysRunningInfoCards.Any()))
+            if ((sysRunningInfoCards == null) || (!sysRunningInfoCards.Any()))
             {
                 sysRunningInfoCards = new[]
                 {
@@ -168,7 +167,7 @@ namespace ImageBed.Pages
             SysRecords.Clear();
             using (var context = new OurDbContext())
             {
-                foreach (var record in await new SQLRecordData(context).GetAsync())
+                foreach (var record in new SqlRecordData(context).GetAll(i => true))
                 {
                     SysRecords.Add(new
                     {
@@ -200,7 +199,7 @@ namespace ImageBed.Pages
         /// </summary>
         public void Dispose()
         {
-            if(t != null)
+            if (t != null)
             {
                 t?.Stop();
                 t?.Dispose();

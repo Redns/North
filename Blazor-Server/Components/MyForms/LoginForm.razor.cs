@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using ImageBed.Data.Entity;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace ImageBed.Components.MyForms
@@ -10,5 +11,8 @@ namespace ImageBed.Components.MyForms
 
         [Parameter]
         public EventCallback<MouseEventArgs> OnLogin { get; set; }
+
+        [Parameter]
+        public UserEntity User { get; set; }
     }
 }

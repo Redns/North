@@ -20,7 +20,7 @@ namespace ImageBed.Data.Access
         /// <param name="opt"></param>
         protected override void OnConfiguring(DbContextOptionsBuilder opt)
         {
-            opt.UseSqlite(GlobalValues.PATH_DATABASE);
+            opt.UseSqlite(GlobalValues.CONNSTR_DATABASE);
         }
     }
 }

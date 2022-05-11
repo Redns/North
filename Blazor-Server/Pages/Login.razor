@@ -7,8 +7,18 @@
 
 @inject MessageService _message
 @inject ILocalStorageService _storage
+@inject NavigationManager NavigationManager
 
 <PageTitle>登 录</PageTitle>
-<div style="width:90%; max-width:500px; margin:auto; margin-top:100px;">
-	<LoginForm LoginInfo=@login OnRegister=@UserRegister OnLogin=@UserLogin/>
+<div style="width:100%; max-width:500px; margin:auto; margin-top:100px;" id="div_login">
+	<LoginForm OnLogin=@UserLogin User=@UserForm/>
 </div>
+
+<style>
+	#div_login{
+		width: 100%;
+		max-width: 550px;
+		margin: auto;
+		margin-top: 100px;
+	}
+</style>

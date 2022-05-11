@@ -64,7 +64,14 @@ namespace ImageBed.Controllers
                                 imageUrls.Add($"{image.Url}");
                             }
                         }
+
+                        // 更新Images数据库表
                         await sqlImageData.AddRangeAsync(images);
+
+                        // 更新Users数据库表
+                        user.TotalUploadNum += images.Count;
+                        user.TotalUploadSize += uploadTotalSize / FileHelper.FILESIZE_1MB;
+                        sqlUserData.Update(user);
 
                         // 更新Record数据库表
                         if (record != null)
