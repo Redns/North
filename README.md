@@ -1,6 +1,6 @@
 # ImageBed
 
-![version: v1.1.4 (shields.io)](https://img.shields.io/badge/version-v2.2.13-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-v6.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
+![version: v1.1.4 (shields.io)](https://img.shields.io/badge/release-v2.2.13-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-6.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
 
 <br>
 
@@ -10,7 +10,7 @@
 
 - 利用 `Git` 仓库存储
 - 对象存储（OSS、COS、七牛云等）
-- 免费公共图床（SM.MS、聚合图床、ImgTP、postimage等）
+- 免费公共图床（SM.MS、聚合图床、ImgTP、Postimage等）
 
 <br>
 
@@ -38,27 +38,25 @@
 
 ## Install
 
-#### VersionTable
+#### Requirement
+
+- [.NET Runtime](https://dotnet.microsoft.com/zh-cn/download/dotnet/6.0/runtime) (必需)
+  - [在 Windows 上安装 ](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-aspnetcore-6.0.4-windows-hosting-bundle-installer)
+  - [在 Linux 上安装 .NET](https://docs.microsoft.com/zh-cn/dotnet/core/install/linux?WT.mc_id=dotnet-35129-website)
+  - [在 macOS 上安装 .NET](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-6.0.4-macos-x64-installer)
+- [Nginx](https://nginx.org/en/) (可选)
+
+<br>
+
+#### All Release
 
 > 在这里可快速选择适合自己的版本，表格中的格式为 "最小版本/ 推荐版本"
 
-|     功 能      |                         ImageBed版本                         |                picgo-plugin-imagebed版本                 |
+|     功 能      |                        ImageBed 版本                         |                picgo-plugin-imagebed版本                 |
 | :------------: | :----------------------------------------------------------: | :------------------------------------------------------: |
 | 图片上传与下载 | [v1.0.0](https://github.com/Redns/ImageBed/releases/tag/v1.0.0) / [v1.1.4](https://github.com/Redns/ImageBed/releases/tag/v1.1.4) | [v1.1.1](https://github.com/Redns/picgo-plugin-imagebed) |
 |    图库管理    | [v2.0.0](https://github.com/Redns/ImageBed/releases/tag/v2.0.0) / [v2.2.13](https://github.com/Redns/ImageBed/releases/tag/v2.2.13) |                                                          |
 |    自动更新    | [v2.3.14](https://github.com/Redns/ImageBed/releases/tag/v2.3.14) / [v2.3.14](https://github.com/Redns/ImageBed/releases/tag/v2.3.14) |                                                          |
-
-<br>
-
-#### Environment
-
-- [.NET Runtime](https://dotnet.microsoft.com/zh-cn/download/dotnet/6.0/runtime)
-  - [在 Windows 上安装 ](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-aspnetcore-6.0.4-windows-hosting-bundle-installer)
-  - [在 Linux 上安装 .NET](https://docs.microsoft.com/zh-cn/dotnet/core/install/linux?WT.mc_id=dotnet-35129-website)
-  - [在 macOS 上安装 .NET](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-6.0.4-macos-x64-installer)
-- [Nginx](https://nginx.org/en/) 
-
-> .NET Runtime 为必要组件，下面的安装示例将使用 Nginx 作为反向代理
 
 <br>
 
@@ -255,19 +253,19 @@
 
 **web 界面上传**
 
-![web界面上传](Images/上传图片.gif)
+![web界面上传](img/上传图片.gif)
 
 <br>
 
 **剪贴板上传**
 
-![剪贴板上传](Images/剪贴板上传.gif)
+![剪贴板上传](img/剪贴板上传.gif)
 
 <br>
 
 #### 删除
 
-![删除图片](Images/删除图片.gif)
+![删除图片](img/删除图片.gif)
 
 <br>
 
@@ -275,19 +273,19 @@
 
 **导入图片**
 
-![导入图片](Images/导入图片.gif)
+![导入图片](img/导入图片.gif)
 
 <br>
 
 **导出图片**
 
-![导出图片](Images/导出图片.gif)
+![导出图片](img/导出图片.gif)
 
 <br>
 
 #### 视图切换
 
-![视图切换](Images/视图切换.gif)
+![视图切换](img/视图切换.gif)
 
 <br>
 
