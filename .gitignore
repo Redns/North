@@ -1,29 +1,19 @@
-# Blazor Server Start
-.vs
-Blazor-Server/bin/*
-Blazor-Server/obj/*
-Blazor-Server/.config
-Blazor-Server/.vs
-Blazor-Server/version.xlsx
-Blazor-Server/Properties/PublishProfiles/*
-# Blazor Server End
+# Root Start
+src/.vs
+# Root End
 
-
-# Blazor WASM Start
-Blazor-wasm/Client/bin/*
-Blazor-wasm/Client/obj/*
-Blazor-wasm/Server/bin/*
-Blazor-wasm/Server/obj/*
-Blazor-wasm/Shared/bin/*
-Blazor-wasm/Shared/obj/*
-# Blazor WASM End
+# North Start
+src/North/.vs
+src/North/bin
+src/North/obj
+# North End
 
 # Updater Start
-Updater/bin/*
-Updater/obj/*
-Updater/Properties/*
+src/Updater/.vs
+src/Updater/bin
+src/Updater/obj
 # Updater End
 
 # Other Start
-发布流程.md
+doc/基本框架.xmind
 # Other End
