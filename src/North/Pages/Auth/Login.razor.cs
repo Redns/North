@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Web;
+using MudBlazor;
 using North.Common;
 using North.Data.Access;
+using North.Data.Entities;
 using North.Models.Auth;
 using System.Security.Claims;
 
@@ -9,7 +12,7 @@ namespace North.Pages.Auth
 {
     partial class Login
     {
-        public bool Loginning { get; set; } = false;
+        public bool LoginRunning { get; set; } = false;
         public LoginModel LoginModel { get; set; } = new LoginModel();
 
 
@@ -33,18 +36,18 @@ namespace North.Pages.Auth
         /// <returns></returns>
         private async Task UserLogin()
         {
-            Loginning = true;
+            LoginRunning = true;
 
-            if(string.IsNullOrEmpty(LoginModel.UserName) || string.IsNullOrEmpty(LoginModel.Password))
+            if (string.IsNullOrEmpty(LoginModel.UserName) || string.IsNullOrEmpty(LoginModel.Password))
             {
-                _ = _message.Error("用户名或密码为空", 1.5);
+                _snackbar.Add("用户名或密码为空", Severity.Error);
             }
             else
             {
-                await Task.Delay(100);
+                await Task.Delay(500);
 
                 var user = new SqlUserData(_context).Get(u => (u.Name == LoginModel.UserName) || (u.Email == LoginModel.UserName)).FirstOrDefault();
-                if ((user is not null) && (user.Password == EncryptHelper.MD5($"{user.Name}:{LoginModel.Password}") && !user.IsForbidden))
+                if ((user is not null) && (user.Password == EncryptHelper.MD5($"{user.Name}:{LoginModel.Password}") && (user.State == State.Normal)))
                 {
                     var claims = new List<Claim>
                     {
@@ -60,11 +63,33 @@ namespace North.Pages.Auth
                 }
                 else
                 {
-                    _ = _message.Error("账号密码错误或已被封禁", 1.5);
+                    _snackbar.Add("账号密码错误或账户状态异常", Severity.Error);
                 }
             }
 
-            Loginning = false;
+            LoginRunning = false;
+        }
+
+
+        /// <summary>
+        /// 监控密码框的 Enter 键
+        /// </summary>
+        /// <param name="args"></param>
+        private async Task EnterToLogin(KeyboardEventArgs args)
+        {
+            if(args.Code is "Enter")
+            {
+                await UserLogin();
+            }
+        }
+
+
+        /// <summary>
+        /// 前往登录界面
+        /// </summary>
+        private void GoToRegister()
+        {
+            _navigationManager.NavigateTo("register", true);
         }
     }
 

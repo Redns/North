@@ -1,1 +1,9 @@
-﻿
+﻿@using MudBlazor
+
+<MudBlazor.MudPaper Width="250px" Elevation="0">
+    <MudBlazor.MudNavMenu Rounded="true" Margin="Margin.Normal" Color="MudBlazor.Color.Tertiary" Class="pa-2">
+        <MudBlazor.MudNavLink Href="/dashboard" Icon="@Icons.Filled.Dashboard">Dashboard</MudBlazor.MudNavLink>
+        <MudBlazor.MudNavLink Match="NavLinkMatch.Prefix" Href="/components/navmenu" Icon="@Icons.Filled.Storage">Servers</MudBlazor.MudNavLink>
+        <MudBlazor.MudNavLink Href="/thelab" Icon="@Icons.Filled.Science">The Lab</MudBlazor.MudNavLink>
+    </MudBlazor.MudNavMenu>
+</MudBlazor.MudPaper>

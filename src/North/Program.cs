@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
+using MudBlazor;
+using MudBlazor.Services;
 using North.Data.Access;
 using North.Models.Auth;
 using North.Services.Storage;
@@ -11,7 +12,17 @@ class Program
         // 创建容器并注入服务
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddAntDesign();
+        builder.Services.AddMudServices(config =>
+        {
+            // Snackbar 配置
+            config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
+            config.SnackbarConfiguration.PreventDuplicates = true;
+            config.SnackbarConfiguration.SnackbarVariant = Variant.Text;
+            config.SnackbarConfiguration.ShowCloseIcon = false;
+            config.SnackbarConfiguration.VisibleStateDuration = 1500;
+            config.SnackbarConfiguration.HideTransitionDuration = 200;
+            config.SnackbarConfiguration.ShowTransitionDuration = 200;
+        });
         builder.Services.AddControllers();
         builder.Services.AddRazorPages();
         builder.Services.AddHttpClient();
@@ -38,7 +49,8 @@ class Program
         app.MapBlazorHub();
         app.MapControllers();
         app.MapFallbackToPage("/_Host");
-        app.Urls.Add("http://0.0.0.0:12121");
+        // TODO 修改绑定的 URL
+        app.Urls.Add("http://0.0.0.0:12122");
 
         app.Run();
     }

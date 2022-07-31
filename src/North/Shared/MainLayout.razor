@@ -1,9 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
-@inject IHttpContextAccessor _accessor
-@inject NavigationManager _navigationManager
-
 <PageTitle>North</PageTitle>
+
 
 <div class="page">
     <AuthorizeView>
@@ -19,3 +17,7 @@
         </article>
     </main>
 </div>
+
+<MudBlazor.MudThemeProvider/>
+<MudBlazor.MudDialogProvider/>
+<MudBlazor.MudSnackbarProvider/>

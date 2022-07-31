@@ -1,23 +1,17 @@
 ﻿@page "/"
 
+@using MudBlazor
+
+@inject ISnackbar Snackbar
 @inject IHttpContextAccessor _accessor
 @inject NavigationManager _navigationManager
 
 <PageTitle>Index</PageTitle>
 
-<AuthorizeView Roles="User">
-    <Authorized>
-        User authentication successful
-    </Authorized>
-    <NotAuthorized>
-        
-    </NotAuthorized>
-</AuthorizeView>
-<AuthorizeView Roles="Admin">
-    <Authorized>
-        Admin authentication successful
-    </Authorized>
-    <NotAuthorized>
-        Admin authentication failed
-    </NotAuthorized>
-</AuthorizeView>
+<MudTextField @bind-Value="TextValue" Label="Standard" Variant="Variant.Text"></MudTextField>
+<MudTextField @bind-Value="TextValue" Label="Filled" Variant="Variant.Filled"></MudTextField>
+<MudTextField @bind-Value="TextValue" Label="Outlined" Variant="Variant.Outlined"></MudTextField>
+
+@code {
+    public string TextValue { get; set; }
+}
