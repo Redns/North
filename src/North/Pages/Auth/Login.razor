@@ -1,0 +1,77 @@
+﻿@page "/login"
+
+@using North.Data.Access
+@using North.Models.Auth
+@using North.Services.Storage
+@using System.Security.Claims
+
+@inject MessageService _message
+@inject OurDbContext _context
+@inject IHttpContextAccessor _accessor
+@inject NavigationManager _navigationManager
+@inject IStorage<UnitLoginIdentify> _identifies
+
+<Card Id="login_card">
+    <Space Direction="DirectionVHType.Vertical" Size="@("middle")" Id="login_form">
+        <SpaceItem Id="login_title">
+            <font color=#7BC27A>N</font><font color=#5DB88E>o</font><font color=#3FAEA2>r</font><font color=#21A4B6>t</font><font color=#039ACA>h</font>
+        </SpaceItem>
+        <SpaceItem>
+            <Input Placeholder="用户名/邮箱"  Size="@InputSize.Default" @bind-Value="@LoginModel.UserName" Class="login_field">
+                <Prefix>
+                    <Icon Type="user" />
+                </Prefix>
+            </Input>
+        </SpaceItem>
+        <SpaceItem>
+            <InputPassword Placeholder="密码"  Size="@InputSize.Default" @bind-Value="@LoginModel.Password" Class="login_field" OnPressEnter="UserLogin">
+                <Prefix>
+                    <Icon Type="lock" />
+                </Prefix>
+            </InputPassword>
+        </SpaceItem>
+        <SpaceItem><Button Type="@ButtonType.Primary" Loading="Loginning" Block OnClick="UserLogin" Id="login_button">登 录</Button></SpaceItem>
+    </Space>
+</Card>
+
+<style>
+    #login_title {
+        margin-top:20px;
+        font-size:35px;
+        font-weight:500;
+        text-align:center;
+    }
+
+    #login_card {
+        width:90%;
+        height:260px;
+        max-width: 310px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 100px;
+        right: 0;
+        margin: auto;
+        border-radius:5px;
+        box-shadow: 0 6px 6px rgba(0, 0, 0, .2);
+        border-color: #eee;
+    }
+
+    #login_form {
+        width:85%;
+        position:absolute;
+        left:0;
+        top:0;
+        bottom:0;
+        right:0;
+        margin:auto;
+    }
+
+    #login_button {
+        border-radius:5px;
+    }
+
+    .login_field {
+        border-radius:5px;
+    }
+</style>

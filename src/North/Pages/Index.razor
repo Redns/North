@@ -1,6 +1,23 @@
 ﻿@page "/"
 
+@inject IHttpContextAccessor _accessor
+@inject NavigationManager _navigationManager
+
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
-<MudButton Variant="Variant.Filled">Default</MudButton>
+<AuthorizeView Roles="User">
+    <Authorized>
+        User authentication successful
+    </Authorized>
+    <NotAuthorized>
+        
+    </NotAuthorized>
+</AuthorizeView>
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        Admin authentication successful
+    </Authorized>
+    <NotAuthorized>
+        Admin authentication failed
+    </NotAuthorized>
+</AuthorizeView>

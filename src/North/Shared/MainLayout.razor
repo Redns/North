@@ -1,18 +1,21 @@
 ﻿@inherits LayoutComponentBase
 
+@inject IHttpContextAccessor _accessor
+@inject NavigationManager _navigationManager
+
 <PageTitle>North</PageTitle>
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
+    <AuthorizeView>
+        <Authorized>
+            <div class="sidebar">
+                <NavMenu />
+            </div>
+        </Authorized>
+    </AuthorizeView>
     <main>
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
-<MudThemeProvider/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
