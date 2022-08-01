@@ -6,6 +6,7 @@ src/.vs
 src/North/.vs
 src/North/bin
 src/North/obj
+src/North/.config
 src/North/appsettings.json
 # North End
 
