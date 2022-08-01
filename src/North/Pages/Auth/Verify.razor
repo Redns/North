@@ -36,7 +36,7 @@
                 {
                     // 更新账户状态
                     var sqlUserData = new SqlUserData(_context);
-                    var user = sqlUserData.Get(u => u.Email == verifyEmail.Email).FirstOrDefault();
+                    var user = await sqlUserData.FindAsync(u => u.Email == verifyEmail.Email);
                     if((user is not null) && (user.State is State.Checking))
                     {
                         user.State = State.Normal;

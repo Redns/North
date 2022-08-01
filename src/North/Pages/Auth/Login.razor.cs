@@ -44,8 +44,7 @@ namespace North.Pages.Auth
             else
             {
                 await Task.Delay(500);
-
-                var user = new SqlUserData(_context).Get(u => (u.Name == LoginModel.UserName) || (u.Email == LoginModel.UserName)).FirstOrDefault();
+                var user = await new SqlUserData(_context).FindAsync(u => (u.Name == LoginModel.UserName) || (u.Email == LoginModel.UserName));
                 if ((user is not null) && (user.Password == EncryptHelper.MD5($"{user.Name}:{LoginModel.Password}") && (user.State == State.Normal)))
                 {
                     var claims = new List<Claim>

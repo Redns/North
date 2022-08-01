@@ -1,4 +1,6 @@
-﻿using North.Data.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using North.Data.Entities;
+using System.Linq.Expressions;
 
 namespace North.Data.Access
 {
@@ -27,6 +29,51 @@ namespace North.Data.Access
                 return _context.VerifyEmails.Where(predicate);
             }
             return Enumerable.Empty<VerifyEmailEntity>();
+        }
+
+
+        /// <summary>
+        /// 获取验证邮件的异步版本
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<VerifyEmailEntity>> GetAsync(Func<VerifyEmailEntity, bool>? predicate = null)
+        {
+            if(_context.VerifyEmails is not null)
+            {
+                if(predicate is not null)
+                {
+                    return _context.VerifyEmails.Where(predicate);
+                }
+                return await _context.VerifyEmails.ToArrayAsync();
+            }
+            return Enumerable.Empty<VerifyEmailEntity>();
+        }
+
+
+        /// <summary>
+        /// 查找验证邮件
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public VerifyEmailEntity? Find(Func<VerifyEmailEntity, bool> predicate)
+        {
+            return _context.VerifyEmails?.Find(predicate);
+        }
+
+
+        /// <summary>
+        /// 查找验证邮件的异步版本
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public async Task<VerifyEmailEntity?> FindAsync(Expression<Func<VerifyEmailEntity, bool>> predicate)
+        {
+            if(_context.VerifyEmails is not null)
+            {
+                return await _context.VerifyEmails.FindAsync(predicate);
+            }
+            return null;
         }
 
 

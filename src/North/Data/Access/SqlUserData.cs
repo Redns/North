@@ -1,4 +1,6 @@
-﻿using North.Data.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using North.Data.Entities;
+using System.Linq.Expressions;
 
 namespace North.Data.Access
 {
@@ -26,7 +28,52 @@ namespace North.Data.Access
                 }
                 return _context.Users.Where(predicate);
             }
-            return Array.Empty<UserEntity>();
+            return Enumerable.Empty<UserEntity>();
+        }
+
+
+        /// <summary>
+        /// 获取用户的异步版本
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<UserEntity>> GetAsync(Func<UserEntity, bool>? predicate = null)
+        {
+            if(_context.Users is not null)
+            {
+                if(predicate is not null)
+                {
+                    return _context.Users.Where(predicate);
+                }
+                return await _context.Users.ToArrayAsync();
+            }
+            return Enumerable.Empty<UserEntity>();
+        }
+
+
+        /// <summary>
+        /// 查找用户
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public UserEntity? Find(Func<UserEntity, bool> predicate)
+        {
+            return _context.Users?.FirstOrDefault(predicate);
+        }
+
+
+        /// <summary>
+        /// 查找用户的异步版本
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public async Task<UserEntity?> FindAsync(Expression<Func<UserEntity, bool>> predicate)
+        {
+            if(_context.Users is not null)
+            {
+                return await _context.Users.FirstOrDefaultAsync(predicate);
+            }
+            return null;
         }
 
 

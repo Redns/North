@@ -48,11 +48,10 @@ namespace North.Pages.Auth
                     _snackbar.Add(validCheckMessage, Severity.Error); return;
                 }
 
-                // 依赖注入方式查找数据库较慢，添加延时以加载动画
+                // 注册
                 await Task.Delay(500);
-
                 var sqlUserData = new SqlUserData(_context);
-                var user = sqlUserData.Get(u => u.Name == RegisterModel.Name || u.Email == RegisterModel.Email).FirstOrDefault();
+                var user = await sqlUserData.FindAsync(u => u.Name == RegisterModel.Name || u.Email == RegisterModel.Email);
                 if (user is not null)
                 {
                     _snackbar.Add("用户名或邮箱已被注册", Severity.Error);
