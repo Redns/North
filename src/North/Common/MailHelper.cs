@@ -10,11 +10,8 @@ namespace North.Common
         /// </summary>
         /// <param name="mail">待发送的邮件</param>
         /// <returns></returns>
-        public static async Task PostEmails(Mail mail)
+        public static async Task SendAsync(Mail mail)
         {
-            // 设置 SMTP
-            mail.Host = $"smtp.{mail.FromPerson.Split(new char[] { '@', '.' })[1]}.com";
-
             // 初始化 MailAddress、Message
             MailAddress mailAddress = new(mail.FromPerson);
             MailMessage mailMessage = new()
@@ -84,21 +81,20 @@ namespace North.Common
         /// <summary>
         /// SMTP邮件服务器
         /// </summary>
-        public string Host { get; set; }
+        public string Host  => $"smtp.{FromPerson.Split(new char[] { '@', '.' })[1]}.com";
 
         /// <summary>
         /// 正文是否是html格式
         /// </summary>
         public bool IsBodyHtml { get; set; }
 
-        public Mail(string fromPerson, string[] recipientArry, string mailTitle, string mailBody, string code, string host, bool isBodyHtml)
+        public Mail(string fromPerson, string[] recipientArry, string mailTitle, string mailBody, string code, bool isBodyHtml)
         {
             FromPerson = fromPerson;
             RecipientArry = recipientArry;
             MailTitle = mailTitle;
             MailBody = mailBody;
             Code = code;
-            Host = host;
             IsBodyHtml = isBodyHtml;
         }
     }

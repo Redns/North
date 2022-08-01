@@ -7,12 +7,15 @@ namespace North.Models.Setting
     {
         public GeneralSetting General { get; set; }
         public RegisterSetting Register { get; set; }
+        public NotifySetting Notify { get; set; }
 
-        public AppSetting(GeneralSetting general, RegisterSetting register)
+        public AppSetting(GeneralSetting general, RegisterSetting register, NotifySetting notify)
         {
             General = general;
             Register = register;
+            Notify = notify;
         }
+
 
 
         /// <summary>
@@ -102,6 +105,32 @@ namespace North.Models.Setting
             MaxUploadCapacity = maxUploadCapacity;
             SingleMaxUploadNums = singleMaxUploadNums;
             SingleMaxUploadCapacity = singleMaxUploadCapacity;
+        }
+    }
+
+
+    public class NotifySetting
+    {
+        public EmailSetting Email { get; set; }
+
+        public NotifySetting(EmailSetting email)
+        {
+            Email = email;
+        }
+    }
+
+
+    public class EmailSetting
+    {
+        public string Account { get; set; }     // 邮箱账号
+        public string Code { get; set; }        // 授权码
+        public long ValidTime { get; set; }     // 有效时间（ms）
+
+        public EmailSetting(string account, string code, long validTime)
+        {
+            Account = account;
+            Code = code;
+            ValidTime = validTime;
         }
     }
 }

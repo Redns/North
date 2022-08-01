@@ -2,6 +2,7 @@
 using MudBlazor;
 using North.Common;
 using North.Data.Access;
+using North.Data.Entities;
 using North.Models.Auth;
 using North.Models.Setting;
 
@@ -58,8 +59,15 @@ namespace North.Pages.Auth
                 }
                 else if (await sqlUserData.AddAsync(RegisterModel.ToUser()))
                 {
-                    _snackbar.Add("验证邮件已发送", Severity.Success);
-                    _navigationManager.NavigateTo("/login");
+                    if(await SendRegisterVerifyEmail())
+                    {
+                        _snackbar.Add("验证邮件已发送", Severity.Success);
+                        _navigationManager.NavigateTo("/login");
+                    }
+                    else
+                    {
+                        _snackbar.Add("验证邮件发送失败", Severity.Error);
+                    }
                 }
                 else
                 {
@@ -80,16 +88,44 @@ namespace North.Pages.Auth
 
 
         /// <summary>
+        /// 发送注册验证邮件
+        /// </summary>
+        /// <returns></returns>
+        private async Task<bool> SendRegisterVerifyEmail()
+        {
+            var emailSettings = GlobalValues.AppSettings.Notify.Email;
+
+            // 添加验证邮件至数据库
+            var sqlVerifyEmailData = new SqlVerifyEmailData(_context);
+            var verifyEmail = new VerifyEmailEntity(IdentifyHelper.GenerateId(), RegisterModel.Email,
+                                                    TimeHelper.TimeStamp + emailSettings.ValidTime,
+                                                    VerifyType.Register);
+            if (await sqlVerifyEmailData.AddAsync(verifyEmail))
+            {
+                var verifyEmailBody = $"欢迎注册 North 图床，" + 
+                                      $"<a href=\"{_navigationManager.BaseUri}/verify/register/{verifyEmail.Id}\">点击链接</a>" + 
+                                      $"以验证您的账户{RegisterModel.Name}";
+                await MailHelper.SendAsync(new Mail(emailSettings.Account, new string[] { RegisterModel.Email },
+                                           "[North]注册验证",
+                                           verifyEmailBody,
+                                           emailSettings.Code, true));
+                return true;
+            }
+            return false;
+        }
+
+
+        /// <summary>
         /// 上传头像
         /// </summary>
         /// <param name="args"></param>
         private async Task UploadAvatar(InputFileChangeEventArgs args)
         {
             var avatar = args.GetMultipleFiles()[0];
-            var maxAvatarSize = GlobalValues.AppSettings.Register.MaxAvatarSize * 1024 * 1024;
+            var maxAvatarSize = RegisterSettings.MaxAvatarSize * 1024 * 1024;
             if(avatar.Size > maxAvatarSize)
             {
-                _snackbar.Add($"头像大小不能超过 {GlobalValues.AppSettings.Register.MaxAvatarSize} MB", Severity.Error);
+                _snackbar.Add($"头像大小不能超过 {RegisterSettings.MaxAvatarSize} MB", Severity.Error);
             }
             else
             {
@@ -102,7 +138,6 @@ namespace North.Pages.Auth
                         await avatarWriteStream.FlushAsync();
                     }
                     RegisterModel.Avatar = avatarName;
-                    await InvokeAsync(() => StateHasChanged());
                 }
             }
         }
