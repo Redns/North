@@ -36,7 +36,7 @@
                           Variant="Variant.Outlined" Margin="Margin.Dense" MaxLength="32"
                           Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Email"></MudTextField>
             <MudTextField @bind-Value="RegisterModel.Password" InputType="InputType.Password" Placeholder="密码" 
-                          Variant="Variant.Outlined" Margin="Margin.Dense" MaxLength="32"
+                          Variant="Variant.Outlined" Margin="Margin.Dense" MaxLength="32" Immediate
                           Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Lock"></MudTextField>
             <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="UserRegister">
                 @if (RegisterRunning)

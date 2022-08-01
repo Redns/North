@@ -103,8 +103,8 @@ namespace North.Pages.Auth
             if (await sqlVerifyEmailData.AddAsync(verifyEmail))
             {
                 var verifyEmailBody = $"欢迎注册 North 图床，" + 
-                                      $"<a href=\"{_navigationManager.BaseUri}/verify/register/{verifyEmail.Id}\">点击链接</a>" + 
-                                      $"以验证您的账户{RegisterModel.Name}";
+                                      $"<a href=\"{_navigationManager.BaseUri}verify/register/{verifyEmail.Id}\">点击链接</a> " + 
+                                      $"以验证您的账户 {RegisterModel.Name}";
                 await MailHelper.SendAsync(new Mail(emailSettings.Account, new string[] { RegisterModel.Email },
                                            "[North]注册验证",
                                            verifyEmailBody,

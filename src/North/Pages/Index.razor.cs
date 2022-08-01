@@ -8,44 +8,13 @@ namespace North.Pages
 {
     partial class Index
     {
-        private bool Clearing = false;
-        private static string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full";
-        private string DragClass = DefaultDragClass;
-        private List<string> fileNames = new List<string>();
-
-        private void OnInputFileChanged(InputFileChangeEventArgs e)
+        protected override async Task OnInitializedAsync()
         {
-            ClearDragClass();
-            var files = e.GetMultipleFiles();
-            foreach (var file in files)
+            if(_accessor.HttpContext?.User.Identity?.IsAuthenticated is not true)
             {
-                fileNames.Add(file.Name);
+                _navigationManager.NavigateTo("login", true);
             }
-        }
-
-        private async Task Clear()
-        {
-            Clearing = true;
-            fileNames.Clear();
-            ClearDragClass();
-            await Task.Delay(100);
-            Clearing = false;
-        }
-        private void Upload()
-        {
-            //Upload the files here
-            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-            Snackbar.Add("TODO: Upload your files!", Severity.Normal);
-        }
-
-        private void SetDragClass()
-        {
-            DragClass = $"{DefaultDragClass} mud-border-primary";
-        }
-
-        private void ClearDragClass()
-        {
-            DragClass = DefaultDragClass;
+            await base.OnInitializedAsync();
         }
     }
 }

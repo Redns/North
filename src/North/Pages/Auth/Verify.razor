@@ -1,3 +1,73 @@
-﻿@page "/verify/{*id}"
+﻿@page "/verify/{Type}/{Id}"
+
+@using North.Common
+@using North.Data.Access
+@using North.Data.Entities
+
+@inject ISnackbar _snackbar
+@inject OurDbContext _context
+@inject NavigationManager _navigationManager
+
+<MudText>@($"系统将在{RemainTime}秒后跳转")</MudText>
+
+@code{
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Type { get; set; } = string.Empty;
+
+    public int RemainTime { get; set; } = 5;
 
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if(Type is "register")
+            {
+                var sqlVerifyEmailData = new SqlVerifyEmailData(_context);
+                var verifyEmail = sqlVerifyEmailData.Get(e => e.Id == Id).FirstOrDefault();
+                if((verifyEmail is null) || (TimeHelper.TimeStamp > verifyEmail.ExpireTime))
+                {
+                    _snackbar.Add("链接不存在或已过期", Severity.Error);
+                }
+                else
+                {
+                    // 更新账户状态
+                    var sqlUserData = new SqlUserData(_context);
+                    var user = sqlUserData.Get(u => u.Email == verifyEmail.Email).FirstOrDefault();
+                    if((user is not null) && (user.State is State.Checking))
+                    {
+                        user.State = State.Normal;
+                        await sqlUserData.UpdateAsync(user);
+
+                        _snackbar.Add("验证成功", Severity.Success);
+                    }
+                    else
+                    {
+                        _snackbar.Add("账户不存在或状态异常", Severity.Error);
+                    }
+                }
+
+                // 删除验证邮件
+                if(verifyEmail is not null)
+                {
+                    await sqlVerifyEmailData.RemoveAsync(verifyEmail);
+                }
+            }
+
+            while(RemainTime > 0)
+            {
+                await Task.Delay(1000);
+                await InvokeAsync(() =>
+                {
+                    RemainTime -= 1;
+                    StateHasChanged();
+                });
+            }
+            _navigationManager.NavigateTo("/login", true);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
