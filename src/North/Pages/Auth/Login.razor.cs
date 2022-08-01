@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using North.Common;
@@ -89,26 +88,14 @@ namespace North.Pages.Auth
         /// </summary>
         private void GoToRegister()
         {
-            _navigationManager.NavigateTo("register", true);
-        }
-    }
-
-
-    public class LoginModel
-    {
-        public string UserName { get; set; }
-        public string Password { get; set; }
-
-        public LoginModel()
-        {
-            UserName = string.Empty;
-            Password = string.Empty;
-        }
-
-        public LoginModel(string userName, string password)
-        {
-            UserName = userName;
-            Password = password;
+            if (!GlobalValues.AppSettings.Register.AllowRegister)
+            {
+                _snackbar.Add("系统当前未开放注册", Severity.Error);
+            }
+            else
+            {
+                _navigationManager.NavigateTo("register", true);
+            }
         }
     }
 }

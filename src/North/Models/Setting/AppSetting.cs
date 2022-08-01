@@ -69,11 +69,13 @@ namespace North.Models.Setting
 
     public class RegisterSetting
     {
+        public bool AllowRegister { get; set; } = true;         // 是否允许注册
         public long MaxAvatarSize { get; set; }                 // 头像最大尺寸（MB）
         public RegisterSettingDefault Default { get; set; }     // 默认注册设置
 
-        public RegisterSetting(long maxAvatarSize, RegisterSettingDefault @default)
+        public RegisterSetting(bool allowRegister, long maxAvatarSize, RegisterSettingDefault @default)
         {
+            AllowRegister = allowRegister;
             MaxAvatarSize = maxAvatarSize;
             Default = @default;
         }
