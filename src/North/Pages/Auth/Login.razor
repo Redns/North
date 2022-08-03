@@ -25,10 +25,10 @@
                           Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Lock" Immediate></MudTextField>
             <MudStack Row="true" Style="width:100%;">
                 <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="GoToRegister" Style="width:50%;">注 册</MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="UserLogin" Style="width:50%;">
+                <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="UserLogin" Style="width:50%;" Disabled="LoginRunning">
                     @if (LoginRunning)
                     {
-                        <MudProgressCircular Class="ms-n2" Size="Size.Small" Style="width:20px; margin-right:10px;" Indeterminate="true"/>
+                        <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate/>
                     }
                     <MudText>登 录</MudText>
                 </MudButton>

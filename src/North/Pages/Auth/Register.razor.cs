@@ -58,6 +58,7 @@ namespace North.Pages.Auth
                 }
                 else if (await sqlUserData.AddAsync(RegisterModel.ToUser()))
                 {
+                    // TODO Linux 无法正常发送邮件
                     if(await SendRegisterVerifyEmail())
                     {
                         _snackbar.Add("验证邮件已发送", Severity.Success);

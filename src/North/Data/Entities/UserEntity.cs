@@ -39,6 +39,22 @@ namespace North.Data.Entities
         }
 
 
+        /// <summary>
+        /// 生成令牌
+        /// </summary>
+        /// <param name="validTime">令牌有效期（ms）</param>
+        /// <returns></returns>
+        public bool GenerateToken(long validTime = 86400000)
+        {
+            if((State is State.Normal) && IsApiAvailable)
+            {
+                Token = IdentifyHelper.GenerateId();
+                TokenExpireTime = TimeHelper.TimeStamp + validTime;
+                return true;
+            }
+            return false;
+        }
+
 
         /// <summary>
         /// 判断令牌是否有效
@@ -46,7 +62,19 @@ namespace North.Data.Entities
         /// <returns></returns>
         public bool IsTokenValid()
         {
-            return !string.IsNullOrEmpty(Token) && (TimeHelper.TimeStamp < TokenExpireTime);
+            return !string.IsNullOrEmpty(Token) && (TimeHelper.TimeStamp < TokenExpireTime) && IsApiAvailable && (State is State.Normal);
+        }
+
+
+        /// <summary>
+        /// 生成 DTO 对象
+        /// </summary>
+        /// <returns></returns>
+        public UserDTOEntity ToDTO()
+        {
+            return new UserDTOEntity(Name, Email, Avatar, State, Permission,
+                                     IsApiAvailable, MaxUploadNums, MaxUploadCapacity,
+                                     SingleMaxUploadNums, SingleMaxUploadCapacity);
         }
 
 
@@ -76,5 +104,34 @@ namespace North.Data.Entities
         Checking = 0,       // 待验证
         Normal,             // 正常
         Forbidden           // 封禁中
+    }
+
+
+    public class UserDTOEntity
+    {
+        public string Name { get; set; }                        // 用户名
+        public string Email { get; set; }
+        public string Avatar { get; set; }                      // 头像
+        public State State { get; set; }                        // 账户状态
+        public Permission Permission { get; set; }              // 用户权限
+        public bool IsApiAvailable { get; set; }                // 能否通过API访问
+        public long MaxUploadNums { get; set; }                 // 最大上传数量（张）
+        public long MaxUploadCapacity { get; set; }             // 最大存储容量（MB）
+        public long SingleMaxUploadNums { get; set; }           // 单次最大上传数量（张）
+        public long SingleMaxUploadCapacity { get; set; }       // 单次最大上传容量（MB）
+
+        public UserDTOEntity(string name, string email, string avatar, State state, Permission permission, bool isApiAvailable, long maxUploadNums, long maxUploadCapacity, long singleMaxUploadNums, long singleMaxUploadCapacity)
+        {
+            Name = name;
+            Email = email;
+            Avatar = avatar;
+            State = state;
+            Permission = permission;
+            IsApiAvailable = isApiAvailable;
+            MaxUploadNums = maxUploadNums;
+            MaxUploadCapacity = maxUploadCapacity;
+            SingleMaxUploadNums = singleMaxUploadNums;
+            SingleMaxUploadCapacity = singleMaxUploadCapacity;
+        }
     }
 }

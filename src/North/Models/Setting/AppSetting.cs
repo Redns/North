@@ -8,14 +8,15 @@ namespace North.Models.Setting
         public GeneralSetting General { get; set; }
         public RegisterSetting Register { get; set; }
         public NotifySetting Notify { get; set; }
+        public ApiSetting Api { get; set; }
 
-        public AppSetting(GeneralSetting general, RegisterSetting register, NotifySetting notify)
+        public AppSetting(GeneralSetting general, RegisterSetting register, NotifySetting notify, ApiSetting api)
         {
             General = general;
             Register = register;
             Notify = notify;
+            Api = api;
         }
-
 
 
         /// <summary>
@@ -131,6 +132,17 @@ namespace North.Models.Setting
             Account = account;
             Code = code;
             ValidTime = validTime;
+        }
+    }
+
+
+    public class ApiSetting
+    {
+        public long TokenValidTime { get; set; }
+
+        public ApiSetting(long tokenValidTime)
+        {
+            TokenValidTime = tokenValidTime;
         }
     }
 }
