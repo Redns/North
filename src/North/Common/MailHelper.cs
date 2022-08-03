@@ -1,5 +1,5 @@
-﻿using System.Net;
-using System.Net.Mail;
+﻿using MimeKit;
+using MailKit.Net.Smtp;
 
 namespace North.Common
 {
@@ -9,41 +9,56 @@ namespace North.Common
         /// 发送邮件
         /// </summary>
         /// <param name="mail">待发送的邮件</param>
+        public static void Send(Mail mail)
+        {
+            // 创建邮件消息
+            var bodyBuilder = mail.IsBodyHtml ? new BodyBuilder { HtmlBody = mail.Body } : new BodyBuilder { TextBody = mail.Body };
+            var message = new MimeMessage()
+            {
+                Subject = mail.Title,
+                Body = bodyBuilder.ToMessageBody()
+            };
+            message.From.Add(mail.From);
+            message.To.AddRange(mail.To);
+
+            // 发送邮件
+            using var client = new SmtpClient()
+            {
+                ServerCertificateValidationCallback = (s, c, h, e) => true
+            };
+            client.Connect(mail.Host, 465, true);
+            client.Authenticate(mail.From.Address, mail.Code);
+            client.Send(message);
+            client.Disconnect(true);
+        }
+
+
+        /// <summary>
+        /// 发送邮件的异步版本
+        /// </summary>
+        /// <param name="mail">待发送的邮件</param>
         /// <returns></returns>
         public static async Task SendAsync(Mail mail)
         {
-            // 初始化 MailAddress、Message
-            MailAddress mailAddress = new(mail.FromPerson);
-            MailMessage mailMessage = new()
+            // 创建邮件消息
+            var bodyBuilder = mail.IsBodyHtml ? new BodyBuilder { HtmlBody = mail.Body } : new BodyBuilder { TextBody = mail.Body };
+            var message = new MimeMessage()
             {
-                From = mailAddress,
-                Subject = mail.MailTitle,
-                SubjectEncoding = System.Text.Encoding.UTF8,
-                Body = mail.MailBody,
-                BodyEncoding = System.Text.Encoding.Default,
-                Priority = MailPriority.High,
-                IsBodyHtml = mail.IsBodyHtml,
+                Subject = mail.Title,
+                Body = bodyBuilder.ToMessageBody()
             };
+            message.From.Add(mail.From);
+            message.To.AddRange(mail.To);
 
-            // 判断是否有收件人
-            if (mail.RecipientArry.Any())
+            // 发送邮件
+            using var client = new SmtpClient()
             {
-                foreach (var recipient in mail.RecipientArry)
-                {
-                    if (!string.IsNullOrEmpty(recipient))
-                    {
-                        mailMessage.To.Add(recipient);
-                    }
-                }
-            }
-
-            // 实例化 SMTP 客户端
-            SmtpClient smtp = new()
-            {
-                Credentials = new NetworkCredential(mail.FromPerson, mail.Code),
-                Host = mail.Host
+                ServerCertificateValidationCallback = (s, c, h, e) => true,
             };
-            await smtp.SendMailAsync(mailMessage);
+            await client.ConnectAsync(mail.Host, 465, true);
+            await client.AuthenticateAsync(mail.From.Address, mail.Code);
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
         }
     }
 
@@ -56,44 +71,54 @@ namespace North.Common
         /// <summary>
         /// 发送人
         /// </summary>
-        public string FromPerson { get; set; }
+        public MailboxAddress From { get; set; }
 
         /// <summary>
         /// 收件人地址(多人)
         /// </summary>
-        public string[] RecipientArry { get; set; }
+        public IEnumerable<MailboxAddress> To { get; set; }
 
         /// <summary>
         /// 标题
         /// </summary>
-        public string MailTitle { get; set; }
+        public string Title { get; set; }
 
         /// <summary>
         /// 正文
         /// </summary>
-        public string MailBody { get; set; }
+        public string Body { get; set; }
 
         /// <summary>
-        /// 客户端授权码(可存在配置文件中)
+        /// 授权码
         /// </summary>
         public string Code { get; set; }
 
         /// <summary>
-        /// SMTP邮件服务器
+        /// SMTP 邮件服务器
         /// </summary>
-        public string Host  => $"smtp.{FromPerson.Split(new char[] { '@', '.' })[1]}.com";
+        public string Host  => $"smtp.{From.Address.Split(new char[] { '@', '.' })[1]}.com";
 
         /// <summary>
-        /// 正文是否是html格式
+        /// 正文是否是 html 格式
         /// </summary>
         public bool IsBodyHtml { get; set; }
 
-        public Mail(string fromPerson, string[] recipientArry, string mailTitle, string mailBody, string code, bool isBodyHtml)
+        public Mail(MailboxAddress from, IEnumerable<MailboxAddress> to, string title, string body, string code, bool isBodyHtml)
         {
-            FromPerson = fromPerson;
-            RecipientArry = recipientArry;
-            MailTitle = mailTitle;
-            MailBody = mailBody;
+            From = from;
+            To = to;
+            Title = title;
+            Body = body;
+            Code = code;
+            IsBodyHtml = isBodyHtml;
+        }
+
+        public Mail(MailboxAddress from, MailboxAddress to, string title, string body, string code, bool isBodyHtml)
+        {
+            From = from;
+            To = new MailboxAddress[] { to };
+            Title = title;
+            Body = body;
             Code = code;
             IsBodyHtml = isBodyHtml;
         }

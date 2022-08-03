@@ -35,39 +35,47 @@ namespace North.Pages.Auth
         /// <returns></returns>
         private async Task UserLogin()
         {
-            LoginRunning = true;
-
-            // 校验用户输入
-            if (string.IsNullOrEmpty(LoginModel.UserName) || string.IsNullOrEmpty(LoginModel.Password))
+            try
             {
-                _snackbar.Add("用户名或密码为空", Severity.Error); return;
-            }
+                LoginRunning = true;
 
-            // 短暂延时以加载动画
-            await Task.Delay(500);
+                if (string.IsNullOrEmpty(LoginModel.UserName) || string.IsNullOrEmpty(LoginModel.Password))
+                {
+                    _snackbar.Add("用户名或密码为空", Severity.Error);
+                }
+                else
+                {
+                    await Task.Delay(500);
 
-            // 检索核验用户身份
-            var user = await new SqlUserData(_context).FindAsync(u => (u.Name == LoginModel.UserName) || (u.Email == LoginModel.UserName));
-            if (user?.Password == EncryptHelper.MD5($"{user?.Name}:{LoginModel.Password}") && (user?.State == State.Normal))
-            {
-                var claims = new List<Claim>
+                    var user = await new SqlUserData(_context).FindAsync(u => (u.Name == LoginModel.UserName) || (u.Email == LoginModel.UserName));
+                    if ((user is null) || (user.Password != EncryptHelper.MD5($"{user.Name}:{LoginModel.Password}")) || (user.State != State.Normal))
                     {
-                        new Claim(ClaimTypes.Name, user.Name),
-                        new Claim(ClaimTypes.Email, user.Email),
-                        new Claim(ClaimTypes.Actor, user.Avatar),
-                        new Claim(ClaimTypes.Role, user.Permission.ToString())
-                    };
-                var loginIdentify = new UnitLoginIdentify(IdentifyHelper.GenerateId(), new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
-                
-                _identifies.Add(loginIdentify);
-                _navigationManager.NavigateTo($"signin/{loginIdentify.Id}", true);
-            }
-            else
-            {
-                _snackbar.Add("账号密码错误或账户状态异常", Severity.Error);
-            }
+                        _snackbar.Add("账号密码错误或账户状态异常", Severity.Error);
+                    }
+                    else
+                    {
+                        var loginIdentify = new UnitLoginIdentify(IdentifyHelper.GenerateId(), new ClaimsIdentity(new Claim[]
+                        {
+                            new Claim(ClaimTypes.Name, user.Name),
+                            new Claim(ClaimTypes.Email, user.Email),
+                            new Claim(ClaimTypes.Actor, user.Avatar),
+                            new Claim(ClaimTypes.Role, user.Permission.ToString())
+                        }, CookieAuthenticationDefaults.AuthenticationScheme));
 
-            LoginRunning = false;
+                        _identifies.Add(loginIdentify);
+                        _navigationManager.NavigateTo($"signin/{loginIdentify.Id}", true);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                _logger.Error("User login failed", e);
+                _snackbar.Add("登陆失败", Severity.Error);
+            }
+            finally
+            {
+                LoginRunning = false;
+            }
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using MimeKit;
 using MudBlazor;
 using North.Common;
 using North.Data.Access;
@@ -30,54 +31,48 @@ namespace North.Pages.Auth
         /// <returns></returns>
         private async Task UserRegister()
         {
-            RegisterRunning = true;
-
             try
             {
-                // 系统未开放注册，仅 Root 用户可注册
+                RegisterRunning = true;
+
                 if (!RegisterSettings.AllowRegister)
                 {
-                    _snackbar.Add("系统当前未开放注册", Severity.Error); return;
-                }
-
-                // 核验注册信息
-                // 注册信息无误时返回空信息
-                var validCheckMessage = RegisterModel.ValidCheck();
-                if (!string.IsNullOrEmpty(validCheckMessage))
-                {
-                    _snackbar.Add(validCheckMessage, Severity.Error); return;
-                }
-
-                // 注册
-                await Task.Delay(500);
-                var sqlUserData = new SqlUserData(_context);
-                var user = await sqlUserData.FindAsync(u => u.Name == RegisterModel.Name || u.Email == RegisterModel.Email);
-                if (user is not null)
-                {
-                    _snackbar.Add("用户名或邮箱已被注册", Severity.Error);
-                }
-                else if (await sqlUserData.AddAsync(RegisterModel.ToUser()))
-                {
-                    // TODO Linux 无法正常发送邮件
-                    if(await SendRegisterVerifyEmail())
-                    {
-                        _snackbar.Add("验证邮件已发送", Severity.Success);
-                        _navigationManager.NavigateTo("/login");
-                    }
-                    else
-                    {
-                        _snackbar.Add("验证邮件发送失败", Severity.Error);
-                    }
+                    _snackbar.Add("系统当前未开放注册", Severity.Error);
                 }
                 else
                 {
-                    _snackbar.Add("注册失败", Severity.Error);
+                    var validCheckMessage = string.Empty;
+                    if (!string.IsNullOrEmpty(validCheckMessage = RegisterModel.ValidCheck()))
+                    {
+                        _snackbar.Add(validCheckMessage, Severity.Error);
+                    }
+                    else
+                    {
+                        await Task.Delay(500);
+
+                        var sqlUserData = new SqlUserData(_context);
+                        var user = await sqlUserData.FindAsync(u => u.Name == RegisterModel.Name || u.Email == RegisterModel.Email);
+                        if (user is not null)
+                        {
+                            _snackbar.Add("用户名或邮箱已被注册", Severity.Error);
+                        }
+                        else if (await sqlUserData.AddAsync(RegisterModel.ToUser()) && await SendRegisterVerifyEmail())
+                        {
+                            _snackbar.Add("验证邮件已发送", Severity.Success);
+                            _navigationManager.NavigateTo("/login");
+                        }
+                        else
+                        {
+                            _snackbar.Add("注册失败", Severity.Error);
+                        }
+                    }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                RegisterModel.Avatar =string.Empty;
+                RegisterModel.Avatar = string.Empty;
 
+                _logger.Error("注册失败", e);
                 _snackbar.Add("注册失败", Severity.Error);
             }
             finally
@@ -105,10 +100,12 @@ namespace North.Pages.Auth
                 var verifyEmailBody = $"欢迎注册 North 图床，" + 
                                       $"<a href=\"{_navigationManager.BaseUri}verify/register/{verifyEmail.Id}\">点击链接</a> " + 
                                       $"以验证您的账户 {RegisterModel.Name}";
-                await MailHelper.SendAsync(new Mail(emailSettings.Account, new string[] { RegisterModel.Email },
-                                           "[North]注册验证",
-                                           verifyEmailBody,
-                                           emailSettings.Code, true));
+                await MailHelper.SendAsync(new Mail(new MailboxAddress("North", emailSettings.Account), 
+                                                    new MailboxAddress(RegisterModel.Name, RegisterModel.Email),
+                                                    "North 图床注册验证",
+                                                    verifyEmailBody,
+                                                    emailSettings.Code, 
+                                                    true));
                 return true;
             }
             return false;
@@ -121,24 +118,31 @@ namespace North.Pages.Auth
         /// <param name="args"></param>
         private async Task UploadAvatar(InputFileChangeEventArgs args)
         {
-            var avatar = args.GetMultipleFiles()[0];
-            var maxAvatarSize = RegisterSettings.MaxAvatarSize * 1024 * 1024;
-            if(avatar.Size > maxAvatarSize)
+            try
             {
-                _snackbar.Add($"头像大小不能超过 {RegisterSettings.MaxAvatarSize} MB", Severity.Error);
-            }
-            else
-            {
-                var avatarName = $"{IdentifyHelper.GenerateId()}{Path.GetExtension(avatar.Name)}";
-                using (var avatarReadStream = avatar.OpenReadStream(maxAvatarSize))
+                var avatar = args.GetMultipleFiles()[0];
+                var maxAvatarSize = RegisterSettings.MaxAvatarSize * 1024 * 1024;
+                if (avatar.Size > maxAvatarSize)
                 {
-                    using (var avatarWriteStream = File.Create($"{GlobalValues.AvatarDir}/{avatarName}"))
-                    {
-                        await avatarReadStream.CopyToAsync(avatarWriteStream);
-                        await avatarWriteStream.FlushAsync();
-                    }
-                    RegisterModel.Avatar = avatarName;
+                    _snackbar.Add($"头像大小不能超过 {RegisterSettings.MaxAvatarSize} MB", Severity.Error);
                 }
+                else
+                {
+                    var avatarName = $"{IdentifyHelper.GenerateId()}{Path.GetExtension(avatar.Name)}";
+                    using (var avatarReadStream = avatar.OpenReadStream(maxAvatarSize))
+                    {
+                        using (var avatarWriteStream = File.Create($"{GlobalValues.AvatarDir}/{avatarName}"))
+                        {
+                            await avatarReadStream.CopyToAsync(avatarWriteStream);
+                            await avatarWriteStream.FlushAsync();
+                        }
+                        RegisterModel.Avatar = avatarName;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                _logger.Error("Avatar upload failed", e);
             }
         }
 
@@ -152,9 +156,9 @@ namespace North.Pages.Auth
             {
                 File.Delete($"{GlobalValues.AvatarDir}/{RegisterModel.Avatar}");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                _logger.Error("Avatar clear failed", e);
             }
             finally
             {

@@ -7,6 +7,14 @@ namespace North.Controllers
     [ApiController]
     public class ImageController : ControllerBase
     {
+        private readonly North.Services.Logger.ILogger _logger;
+
+        public ImageController(Services.Logger.ILogger logger)
+        {
+            _logger = logger;
+        }
+
+
         /// <summary>
         /// 获取头像
         /// </summary>
@@ -20,8 +28,9 @@ namespace North.Controllers
             {
                 return File(System.IO.File.ReadAllBytes(avatar), $"image/{path.Split('.').Last()}");
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                _logger.Error($"Get avatar {path} failed", e);
                 return File(System.IO.File.ReadAllBytes($"{GlobalValues.AvatarDir}/default.png"), "image/png");
             }
         }

@@ -9,14 +9,17 @@ namespace North.Models.Setting
         public RegisterSetting Register { get; set; }
         public NotifySetting Notify { get; set; }
         public ApiSetting Api { get; set; }
+        public LogSetting Log { get; set; }
 
-        public AppSetting(GeneralSetting general, RegisterSetting register, NotifySetting notify, ApiSetting api)
+        public AppSetting(GeneralSetting general, RegisterSetting register, NotifySetting notify, ApiSetting api, LogSetting log)
         {
             General = general;
             Register = register;
             Notify = notify;
             Api = api;
+            Log = log;
         }
+
 
 
         /// <summary>
@@ -143,6 +146,34 @@ namespace North.Models.Setting
         public ApiSetting(long tokenValidTime)
         {
             TokenValidTime = tokenValidTime;
+        }
+    }
+
+
+    public class LogSetting
+    {
+        public string Output { get; set; }
+        public Level Level { get; set; }
+        public string Layout { get; set; }
+
+        public LogSetting(string output, Level level, string layout)
+        {
+            Output = output;
+            Level = level;
+            Layout = layout;
+        }
+    }
+
+
+    public class Level
+    {
+        public LogLevel Min { get; set; }
+        public LogLevel Max { get; set; }
+
+        public Level(LogLevel min, LogLevel max)
+        {
+            Min = min;
+            Max = max;
         }
     }
 }

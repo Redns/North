@@ -2,6 +2,7 @@
 
 @using North.Data.Access
 
+@inject ILogger _logger
 @inject ISnackbar _snackbar
 @inject OurDbContext _context
 @inject IHttpContextAccessor _accessor
@@ -38,10 +39,10 @@
             <MudTextField @bind-Value="RegisterModel.Password" InputType="InputType.Password" Placeholder="密码" 
                           Variant="Variant.Outlined" Margin="Margin.Dense" MaxLength="32" Immediate
                           Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Lock"></MudTextField>
-            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="UserRegister">
+            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="UserRegister" Disabled="RegisterRunning">
                 @if (RegisterRunning)
                 {
-                    <MudProgressCircular Class="ms-n2" Size="Size.Small" Style="width:20px; margin-right:10px;" Indeterminate="true"/>
+                    <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;"/>
                 }
                 <MudText>注 册</MudText>
             </MudButton>

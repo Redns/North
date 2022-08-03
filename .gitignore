@@ -16,6 +16,10 @@ src/Updater/bin
 src/Updater/obj
 # Updater End
 
+# EmailPoster Start
+src/EmailPoster
+# EmailPoster End
+
 # Other Start
 doc/基本框架.xmind
 # Other End

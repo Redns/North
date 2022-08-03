@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MudBlazor;
 using MudBlazor.Services;
+using NLog.Extensions.Logging;
 using North.Data.Access;
 using North.Models.Auth;
+using North.Services.Logger;
 using North.Services.Storage;
 
 class Program
@@ -23,21 +25,30 @@ class Program
             config.SnackbarConfiguration.HideTransitionDuration = 200;
             config.SnackbarConfiguration.ShowTransitionDuration = 200;
         });
-        builder.Services.AddControllers();
         builder.Services.AddRazorPages();
         builder.Services.AddHttpClient();
+        builder.Services.AddControllers();
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddLogging(logger =>
+        {
+            logger.ClearProviders();
+            logger.AddDebug();
+            logger.AddEventSourceLogger();
+            logger.AddNLog();
+        });
+        builder.Services.AddSingleton<North.Services.Logger.ILogger, NLogger>(logger => new NLogger());
+        builder.Services.AddDbContext<OurDbContext>();
         builder.Services.AddServerSideBlazor(option =>
         {
             option.DetailedErrors = false;
         });
-        builder.Services.AddDbContext<OurDbContext>();
-        builder.Services.AddHttpContextAccessor();
         builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                         .AddCookie(options =>
                         {
                             options.ExpireTimeSpan = TimeSpan.FromDays(3);
                         });
         builder.Services.AddSingleton<IStorage<UnitLoginIdentify>, MemoryStorage<UnitLoginIdentify>>(identifies => new MemoryStorage<UnitLoginIdentify>());
+
 
         // 构建应用
         var app = builder.Build();
