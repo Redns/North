@@ -3,22 +3,21 @@
 <PageTitle>North</PageTitle>
 
 <MudStack Row Style="width:100%; height:100%;">
-    <MudStack>
-        <MudCard>
-            <MudCardContent>
-                <MudImage Src="images/mony.jpg" Alt="Mony the dog" Elevation="25" Class="rounded-lg"/>
-            </MudCardContent>
-        </MudCard>
-        <NavMenu/>
-    </MudStack>
-    <MudStack Style="width:100%;">
-        <MudAppBar Color="Color.Primary" Fixed="false">
-            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
-            <MudSpacer />
-            <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
-        </MudAppBar>
-        @Body
-    </MudStack>
+    <AuthorizeView>
+        <Authorized>
+            <div>
+                <NorthCard/>
+                <NavMenu/>
+            </div>
+            <div>
+                <ActionBar/>
+                @Body
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            @Body
+        </NotAuthorized>
+    </AuthorizeView>
 </MudStack>
 
 <MudBlazor.MudThemeProvider/>

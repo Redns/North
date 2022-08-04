@@ -49,7 +49,6 @@ class Program
                         });
         builder.Services.AddSingleton<IStorage<UnitLoginIdentify>, MemoryStorage<UnitLoginIdentify>>(identifies => new MemoryStorage<UnitLoginIdentify>());
 
-
         // 构建应用
         var app = builder.Build();
 

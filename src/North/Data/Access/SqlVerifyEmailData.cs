@@ -58,7 +58,7 @@ namespace North.Data.Access
         /// <returns></returns>
         public VerifyEmailEntity? Find(Func<VerifyEmailEntity, bool> predicate)
         {
-            return _context.VerifyEmails?.Find(predicate);
+            return _context.VerifyEmails?.FirstOrDefault(predicate);
         }
 
 
@@ -71,7 +71,7 @@ namespace North.Data.Access
         {
             if(_context.VerifyEmails is not null)
             {
-                return await _context.VerifyEmails.FindAsync(predicate);
+                return await _context.VerifyEmails.FirstOrDefaultAsync(predicate);
             }
             return null;
         }
