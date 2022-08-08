@@ -1,0 +1,17 @@
+﻿<div id="font_title" style=@Style>
+    <font color=#7BC27A>N</font><font color=#5DB88E>o</font><font color=#3FAEA2>r</font><font color=#21A4B6>t</font><font color=#039ACA>h</font>
+</div>
+
+<style>
+    #font_title {
+        color:white; 
+        font-weight:400;
+        font-family:sans-serif;
+        background-color:rgb(75,85,99);
+    }
+</style>
+
+@code{
+    [Parameter]
+    public string Style { get; set; } = string.Empty;
+}

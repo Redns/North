@@ -56,9 +56,7 @@ namespace North.Pages.Auth
                     {
                         var loginIdentify = new UnitLoginIdentify(IdentifyHelper.GenerateId(), new ClaimsIdentity(new Claim[]
                         {
-                            new Claim(ClaimTypes.Name, user.Name),
-                            new Claim(ClaimTypes.Email, user.Email),
-                            new Claim(ClaimTypes.Actor, user.Avatar),
+                            new Claim(ClaimTypes.SerialNumber, user.Id),
                             new Claim(ClaimTypes.Role, user.Permission.ToString())
                         }, CookieAuthenticationDefaults.AuthenticationScheme));
 

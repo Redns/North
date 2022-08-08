@@ -34,6 +34,16 @@
             throw new NotImplementedException();
         }
 
+        public T? Find(Predicate<T> predicate)
+        {
+            return _items.Find(predicate);
+        }
+
+        public Task<T?> FindAsync(Predicate<T> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<T> Get(Predicate<T>? predicate = null)
         {
             if(predicate is null)

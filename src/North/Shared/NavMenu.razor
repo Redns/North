@@ -1,7 +1,11 @@
-﻿<MudPaper Width="250px" Elevation="0">
-    <MudNavMenu Rounded="true" Margin="Margin.Dense" Color="Color.Primary" Class="pa-2">
-        <MudNavLink Href="/dashboard" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
-        <MudNavLink Match="NavLinkMatch.Prefix" Href="/components/navmenu" Icon="@Icons.Filled.Storage">Servers</MudNavLink>
-        <MudNavLink Href="/thelab" Icon="@Icons.Filled.Science">The Lab</MudNavLink>
+﻿<MudStack Justify="Justify.SpaceBetween" Style="@Style">
+    <MudNavMenu Rounded Margin="Margin.Normal" Color="Color.Tertiary" Class="pa-2" id="nav">
+        <MudNavLink Href="/upload" Icon="@Icons.Outlined.Upload">上 传</MudNavLink>
+        <MudNavLink Href="/dashboard" Icon="@Icons.Outlined.Speed">仪表盘</MudNavLink>
+        <MudNavLink Href="/images" Icon="@Icons.Outlined.BrokenImage">图 库</MudNavLink>
+        <MudNavLink Href="/users" Icon="@Icons.Outlined.People">用户组</MudNavLink>
+        <MudNavLink Href="/apis" Icon="@Icons.Outlined.Link">API</MudNavLink>
+        <MudNavLink Href="/settings" Icon="@Icons.Outlined.Settings">设 置</MudNavLink>
     </MudNavMenu>
-</MudPaper>
+    <MudAlert Severity="Severity.Normal">The reactor type is RBMK-1000</MudAlert>
+</MudStack>

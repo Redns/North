@@ -2,17 +2,21 @@
 
 <PageTitle>North</PageTitle>
 
-<MudStack Row Style="width:100%; height:100%;">
+<MudStack Row Spacing="0" Style="width:100%; height:100%;">
     <AuthorizeView>
         <Authorized>
-            <div>
-                <NorthCard/>
-                <NavMenu/>
-            </div>
-            <div>
-                <ActionBar/>
+            @if (IsExpanded)
+            {
+                <MudStack Spacing="0" Style="width:250px; height:100%;">
+                    <Title Style="width:100%; height:50px; font-size:26px; text-align:center; line-height:50px;"/>
+                    <NavMenu Style="width:100%; height:100%;"/>
+                </MudStack>
+            }
+            <MudStack Spacing="0" Style="width:100%; height:100%;">
+                <ActionBar OnNavMenuStateChanged="@OnNavMenuStateChanged" IsExpanded="@IsExpanded" Style="width:100%; height:50px;"/>
+                <MudDivider Style="width:100%;"/>
                 @Body
-            </div>
+            </MudStack>
         </Authorized>
         <NotAuthorized>
             @Body
