@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using North.Common;
@@ -11,6 +12,8 @@ namespace North.Pages.Auth
 {
     partial class Login
     {
+        [Parameter]
+        public string NavUrl { get; set; } = string.Empty;
         public bool LoginRunning { get; set; } = false;
         public LoginModel LoginModel { get; set; } = new LoginModel();
 
@@ -23,7 +26,7 @@ namespace North.Pages.Auth
         {
             if(_accessor.HttpContext?.User?.Identity?.IsAuthenticated is true)
             {
-                _navigationManager.NavigateTo("", true);
+                _navigationManager.NavigateTo(NavUrl, true);
             }
             await base.OnInitializedAsync();
         }
@@ -61,7 +64,7 @@ namespace North.Pages.Auth
                         }, CookieAuthenticationDefaults.AuthenticationScheme));
 
                         _identifies.Add(loginIdentify);
-                        _navigationManager.NavigateTo($"signin/{loginIdentify.Id}", true);
+                        _navigationManager.NavigateTo($"signin/{loginIdentify.Id}/{NavUrl}", true);
                     }
                 }
             }

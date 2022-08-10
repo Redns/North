@@ -37,7 +37,7 @@ namespace North.Data.Access
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<VerifyEmailEntity>> GetAsync(Func<VerifyEmailEntity, bool>? predicate = null)
+        public async ValueTask<IEnumerable<VerifyEmailEntity>> GetAsync(Func<VerifyEmailEntity, bool>? predicate = null)
         {
             if(_context.VerifyEmails is not null)
             {
@@ -67,7 +67,7 @@ namespace North.Data.Access
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public async Task<VerifyEmailEntity?> FindAsync(Expression<Func<VerifyEmailEntity, bool>> predicate)
+        public async ValueTask<VerifyEmailEntity?> FindAsync(Expression<Func<VerifyEmailEntity, bool>> predicate)
         {
             if(_context.VerifyEmails is not null)
             {
@@ -98,7 +98,7 @@ namespace North.Data.Access
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public async Task<bool> AddAsync(VerifyEmailEntity email)
+        public async ValueTask<bool> AddAsync(VerifyEmailEntity email)
         {
             if(_context.VerifyEmails is not null)
             {
@@ -130,7 +130,7 @@ namespace North.Data.Access
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public async Task<bool> RemoveAsync(VerifyEmailEntity email)
+        public async ValueTask<bool> RemoveAsync(VerifyEmailEntity email)
         {
             if (_context.VerifyEmails is not null)
             {

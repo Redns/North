@@ -122,14 +122,14 @@ namespace North.Pages.Auth
             {
                 var avatar = args.GetMultipleFiles()[0];
                 var maxAvatarSize = RegisterSettings.MaxAvatarSize * 1024 * 1024;
-                if (avatar.Size > maxAvatarSize)
+                if ((ulong)avatar.Size > maxAvatarSize)
                 {
                     _snackbar.Add($"头像大小不能超过 {RegisterSettings.MaxAvatarSize} MB", Severity.Error);
                 }
                 else
                 {
                     var avatarName = $"{IdentifyHelper.GenerateId()}{Path.GetExtension(avatar.Name)}";
-                    using (var avatarReadStream = avatar.OpenReadStream(maxAvatarSize))
+                    using (var avatarReadStream = avatar.OpenReadStream((long)maxAvatarSize))
                     {
                         using (var avatarWriteStream = File.Create($"{GlobalValues.AvatarDir}/{avatarName}"))
                         {

@@ -20,6 +20,11 @@ src/Updater/obj
 src/EmailPoster
 # EmailPoster End
 
+# Launcher Start
+src/Launcher/bin
+src/Launcher/obj
+# Launcher End
+
 # Other Start
 doc/基本框架.xmind
 # Other End

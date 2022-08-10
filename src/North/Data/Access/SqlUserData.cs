@@ -37,7 +37,7 @@ namespace North.Data.Access
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<UserEntity>> GetAsync(Func<UserEntity, bool>? predicate = null)
+        public async ValueTask<IEnumerable<UserEntity>> GetAsync(Func<UserEntity, bool>? predicate = null)
         {
             if(_context.Users is not null)
             {
@@ -67,7 +67,7 @@ namespace North.Data.Access
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public async Task<UserEntity?> FindAsync(Expression<Func<UserEntity, bool>> predicate)
+        public async ValueTask<UserEntity?> FindAsync(Expression<Func<UserEntity, bool>> predicate)
         {
             if(_context.Users is not null)
             {
@@ -98,7 +98,7 @@ namespace North.Data.Access
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<bool> AddAsync(UserEntity user)
+        public async ValueTask<bool> AddAsync(UserEntity user)
         {
             if (_context.Users is not null)
             {
@@ -130,7 +130,7 @@ namespace North.Data.Access
         /// </summary>
         /// <param name="users"></param>
         /// <returns></returns>
-        public async Task<bool> AddRangeAsync(IEnumerable<UserEntity> users)
+        public async ValueTask<bool> AddRangeAsync(IEnumerable<UserEntity> users)
         {
             if(_context.Users is not null)
             {
@@ -162,7 +162,7 @@ namespace North.Data.Access
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<bool> RemoveAsync(UserEntity user)
+        public async ValueTask<bool> RemoveAsync(UserEntity user)
         {
             if(_context.Users is not null)
             {
@@ -194,7 +194,7 @@ namespace North.Data.Access
         /// </summary>
         /// <param name="users"></param>
         /// <returns></returns>
-        public async Task<bool> RemoveRangeAsync(IEnumerable<UserEntity> users)
+        public async ValueTask<bool> RemoveRangeAsync(IEnumerable<UserEntity> users)
         {
             if (_context.Users is not null)
             {
@@ -226,7 +226,7 @@ namespace North.Data.Access
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateAsync(UserEntity user)
+        public async ValueTask<bool> UpdateAsync(UserEntity user)
         {
             if (_context.Users is not null)
             {

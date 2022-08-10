@@ -3,7 +3,7 @@ using North.Data.Entities;
 
 namespace North.Models.Setting
 {
-    public class AppSetting
+    public record class AppSetting
     {
         public GeneralSetting General { get; set; }
         public RegisterSetting Register { get; set; }
@@ -29,15 +29,7 @@ namespace North.Models.Setting
         /// <returns></returns>
         public static AppSetting Load(string path = "appsettings.json")
         {
-            var appSetting = JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText(path));
-            if(appSetting is not null) 
-            { 
-                return appSetting; 
-            }
-            else
-            {
-                throw new Exception($"Failed to parse {path}");
-            }
+            return JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText(path)) ?? throw new Exception($"Failed to parse {path}");
         }
 
 
@@ -48,16 +40,6 @@ namespace North.Models.Setting
         public void Save(string path = "appsettings.json")
         {
             File.WriteAllText(path, ToString());
-        }
-
-
-        /// <summary>
-        /// 复制当前设置
-        /// </summary>
-        /// <returns></returns>
-        public AppSetting? Clone()
-        {
-            return JsonConvert.DeserializeObject<AppSetting>(ToString());
         }
 
 
@@ -77,10 +59,10 @@ namespace North.Models.Setting
     public class RegisterSetting
     {
         public bool AllowRegister { get; set; } = true;         // 是否允许注册
-        public long MaxAvatarSize { get; set; }                 // 头像最大尺寸（MB）
+        public ulong MaxAvatarSize { get; set; }                // 头像最大尺寸（MB）
         public RegisterSettingDefault Default { get; set; }     // 默认注册设置
 
-        public RegisterSetting(bool allowRegister, long maxAvatarSize, RegisterSettingDefault @default)
+        public RegisterSetting(bool allowRegister, ulong maxAvatarSize, RegisterSettingDefault @default)
         {
             AllowRegister = allowRegister;
             MaxAvatarSize = maxAvatarSize;
@@ -96,12 +78,12 @@ namespace North.Models.Setting
     {
         public Permission Permission { get; set; }          // 用户权限
         public bool IsApiAvailable { get; set; }            // 是否启用 API
-        public long MaxUploadNums { get; set; }             // 最大上传数量（张）
-        public long MaxUploadCapacity { get; set; }         // 最大上传容量（MB）
-        public long SingleMaxUploadNums { get; set; }       // 单次最大上传数量（张）
-        public long SingleMaxUploadCapacity { get; set; }   // 单次最大上传容量（MB）
+        public ulong MaxUploadNums { get; set; }            // 最大上传数量（张）
+        public ulong MaxUploadCapacity { get; set; }        // 最大上传容量（MB）
+        public ulong SingleMaxUploadNums { get; set; }      // 单次最大上传数量（张）
+        public ulong SingleMaxUploadCapacity { get; set; }  // 单次最大上传容量（MB）
 
-        public RegisterSettingDefault(Permission permission, bool isApiAvailable, long maxUploadNums, long maxUploadCapacity, long singleMaxUploadNums, long singleMaxUploadCapacity)
+        public RegisterSettingDefault(Permission permission, bool isApiAvailable, ulong maxUploadNums, ulong maxUploadCapacity, ulong singleMaxUploadNums, ulong singleMaxUploadCapacity)
         {
             Permission = permission;
             IsApiAvailable = isApiAvailable;
@@ -128,9 +110,9 @@ namespace North.Models.Setting
     {
         public string Account { get; set; }     // 邮箱账号
         public string Code { get; set; }        // 授权码
-        public long ValidTime { get; set; }     // 有效时间（ms）
+        public ulong ValidTime { get; set; }    // 有效时间（ms）
 
-        public EmailSetting(string account, string code, long validTime)
+        public EmailSetting(string account, string code, ulong validTime)
         {
             Account = account;
             Code = code;
@@ -141,9 +123,9 @@ namespace North.Models.Setting
 
     public class ApiSetting
     {
-        public long TokenValidTime { get; set; }
+        public ulong TokenValidTime { get; set; }
 
-        public ApiSetting(long tokenValidTime)
+        public ApiSetting(ulong tokenValidTime)
         {
             TokenValidTime = tokenValidTime;
         }

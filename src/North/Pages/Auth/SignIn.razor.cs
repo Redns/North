@@ -9,6 +9,8 @@ namespace North.Pages.Auth
     {
         [Parameter]
         public string Id { get; set; } = string.Empty;
+        [Parameter]
+        public string NavUrl { get; set; } = string.Empty;
 
 
         /// <summary>
@@ -24,7 +26,7 @@ namespace North.Pages.Auth
                 await _accessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                                                         new ClaimsPrincipal(identify.ClaimsIdentity),
                                                         new AuthenticationProperties());
-                _navigationManager.NavigateTo("", true);
+                _navigationManager.NavigateTo(NavUrl, true);
             }
             _navigationManager.NavigateTo("/login", true);
         }

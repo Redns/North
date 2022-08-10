@@ -12,15 +12,15 @@ namespace North.Data.Entities
         public string Avatar { get; set; }                      // 头像
         public State State { get; set; }                        // 账户状态
         public string Token { get; set; }                       // 令牌
-        public long TokenExpireTime { get; set; }               // 令牌过期时间
+        public ulong TokenExpireTime { get; set; }               // 令牌过期时间
         public Permission Permission { get; set; }              // 用户权限
         public bool IsApiAvailable { get; set; }                // 能否通过API访问
-        public long MaxUploadNums { get; set; }                 // 最大上传数量（张）
-        public long MaxUploadCapacity { get; set; }             // 最大存储容量（MB）
-        public long SingleMaxUploadNums { get; set; }           // 单次最大上传数量（张）
-        public long SingleMaxUploadCapacity { get; set; }       // 单次最大上传容量（MB）
+        public ulong MaxUploadNums { get; set; }                 // 最大上传数量（张）
+        public ulong MaxUploadCapacity { get; set; }             // 最大存储容量（MB）
+        public ulong SingleMaxUploadNums { get; set; }           // 单次最大上传数量（张）
+        public ulong SingleMaxUploadCapacity { get; set; }       // 单次最大上传容量（MB）
 
-        public UserEntity(string id, string name, string email, string password, string avatar, State state, string token, long tokenExpireTime, Permission permission, bool isApiAvailable, long maxUploadNums, long maxUploadCapacity, long singleMaxUploadNums, long singleMaxUploadCapacity)
+        public UserEntity(string id, string name, string email, string password, string avatar, State state, string token, ulong tokenExpireTime, Permission permission, bool isApiAvailable, ulong maxUploadNums, ulong maxUploadCapacity, ulong singleMaxUploadNums, ulong singleMaxUploadCapacity)
         {
             Id = id;
             Name = name;
@@ -44,7 +44,7 @@ namespace North.Data.Entities
         /// </summary>
         /// <param name="validTime">令牌有效期（ms）</param>
         /// <returns></returns>
-        public bool GenerateToken(long validTime = 86400000)
+        public bool GenerateToken(ulong validTime = 86400000)
         {
             if((State is State.Normal) && IsApiAvailable)
             {
@@ -115,12 +115,12 @@ namespace North.Data.Entities
         public State State { get; set; }                        // 账户状态
         public Permission Permission { get; set; }              // 用户权限
         public bool IsApiAvailable { get; set; }                // 能否通过API访问
-        public long MaxUploadNums { get; set; }                 // 最大上传数量（张）
-        public long MaxUploadCapacity { get; set; }             // 最大存储容量（MB）
-        public long SingleMaxUploadNums { get; set; }           // 单次最大上传数量（张）
-        public long SingleMaxUploadCapacity { get; set; }       // 单次最大上传容量（MB）
+        public ulong MaxUploadNums { get; set; }                 // 最大上传数量（张）
+        public ulong MaxUploadCapacity { get; set; }             // 最大存储容量（MB）
+        public ulong SingleMaxUploadNums { get; set; }           // 单次最大上传数量（张）
+        public ulong SingleMaxUploadCapacity { get; set; }       // 单次最大上传容量（MB）
 
-        public UserDTOEntity(string name, string email, string avatar, State state, Permission permission, bool isApiAvailable, long maxUploadNums, long maxUploadCapacity, long singleMaxUploadNums, long singleMaxUploadCapacity)
+        public UserDTOEntity(string name, string email, string avatar, State state, Permission permission, bool isApiAvailable, ulong maxUploadNums, ulong maxUploadCapacity, ulong singleMaxUploadNums, ulong singleMaxUploadCapacity)
         {
             Name = name;
             Email = email;
