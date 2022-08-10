@@ -3,7 +3,7 @@ using North.Data.Entities;
 
 namespace North.Models.Setting
 {
-    public record class AppSetting
+    public class AppSetting
     {
         public GeneralSetting General { get; set; }
         public RegisterSetting Register { get; set; }
@@ -40,6 +40,17 @@ namespace North.Models.Setting
         public void Save(string path = "appsettings.json")
         {
             File.WriteAllText(path, ToString());
+        }
+
+
+        /// <summary>
+        /// 复制应用设置（注意不能使用 record 和 struct）
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public AppSetting Clone()
+        {
+            return JsonConvert.DeserializeObject<AppSetting>(ToString()) ?? throw new Exception("Clone AppSetting failed");
         }
 
 

@@ -8,7 +8,23 @@ namespace North.Pages.Settings
     {
         public bool SaveRunning { get; set; } = false;
         public bool CencelSaveRunning { get; set; } = false;
-        public AppSetting AppSetting { get; set; } = GlobalValues.AppSettings with { };
+        public bool PageLoading { get; set; } = true;
+        public AppSetting AppSetting { get; set; }
+
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                AppSetting = GlobalValues.AppSettings.Clone();
+                await InvokeAsync(() =>
+                {
+                    PageLoading = false;
+                    StateHasChanged();
+                });
+            }
+            await base.OnAfterRenderAsync(firstRender);
+        }
 
 
         /// <summary>
@@ -23,14 +39,14 @@ namespace North.Pages.Settings
                 await Task.Delay(500);
 
                 AppSetting.Save();
-                GlobalValues.AppSettings = AppSetting with { };
+                GlobalValues.AppSettings = AppSetting.Clone();
 
                 _snackbar.Add("保存成功", Severity.Success);
             }
             catch(Exception e)
             {
                 GlobalValues.AppSettings = AppSetting.Load();
-                AppSetting = GlobalValues.AppSettings with { };
+                AppSetting = GlobalValues.AppSettings.Clone();
 
                 _snackbar.Add("保存失败", Severity.Error);
                 _logger.Error("Failed to save settings", e);
@@ -49,7 +65,7 @@ namespace North.Pages.Settings
                 CencelSaveRunning = true;
                 await Task.Delay(500);
 
-                AppSetting = GlobalValues.AppSettings with { };
+                AppSetting = GlobalValues.AppSettings.Clone();
 
                 _snackbar.Add("已还原设置", Severity.Success);
             }
