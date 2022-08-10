@@ -17,7 +17,7 @@ namespace North.Pages.Auth
         /// </summary>
         [Parameter]
         [SupplyParameterFromQuery]
-        public string Link { get; set; } = string.Empty;
+        public string Redirect { get; set; } = string.Empty;
 
         /// <summary>
         /// 登录进行中标志
@@ -67,7 +67,7 @@ namespace North.Pages.Auth
                         }, CookieAuthenticationDefaults.AuthenticationScheme));
 
                         _identifies.Add(loginIdentify);
-                        _navigationManager.NavigateTo($"signin/?id={loginIdentify.Id}&link={Link}", true);
+                        _navigationManager.NavigateTo($"signin/?id={loginIdentify.Id}&redirect={Redirect}", true);
                     }
                 }
             }

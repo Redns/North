@@ -76,7 +76,7 @@ namespace North.Shared
                                                     .ToLower();
                 if (!relativeUrl.Contains(GlobalValues.WithoutAuthenticationPages, true))
                 {
-                    _navigationManager.NavigateTo($"/login?link={relativeUrl}", true);
+                    _navigationManager.NavigateTo($"/login?redirect={relativeUrl}", true);
                 }
             }
         }

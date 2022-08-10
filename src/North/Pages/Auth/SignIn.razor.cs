@@ -12,7 +12,7 @@ namespace North.Pages.Auth
         public string Id { get; set; } = string.Empty;
         [Parameter]
         [SupplyParameterFromQuery]
-        public string Link { get; set; } = string.Empty;
+        public string Redirect { get; set; } = string.Empty;
 
 
         /// <summary>
@@ -28,9 +28,9 @@ namespace North.Pages.Auth
                 await _accessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                                                         new ClaimsPrincipal(identify.ClaimsIdentity),
                                                         new AuthenticationProperties());
-                _navigationManager.NavigateTo(Link, true);
+                _navigationManager.NavigateTo(Redirect, true);
             }
-            _navigationManager.NavigateTo($"login?link={Link}", true);
+            _navigationManager.NavigateTo($"login?redirect={Redirect}", true);
         }
     }
 }
