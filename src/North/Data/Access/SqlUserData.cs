@@ -24,9 +24,9 @@ namespace North.Data.Access
             {
                 if(predicate is null)
                 {
-                    return _context.Users;
+                    return _context.Users.AsNoTracking();
                 }
-                return _context.Users.Where(predicate);
+                return _context.Users.AsNoTracking().Where(predicate);
             }
             return Enumerable.Empty<UserEntity>();
         }
@@ -43,9 +43,9 @@ namespace North.Data.Access
             {
                 if(predicate is not null)
                 {
-                    return _context.Users.Where(predicate);
+                    return _context.Users.AsNoTracking().Where(predicate);
                 }
-                return await _context.Users.ToArrayAsync();
+                return await _context.Users.AsNoTracking().ToArrayAsync();
             }
             return Enumerable.Empty<UserEntity>();
         }
@@ -58,7 +58,7 @@ namespace North.Data.Access
         /// <returns></returns>
         public UserEntity? Find(Func<UserEntity, bool> predicate)
         {
-            return _context.Users?.FirstOrDefault(predicate);
+            return _context.Users?.AsNoTracking().FirstOrDefault(predicate);
         }
 
 
@@ -71,7 +71,7 @@ namespace North.Data.Access
         {
             if(_context.Users is not null)
             {
-                return await _context.Users.FirstOrDefaultAsync(predicate);
+                return await _context.Users.AsNoTracking().FirstOrDefaultAsync(predicate);
             }
             return null;
         }

@@ -1,6 +1,6 @@
 ﻿namespace North.Common
 {
-    public class IdentifyHelper
+    public static class IdentifyHelper
     {
         /// <summary>
         /// Unix 时间戳

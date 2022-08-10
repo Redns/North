@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using North.Common;
+using North.Data.Access;
 
 namespace North.Controllers
 {
@@ -7,10 +8,12 @@ namespace North.Controllers
     [ApiController]
     public class ImageController : ControllerBase
     {
+        private readonly OurDbContext _context;
         private readonly North.Services.Logger.ILogger _logger;
 
-        public ImageController(Services.Logger.ILogger logger)
+        public ImageController(OurDbContext context, Services.Logger.ILogger logger)
         {
+            _context = context;
             _logger = logger;
         }
 
@@ -23,10 +26,9 @@ namespace North.Controllers
         [HttpGet("avatar/{path}")]
         public IActionResult GetAvatar(string path)
         {
-            var avatar = $"{GlobalValues.AvatarDir}/{path}";
             try
             {
-                return File(System.IO.File.ReadAllBytes(avatar), $"image/{path.Split('.').Last()}");
+                return File(System.IO.File.ReadAllBytes($"{GlobalValues.AvatarDir}/{path}"), $"image/{path.Split('.').Last()}");
             }
             catch (Exception e)
             {

@@ -1,6 +1,6 @@
 ﻿namespace North.Common
 {
-    public class TaskHelper
+    public static class TaskHelper
     {
         /// <summary>
         /// 带有超时处理的异步任务等待
@@ -10,7 +10,7 @@
         /// <param name="timeout">超时时间</param>
         /// <returns></returns>
         /// <exception cref="TimeoutException"></exception>
-        public static async Task<TResult> WaitAsync<TResult>(Task<TResult> task, TimeSpan timeout)
+        public static async Task<TResult> WaitAsync<TResult>(this Task<TResult> task, TimeSpan timeout)
         {
             using (var timeoutCancellationTokenSource = new CancellationTokenSource())
             {

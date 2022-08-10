@@ -12,24 +12,22 @@ namespace North.Pages.Auth
 {
     partial class Login
     {
+        /// <summary>
+        /// 源地址
+        /// </summary>
         [Parameter]
-        public string NavUrl { get; set; } = string.Empty;
-        public bool LoginRunning { get; set; } = false;
-        public LoginModel LoginModel { get; set; } = new LoginModel();
-
+        [SupplyParameterFromQuery]
+        public string Link { get; set; } = string.Empty;
 
         /// <summary>
-        /// 若用户已认证则跳转至首页
+        /// 登录进行中标志
         /// </summary>
-        /// <returns></returns>
-        protected override async Task OnInitializedAsync()
-        {
-            if(_accessor.HttpContext?.User?.Identity?.IsAuthenticated is true)
-            {
-                _navigationManager.NavigateTo(NavUrl, true);
-            }
-            await base.OnInitializedAsync();
-        }
+        public bool LoginRunning { get; set; } = false;
+
+        /// <summary>
+        /// 登录模型
+        /// </summary>
+        public LoginModel LoginModel { get; set; } = new LoginModel();
 
 
         /// <summary>
@@ -38,25 +36,30 @@ namespace North.Pages.Auth
         /// <returns></returns>
         private async Task UserLogin()
         {
+            LoginRunning = true;
+
             try
             {
-                LoginRunning = true;
-
-                if (string.IsNullOrEmpty(LoginModel.UserName) || string.IsNullOrEmpty(LoginModel.Password))
+                // 校验用户登录信息
+                var loginValidCheckMessage = LoginModel.ValidCheck();
+                if (!string.IsNullOrEmpty(loginValidCheckMessage))
                 {
-                    _snackbar.Add("用户名或密码为空", Severity.Error);
+                    _snackbar.Add(loginValidCheckMessage, Severity.Error);
                 }
                 else
                 {
                     await Task.Delay(500);
 
-                    var user = await new SqlUserData(_context).FindAsync(u => (u.Name == LoginModel.UserName) || (u.Email == LoginModel.UserName));
-                    if ((user is null) || (user.Password != EncryptHelper.MD5($"{user.Name}:{LoginModel.Password}")) || (user.State != State.Normal))
+                    // 检索用户
+                    // 邮箱和用户ID均作为用户的唯一标识符
+                    var user = await new SqlUserData(_context).FindAsync(u => u.Email == LoginModel.Email);
+                    if ((user?.Password != $"{user?.Name}:{LoginModel.Password}".MD5()) || (user?.State != State.Normal))
                     {
                         _snackbar.Add("账号密码错误或账户状态异常", Severity.Error);
                     }
                     else
                     {
+                        // 记录用户信息
                         var loginIdentify = new UnitLoginIdentify(IdentifyHelper.GenerateId(), new ClaimsIdentity(new Claim[]
                         {
                             new Claim(ClaimTypes.SerialNumber, user.Id),
@@ -64,14 +67,14 @@ namespace North.Pages.Auth
                         }, CookieAuthenticationDefaults.AuthenticationScheme));
 
                         _identifies.Add(loginIdentify);
-                        _navigationManager.NavigateTo($"signin/{loginIdentify.Id}/{NavUrl}", true);
+                        _navigationManager.NavigateTo($"signin/?id={loginIdentify.Id}&link={Link}", true);
                     }
                 }
             }
             catch(Exception e)
             {
-                _logger.Error("User login failed", e);
-                _snackbar.Add("登陆失败", Severity.Error);
+                _logger.Error("Login failed", e);
+                _snackbar.Add("登陆失败，系统内部错误", Severity.Error);
             }
             finally
             {

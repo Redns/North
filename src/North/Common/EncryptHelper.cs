@@ -2,7 +2,7 @@
 
 namespace North.Common
 {
-    public class EncryptHelper
+    public static class EncryptHelper
     {
         /// <summary>
         /// MD5 加密(32位大写)
@@ -10,7 +10,7 @@ namespace North.Common
         /// <param name="s">待加密的字符串</param>
         /// <param name="encoding">字符串编码</param>
         /// <returns></returns>
-        public static string MD5(string s, Encoding? encoding = null)
+        public static string MD5(this string s, Encoding? encoding = null)
         {
             if (encoding is null) { encoding = Encoding.UTF8; }
             return BitConverter.ToString(System.Security.Cryptography.MD5.Create()

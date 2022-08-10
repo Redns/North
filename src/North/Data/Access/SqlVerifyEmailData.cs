@@ -24,9 +24,9 @@ namespace North.Data.Access
             {
                 if(predicate is null)
                 {
-                    return _context.VerifyEmails;
+                    return _context.VerifyEmails.AsNoTracking();
                 }
-                return _context.VerifyEmails.Where(predicate);
+                return _context.VerifyEmails.AsNoTracking().Where(predicate);
             }
             return Enumerable.Empty<VerifyEmailEntity>();
         }
@@ -43,9 +43,9 @@ namespace North.Data.Access
             {
                 if(predicate is not null)
                 {
-                    return _context.VerifyEmails.Where(predicate);
+                    return _context.VerifyEmails.AsNoTracking().Where(predicate);
                 }
-                return await _context.VerifyEmails.ToArrayAsync();
+                return await _context.VerifyEmails.AsNoTracking().ToArrayAsync();
             }
             return Enumerable.Empty<VerifyEmailEntity>();
         }
@@ -58,7 +58,7 @@ namespace North.Data.Access
         /// <returns></returns>
         public VerifyEmailEntity? Find(Func<VerifyEmailEntity, bool> predicate)
         {
-            return _context.VerifyEmails?.FirstOrDefault(predicate);
+            return _context.VerifyEmails?.AsNoTracking().FirstOrDefault(predicate);
         }
 
 
@@ -71,7 +71,7 @@ namespace North.Data.Access
         {
             if(_context.VerifyEmails is not null)
             {
-                return await _context.VerifyEmails.FirstOrDefaultAsync(predicate);
+                return await _context.VerifyEmails.AsNoTracking().FirstOrDefaultAsync(predicate);
             }
             return null;
         }

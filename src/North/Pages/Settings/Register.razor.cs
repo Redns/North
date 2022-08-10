@@ -10,15 +10,6 @@ namespace North.Pages.Settings
         public bool CencelSaveRunning { get; set; } = false;
         public AppSetting AppSetting { get; set; } = GlobalValues.AppSettings with { };
 
-        protected override async Task OnInitializedAsync()
-        {
-            if (_accessor.HttpContext?.User.Identity?.IsAuthenticated is not true)
-            {
-                _navigationManager.NavigateTo("login/settings/register");
-            }
-            await base.OnInitializedAsync();
-        }
-
 
         /// <summary>
         /// 保存设置

@@ -9,67 +9,81 @@
 <AuthorizeView Roles="System">
     <Authorized>
         <MudStack Spacing="6" Style="margin-left:37px; margin-top:20px;">
+            <!-- 是否开放注册 -->
             <MudStack Spacing="2">
-                <p class="menu_text">开放注册</p>
+                <MudTooltip Text="开启后可通过邮箱注册账户" Placement="Placement.Right">
+                    <p class="menu_text">开放注册</p>
+                </MudTooltip>
                 <MudSwitch @bind-Checked="@AppSetting.Register.AllowRegister" 
-                           Color="Color.Tertiary" />
+                           Color="Color.Tertiary" style="width:fit-content;"/>
             </MudStack>
+            <!-- 用户注册头像尺寸限制 -->
             <MudStack Spacing="2">
                 <MudTooltip Text="允许上传的最大头像尺寸" Placement="Placement.Right">
                     <p class="menu_text">头像最大尺寸</p>
                 </MudTooltip>
-                <MudTextField @bind-Value="@AppSetting.Register.MaxAvatarSize" 
+                <MudTextField @bind-Value="@AppSetting.Register.MaxAvatarSize" Immediate
                               Variant="Variant.Outlined" Margin="Margin.Dense"
                               Adornment="Adornment.End" AdornmentText="MB" 
-                              Style="width:90%; max-width:140px;"/>
+                              Style="width:90%; max-width:90px; height:35px;" />
             </MudStack>
+            <!-- 默认授予用户的权限 -->
             <MudStack Spacing="2">
                 <MudTooltip Text="默认授予的权限" Placement="Placement.Right">
                     <p class="menu_text">用户权限</p>
                 </MudTooltip>
-                <MudSelect @bind-Value="@AppSetting.Register.Default.Permission" 
-                           Variant="Variant.Outlined" 
-                           Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter"
-                           Style="width:90%; max-width:140px;">
-                    <MudSelectItem Value="Permission.User">
+                <MudSelect @bind-Value="@AppSetting.Register.Default.Permission" Immediate
+                           Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter"
+                           Style="width:90%; max-width:140px; height:35px;">
+                    <MudSelectItem Value="Permission.User" Style="height:35px;">
                         <MudStack Row AlignItems="AlignItems.Center">
-                            <MudIcon Icon="@Icons.Outlined.PersonOutline"/>用 户
+                            <MudIcon Icon="@Icons.Outlined.PersonOutline" />用 户
                         </MudStack>
                     </MudSelectItem>
-                    <MudSelectItem Value="Permission.Administrator">
+                    <MudSelectItem Value="Permission.Administrator" Style="height:35px;">
                         <MudStack Row AlignItems="AlignItems.Center">
-                            <MudIcon Icon="@Icons.Outlined.AdminPanelSettings"/>管理员
+                            <MudIcon Icon="@Icons.Outlined.AdminPanelSettings" />管理员
                         </MudStack>
                     </MudSelectItem>
                 </MudSelect>
             </MudStack>
+            <!-- 默认是否允许用户调用 API -->
             <MudStack Spacing="2">
-                <p class="menu_text">允许调用API</p>
+                <MudTooltip Text="开启后用户可通过接口执行操作" Placement="Placement.Right">
+                    <p class="menu_text">允许调用API</p>
+                </MudTooltip>
                 <MudSwitch @bind-Checked="@AppSetting.Register.Default.IsApiAvailable" 
                            Color="Color.Tertiary" />
             </MudStack>
-            <MudStack Spacing="2" Style="width:100%; max-width:280px;">
+            <!-- 默认允许上传的图片数量/容量 -->
+            <MudStack Spacing="2" Style="width:100%; max-width:240px;">
                 <p class="menu_text">最大上传数量/容量</p>
                 <MudStack Row Spacing="3"> 
                     <MudTextField @bind-Value="@AppSetting.Register.Default.MaxUploadNums" 
                                   Variant="Variant.Outlined" Margin="Margin.Dense"
-                                  Adornment="Adornment.End" AdornmentText="张" />
+                                  Adornment="Adornment.End" AdornmentText="张" 
+                                  Style="height:35px;"/>
                     <MudTextField @bind-Value="@AppSetting.Register.Default.MaxUploadCapacity" 
                                 Variant="Variant.Outlined" Margin="Margin.Dense"
-                                Adornment="Adornment.End" AdornmentText="MB" />
+                                Adornment="Adornment.End" AdornmentText="MB"
+                                Style="height:35px;"/>
                 </MudStack>
             </MudStack>
-            <MudStack Spacing="2" Style="width:100%; max-width:280px;">
+            <!-- 默认允许上传的图片数量/容量（单次）-->
+            <MudStack Spacing="2" Style="width:100%; max-width:240px;">
                 <p class="menu_text">最大上传数量/容量（单次）</p>
                 <MudStack Row Spacing="3">
                     <MudTextField @bind-Value="@AppSetting.Register.Default.SingleMaxUploadNums" 
                                   Variant="Variant.Outlined" Margin="Margin.Dense"
-                                  Adornment="Adornment.End" AdornmentText="张" />
+                                  Adornment="Adornment.End" AdornmentText="张" 
+                                  Style="height:35px;"/>
                     <MudTextField @bind-Value="@AppSetting.Register.Default.SingleMaxUploadCapacity" 
-                                Variant="Variant.Outlined" Margin="Margin.Dense"
-                                Adornment="Adornment.End" AdornmentText="MB" />
+                                  Variant="Variant.Outlined" Margin="Margin.Dense"
+                                  Adornment="Adornment.End" AdornmentText="MB" 
+                                  Style="height:35px;"/>
                 </MudStack>
             </MudStack>
+            <!-- 保存/取消设置 -->
             <MudStack Row Style="width:100%;">
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" 
                            OnClick="SaveSettings" Disabled="@SaveRunning"

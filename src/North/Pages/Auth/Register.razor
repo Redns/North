@@ -30,15 +30,16 @@
                     <MudAvatar Image="@($"api/image/avatar/{RegisterModel.Avatar}")" Style="min-width:50px; min-height:50px;"/>
                 </MudBadge>
             }
-            <MudTextField @bind-Value="RegisterModel.Name" Placeholder="用户名" MaxLength="16"
-                          Variant="Variant.Outlined" Margin="Margin.Dense"
+            <MudTextField @bind-Value="RegisterModel.Name" MaxLength="16"
+                          Placeholder="用户名" Variant="Variant.Outlined" Margin="Margin.Dense"
                           Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Person"></MudTextField>
-            <MudTextField @bind-Value="RegisterModel.Email" Placeholder="邮 箱" 
-                          Variant="Variant.Outlined" Margin="Margin.Dense" MaxLength="32"
+            <MudTextField @bind-Value="RegisterModel.Email" MaxLength="32"
+                          Placeholder="邮 箱" Variant="Variant.Outlined" Margin="Margin.Dense" 
                           Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Email"></MudTextField>
-            <MudTextField @bind-Value="RegisterModel.Password" InputType="InputType.Password" Placeholder="密码" 
-                          Variant="Variant.Outlined" Margin="Margin.Dense" MaxLength="32" Immediate
-                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Lock"></MudTextField>
+            <MudTextField @bind-Value="RegisterModel.Password" InputType="InputType.Password" MaxLength="32" 
+                          Placeholder="密码" Variant="Variant.Outlined" Margin="Margin.Dense" 
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Lock"
+                          Immediate></MudTextField>
             <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="UserRegister" Disabled="RegisterRunning">
                 @if (RegisterRunning)
                 {

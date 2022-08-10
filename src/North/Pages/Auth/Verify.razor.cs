@@ -9,9 +9,11 @@ namespace North.Pages.Auth
     partial class Verify
     {
         [Parameter]
+        [SupplyParameterFromQuery]
         public string Id { get; set; } = string.Empty;
 
         [Parameter]
+        [SupplyParameterFromQuery]
         public string Type { get; set; } = string.Empty;
 
         public int RemainTime { get; set; } = 5;
@@ -54,7 +56,7 @@ namespace North.Pages.Auth
                             StateHasChanged();
                         });
                     }
-                    _navigationManager.NavigateTo("/login", true);
+                    _navigationManager.NavigateTo("login", true);
                 }
             }
             await base.OnAfterRenderAsync(firstRender);

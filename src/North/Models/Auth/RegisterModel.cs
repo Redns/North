@@ -34,15 +34,23 @@ namespace North.Models.Auth
         /// <returns>提示信息</returns>
         public string ValidCheck()
         {
-            if (!string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Email) && !string.IsNullOrEmpty(Avatar) && !string.IsNullOrEmpty(Password))
+            if (string.IsNullOrEmpty(Name))
             {
-                if (!new Regex("^\\s*([A-Za-z0-9_-]+(\\.\\w+)*@(\\w+\\.)+\\w{2,5})\\s*$").IsMatch(Email))
-                {
-                    return "邮箱格式错误";
-                }
-                return string.Empty;
+                return "用户名不能为空";
             }
-            return "注册信息不能为空";
+            else if (string.IsNullOrEmpty(Email))
+            {
+                return "邮箱不能为空";
+            }
+            else if (string.IsNullOrEmpty(Password))
+            {
+                return "密码不能为空";
+            }
+            else if (!new Regex("^\\s*([A-Za-z0-9_-]+(\\.\\w+)*@(\\w+\\.)+\\w{2,5})\\s*$").IsMatch(Email))
+            {
+                return "邮箱格式错误";
+            }
+            return string.Empty;
         }
 
 

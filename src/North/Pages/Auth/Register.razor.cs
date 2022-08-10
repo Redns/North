@@ -5,24 +5,27 @@ using North.Common;
 using North.Data.Access;
 using North.Data.Entities;
 using North.Models.Auth;
+using North.Models.Notification;
 using North.Models.Setting;
 
 namespace North.Pages.Auth
 {
     partial class Register
     {
+        /// <summary>
+        /// 注册进行中标志
+        /// </summary>
         public bool RegisterRunning { get; set; } = false;
-        public RegisterModel RegisterModel { get; set; } = new RegisterModel();
-        public RegisterSetting RegisterSettings { get; set; } = GlobalValues.AppSettings.Register;
 
-        protected override async Task OnInitializedAsync()
-        {
-            if(_accessor.HttpContext?.User?.Identity?.IsAuthenticated is true)
-            {
-                _navigationManager.NavigateTo("", true);
-            }
-            await base.OnInitializedAsync();
-        }
+        /// <summary>
+        /// 注册模型
+        /// </summary>
+        public RegisterModel RegisterModel { get; set; } = new RegisterModel();
+
+        /// <summary>
+        /// 系统注册设置
+        /// </summary>
+        public RegisterSetting RegisterSettings { get; set; } = GlobalValues.AppSettings.Register;
 
 
         /// <summary>
@@ -31,18 +34,19 @@ namespace North.Pages.Auth
         /// <returns></returns>
         private async Task UserRegister()
         {
+            RegisterRunning = true;
+
             try
             {
-                RegisterRunning = true;
-
                 if (!RegisterSettings.AllowRegister)
                 {
                     _snackbar.Add("系统当前未开放注册", Severity.Error);
                 }
                 else
                 {
-                    var validCheckMessage = string.Empty;
-                    if (!string.IsNullOrEmpty(validCheckMessage = RegisterModel.ValidCheck()))
+                    // 校验用户输入
+                    var validCheckMessage = RegisterModel.ValidCheck();
+                    if (!string.IsNullOrEmpty(validCheckMessage))
                     {
                         _snackbar.Add(validCheckMessage, Severity.Error);
                     }
@@ -51,15 +55,15 @@ namespace North.Pages.Auth
                         await Task.Delay(500);
 
                         var sqlUserData = new SqlUserData(_context);
-                        var user = await sqlUserData.FindAsync(u => u.Name == RegisterModel.Name || u.Email == RegisterModel.Email);
+                        var user = await sqlUserData.FindAsync(u => u.Email == RegisterModel.Email);
                         if (user is not null)
                         {
-                            _snackbar.Add("用户名或邮箱已被注册", Severity.Error);
+                            _snackbar.Add("邮箱已被注册", Severity.Error);
                         }
                         else if (await sqlUserData.AddAsync(RegisterModel.ToUser()) && await SendRegisterVerifyEmail())
                         {
                             _snackbar.Add("验证邮件已发送", Severity.Success);
-                            _navigationManager.NavigateTo("/login");
+                            _navigationManager.NavigateTo("login");
                         }
                         else
                         {
@@ -72,8 +76,8 @@ namespace North.Pages.Auth
             {
                 RegisterModel.Avatar = string.Empty;
 
-                _logger.Error("注册失败", e);
-                _snackbar.Add("注册失败", Severity.Error);
+                _logger.Error("Register failed", e);
+                _snackbar.Add("注册失败，系统内部错误", Severity.Error);
             }
             finally
             {
@@ -98,14 +102,14 @@ namespace North.Pages.Auth
             if (await sqlVerifyEmailData.AddAsync(verifyEmail))
             {
                 var verifyEmailBody = $"欢迎注册 North 图床，" + 
-                                      $"<a href=\"{_navigationManager.BaseUri}verify/register/{verifyEmail.Id}\">点击链接</a> " + 
+                                      $"<a href=\"{_navigationManager.BaseUri}verify?type=register&id={verifyEmail.Id}\">点击链接</a> " + 
                                       $"以验证您的账户 {RegisterModel.Name}";
-                await MailHelper.SendAsync(new Mail(new MailboxAddress("North", emailSettings.Account), 
-                                                    new MailboxAddress(RegisterModel.Name, RegisterModel.Email),
-                                                    "North 图床注册验证",
-                                                    verifyEmailBody,
-                                                    emailSettings.Code, 
-                                                    true));
+                await new Mail(new MailboxAddress("North", emailSettings.Account), 
+                               new MailboxAddress(RegisterModel.Name, RegisterModel.Email),
+                               "North 图床注册验证",
+                               verifyEmailBody,
+                               emailSettings.Code, 
+                               true).SendAsync();
                 return true;
             }
             return false;
@@ -118,6 +122,7 @@ namespace North.Pages.Auth
         /// <param name="args"></param>
         private async Task UploadAvatar(InputFileChangeEventArgs args)
         {
+            // TODO 注意这是一个漏洞，用户可直接在注册界面上传图片
             try
             {
                 var avatar = args.GetMultipleFiles()[0];
@@ -142,7 +147,7 @@ namespace North.Pages.Auth
             }
             catch(Exception e)
             {
-                _logger.Error("Avatar upload failed", e);
+                _logger.Error("Upload avatar failed", e);
             }
         }
 
@@ -158,7 +163,7 @@ namespace North.Pages.Auth
             }
             catch (Exception e)
             {
-                _logger.Error("Avatar clear failed", e);
+                _logger.Error("Clear avatar failed", e);
             }
             finally
             {

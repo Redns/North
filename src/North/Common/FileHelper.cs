@@ -1,8 +1,8 @@
 ﻿namespace North.Common
 {
-    public class FileHelper
+    public static class FileHelper
     {
-        private readonly string[] Image_Extensions = new string[] { ".png", ".jpg", ".jpeg", ".bmp", ".svg", ".gif" };
+        private static readonly string[] Image_Extensions = new string[] { ".png", ".jpg", ".jpeg", ".bmp", ".svg", ".gif" };
 
 
         /// <summary>
@@ -10,7 +10,7 @@
         /// </summary>
         /// <param name="filename"></param>
         /// <returns></returns>
-        public bool IsImage(string filename)
+        public static bool IsImage(this string filename)
         {
             return Image_Extensions.Contains(Path.GetExtension(filename));
         }
