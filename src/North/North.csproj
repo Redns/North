@@ -19,8 +19,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\Images\" />
     <Folder Include="Data\Logs\" />
     <Folder Include="wwwroot\css\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NorthCore\NorthCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,9 +36,6 @@
 
   <ItemGroup>
     <None Update="Data\Databases\North.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Data\Images\Avatars\default.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

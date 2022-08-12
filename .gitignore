@@ -1,5 +1,6 @@
 # Root Start
 src/.vs
+src/.vscode
 # Root End
 
 # North Start
@@ -9,6 +10,12 @@ src/North/obj
 src/North/.config
 src/North/appsettings.json
 # North End
+
+# NorthCore Start
+src/NorthCore/.vs
+src/NorthCore/bin
+src/NorthCore/obj
+# NorthCore End
 
 # Updater Start
 src/Updater/.vs

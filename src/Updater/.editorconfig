@@ -1,4 +1,4 @@
 ﻿[*.cs]
 
 # IDE0063: 使用简单的 "using" 语句
-dotnet_diagnostic.IDE0063.severity = silent
+dotnet_diagnostic.IDE0063.severity = error

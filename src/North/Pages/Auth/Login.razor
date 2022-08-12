@@ -4,7 +4,6 @@
 @using North.Models.Auth
 @using North.Services.Storage
 @using System.Security.Claims
-@using System.ComponentModel.DataAnnotations
 
 @inject ISnackbar _snackbar
 @inject ILogger _logger
@@ -19,13 +18,12 @@
             <div id="login_title">
                 <font color=#7BC27A>N</font><font color=#5DB88E>o</font><font color=#3FAEA2>r</font><font color=#21A4B6>t</font><font color=#039ACA>h</font>
             </div>
-            <MudTextField @bind-Value="LoginModel.Email" MaxLength="32" 
-                          Placeholder="邮箱" Variant="Variant.Outlined" Margin="Margin.Dense"
+            <MudTextField @bind-Value="LoginModel.Email" Placeholder="用户名或邮箱" MaxLength="32"
+                          Variant="Variant.Outlined" Margin="Margin.Dense"
                           Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Person"></MudTextField>
-            <MudTextField @bind-Value="LoginModel.Password" InputType="InputType.Password" MaxLength="32"
-                          Placeholder="密码" Variant="Variant.Outlined" Margin="Margin.Dense"
-                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Lock"
-                          OnKeyDown="EnterToLogin" Immediate></MudTextField>
+            <MudTextField @bind-Value="LoginModel.Password" InputType="InputType.Password" Placeholder="密码" 
+                          Variant="Variant.Outlined" Margin="Margin.Dense" OnKeyDown="EnterToLogin" MaxLength="32"
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Lock" Immediate></MudTextField>
             <MudStack Row="true" Style="width:100%;">
                 <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="GoToRegister" Style="width:50%;">注 册</MudButton>
                 <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="UserLogin" Style="width:50%;" Disabled="LoginRunning">
@@ -39,7 +37,6 @@
         </MudStack>
     </MudCardContent>
 </MudCard>
-
 
 <style>
     body {

@@ -16,5 +16,37 @@
     <body>
         @RenderBody()
         <script src="_framework/blazor.server.js"></script>
+        <!-- 注册自定义 pastemultimedia 事件 -->
+        <script>
+            Blazor.registerCustomEventType("pastemultimedia", {
+                browserEventName: 'paste',
+                createEventArgs: event => {
+                    let data = [];
+                    let isMultimedia = false;
+                    
+                    const text = event.clipboardData.getData('text');
+                    if(text != ""){
+                        data.push(text);
+                    }
+                    else{
+                        isMultimedia = true;
+
+                        const items = event.clipboardData.items;
+                        for (let i = 0; i < items.length; i++) {
+                            const file = items[i].getAsFile();
+                            if (!file) {
+                                continue;
+                            }
+                            data.push(`${items[i].type}&${URL.createObjectURL(file)}`);
+                        }
+                    }
+
+                    return {
+                        isMultimedia,
+                        data
+                    }
+                }
+            })
+        </script>
     </body>
 </html>

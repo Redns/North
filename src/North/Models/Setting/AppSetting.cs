@@ -50,6 +50,7 @@ namespace North.Models.Setting
         /// <exception cref="Exception"></exception>
         public AppSetting Clone()
         {
+            // TODO 使用构造函数直接复制
             return JsonConvert.DeserializeObject<AppSetting>(ToString()) ?? throw new Exception("Clone AppSetting failed");
         }
 

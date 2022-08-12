@@ -2,6 +2,7 @@
 
 @using North.Data.Access
 
+@inject IJSRuntime JS
 @inject ILogger _logger
 @inject ISnackbar _snackbar
 @inject OurDbContext _context
@@ -27,7 +28,7 @@
                 <MudBadge Icon="@Icons.Filled.Clear" Color="Color.Dark" Origin="Origin.BottomRight" 
                           Overlap Bordered Style="width:fit-content; margin:auto; cursor:pointer;"
                           OnClick="ClearAvatar">
-                    <MudAvatar Image="@($"api/image/avatar/{RegisterModel.Avatar}")" Style="min-width:50px; min-height:50px;"/>
+                    <MudAvatar Image="@RegisterModel.Avatar" Style="min-width:50px; min-height:50px;"/>
                 </MudBadge>
             }
             <MudTextField @bind-Value="RegisterModel.Name" MaxLength="16"

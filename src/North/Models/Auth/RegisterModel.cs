@@ -46,6 +46,10 @@ namespace North.Models.Auth
             {
                 return "密码不能为空";
             }
+            else if (string.IsNullOrEmpty(Avatar))
+            {
+                return "头像不能为空";
+            }
             else if (!new Regex("^\\s*([A-Za-z0-9_-]+(\\.\\w+)*@(\\w+\\.)+\\w{2,5})\\s*$").IsMatch(Email))
             {
                 return "邮箱格式错误";

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
 using MimeKit;
 using MudBlazor;
 using North.Common;
@@ -62,6 +63,7 @@ namespace North.Pages.Auth
                         }
                         else if (await sqlUserData.AddAsync(RegisterModel.ToUser()) && await SendRegisterVerifyEmail())
                         {
+                            // 保存头像
                             _snackbar.Add("验证邮件已发送", Severity.Success);
                             _navigationManager.NavigateTo("login");
                         }
@@ -122,32 +124,24 @@ namespace North.Pages.Auth
         /// <param name="args"></param>
         private async Task UploadAvatar(InputFileChangeEventArgs args)
         {
-            // TODO 注意这是一个漏洞，用户可直接在注册界面上传图片
             try
             {
                 var avatar = args.GetMultipleFiles()[0];
-                var maxAvatarSize = RegisterSettings.MaxAvatarSize * 1024 * 1024;
-                if ((ulong)avatar.Size > maxAvatarSize)
+                var avatarMaxSize = RegisterSettings.MaxAvatarSize * 1024 * 1024;
+                if ((ulong)avatar.Size > avatarMaxSize)
                 {
                     _snackbar.Add($"头像大小不能超过 {RegisterSettings.MaxAvatarSize} MB", Severity.Error);
                 }
                 else
                 {
-                    var avatarName = $"{IdentifyHelper.GenerateId()}{Path.GetExtension(avatar.Name)}";
-                    using (var avatarReadStream = avatar.OpenReadStream((long)maxAvatarSize))
-                    {
-                        using (var avatarWriteStream = File.Create($"{GlobalValues.AvatarDir}/{avatarName}"))
-                        {
-                            await avatarReadStream.CopyToAsync(avatarWriteStream);
-                            await avatarWriteStream.FlushAsync();
-                        }
-                        RegisterModel.Avatar = avatarName;
-                    }
+                    using var avatarReadStream = avatar.OpenReadStream((long)avatarMaxSize);
+                    using var avatarReadStreamRef = new DotNetStreamReference(avatarReadStream);
+                    RegisterModel.Avatar = await JS.InvokeAsync<string>("upload", avatarReadStreamRef, avatar.ContentType);
                 }
             }
             catch(Exception e)
             {
-                _logger.Error("Upload avatar failed", e);
+                _logger.Error("Avatar upload failed", e);
             }
         }
 
@@ -155,20 +149,53 @@ namespace North.Pages.Auth
         /// <summary>
         /// 清除头像
         /// </summary>
-        private void ClearAvatar()
+        private async Task ClearAvatar()
         {
-            try
-            {
-                File.Delete($"{GlobalValues.AvatarDir}/{RegisterModel.Avatar}");
-            }
-            catch (Exception e)
-            {
-                _logger.Error("Clear avatar failed", e);
-            }
-            finally
+            if (!string.IsNullOrEmpty(RegisterModel.Avatar))
             {
                 RegisterModel.Avatar = string.Empty;
+                await DestroyBlob(RegisterModel.Avatar);
             }
+        }
+
+
+        /// <summary>
+        /// 下载浏览器 Blob 文件
+        /// </summary>
+        /// <example>https://docs.microsoft.com/zh-cn/aspnet/core/blazor/javascript-interoperability/call-dotnet-from-javascript?view=aspnetcore-6.0#stream-from-javascript-to-net</example>
+        /// <param name="url">文件链接</param>
+        /// <param name="path">保存路径</param>
+        /// <param name="maxAllowedSize">JavaScript 中读取操作允许的最大字节数（默认：512000字节）</param>
+        /// <returns></returns>
+        private async ValueTask DownloadBlob(string url, string path, long maxAllowedSize = 512000)
+        {
+            var blobReadStreamRef = await JS.InvokeAsync<IJSStreamReference>("getBlobStream", url);
+            using var dataReferenceStream = await blobReadStreamRef.OpenReadStreamAsync(maxAllowedSize);
+            await dataReferenceStream.CopyToAsync(File.OpenWrite(path));
+        }
+
+
+        /// <summary>
+        /// 获取浏览器 Blob 文件数据流
+        /// </summary>
+        /// <param name="url">文件链接</param>
+        /// <param name="maxAllowedSize">JavaScript 中读取操作允许的最大字节数（默认：512000字节）</param>
+        /// <returns></returns>
+        private async ValueTask<Stream> GetBlobStream(string url, long maxAllowedSize = 512000)
+        {
+            var blobReadStreamRef = await JS.InvokeAsync<IJSStreamReference>("getBlobStream", url);
+            return await blobReadStreamRef.OpenReadStreamAsync(maxAllowedSize);
+        }
+
+
+        /// <summary>
+        /// 销毁浏览器 Blob 对象
+        /// </summary>
+        /// <param name="url">对象链接</param>
+        /// <returns></returns>
+        private async ValueTask DestroyBlob(string url)
+        {
+            await JS.InvokeVoidAsync("destroy", url);
         }
     }
 }
