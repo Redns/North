@@ -1,4 +1,4 @@
-﻿namespace Updater
+﻿namespace North.Updater
 {
     internal class Program
     {

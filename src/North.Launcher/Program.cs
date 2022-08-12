@@ -1,4 +1,4 @@
-﻿namespace Launcher
+﻿namespace North.Launcher
 {
     internal class Program
     {

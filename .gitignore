@@ -11,26 +11,31 @@ src/North/.config
 src/North/appsettings.json
 # North End
 
-# NorthCore Start
-src/NorthCore/.vs
-src/NorthCore/bin
-src/NorthCore/obj
-# NorthCore End
+# North.Core Start
+src/North.Core/.vs
+src/North.Core/bin
+src/North.Core/obj
+# North.Core End
 
-# Updater Start
-src/Updater/.vs
-src/Updater/bin
-src/Updater/obj
-# Updater End
+# North.Launcher Start
+src/North.Launcher/.vs
+src/North.Launcher/bin
+src/North.Launcher/obj
+# North.Launcher End
 
-# EmailPoster Start
-src/EmailPoster
-# EmailPoster End
+# North.PluginBase Start
+src/North.PluginBase/.vs
+src/North.PluginBase/bin
+src/North.PluginBase/obj
+# North.PluginBase End
 
-# Launcher Start
-src/Launcher/bin
-src/Launcher/obj
-# Launcher End
+# North.Updater Start
+src/North.Updater/.vs
+src/North.Updater/bin
+src/North.Updater/obj
+# North.Updater End
+
+
 
 # Other Start
 doc/基本框架.xmind
