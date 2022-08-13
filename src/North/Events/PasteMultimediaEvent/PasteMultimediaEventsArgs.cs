@@ -1,4 +1,4 @@
-﻿namespace North.Models.Events.PasteMultimediaEvent
+﻿namespace North.Events.PasteMultimediaEvent
 {
     /// <summary>
     /// PasteMultimedia 事件参数

@@ -33,15 +33,15 @@ namespace North.Models.Auth
         /// <returns></returns>
         public string ValidCheck()
         {
-            if (string.IsNullOrEmpty(Email)) 
-            { 
-                return "邮箱不能为空"; 
+            if (string.IsNullOrEmpty(Email))
+            {
+                return "邮箱不能为空";
             }
-            else if(string.IsNullOrEmpty(Password))
+            else if (string.IsNullOrEmpty(Password))
             {
                 return "密码不能为空";
             }
-            else if(!new Regex("^\\s*([A-Za-z0-9_-]+(\\.\\w+)*@(\\w+\\.)+\\w{2,5})\\s*$").IsMatch(Email))
+            else if (!new Regex("^\\s*([A-Za-z0-9_-]+(\\.\\w+)*@(\\w+\\.)+\\w{2,5})\\s*$").IsMatch(Email))
             {
                 return "邮箱格式不正确";
             }

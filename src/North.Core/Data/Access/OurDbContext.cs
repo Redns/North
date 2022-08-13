@@ -1,19 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using North.Data.Entities;
+using North.Core.Data.Entities;
 
-namespace North.Data.Access
+namespace North.Core.Data.Access
 {
     public class OurDbContext : DbContext, IDisposable
     {
+        private readonly string _connStr;
         public DbSet<UserEntity>? Users { get; set; }
         public DbSet<VerifyEmailEntity>? VerifyEmails { get; set; }
 
-        public OurDbContext() { }
-        public OurDbContext(DbContextOptions<OurDbContext> options) : base(options) { }
+        public OurDbContext(string connStr) 
+        { 
+            _connStr = connStr;
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder opt)
         {
-            opt.UseSqlite("Data Source=Data/Databases/North.db;");
+            opt.UseSqlite(_connStr);
         }
     }
 }

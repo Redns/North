@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using MudBlazor;
 using MudBlazor.Services;
 using NLog.Extensions.Logging;
-using North.Data.Access;
+using North.Core.Data.Access;
 using North.Models.Auth;
 using North.Services.Logger;
 using North.Services.Storage;
@@ -37,7 +37,7 @@ class Program
             logger.AddNLog();
         });
         builder.Services.AddSingleton<North.Services.Logger.ILogger, NLogger>(logger => new NLogger());
-        builder.Services.AddDbContext<OurDbContext>();
+        builder.Services.AddScoped(context => new OurDbContext("Data Source=Data/Databases/North.db;"));
         builder.Services.AddServerSideBlazor(option =>
         {
             option.DetailedErrors = false;

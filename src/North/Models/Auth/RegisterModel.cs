@@ -1,5 +1,6 @@
 ﻿using North.Common;
-using North.Data.Entities;
+using North.Core.Data.Entities;
+using North.Core.Helper;
 using System.Text.RegularExpressions;
 
 namespace North.Models.Auth
@@ -65,7 +66,7 @@ namespace North.Models.Auth
         public UserEntity ToUser()
         {
             var registerDefaultSettings = GlobalValues.AppSettings.Register.Default;
-            return new UserEntity(IdentifyHelper.GenerateId(),
+            return new UserEntity(IdentifyHelper.Generate(),
                                   Name,
                                   Email,
                                   EncryptHelper.MD5($"{Name}:{Password}"),

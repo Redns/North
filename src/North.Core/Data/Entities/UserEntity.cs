@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using North.Common;
+using North.Core.Helper;
 
-namespace North.Data.Entities
+namespace North.Core.Data.Entities
 {
     public class UserEntity
     {
@@ -50,8 +50,8 @@ namespace North.Data.Entities
         {
             if((State is State.Normal) && IsApiAvailable)
             {
-                Token = IdentifyHelper.GenerateId();
-                TokenExpireTime = TimeHelper.TimeStamp + validTime;
+                Token = IdentifyHelper.Generate();
+                TokenExpireTime = IdentifyHelper.TimeStamp + validTime;
                 return true;
             }
             return false;
@@ -64,7 +64,7 @@ namespace North.Data.Entities
         /// <returns></returns>
         public bool IsTokenValid()
         {
-            return !string.IsNullOrEmpty(Token) && (TimeHelper.TimeStamp < TokenExpireTime) && IsApiAvailable && (State is State.Normal);
+            return !string.IsNullOrEmpty(Token) && (IdentifyHelper.TimeStamp < TokenExpireTime) && IsApiAvailable && (State is State.Normal);
         }
 
 

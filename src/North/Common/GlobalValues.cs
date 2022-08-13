@@ -1,6 +1,4 @@
-﻿using North.Models.Setting;
-
-namespace North.Common
+﻿namespace North.Common
 {
     public static class GlobalValues
     {

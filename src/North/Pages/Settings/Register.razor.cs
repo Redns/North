@@ -1,6 +1,5 @@
 ﻿using MudBlazor;
 using North.Common;
-using North.Models.Setting;
 
 namespace North.Pages.Settings
 {

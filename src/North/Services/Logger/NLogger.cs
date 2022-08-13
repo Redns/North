@@ -1,7 +1,7 @@
 ﻿using NLog;
 using NLog.Config;
 using NLog.Targets;
-using North.Models.Setting;
+using North.Common;
 
 namespace North.Services.Logger
 {

@@ -1,7 +1,10 @@
 ﻿using System.Text;
 
-namespace North.Common
+namespace North.Core.Helper
 {
+    /// <summary>
+    /// 加密辅助类
+    /// </summary>
     public static class EncryptHelper
     {
         /// <summary>
@@ -12,9 +15,8 @@ namespace North.Common
         /// <returns></returns>
         public static string MD5(this string s, Encoding? encoding = null)
         {
-            if (encoding is null) { encoding = Encoding.UTF8; }
             return BitConverter.ToString(System.Security.Cryptography.MD5.Create()
-                                                                         .ComputeHash(encoding.GetBytes(s)))
+                                                                         .ComputeHash((encoding ?? Encoding.UTF8).GetBytes(s)))
                                                                          .Replace("-", string.Empty);
         }
     }

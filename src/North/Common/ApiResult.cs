@@ -1,4 +1,4 @@
-﻿namespace North.Models.Api
+﻿namespace North.Common
 {
     public class ApiResult<T>
     {

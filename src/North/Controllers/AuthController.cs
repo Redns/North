@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using North.Common;
-using North.Data.Access;
-using North.Data.Entities;
-using North.Models.Api;
+using North.Core.Data.Access;
+using North.Core.Data.Entities;
 
 namespace North.Controllers
 {

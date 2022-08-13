@@ -1,5 +1,8 @@
-﻿namespace North.Common
+﻿namespace North.Core.Helper
 {
+    /// <summary>
+    /// 字符串辅助类
+    /// </summary>
     public static class StringHelper
     {
         /// <summary>
@@ -7,6 +10,7 @@
         /// </summary>
         /// <param name="s"></param>
         /// <param name="values"></param>
+        /// <param name="perfectMatch">若为 true，则只有当字符串 s 与数组中的某个元素相等时，才会返回 true</param>
         /// <returns></returns>
         public static bool Contains(this string s, string[] values, bool perfectMatch = false)
         {

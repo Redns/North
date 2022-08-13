@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using North.Data.Entities;
+using North.Core.Data.Entities;
 using System.Linq.Expressions;
 
-namespace North.Data.Access
+namespace North.Core.Data.Access
 {
     public class SqlUserData
     {

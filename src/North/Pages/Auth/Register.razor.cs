@@ -3,11 +3,11 @@ using Microsoft.JSInterop;
 using MimeKit;
 using MudBlazor;
 using North.Common;
-using North.Data.Access;
-using North.Data.Entities;
+using North.Core.Data.Access;
+using North.Core.Data.Entities;
+using North.Core.Helper;
 using North.Models.Auth;
 using North.Models.Notification;
-using North.Models.Setting;
 
 namespace North.Pages.Auth
 {
@@ -98,8 +98,8 @@ namespace North.Pages.Auth
 
             // 添加验证邮件至数据库
             var sqlVerifyEmailData = new SqlVerifyEmailData(_context);
-            var verifyEmail = new VerifyEmailEntity(IdentifyHelper.GenerateId(), RegisterModel.Email,
-                                                    TimeHelper.TimeStamp + emailSettings.ValidTime,
+            var verifyEmail = new VerifyEmailEntity(IdentifyHelper.Generate(), RegisterModel.Email,
+                                                    IdentifyHelper.TimeStamp + emailSettings.ValidTime,
                                                     VerifyType.Register);
             if (await sqlVerifyEmailData.AddAsync(verifyEmail))
             {

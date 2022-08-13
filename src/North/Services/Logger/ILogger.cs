@@ -1,4 +1,4 @@
-﻿using North.Models.Setting;
+﻿using North.Common;
 
 namespace North.Services.Logger
 {

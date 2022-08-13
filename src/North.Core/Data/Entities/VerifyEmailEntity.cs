@@ -1,4 +1,4 @@
-﻿namespace North.Data.Entities
+﻿namespace North.Core.Data.Entities
 {
     /// <summary>
     /// 邮箱验证类

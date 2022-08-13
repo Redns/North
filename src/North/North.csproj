@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MailKit" Version="3.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.7" />
@@ -22,6 +21,11 @@
     <Folder Include="Data\Images\" />
     <Folder Include="Data\Logs\" />
     <Folder Include="wwwroot\css\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\North.Core\North.Core.csproj" />
+    <ProjectReference Include="..\North.PluginBase\North.PluginBase.csproj" />
   </ItemGroup>
 
   <ItemGroup>

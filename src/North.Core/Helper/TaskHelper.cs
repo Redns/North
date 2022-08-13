@@ -1,5 +1,8 @@
-﻿namespace North.Common
+﻿namespace North.Core.Helper
 {
+    /// <summary>
+    /// 异步操作辅助类
+    /// </summary>
     public static class TaskHelper
     {
         /// <summary>
@@ -12,16 +15,14 @@
         /// <exception cref="TimeoutException"></exception>
         public static async Task<TResult> WaitAsync<TResult>(this Task<TResult> task, TimeSpan timeout)
         {
-            using (var timeoutCancellationTokenSource = new CancellationTokenSource())
+            using var timeoutCancellationTokenSource = new CancellationTokenSource();
+            var delayTask = Task.Delay(timeout, timeoutCancellationTokenSource.Token);
+            if (await Task.WhenAny(task, delayTask) == task)
             {
-                var delayTask = Task.Delay(timeout, timeoutCancellationTokenSource.Token);
-                if (await Task.WhenAny(task, delayTask) == task)
-                {
-                    timeoutCancellationTokenSource.Cancel();
-                    return await task;
-                }
-                throw new TimeoutException("Operation time out");
+                timeoutCancellationTokenSource.Cancel();
+                return await task;
             }
+            throw new TimeoutException("Operation time out");
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using North.Common;
-using North.Data.Access;
+using North.Core.Data.Access;
 
 namespace North.Controllers
 {

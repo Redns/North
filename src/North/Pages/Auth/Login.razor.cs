@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using North.Common;
-using North.Data.Access;
-using North.Data.Entities;
+using North.Core.Data.Access;
+using North.Core.Data.Entities;
+using North.Core.Helper;
 using North.Models.Auth;
 using System.Security.Claims;
 
@@ -60,7 +61,7 @@ namespace North.Pages.Auth
                     else
                     {
                         // 记录用户信息
-                        var loginIdentify = new UnitLoginIdentify(IdentifyHelper.GenerateId(), new ClaimsIdentity(new Claim[]
+                        var loginIdentify = new UnitLoginIdentify(IdentifyHelper.Generate(), new ClaimsIdentity(new Claim[]
                         {
                             new Claim(ClaimTypes.SerialNumber, user.Id),
                             new Claim(ClaimTypes.Role, user.Permission.ToString())

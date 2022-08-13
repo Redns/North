@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using North.Common;
-using North.Data.Access;
-using North.Data.Entities;
+using North.Core.Data.Access;
+using North.Core.Data.Entities;
+using North.Core.Helper;
 
 namespace North.Pages.Auth
 {
@@ -73,7 +73,7 @@ namespace North.Pages.Auth
             var sqlVerifyEmailData = new SqlVerifyEmailData(_context);
 
             var verifyEmail = sqlVerifyEmailData.Find(e => e.Id == Id);
-            if ((verifyEmail is null) || (TimeHelper.TimeStamp > verifyEmail.ExpireTime))
+            if ((verifyEmail is null) || (IdentifyHelper.TimeStamp > verifyEmail.ExpireTime))
             {
                 _snackbar.Add("链接不存在或已过期", Severity.Error);
             }

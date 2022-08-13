@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace North.Models.Events.PasteMultimediaEvent
+namespace North.Events.PasteMultimediaEvent
 {
     [EventHandler("onpastemultimedia", typeof(PasteMultimediaEventsArgs),
     enableStopPropagation: true, enablePreventDefault: true)]

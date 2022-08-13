@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using North.Data.Entities;
+using North.Core.Data.Entities;
 
-namespace North.Models.Setting
+namespace North.Common
 {
     public class AppSetting
     {

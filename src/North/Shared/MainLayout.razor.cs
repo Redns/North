@@ -1,6 +1,7 @@
 ﻿using North.Common;
-using North.Data.Access;
-using North.Data.Entities;
+using North.Core.Helper;
+using North.Core.Data.Access;
+using North.Core.Data.Entities;
 using System.Security.Claims;
 
 namespace North.Shared
