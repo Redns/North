@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using North.Core.Helper;
+using North.Pages.Database;
+using System.Text.RegularExpressions;
 
 namespace North.Models.Auth
 {
@@ -13,6 +15,11 @@ namespace North.Models.Auth
         /// 密码
         /// </summary>
         public string Password { get; set; }
+
+        /// <summary>
+        /// 加密后的密码
+        /// </summary>
+        public string PasswordEncrypted => $"{Email}:{Password}".MD5();
 
         public LoginModel()
         {

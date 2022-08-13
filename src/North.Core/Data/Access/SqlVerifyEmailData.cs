@@ -110,6 +110,38 @@ namespace North.Core.Data.Access
 
 
         /// <summary>
+        /// 添加多个验证邮件
+        /// </summary>
+        /// <param name="emails"></param>
+        /// <returns></returns>
+        public bool AddRange(IEnumerable<VerifyEmailEntity> emails)
+        {
+            if (_context.VerifyEmails is not null)
+            {
+                _context.VerifyEmails.AddRange(emails);
+                return _context.SaveChanges() > 0;
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// 添加多个验证邮件的异步版本
+        /// </summary>
+        /// <param name="emails"></param>
+        /// <returns></returns>
+        public async ValueTask<bool> AddRangeAsync(IEnumerable<VerifyEmailEntity> emails)
+        {
+            if (_context.VerifyEmails is not null)
+            {
+                await _context.VerifyEmails.AddRangeAsync(emails);
+                return await _context.SaveChangesAsync() > 0;
+            }
+            return false;
+        }
+
+
+        /// <summary>
         /// 删除验证邮件
         /// </summary>
         /// <param name="email"></param>
@@ -138,6 +170,38 @@ namespace North.Core.Data.Access
                 return await _context.SaveChangesAsync() > 0;
             }
             return false;
+        }
+
+
+        /// <summary>
+        /// 移除多个验证邮件
+        /// </summary>
+        /// <param name="emails"></param>
+        /// <returns></returns>
+        public bool RemoveRange(IEnumerable<VerifyEmailEntity> emails)
+        {
+            if (_context.VerifyEmails is not null)
+            {
+                _context.VerifyEmails.RemoveRange(emails);
+                return _context.SaveChanges() > 0;
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// 移除多个用户的异步版本
+        /// </summary>
+        /// <param name="users"></param>
+        /// <returns></returns>
+        public async ValueTask<bool> RemoveRangeAsync(IEnumerable<VerifyEmailEntity> emails)
+        {
+            if (_context.VerifyEmails is not null)
+            {
+                _context.VerifyEmails.RemoveRange(emails);
+                return await _context.SaveChangesAsync() > 0;
+            }
+            return true;
         }
     }
 }

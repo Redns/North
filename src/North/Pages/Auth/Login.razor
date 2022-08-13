@@ -2,15 +2,12 @@
 
 @using North.Core.Data.Access
 @using North.Models.Auth
-@using North.Services.Storage
 @using System.Security.Claims
 
-@inject ISnackbar _snackbar
 @inject ILogger _logger
-@inject OurDbContext _context
+@inject ISnackbar _snackbar
 @inject IHttpContextAccessor _accessor
 @inject NavigationManager _navigationManager
-@inject IStorage<UnitLoginIdentify> _identifies
 
 <MudCard id="login_card">
     <MudCardContent id="login_form">

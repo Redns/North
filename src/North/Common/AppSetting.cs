@@ -6,20 +6,21 @@ namespace North.Common
     public class AppSetting
     {
         public GeneralSetting General { get; set; }
+        public StorageSetting Storage { get; set; }
         public RegisterSetting Register { get; set; }
         public NotifySetting Notify { get; set; }
         public ApiSetting Api { get; set; }
         public LogSetting Log { get; set; }
 
-        public AppSetting(GeneralSetting general, RegisterSetting register, NotifySetting notify, ApiSetting api, LogSetting log)
+        public AppSetting(GeneralSetting general, StorageSetting storage, RegisterSetting register, NotifySetting notify, ApiSetting api, LogSetting log)
         {
             General = general;
+            Storage = storage;
             Register = register;
             Notify = notify;
             Api = api;
             Log = log;
         }
-
 
 
         /// <summary>
@@ -29,7 +30,7 @@ namespace North.Common
         /// <returns></returns>
         public static AppSetting Load(string path = "appsettings.json")
         {
-            return JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText(path)) ?? throw new Exception($"Failed to parse {path}");
+            return JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText(path)) ?? throw new Exception($"Load {path} failed");
         }
 
 
@@ -65,6 +66,28 @@ namespace North.Common
     public class GeneralSetting
     {
 
+    }
+
+
+    public class StorageSetting
+    {
+        public DataBaseSetting DataBase { get; set; }
+
+        public StorageSetting(DataBaseSetting dataBase)
+        {
+            DataBase = dataBase;
+        }
+    }
+
+
+    public class DataBaseSetting
+    {
+        public string ConnStr { get; set; }
+
+        public DataBaseSetting(string connStr)
+        {
+            ConnStr = connStr;
+        }
     }
 
 

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using North.Common;
-using North.Core.Data.Access;
 using North.Core.Data.Entities;
 using North.Core.Helper;
 using North.Models.Auth;
@@ -51,30 +50,27 @@ namespace North.Pages.Auth
                 {
                     await Task.Delay(500);
 
-                    // 检索用户
-                    // 邮箱和用户ID均作为用户的唯一标识符
-                    var user = await new SqlUserData(_context).FindAsync(u => u.Email == LoginModel.Email);
-                    if ((user?.Password != $"{user?.Name}:{LoginModel.Password}".MD5()) || (user?.State != State.Normal))
+                    var user = GlobalValues.MemoryDatabase.Users.FirstOrDefault(u => u.Email == LoginModel.Email);
+                    if ((user?.Password != LoginModel.PasswordEncrypted) || (user?.State != State.Normal))
                     {
                         _snackbar.Add("账号密码错误或账户状态异常", Severity.Error);
                     }
                     else
                     {
-                        // 记录用户信息
                         var loginIdentify = new UnitLoginIdentify(IdentifyHelper.Generate(), new ClaimsIdentity(new Claim[]
                         {
                             new Claim(ClaimTypes.SerialNumber, user.Id),
                             new Claim(ClaimTypes.Role, user.Permission.ToString())
                         }, CookieAuthenticationDefaults.AuthenticationScheme));
+                        GlobalValues.UnitLoginIdentifies.Add(loginIdentify);
 
-                        _identifies.Add(loginIdentify);
                         _navigationManager.NavigateTo($"signin/?id={loginIdentify.Id}&redirect={Redirect}", true);
                     }
                 }
             }
             catch(Exception e)
             {
-                _logger.Error("Login failed", e);
+                _logger.Error("Failed to login", e);
                 _snackbar.Add("登陆失败，系统内部错误", Severity.Error);
             }
             finally

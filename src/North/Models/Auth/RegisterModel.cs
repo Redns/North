@@ -10,6 +10,7 @@ namespace North.Models.Auth
         public string Name { get; set; }            // 用户名
         public string Email { get; set; }           // 邮箱
         public string Avatar { get; set; }          // 头像（xxx.xx）
+        public string AvatarExtension { get; set; } // 头像后缀（不带 '.'）
         public string Password { get; set; }        // 密码
 
         public RegisterModel()
@@ -17,14 +18,16 @@ namespace North.Models.Auth
             Name = string.Empty;
             Email = string.Empty;
             Avatar = string.Empty;
+            AvatarExtension = string.Empty;
             Password = string.Empty;
         }
 
-        public RegisterModel(string name, string email, string avatar, string password)
+        public RegisterModel(string name, string email, string avatar, string avatarExtension, string password)
         {
             Name = name;
             Email = email;
             Avatar = avatar;
+            AvatarExtension = avatarExtension;
             Password = password;
         }
 
@@ -69,7 +72,7 @@ namespace North.Models.Auth
             return new UserEntity(IdentifyHelper.Generate(),
                                   Name,
                                   Email,
-                                  EncryptHelper.MD5($"{Name}:{Password}"),
+                                  EncryptHelper.MD5($"{Email}:{Password}"),
                                   $"api/image/avatar/{Avatar}",
                                   State.Checking,
                                   string.Empty,

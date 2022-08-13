@@ -74,7 +74,7 @@ namespace North.Core.Data.Entities
         /// <returns></returns>
         public UserDTOEntity ToDTO()
         {
-            return new UserDTOEntity(Name, Email, Avatar, State, Permission,
+            return new UserDTOEntity(Id, Name, Email, Avatar, State, Permission,
                                      IsApiAvailable, MaxUploadNums, MaxUploadCapacity,
                                      SingleMaxUploadNums, SingleMaxUploadCapacity);
         }
@@ -111,6 +111,7 @@ namespace North.Core.Data.Entities
 
     public class UserDTOEntity
     {
+        public string Id { get; set; }                          // 用户 ID
         public string Name { get; set; }                        // 用户名
         public string Email { get; set; }
         public string Avatar { get; set; }                      // 头像
@@ -122,8 +123,9 @@ namespace North.Core.Data.Entities
         public ulong SingleMaxUploadNums { get; set; }           // 单次最大上传数量（张）
         public ulong SingleMaxUploadCapacity { get; set; }       // 单次最大上传容量（MB）
 
-        public UserDTOEntity(string name, string email, string avatar, State state, Permission permission, bool isApiAvailable, ulong maxUploadNums, ulong maxUploadCapacity, ulong singleMaxUploadNums, ulong singleMaxUploadCapacity)
+        public UserDTOEntity(string id, string name, string email, string avatar, State state, Permission permission, bool isApiAvailable, ulong maxUploadNums, ulong maxUploadCapacity, ulong singleMaxUploadNums, ulong singleMaxUploadCapacity)
         {
+            Id = id;
             Name = name;
             Email = email;
             Avatar = avatar;

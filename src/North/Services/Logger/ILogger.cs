@@ -16,6 +16,6 @@ namespace North.Services.Logger
         void Error(string message, Exception e);
         void Fatal(string message);
         void Fatal(string message, Exception e);
-        void ConfigLoggers(LogSetting? settings);
+        void ConfigLoggers(LogSetting settings);
     }
 }

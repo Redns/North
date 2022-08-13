@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using North.Common;
 using North.Core.Data.Access;
 using North.Core.Data.Entities;
 using North.Core.Helper;
@@ -33,7 +34,7 @@ namespace North.Pages.Auth
                 {
                     switch (Type.ToLower())
                     {
-                        case "register": await VerifyRegister(); break;
+                        case "register": VerifyRegister(); break;
                         default: break;
                     }
                 }
@@ -67,24 +68,19 @@ namespace North.Pages.Auth
         /// 用户注册验证
         /// </summary>
         /// <returns></returns>
-        private async Task VerifyRegister()
+        private void VerifyRegister()
         {
-            var sqlUserData = new SqlUserData(_context);
-            var sqlVerifyEmailData = new SqlVerifyEmailData(_context);
-
-            var verifyEmail = sqlVerifyEmailData.Find(e => e.Id == Id);
+            var verifyEmail = GlobalValues.MemoryDatabase.VerifyEmails.Find(e => e.Id == Id);
             if ((verifyEmail is null) || (IdentifyHelper.TimeStamp > verifyEmail.ExpireTime))
             {
                 _snackbar.Add("链接不存在或已过期", Severity.Error);
             }
             else
             {
-                var user = await sqlUserData.FindAsync(u => u.Email == verifyEmail.Email);
+                var user = GlobalValues.MemoryDatabase.Users.FirstOrDefault(u => u.Email == verifyEmail.Email);
                 if ((user is not null) && (user.State is State.Checking))
                 {
                     user.State = State.Normal;
-                    await sqlUserData.UpdateAsync(user);
-
                     _snackbar.Add("验证成功", Severity.Success);
                 }
                 else
@@ -96,7 +92,7 @@ namespace North.Pages.Auth
             // 删除验证邮件
             if (verifyEmail is not null)
             {
-                await sqlVerifyEmailData.RemoveAsync(verifyEmail);
+                GlobalValues.MemoryDatabase.VerifyEmails.Remove(verifyEmail);
             }
         }
     }

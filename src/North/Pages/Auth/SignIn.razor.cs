@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
+using North.Common;
 using System.Security.Claims;
 
 namespace North.Pages.Auth
@@ -21,10 +22,10 @@ namespace North.Pages.Auth
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
-            var identify = _identifies.Find(identify => identify.Id == Id);
+            var identify = GlobalValues.UnitLoginIdentifies.Find(identify => identify.Id == Id);
             if ((_accessor.HttpContext is not null) && identify is not null)
             {
-                _identifies.Remove(identify);
+                GlobalValues.UnitLoginIdentifies.Remove(identify);
                 await _accessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                                                         new ClaimsPrincipal(identify.ClaimsIdentity),
                                                         new AuthenticationProperties());

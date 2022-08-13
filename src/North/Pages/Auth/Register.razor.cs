@@ -3,7 +3,6 @@ using Microsoft.JSInterop;
 using MimeKit;
 using MudBlazor;
 using North.Common;
-using North.Core.Data.Access;
 using North.Core.Data.Entities;
 using North.Core.Helper;
 using North.Models.Auth;
@@ -41,42 +40,51 @@ namespace North.Pages.Auth
             {
                 if (!RegisterSettings.AllowRegister)
                 {
-                    _snackbar.Add("系统当前未开放注册", Severity.Error);
+                    _snackbar.Add("系统当前未开放注册", Severity.Error); return; 
+                }
+
+                // 校验用户输入
+                var validCheckMessage = RegisterModel.ValidCheck();
+                if (!string.IsNullOrEmpty(validCheckMessage))
+                {
+                    _snackbar.Add(validCheckMessage, Severity.Error);
                 }
                 else
                 {
-                    // 校验用户输入
-                    var validCheckMessage = RegisterModel.ValidCheck();
-                    if (!string.IsNullOrEmpty(validCheckMessage))
+                    await Task.Delay(500);
+                    if (GlobalValues.MemoryDatabase.Users.FirstOrDefault(u => u.Email == RegisterModel.Email) is not null)
                     {
-                        _snackbar.Add(validCheckMessage, Severity.Error);
+                        _snackbar.Add("邮箱已被注册", Severity.Error);
                     }
                     else
                     {
-                        await Task.Delay(500);
+                        // TODO 此处后期根据 AppSetting 中的设置项确定保存路径
+                        var newUser = RegisterModel.ToUser();
+                        var avatarName = $"{IdentifyHelper.Generate()}.{RegisterModel.AvatarExtension}";
 
-                        var sqlUserData = new SqlUserData(_context);
-                        var user = await sqlUserData.FindAsync(u => u.Email == RegisterModel.Email);
-                        if (user is not null)
-                        {
-                            _snackbar.Add("邮箱已被注册", Severity.Error);
-                        }
-                        else if (await sqlUserData.AddAsync(RegisterModel.ToUser()) && await SendRegisterVerifyEmail())
-                        {
-                            // 保存头像
-                            _snackbar.Add("验证邮件已发送", Severity.Success);
-                            _navigationManager.NavigateTo("login");
-                        }
-                        else
-                        {
-                            _snackbar.Add("注册失败", Severity.Error);
-                        }
+                        // 保存用户头像
+                        await DownloadBlob(RegisterModel.Avatar,
+                                           $"Data/Images/{newUser.Id}/{avatarName}",
+                                           (long)RegisterSettings.MaxAvatarSize * 1024 * 1024);
+
+                        // 发送验证邮件
+                        await SendRegisterVerifyEmail();
+
+                        // 录入用户
+                        newUser.Avatar = $"api/image/{newUser.Id}/{avatarName}";
+                        GlobalValues.MemoryDatabase.Users.Add(newUser);
+
+                        _snackbar.Add("验证邮件已发送", Severity.Success);
+                        _navigationManager.NavigateTo("login");
                     }
                 }
             }
             catch (Exception e)
             {
+                await DestroyBlob(RegisterModel.Avatar);
+
                 RegisterModel.Avatar = string.Empty;
+                RegisterModel.AvatarExtension = string.Empty;
 
                 _logger.Error("Register failed", e);
                 _snackbar.Add("注册失败，系统内部错误", Severity.Error);
@@ -92,29 +100,26 @@ namespace North.Pages.Auth
         /// 发送注册验证邮件
         /// </summary>
         /// <returns></returns>
-        private async Task<bool> SendRegisterVerifyEmail()
+        private async ValueTask SendRegisterVerifyEmail()
         {
             var emailSettings = GlobalValues.AppSettings.Notify.Email;
 
             // 添加验证邮件至数据库
-            var sqlVerifyEmailData = new SqlVerifyEmailData(_context);
             var verifyEmail = new VerifyEmailEntity(IdentifyHelper.Generate(), RegisterModel.Email,
                                                     IdentifyHelper.TimeStamp + emailSettings.ValidTime,
                                                     VerifyType.Register);
-            if (await sqlVerifyEmailData.AddAsync(verifyEmail))
-            {
-                var verifyEmailBody = $"欢迎注册 North 图床，" + 
-                                      $"<a href=\"{_navigationManager.BaseUri}verify?type=register&id={verifyEmail.Id}\">点击链接</a> " + 
-                                      $"以验证您的账户 {RegisterModel.Name}";
-                await new Mail(new MailboxAddress("North", emailSettings.Account), 
-                               new MailboxAddress(RegisterModel.Name, RegisterModel.Email),
-                               "North 图床注册验证",
-                               verifyEmailBody,
-                               emailSettings.Code, 
-                               true).SendAsync();
-                return true;
-            }
-            return false;
+            GlobalValues.MemoryDatabase.VerifyEmails.Add(verifyEmail);
+
+            // 构造验证邮件并发送
+            var verifyEmailBody = $"欢迎注册 North 图床，" +
+                                  $"<a href=\"{_navigationManager.BaseUri}verify?type=register&id={verifyEmail.Id}\">点击链接</a> " +
+                                  $"以验证您的账户 {RegisterModel.Name}";
+            await new Mail(new MailboxAddress("North", emailSettings.Account),
+                           new MailboxAddress(RegisterModel.Name, RegisterModel.Email),
+                           "North 图床注册验证",
+                           verifyEmailBody,
+                           emailSettings.Code,
+                           true).SendAsync();
         }
 
 
@@ -136,7 +141,9 @@ namespace North.Pages.Auth
                 {
                     using var avatarReadStream = avatar.OpenReadStream((long)avatarMaxSize);
                     using var avatarReadStreamRef = new DotNetStreamReference(avatarReadStream);
+
                     RegisterModel.Avatar = await JS.InvokeAsync<string>("upload", avatarReadStreamRef, avatar.ContentType);
+                    RegisterModel.AvatarExtension = avatar.ContentType.Split('/').Last();
                 }
             }
             catch(Exception e)
@@ -154,6 +161,8 @@ namespace North.Pages.Auth
             if (!string.IsNullOrEmpty(RegisterModel.Avatar))
             {
                 RegisterModel.Avatar = string.Empty;
+                RegisterModel.AvatarExtension = string.Empty;
+
                 await DestroyBlob(RegisterModel.Avatar);
             }
         }
@@ -169,9 +178,17 @@ namespace North.Pages.Auth
         /// <returns></returns>
         private async ValueTask DownloadBlob(string url, string path, long maxAllowedSize = 512000)
         {
-            var blobReadStreamRef = await JS.InvokeAsync<IJSStreamReference>("getBlobStream", url);
-            using var dataReferenceStream = await blobReadStreamRef.OpenReadStreamAsync(maxAllowedSize);
-            await dataReferenceStream.CopyToAsync(File.OpenWrite(path));
+            // 获取 Blob 文件流
+            using var dataReferenceStream = await GetBlobStream(url, maxAllowedSize);
+
+            // 创建文件夹
+            var rootDirectory = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(rootDirectory))
+            {
+                Directory.CreateDirectory(rootDirectory);
+            }
+            using var avatarWriteStream = File.OpenWrite(path);
+            await dataReferenceStream.CopyToAsync(avatarWriteStream);
         }
 
 
