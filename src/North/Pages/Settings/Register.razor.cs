@@ -58,6 +58,10 @@ namespace North.Pages.Settings
         }
 
 
+        /// <summary>
+        /// 还原设置
+        /// </summary>
+        /// <returns></returns>
         public async Task CancelSaveSettings()
         {
             try

@@ -1,4 +1,6 @@
-﻿<MudToolBar Style="@Style">
+﻿@inject NavigationManager _navigationManager
+
+<MudToolBar Style="@Style">
         <MudTooltip Text="@ExpandTooltip" Placement="Placement.Right">
             <MudIconButton Icon="@Icons.Material.Outlined.Menu" OnClick="@OnNavMenuStateChanged"/>
         </MudTooltip>
@@ -9,12 +11,12 @@
         <MudTooltip Text="上传">
             <MudIconButton Icon="@Icons.Material.Outlined.FileUpload" />
         </MudTooltip>
-        <MudTooltip Text="账号">
-            <MudIconButton Icon="@Icons.Material.Outlined.ManageAccounts" />
+        <MudTooltip>
+            <ChildContent>
+                <MudIconButton Icon="@Icons.Material.Outlined.ManageAccounts" OnClick="SignOut"/>
+            </ChildContent>
+            <TooltipContent>
+                <MudText>点击退出登录</MudText>
+            </TooltipContent>
         </MudTooltip>
 </MudToolBar>
-
-@code{
-    [Parameter]
-    public string Style { get; set; } = string.Empty;
-}

@@ -60,12 +60,11 @@ namespace North.Pages.Auth
                     {
                         // TODO 此处后期根据 AppSetting 中的设置项确定保存路径
                         var newUser = RegisterModel.ToUser();
+                        var avatarMaxSize = RegisterSettings.MaxAvatarSize * 1024 * 1024;
                         var avatarName = $"{IdentifyHelper.Generate()}.{RegisterModel.AvatarExtension}";
 
                         // 保存用户头像
-                        await DownloadBlob(RegisterModel.Avatar,
-                                           $"Data/Images/{newUser.Id}/{avatarName}",
-                                           (long)RegisterSettings.MaxAvatarSize * 1024 * 1024);
+                        await DownloadBlob(RegisterModel.Avatar, $"Data/Images/{newUser.Id}/{avatarName}", (long)avatarMaxSize);
 
                         // 发送验证邮件
                         await SendRegisterVerifyEmail();
@@ -133,7 +132,7 @@ namespace North.Pages.Auth
             {
                 var avatar = args.GetMultipleFiles()[0];
                 var avatarMaxSize = RegisterSettings.MaxAvatarSize * 1024 * 1024;
-                if ((ulong)avatar.Size > avatarMaxSize)
+                if (avatar.Size > avatarMaxSize)
                 {
                     _snackbar.Add($"头像大小不能超过 {RegisterSettings.MaxAvatarSize} MB", Severity.Error);
                 }

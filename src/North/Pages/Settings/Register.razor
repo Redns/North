@@ -7,120 +7,124 @@
 @inject IHttpContextAccessor _accessor
 @inject NavigationManager _navigationManager
 
+<AuthorizeView Roles="User,Administrator">
+    <MudStack Spacing="10" Row AlignItems="AlignItems.Center" Class="message_warn">
+        <MudImage Src="icons/warn.svg" Width="180" Elevation="0" Class="rounded-lg ma-4" />
+        <MudLink Href="/" Color="Color.Warning" Style="font-weight:bold; font-size:34px;">您的权限不足，无法访问</MudLink>
+    </MudStack>
+</AuthorizeView>
 <AuthorizeView Roles="System">
-    <Authorized>
-        @if(!PageLoading)
-        {
-            <MudStack Spacing="6" Style="margin-left:37px; margin-top:20px;" id="page">
-                <!-- 是否开放注册 -->
-                <MudStack Spacing="2">
-                    <MudTooltip Text="开启后可通过邮箱注册账户" Placement="Placement.Right">
-                        <p class="menu_text">开放注册</p>
-                    </MudTooltip>
-                    <MudSwitch @bind-Checked="@AppSetting.Register.AllowRegister" 
+    @if (!PageLoading)
+    {
+        <MudStack Spacing="6" Style="margin-left:37px; margin-top:20px;" id="page">
+                    <!-- 是否开放注册 -->
+                    <MudStack Spacing="2">
+                        <MudTooltip Text="开启后可通过邮箱注册账户" Placement="Placement.Right">
+                            <p class="menu_text">开放注册</p>
+                         </MudTooltip>
+                        <MudSwitch @bind-Checked="@AppSetting.Register.AllowRegister" 
                                Color="Color.Tertiary" style="width:fit-content;"/>
-                </MudStack>
-                <!-- 用户注册头像尺寸限制 -->
-                <MudStack Spacing="2">
-                    <MudTooltip Text="允许上传的最大头像尺寸" Placement="Placement.Right">
-                        <p class="menu_text">头像最大尺寸</p>
-                    </MudTooltip>
-                    <MudNumericField @bind-Value="@AppSetting.Register.MaxAvatarSize" Min="0"
+                    </MudStack>
+                    <!-- 用户注册头像尺寸限制 -->
+                    <MudStack Spacing="2">
+                        <MudTooltip Text="允许上传的最大头像尺寸" Placement="Placement.Right">
+                            <p class="menu_text">头像最大尺寸</p>
+                        </MudTooltip>
+                        <MudNumericField @bind-Value="@AppSetting.Register.MaxAvatarSize" Min="0"
                                      HideSpinButtons Margin="Margin.Dense" Adornment="Adornment.End" AdornmentText="MB" 
                                      Variant="Variant.Outlined" Style="width:90%; max-width:100px; height:35px;" />
-                </MudStack>
-                <!-- 验证邮件有效期 -->
-                <MudStack Spacing="2">
-                    <MudTooltip Text="注册后必须在有效期内通过邮件验证账户" Placement="Placement.Right">
-                        <p class="menu_text">验证邮件有效期</p>
-                    </MudTooltip>
-                    <MudNumericField @bind-Value="@AppSetting.Register.VerifyEmailValidTime" Min="0"
+                    </MudStack>
+                        <!-- 验证邮件有效期 -->
+                         <MudStack Spacing="2">
+                            <MudTooltip Text="注册后必须在有效期内通过邮件验证账户" Placement="Placement.Right">
+                            <p class="menu_text">验证邮件有效期</p>
+                        </MudTooltip>
+                        <MudNumericField @bind-Value="@AppSetting.Register.VerifyEmailValidTime" Min="0"
                                      HideSpinButtons Adornment="Adornment.End" AdornmentText="ms" Variant="Variant.Outlined"
                                      Margin="Margin.Dense"  Style="width:90%; max-width:140px; height:35px;" />
-                </MudStack>
-                <!-- 默认授予用户的权限 -->
-                <MudStack Spacing="2">
-                    <MudTooltip Text="默认授予的权限" Placement="Placement.Right">
-                        <p class="menu_text">用户权限</p>
-                    </MudTooltip>
-                    <MudSelect @bind-Value="@AppSetting.Register.Default.Permission" Immediate
+                    </MudStack>
+                    <!-- 默认授予用户的权限 -->
+                    <MudStack Spacing="2">
+                        <MudTooltip Text="默认授予的权限" Placement="Placement.Right">
+                            <p class="menu_text">用户权限</p>
+                        </MudTooltip>
+                        <MudSelect @bind-Value="@AppSetting.Register.Default.Permission" Immediate
                                Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter"
                                Style="width:90%; max-width:140px; max-height:35px;">
-                        <MudSelectItem Value="Permission.User" Style="height:35px;">
-                            <MudStack Row AlignItems="AlignItems.Center">
-                                <MudIcon Icon="@Icons.Outlined.PersonOutline" />用 户
-                            </MudStack>
-                        </MudSelectItem>
-                        <MudSelectItem Value="Permission.Administrator" Style="height:35px;">
-                            <MudStack Row AlignItems="AlignItems.Center">
-                                <MudIcon Icon="@Icons.Outlined.AdminPanelSettings" />管理员
-                            </MudStack>
-                        </MudSelectItem>
-                    </MudSelect>
-                </MudStack>
-                <!-- 默认是否允许用户调用 API -->
-                <MudStack Spacing="2">
-                    <MudTooltip Text="默认是否允许调用API" Placement="Placement.Right">
-                        <p class="menu_text">API调用</p>
-                    </MudTooltip>
-                    <MudSwitch @bind-Checked="@AppSetting.Register.Default.IsApiAvailable"
+                            <MudSelectItem Value="Permission.User" Style="height:35px;">
+                                <MudStack Row AlignItems="AlignItems.Center">
+                                    <MudIcon Icon="@Icons.Outlined.PersonOutline" />用 户
+                                </MudStack>
+                            </MudSelectItem>
+                            <MudSelectItem Value="Permission.Administrator" Style="height:35px;">
+                                <MudStack Row AlignItems="AlignItems.Center">
+                                    <MudIcon Icon="@Icons.Outlined.AdminPanelSettings" />管理员
+                                </MudStack>
+                            </MudSelectItem>
+                        </MudSelect>
+                    </MudStack>
+                    <!-- 默认是否允许用户调用 API -->
+                    <MudStack Spacing="2">
+                        <MudTooltip Text="默认是否允许调用API" Placement="Placement.Right">
+                            <p class="menu_text">API调用</p>
+                        </MudTooltip>
+                        <MudSwitch @bind-Checked="@AppSetting.Register.Default.IsApiAvailable"
                                Color="Color.Tertiary" />
-                </MudStack>
-                <!-- 默认允许上传的图片数量/容量 -->
-                <MudStack Spacing="2" Style="width:100%; max-width:240px;">
-                    <p class="menu_text">最大上传数量/容量</p>
-                    <MudStack Row Spacing="3">
-                        <MudNumericField @bind-Value="@AppSetting.Register.Default.MaxUploadNums" Min="0"
+                    </MudStack>
+                    <!-- 默认允许上传的图片数量/容量 -->
+                    <MudStack Spacing="2" Style="width:100%; max-width:240px;">
+                        <p class="menu_text">最大上传数量/容量</p>
+                        <MudStack Row Spacing="3">
+                            <MudNumericField @bind-Value="@AppSetting.Register.Default.MaxUploadNums" Min="0"
                                          HideSpinButtons Adornment="Adornment.End" AdornmentText="张" Variant="Variant.Outlined"
                                          Margin="Margin.Dense" Style="height:35px;" />
-                        <MudNumericField @bind-Value="@AppSetting.Register.Default.MaxUploadCapacity" Min="0"
+                            <MudNumericField @bind-Value="@AppSetting.Register.Default.MaxUploadCapacity" Min="0"
                                          HideSpinButtons Adornment="Adornment.End" AdornmentText="MB" Variant="Variant.Outlined"
                                          Margin="Margin.Dense" Style="height:35px;" />
+                        </MudStack>
                     </MudStack>
-                </MudStack>
-                <!-- 默认允许上传的图片数量/容量（单次）-->
-                <MudStack Spacing="2" Style="width:100%; max-width:240px;">
-                    <p class="menu_text">最大上传数量/容量（单次）</p>
-                    <MudStack Row Spacing="3">
-                        <MudNumericField @bind-Value="@AppSetting.Register.Default.SingleMaxUploadNums" 
+                    <!-- 默认允许上传的图片数量/容量（单次）-->
+                    <MudStack Spacing="2" Style="width:100%; max-width:240px;">
+                        <p class="menu_text">最大上传数量/容量（单次）</p>
+                        <MudStack Row Spacing="3">
+                            <MudNumericField @bind-Value="@AppSetting.Register.Default.SingleMaxUploadNums" 
                                          Min="0" Max="@AppSetting.Register.Default.MaxUploadNums"
                                          HideSpinButtons Adornment="Adornment.End" AdornmentText="张" Variant="Variant.Outlined"
                                          Margin="Margin.Dense" Style="height:35px;" />
-                        <MudNumericField @bind-Value="@AppSetting.Register.Default.SingleMaxUploadCapacity" 
+                            <MudNumericField @bind-Value="@AppSetting.Register.Default.SingleMaxUploadCapacity" 
                                          Min="0" Max="@AppSetting.Register.Default.MaxUploadCapacity"
                                          HideSpinButtons Adornment="Adornment.End" AdornmentText="MB" Variant="Variant.Outlined"
                                          Margin="Margin.Dense" Style="height:35px;" />
+                        </MudStack>
                     </MudStack>
-                </MudStack>
-                <!-- 保存/取消设置 -->
-                <MudStack Row Style="width:100%;">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                    <!-- 保存/取消设置 -->
+                    <MudStack Row Style="width:100%;">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" 
                                OnClick="SaveSettings" Disabled="@SaveRunning"
                                Style="width:100px;">
-                        @if (SaveRunning)
-                        {
-                            <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate/>
-                        }
-                        <MudText>保 存</MudText>
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled" Color="Color.Error" 
+                    @if (SaveRunning)
+                    {
+                                    <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate/>
+                    }
+                            <MudText>保 存</MudText>
+                        </MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Error" 
                                OnClick="CancelSaveSettings" Disabled="@CencelSaveRunning"
                                Style="width:100px;">
-                        @if (CencelSaveRunning)
-                        {
-                            <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate/>
-                        }
-                        <MudText>取 消</MudText>
-                    </MudButton>
+                    @if (CencelSaveRunning)
+                    {
+                                    <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate/>
+                    }
+                            <MudText>取 消</MudText>
+                        </MudButton>
+                    </MudStack>
                 </MudStack>
-            </MudStack>
-        }
-        else
-        {
-            <MudProgressCircular Color="Color.Info" Size="Size.Medium" Indeterminate
-                                 Style="left:0; right:0; top:0; bottom:0; position:absolute; margin:auto;"/>
-        }
-    </Authorized>
+    }
+    else
+    {
+        <MudProgressCircular Color="Color.Info" Size="Size.Medium" Indeterminate
+                                Style="left:0; right:0; top:0; bottom:0; position:absolute; margin:auto;"/>
+    }
 </AuthorizeView>
 
 <style>
@@ -129,16 +133,27 @@
     }
 
     html, body {
-        height: 100%;
+        height: calc(100% - 20px);
     }
 
     #page {
         overflow: scroll;
         overflow-x: hidden;
-        height: 85%;
+        height: 100%;
     }
 
     #page::-webkit-scrollbar {
         display:none;
+    }
+
+    .message_warn {
+        width:fit-content;
+        height:fit-content;
+        left: 0;
+        top: 0;
+        bottom: 100px;
+        right: 0;
+        position: absolute;
+        margin: auto;
     }
 </style>
