@@ -1,17 +1,21 @@
-﻿<div id="font_title" style=@Style>
-    <font color=#7BC27A>N</font><font color=#5DB88E>o</font><font color=#3FAEA2>r</font><font color=#21A4B6>t</font><font color=#039ACA>h</font>
-</div>
+﻿<font id="font_title" style=@Style>
+    @Text
+</font>
 
 <style>
     #font_title {
-        color:white; 
-        font-weight:400;
-        font-family:sans-serif;
-        background-color:rgb(75,85,99);
+        font-weight: 400;
+        font-family: sans-serif;
+        background: linear-gradient(to right, rgb(123, 194, 122) 0%, rgba(63, 174, 162) 50%, rgb(3, 154, 202) 80%);
+        -webkit-background-clip: text;
+        color: transparent;
     }
 </style>
 
 @code{
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
     [Parameter]
     public string Style { get; set; } = string.Empty;
 }

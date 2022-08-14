@@ -65,7 +65,18 @@ namespace North.Common
 
     public class GeneralSetting
     {
+        /// <summary>
+        /// 图床名称
+        /// </summary>
+        public string Name { get; set; }
 
+        public string Footer { get; set; }
+
+        public GeneralSetting(string name, string footer)
+        {
+            Name = name;
+            Footer = footer;
+        }
     }
 
 

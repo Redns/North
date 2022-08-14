@@ -1,5 +1,5 @@
-﻿<MudStack Justify="Justify.SpaceBetween" Style="@Style">
-    <AuthorizeView Roles="User">
+﻿@*<AuthorizeView Roles="User">
+    <MudDrawer @bind-Open="@IsExpanded" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini">
         <MudNavMenu Rounded Margin="Margin.Normal" Color="Color.Tertiary" Class="pa-2" id="nav">
             <MudNavLink Href="/upload" Icon="@Icons.Outlined.Upload">上 传</MudNavLink>
             <MudNavLink Href="/dashboard" Icon="@Icons.Outlined.Speed">仪表盘</MudNavLink>
@@ -11,8 +11,10 @@
                 <MudNavLink Href="/settings/about" Icon="@Icons.Outlined.Info">关 于</MudNavLink>
             </MudNavGroup>
         </MudNavMenu>
-    </AuthorizeView>
-    <AuthorizeView Roles="Administrator">
+    </MudDrawer>
+</AuthorizeView>
+<AuthorizeView Roles="Administrator">
+    <MudDrawer @bind-Open="@IsExpanded" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover>
         <MudNavMenu Rounded Margin="Margin.Normal" Color="Color.Tertiary" Class="pa-2" id="nav">
             <MudNavLink Href="/upload" Icon="@Icons.Outlined.Upload">上 传</MudNavLink>
             <MudNavLink Href="/dashboard" Icon="@Icons.Outlined.Speed">仪表盘</MudNavLink>
@@ -25,8 +27,10 @@
                 <MudNavLink Href="/settings/about" Icon="@Icons.Outlined.Info">关 于</MudNavLink>
             </MudNavGroup>
         </MudNavMenu>
-    </AuthorizeView>
-    <AuthorizeView Roles="System">
+    </MudDrawer>
+</AuthorizeView>*@
+@*<AuthorizeView Roles="System">*@
+    <MudDrawer @bind-Open="@IsExpanded" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover>
         <MudNavMenu Rounded Margin="Margin.Normal" Color="Color.Tertiary" Class="pa-2" id="nav">
             <MudNavLink Href="/upload" Icon="@Icons.Outlined.Upload">上 传</MudNavLink>
             <MudNavLink Href="/dashboard" Icon="@Icons.Outlined.Speed">仪表盘</MudNavLink>
@@ -43,5 +47,5 @@
                 <MudNavLink Href="/settings/about" Icon="@Icons.Outlined.Info">关 于</MudNavLink>
             </MudNavGroup>
         </MudNavMenu>
-    </AuthorizeView>
-</MudStack>
+    </MudDrawer>
+@*</AuthorizeView>*@

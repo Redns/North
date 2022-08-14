@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\Images\" />
     <Folder Include="Data\Logs\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>

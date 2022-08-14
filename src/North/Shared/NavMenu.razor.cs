@@ -6,5 +6,8 @@ namespace North.Shared
     {
         [Parameter]
         public string Style { get; set; } = string.Empty;
+
+        [Parameter]
+        public bool IsExpanded { get; set; } = false;
     }
 }

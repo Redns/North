@@ -1,22 +1,24 @@
-﻿@inject NavigationManager _navigationManager
+﻿@using North.Common
+@inject NavigationManager _navigationManager
 
 <MudToolBar Style="@Style">
-        <MudTooltip Text="@ExpandTooltip" Placement="Placement.Right">
-            <MudIconButton Icon="@Icons.Material.Outlined.Menu" OnClick="@OnNavMenuStateChanged"/>
-        </MudTooltip>
-        <MudSpacer />
-        <MudTooltip Text="通知">
-            <MudIconButton Icon="@Icons.Material.Outlined.Notifications" />
-        </MudTooltip>
-        <MudTooltip Text="上传">
-            <MudIconButton Icon="@Icons.Material.Outlined.FileUpload" />
-        </MudTooltip>
-        <MudTooltip>
-            <ChildContent>
-                <MudIconButton Icon="@Icons.Material.Outlined.ManageAccounts" OnClick="SignOut"/>
-            </ChildContent>
-            <TooltipContent>
-                <MudText>点击退出登录</MudText>
-            </TooltipContent>
-        </MudTooltip>
+    <MudTooltip Text="@ExpandTooltip" Placement="Placement.Right">
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" OnClick="@OnNavMenuStateChanged" Style="margin-left:-11px;" />
+    </MudTooltip>
+    <Title Text="@GlobalValues.AppSettings.General.Name" Style="margin-left:10px; font-size:20px;" />
+    <MudSpacer />
+    <MudTooltip Text="通知">
+        <MudIconButton Icon="@Icons.Material.Outlined.Notifications" />
+    </MudTooltip>
+    <MudTooltip Text="上传">
+        <MudIconButton Icon="@Icons.Material.Outlined.FileUpload" />
+    </MudTooltip>
+    <MudTooltip>
+        <ChildContent>
+            <MudIconButton Icon="@Icons.Material.Outlined.ManageAccounts" OnClick="SignOut" />
+        </ChildContent>
+        <TooltipContent>
+            <MudText>点击退出登录</MudText>
+        </TooltipContent>
+    </MudTooltip>
 </MudToolBar>

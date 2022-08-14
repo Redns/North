@@ -9,28 +9,32 @@
 
 <PageTitle>North</PageTitle>
 
-<MudStack Row Spacing="0" Style="width:100%; height:100%;">
+<MudStack Spacing="0" id="action_bar">
+    <ActionBar  />
+    <MudDivider />
+</MudStack>
+<MudStack Row id="container">
     <AuthorizeView>
         <Authorized>
-            @if (IsExpanded)
-            {
-                <MudStack Spacing="0" Style="width:250px; height:100%;">
-                    <Title Style="width:100%; height:50px; font-size:26px; text-align:center; line-height:50px;"/>
-                    <NavMenu Style="width:100%; height:100%;"/>
-                </MudStack>
-            }
-            <MudStack Spacing="0" Style="width:100%; height:100%;">
-                <ActionBar OnNavMenuStateChanged="@OnNavMenuStateChanged" IsExpanded="@IsExpanded" Style="width:100%; height:50px;"/>
-                <MudDivider Style="width:100%;"/>
-                @Body
-            </MudStack>
+            <NavMenu Style="width:250px;" />
         </Authorized>
-        <NotAuthorized>
-            @Body
-        </NotAuthorized>
     </AuthorizeView>
+    <MudStack class="d-flex mud-height-full mud-width-full">
+        @Body
+        <Footer Content="@GlobalValues.AppSettings.General.Footer" Style="width:100%;" />
+    </MudStack>
 </MudStack>
 
-<MudBlazor.MudThemeProvider/>
-<MudBlazor.MudDialogProvider/>
-<MudBlazor.MudSnackbarProvider/>
+<style>
+    #action_bar {
+        height:50px;
+    }
+
+    #container {
+        width:100%;
+        position:absolute;
+        top:50px;
+        left:0;
+        bottom:0;
+    }
+</style>
