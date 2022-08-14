@@ -29,9 +29,9 @@
         </MudNavMenu>
     </MudDrawer>
 </AuthorizeView>*@
-@*<AuthorizeView Roles="System">*@
-    <MudDrawer @bind-Open="@IsExpanded" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover>
-        <MudNavMenu Rounded Margin="Margin.Normal" Color="Color.Tertiary" Class="pa-2" id="nav">
+<AuthorizeView Roles="System">
+    <MudDrawer @bind-Open="@IsExpanded" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover Style="overflow:hidden;">
+        <MudNavMenu Rounded Margin="Margin.Normal" Color="Color.Tertiary" Style="@Style">
             <MudNavLink Href="/upload" Icon="@Icons.Outlined.Upload">上 传</MudNavLink>
             <MudNavLink Href="/dashboard" Icon="@Icons.Outlined.Speed">仪表盘</MudNavLink>
             <MudNavLink Href="/images" Icon="@Icons.Outlined.BrokenImage">图 库</MudNavLink>
@@ -48,4 +48,4 @@
             </MudNavGroup>
         </MudNavMenu>
     </MudDrawer>
-@*</AuthorizeView>*@
+</AuthorizeView>

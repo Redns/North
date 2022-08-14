@@ -10,13 +10,13 @@
 <PageTitle>North</PageTitle>
 
 <MudStack Spacing="0" id="action_bar">
-    <ActionBar  />
+    <ActionBar IsExpanded="@IsExpanded" OnNavMenuStateChanged="@OnNavMenuStateChanged" />
     <MudDivider />
 </MudStack>
 <MudStack Row id="container">
     <AuthorizeView>
         <Authorized>
-            <NavMenu Style="width:250px;" />
+            <NavMenu IsExpanded="@IsExpanded" Style="width:240px;" />
         </Authorized>
     </AuthorizeView>
     <MudStack class="d-flex mud-height-full mud-width-full">
