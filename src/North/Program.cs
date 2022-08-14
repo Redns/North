@@ -111,21 +111,11 @@ class Program
         // KLogger 基于 FileStream 实现，不受影响 
         using var logger = new KLogger(GlobalValues.AppSettings.Log);
 
-        using var context = new OurDbContext(GlobalValues.AppSettings.Storage.DataBase.ConnStr);
-
+        // 同步本地数据库
         logger.Info("Database syncing...");
-
-        // 更新用户信息
-        var sqlUserData = new SqlUserData(context);
-        sqlUserData.RemoveRange(sqlUserData.Get());
-        sqlUserData.AddRange(GlobalValues.MemoryDatabase.Users);
-
-        // 更新邮件信息
-        var sqlVerifyEmailData = new SqlVerifyEmailData(context);
-        sqlVerifyEmailData.RemoveRange(sqlVerifyEmailData.Get());
-        sqlVerifyEmailData.AddRange(GlobalValues.MemoryDatabase.VerifyEmails);
-
+        GlobalValues.MemoryDatabase.SyncDatabase(GlobalValues.AppSettings.Storage.DataBase.ConnStr);
         logger.Info("Database sync success");
+
         logger.Info("Application exit");
     }
 }

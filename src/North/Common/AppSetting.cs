@@ -82,11 +82,20 @@ namespace North.Common
 
     public class DataBaseSetting
     {
+        /// <summary>
+        /// 数据库连接字符串
+        /// </summary>
         public string ConnStr { get; set; }
 
-        public DataBaseSetting(string connStr)
+        /// <summary>
+        /// 数据库同步时间间隔（单位：s）
+        /// </summary>
+        public ulong SyncTimeInterval { get; set; }
+
+        public DataBaseSetting(string connStr, ulong syncTimeInterval)
         {
             ConnStr = connStr;
+            SyncTimeInterval = syncTimeInterval;
         }
     }
 

@@ -1,7 +1,5 @@
 ﻿using North.Core.Data.Access;
 using North.Models.Auth;
-using North.Services.Logger;
-using ILogger = North.Services.Logger.ILogger;
 
 namespace North.Common
 {
@@ -31,13 +29,7 @@ namespace North.Common
         {
             get
             {
-                if(_memoryDatabase is null)
-                {
-                    using var context = new OurDbContext(AppSettings.Storage.DataBase.ConnStr);
-                    _memoryDatabase = new MemoryDatabase(new SqlUserData(context).Get().ToList(),
-                                                        new SqlVerifyEmailData(context).Get().ToList());
-                }
-                return _memoryDatabase;
+                return _memoryDatabase ??= new MemoryDatabase(AppSettings.Storage.DataBase.ConnStr, AppSettings.Storage.DataBase.SyncTimeInterval);
             }
             set { _memoryDatabase = value; }
         }
