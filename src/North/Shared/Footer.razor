@@ -1,7 +1,9 @@
-﻿@using Microsoft.AspNetCore.Html
-<div id="footer" style="@Style">
-    @(new HtmlString(@Content))
-</div>
+﻿@if(!string.IsNullOrEmpty(Content))
+{
+    <div id="footer" style="@Style">
+        @FooterContent
+    </div>
+}
 
 <style>
     #footer {
@@ -17,3 +19,7 @@
         text-align:center;
     }
 </style>
+
+@code {
+    RenderFragment FooterContent => (builder) => builder.AddMarkupContent(0, Content);
+}
