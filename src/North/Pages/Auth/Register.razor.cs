@@ -106,7 +106,7 @@ namespace North.Pages.Auth
 
             // 添加验证邮件至数据库
             var verifyEmail = new VerifyEmailEntity(IdentifyHelper.Generate(), RegisterModel.Email,
-                                                    IdentifyHelper.TimeStamp + emailSettings.ValidTime,
+                                                    IdentifyHelper.TimeStamp + RegisterSettings.VerifyEmailValidTime,
                                                     VerifyType.Register);
             GlobalValues.MemoryDatabase.VerifyEmails.Add(verifyEmail);
 

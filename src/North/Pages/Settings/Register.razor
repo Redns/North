@@ -1,4 +1,5 @@
 ﻿@page "/settings/register"
+
 @using North.Core.Data.Entities
 
 @inject ILogger _logger
@@ -10,7 +11,7 @@
     <Authorized>
         @if(!PageLoading)
         {
-            <MudStack Spacing="6" Style="margin-left:37px; margin-top:20px;">
+            <MudStack Spacing="6" Style="margin-left:37px; margin-top:20px;" id="page">
                 <!-- 是否开放注册 -->
                 <MudStack Spacing="2">
                     <MudTooltip Text="开启后可通过邮箱注册账户" Placement="Placement.Right">
@@ -24,10 +25,18 @@
                     <MudTooltip Text="允许上传的最大头像尺寸" Placement="Placement.Right">
                         <p class="menu_text">头像最大尺寸</p>
                     </MudTooltip>
-                    <MudTextField @bind-Value="@AppSetting.Register.MaxAvatarSize" Immediate
-                                  Variant="Variant.Outlined" Margin="Margin.Dense"
-                                  Adornment="Adornment.End" AdornmentText="MB" 
-                                  Style="width:90%; max-width:90px; height:35px;" />
+                    <MudNumericField @bind-Value="@AppSetting.Register.MaxAvatarSize" Min="0"
+                                     HideSpinButtons Margin="Margin.Dense" Adornment="Adornment.End" AdornmentText="MB" 
+                                     Variant="Variant.Outlined" Style="width:90%; max-width:100px; height:35px;" />
+                </MudStack>
+                <!-- 验证邮件有效期 -->
+                <MudStack Spacing="2">
+                    <MudTooltip Text="注册后必须在有效期内通过邮件验证账户" Placement="Placement.Right">
+                        <p class="menu_text">验证邮件有效期</p>
+                    </MudTooltip>
+                    <MudNumericField @bind-Value="@AppSetting.Register.VerifyEmailValidTime" Min="0"
+                                     HideSpinButtons Adornment="Adornment.End" AdornmentText="ms" Variant="Variant.Outlined"
+                                     Margin="Margin.Dense"  Style="width:90%; max-width:140px; height:35px;" />
                 </MudStack>
                 <!-- 默认授予用户的权限 -->
                 <MudStack Spacing="2">
@@ -36,7 +45,7 @@
                     </MudTooltip>
                     <MudSelect @bind-Value="@AppSetting.Register.Default.Permission" Immediate
                                Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter"
-                               Style="width:90%; max-width:140px; height:35px;">
+                               Style="width:90%; max-width:140px; max-height:35px;">
                         <MudSelectItem Value="Permission.User" Style="height:35px;">
                             <MudStack Row AlignItems="AlignItems.Center">
                                 <MudIcon Icon="@Icons.Outlined.PersonOutline" />用 户
@@ -51,38 +60,36 @@
                 </MudStack>
                 <!-- 默认是否允许用户调用 API -->
                 <MudStack Spacing="2">
-                    <MudTooltip Text="开启后用户可通过接口执行操作" Placement="Placement.Right">
-                        <p class="menu_text">允许调用API</p>
+                    <MudTooltip Text="默认是否允许调用API" Placement="Placement.Right">
+                        <p class="menu_text">API调用</p>
                     </MudTooltip>
-                    <MudSwitch @bind-Checked="@AppSetting.Register.Default.IsApiAvailable" 
+                    <MudSwitch @bind-Checked="@AppSetting.Register.Default.IsApiAvailable"
                                Color="Color.Tertiary" />
                 </MudStack>
                 <!-- 默认允许上传的图片数量/容量 -->
                 <MudStack Spacing="2" Style="width:100%; max-width:240px;">
                     <p class="menu_text">最大上传数量/容量</p>
-                    <MudStack Row Spacing="3"> 
-                        <MudTextField @bind-Value="@AppSetting.Register.Default.MaxUploadNums" 
-                                      Variant="Variant.Outlined" Margin="Margin.Dense"
-                                      Adornment="Adornment.End" AdornmentText="张" 
-                                      Style="height:35px;"/>
-                        <MudTextField @bind-Value="@AppSetting.Register.Default.MaxUploadCapacity" 
-                                    Variant="Variant.Outlined" Margin="Margin.Dense"
-                                    Adornment="Adornment.End" AdornmentText="MB"
-                                    Style="height:35px;"/>
+                    <MudStack Row Spacing="3">
+                        <MudNumericField @bind-Value="@AppSetting.Register.Default.MaxUploadNums" Min="0"
+                                         HideSpinButtons Adornment="Adornment.End" AdornmentText="张" Variant="Variant.Outlined"
+                                         Margin="Margin.Dense" Style="height:35px;" />
+                        <MudNumericField @bind-Value="@AppSetting.Register.Default.MaxUploadCapacity" Min="0"
+                                         HideSpinButtons Adornment="Adornment.End" AdornmentText="MB" Variant="Variant.Outlined"
+                                         Margin="Margin.Dense" Style="height:35px;" />
                     </MudStack>
                 </MudStack>
                 <!-- 默认允许上传的图片数量/容量（单次）-->
                 <MudStack Spacing="2" Style="width:100%; max-width:240px;">
                     <p class="menu_text">最大上传数量/容量（单次）</p>
                     <MudStack Row Spacing="3">
-                        <MudTextField @bind-Value="@AppSetting.Register.Default.SingleMaxUploadNums" 
-                                      Variant="Variant.Outlined" Margin="Margin.Dense"
-                                      Adornment="Adornment.End" AdornmentText="张" 
-                                      Style="height:35px;"/>
-                        <MudTextField @bind-Value="@AppSetting.Register.Default.SingleMaxUploadCapacity" 
-                                      Variant="Variant.Outlined" Margin="Margin.Dense"
-                                      Adornment="Adornment.End" AdornmentText="MB" 
-                                      Style="height:35px;"/>
+                        <MudNumericField @bind-Value="@AppSetting.Register.Default.SingleMaxUploadNums" 
+                                         Min="0" Max="@AppSetting.Register.Default.MaxUploadNums"
+                                         HideSpinButtons Adornment="Adornment.End" AdornmentText="张" Variant="Variant.Outlined"
+                                         Margin="Margin.Dense" Style="height:35px;" />
+                        <MudNumericField @bind-Value="@AppSetting.Register.Default.SingleMaxUploadCapacity" 
+                                         Min="0" Max="@AppSetting.Register.Default.MaxUploadCapacity"
+                                         HideSpinButtons Adornment="Adornment.End" AdornmentText="MB" Variant="Variant.Outlined"
+                                         Margin="Margin.Dense" Style="height:35px;" />
                     </MudStack>
                 </MudStack>
                 <!-- 保存/取消设置 -->
@@ -119,5 +126,19 @@
 <style>
     .menu_text {
         font-weight:bold;
+    }
+
+    html, body {
+        height: 100%;
+    }
+
+    #page {
+        overflow: scroll;
+        overflow-x: hidden;
+        height: 85%;
+    }
+
+    #page::-webkit-scrollbar {
+        display:none;
     }
 </style>

@@ -14,7 +14,7 @@ namespace North.Common
         /// <summary>
         /// 数据库同步间隔（单位：秒）
         /// </summary>
-        public ulong SyncTimeInterval { get; set; }
+        public long SyncTimeInterval { get; set; }
 
         /// <summary>
         /// 数据库同步定时器
@@ -23,7 +23,7 @@ namespace North.Common
         public List<UserEntity> Users { get; set; }
         public List<VerifyEmailEntity> VerifyEmails { get; set; }
 
-        public MemoryDatabase(string connStr, ulong syncTimeInterval)
+        public MemoryDatabase(string connStr, long syncTimeInterval)
         {
             ConnStr = connStr;
 
@@ -42,7 +42,7 @@ namespace North.Common
             SyncTimer.Enabled = true;
         }
 
-        public MemoryDatabase(string connStr, ulong syncTimeInterval, List<UserEntity> users, List<VerifyEmailEntity> verifyEmails)
+        public MemoryDatabase(string connStr, long syncTimeInterval, List<UserEntity> users, List<VerifyEmailEntity> verifyEmails)
         {
             ConnStr = connStr;
             Users = users;

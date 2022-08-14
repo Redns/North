@@ -35,6 +35,7 @@ namespace North.Pages.Settings
             try
             {
                 SaveRunning = true;
+
                 await Task.Delay(500);
 
                 AppSetting.Save();

@@ -90,9 +90,9 @@ namespace North.Common
         /// <summary>
         /// 数据库同步时间间隔（单位：s）
         /// </summary>
-        public ulong SyncTimeInterval { get; set; }
+        public long SyncTimeInterval { get; set; }
 
-        public DataBaseSetting(string connStr, ulong syncTimeInterval)
+        public DataBaseSetting(string connStr, long syncTimeInterval)
         {
             ConnStr = connStr;
             SyncTimeInterval = syncTimeInterval;
@@ -102,14 +102,31 @@ namespace North.Common
 
     public class RegisterSetting
     {
-        public bool AllowRegister { get; set; } = true;         // 是否允许注册
-        public ulong MaxAvatarSize { get; set; }                // 头像最大尺寸（MB）
-        public RegisterSettingDefault Default { get; set; }     // 默认注册设置
+        /// <summary>
+        /// 是否允许注册
+        /// </summary>
+        public bool AllowRegister { get; set; } = true;
 
-        public RegisterSetting(bool allowRegister, ulong maxAvatarSize, RegisterSettingDefault @default)
+        /// <summary>
+        /// 头像最大尺寸（MB）
+        /// </summary>
+        public double MaxAvatarSize { get; set; }       
+        
+        /// <summary>
+        /// 验证邮件有效期（ms）
+        /// </summary>
+        public long VerifyEmailValidTime { get; set; }
+
+        /// <summary>
+        /// 默认注册设置
+        /// </summary>
+        public RegisterSettingDefault Default { get; set; }
+
+        public RegisterSetting(bool allowRegister, double maxAvatarSize, long verifyEmailValidTime, RegisterSettingDefault @default)
         {
             AllowRegister = allowRegister;
             MaxAvatarSize = maxAvatarSize;
+            VerifyEmailValidTime = verifyEmailValidTime;
             Default = @default;
         }
     }
@@ -122,12 +139,12 @@ namespace North.Common
     {
         public Permission Permission { get; set; }          // 用户权限
         public bool IsApiAvailable { get; set; }            // 是否启用 API
-        public ulong MaxUploadNums { get; set; }            // 最大上传数量（张）
-        public ulong MaxUploadCapacity { get; set; }        // 最大上传容量（MB）
-        public ulong SingleMaxUploadNums { get; set; }      // 单次最大上传数量（张）
-        public ulong SingleMaxUploadCapacity { get; set; }  // 单次最大上传容量（MB）
+        public long MaxUploadNums { get; set; }            // 最大上传数量（张）
+        public double MaxUploadCapacity { get; set; }        // 最大上传容量（MB）
+        public long SingleMaxUploadNums { get; set; }      // 单次最大上传数量（张）
+        public double SingleMaxUploadCapacity { get; set; }  // 单次最大上传容量（MB）
 
-        public RegisterSettingDefault(Permission permission, bool isApiAvailable, ulong maxUploadNums, ulong maxUploadCapacity, ulong singleMaxUploadNums, ulong singleMaxUploadCapacity)
+        public RegisterSettingDefault(Permission permission, bool isApiAvailable, long maxUploadNums, double maxUploadCapacity, long singleMaxUploadNums, double singleMaxUploadCapacity)
         {
             Permission = permission;
             IsApiAvailable = isApiAvailable;
@@ -152,24 +169,29 @@ namespace North.Common
 
     public class EmailSetting
     {
-        public string Account { get; set; }     // 邮箱账号
-        public string Code { get; set; }        // 授权码
-        public ulong ValidTime { get; set; }    // 有效时间（ms）
+        /// <summary>
+        /// 邮箱账号
+        /// </summary>
+        public string Account { get; set; }
 
-        public EmailSetting(string account, string code, ulong validTime)
+        /// <summary>
+        /// 授权码
+        /// </summary>
+        public string Code { get; set; }
+
+        public EmailSetting(string account, string code)
         {
             Account = account;
             Code = code;
-            ValidTime = validTime;
         }
     }
 
 
     public class ApiSetting
     {
-        public ulong TokenValidTime { get; set; }
+        public long TokenValidTime { get; set; }
 
-        public ApiSetting(ulong tokenValidTime)
+        public ApiSetting(long tokenValidTime)
         {
             TokenValidTime = tokenValidTime;
         }

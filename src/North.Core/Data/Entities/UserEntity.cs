@@ -5,24 +5,82 @@ namespace North.Core.Data.Entities
 {
     public class UserEntity
     {
-        public string Id { get; set; }                          // 用户 ID
-        public string Name { get; set; }                        // 用户名
-        public string Email { get; set; }
-        public string Password { get; set; }                    // 密码
-        public string Avatar { get; set; }                      // 头像
-        public State State { get; set; }                        // 账户状态
-        public string Token { get; set; }                       // 令牌
-        public ulong TokenExpireTime { get; set; }              // 令牌过期时间
-        public Permission Permission { get; set; }              // 用户权限
-        public bool IsApiAvailable { get; set; }                // 能否通过API访问
-        public ulong MaxUploadNums { get; set; }                // 最大上传数量（张）
-        public ulong MaxUploadCapacity { get; set; }            // 最大存储容量（MB）
-        public ulong SingleMaxUploadNums { get; set; }          // 单次最大上传数量（张）
-        public ulong SingleMaxUploadCapacity { get; set; }      // 单次最大上传容量（MB）
-        public string RegisterTime { get; set; }                // 注册时间
-                            = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");                 
+        /// <summary>
+        /// 用户 ID
+        /// </summary>
+        public string Id { get; set; }
 
-        public UserEntity(string id, string name, string email, string password, string avatar, State state, string token, ulong tokenExpireTime, Permission permission, bool isApiAvailable, ulong maxUploadNums, ulong maxUploadCapacity, ulong singleMaxUploadNums, ulong singleMaxUploadCapacity)
+        /// <summary>
+        /// 用户名
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 密码
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
+        /// 加密后的密码
+        /// </summary>
+        public string Password { get; set; }
+
+        /// <summary>
+        /// 头像
+        /// </summary>
+        public string Avatar { get; set; }
+
+        /// <summary>
+        /// 账户状态
+        /// </summary>
+        public State State { get; set; }
+
+        /// <summary>
+        /// 令牌
+        /// </summary>
+        public string Token { get; set; }
+
+        /// <summary>
+        /// 令牌过期时间
+        /// </summary>
+        public long TokenExpireTime { get; set; }
+
+        /// <summary>
+        /// 用户权限
+        /// </summary>
+        public Permission Permission { get; set; }
+
+        /// <summary>
+        /// 能否通过API访问
+        /// </summary>
+        public bool IsApiAvailable { get; set; }
+
+        /// <summary>
+        /// 最大上传数量（张）
+        /// </summary>
+        public long MaxUploadNums { get; set; }
+
+        /// <summary>
+        /// 最大存储容量（MB）
+        /// </summary>
+        public double MaxUploadCapacity { get; set; }
+
+        /// <summary>
+        /// 单次最大上传数量（张）
+        /// </summary>
+        public long SingleMaxUploadNums { get; set; }
+
+        /// <summary>
+        /// 单次最大上传容量（MB）
+        /// </summary>
+        public double SingleMaxUploadCapacity { get; set; }
+
+        /// <summary>
+        /// 注册时间
+        /// </summary>
+        public string RegisterTime { get; set; } = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+        public UserEntity(string id, string name, string email, string password, string avatar, State state, string token, long tokenExpireTime, Permission permission, bool isApiAvailable, long maxUploadNums, double maxUploadCapacity, long singleMaxUploadNums, double singleMaxUploadCapacity)
         {
             Id = id;
             Name = name;
@@ -41,12 +99,14 @@ namespace North.Core.Data.Entities
         }
 
 
+
+
         /// <summary>
         /// 生成令牌
         /// </summary>
         /// <param name="validTime">令牌有效期（ms）</param>
         /// <returns></returns>
-        public bool GenerateToken(ulong validTime = 86400000)
+        public bool GenerateToken(long validTime = 86400000)
         {
             if((State is State.Normal) && IsApiAvailable)
             {
@@ -111,19 +171,62 @@ namespace North.Core.Data.Entities
 
     public class UserDTOEntity
     {
-        public string Id { get; set; }                          // 用户 ID
-        public string Name { get; set; }                        // 用户名
-        public string Email { get; set; }
-        public string Avatar { get; set; }                      // 头像
-        public State State { get; set; }                        // 账户状态
-        public Permission Permission { get; set; }              // 用户权限
-        public bool IsApiAvailable { get; set; }                // 能否通过API访问
-        public ulong MaxUploadNums { get; set; }                 // 最大上传数量（张）
-        public ulong MaxUploadCapacity { get; set; }             // 最大存储容量（MB）
-        public ulong SingleMaxUploadNums { get; set; }           // 单次最大上传数量（张）
-        public ulong SingleMaxUploadCapacity { get; set; }       // 单次最大上传容量（MB）
+        /// <summary>
+        /// 用户 ID
+        /// </summary>
+        public string Id { get; set; }
 
-        public UserDTOEntity(string id, string name, string email, string avatar, State state, Permission permission, bool isApiAvailable, ulong maxUploadNums, ulong maxUploadCapacity, ulong singleMaxUploadNums, ulong singleMaxUploadCapacity)
+        /// <summary>
+        /// 用户名
+        /// </summary>
+        public string Name { get; set; }                
+        
+        /// <summary>
+        /// 用户邮箱
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
+        /// 头像
+        /// </summary>
+        public string Avatar { get; set; }
+
+        /// <summary>
+        /// 账户状态
+        /// </summary>
+        public State State { get; set; }
+
+        /// <summary>
+        /// 用户权限
+        /// </summary>
+        public Permission Permission { get; set; }
+
+        /// <summary>
+        /// 能否通过API访问
+        /// </summary>
+        public bool IsApiAvailable { get; set; }
+
+        /// <summary>
+        /// 最大上传数量（张）
+        /// </summary>
+        public long MaxUploadNums { get; set; }
+
+        /// <summary>
+        /// 最大存储容量（MB）
+        /// </summary>
+        public double MaxUploadCapacity { get; set; }
+
+        /// <summary>
+        /// 单次最大上传数量（张）
+        /// </summary>
+        public long SingleMaxUploadNums { get; set; }
+
+        /// <summary>
+        /// 单次最大上传容量（MB）
+        /// </summary>
+        public double SingleMaxUploadCapacity { get; set; }       
+
+        public UserDTOEntity(string id, string name, string email, string avatar, State state, Permission permission, bool isApiAvailable, long maxUploadNums, double maxUploadCapacity, long singleMaxUploadNums, double singleMaxUploadCapacity)
         {
             Id = id;
             Name = name;

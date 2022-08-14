@@ -8,11 +8,11 @@
         /// <summary>
         /// Unix 时间戳
         /// </summary>
-        public static ulong TimeStamp
+        public static long TimeStamp
         {
             get
             {
-                return (ulong)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
+                return (long)DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
             }
         }
 

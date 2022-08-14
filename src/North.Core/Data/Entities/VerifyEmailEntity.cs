@@ -5,12 +5,27 @@
     /// </summary>
     public class VerifyEmailEntity
     {
-        public string Id { get; set; }              // 验证链接为 verify/{nameof(VerifyType)}/{Id}
-        public string Email { get; set; }           // 待验证的邮箱地址
-        public ulong ExpireTime { get; set; }       // 链接到期时间
-        public VerifyType VerifyType { get; set; }  // 验证类型
+        /// <summary>
+        /// 验证链接为 verify?type={nameof(VerifyType)}&id={Id}
+        /// </summary>
+        public string Id { get; set; }
 
-        public VerifyEmailEntity(string id, string email, ulong expireTime, VerifyType verifyType)
+        /// <summary>
+        /// 待验证的邮箱地址
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
+        /// 链接到期时间
+        /// </summary>
+        public long ExpireTime { get; set; }
+
+        /// <summary>
+        /// 验证类型
+        /// </summary>
+        public VerifyType VerifyType { get; set; }  
+
+        public VerifyEmailEntity(string id, string email, long expireTime, VerifyType verifyType)
         {
             Id = id;
             Email = email;
