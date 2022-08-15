@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using North.Common;
-using North.Core.Data.Entities;
+using North.Core.Entities;
 using North.Core.Helper;
+using North.Data.Access;
 using North.Models.Auth;
 using System.Security.Claims;
 
@@ -50,7 +51,8 @@ namespace North.Pages.Auth
                 {
                     await Task.Delay(500);
 
-                    var user = GlobalValues.MemoryDatabase.Users.FirstOrDefault(u => u.Email == LoginModel.Email);
+                    using var context = new OurDbContext();
+                    var user = await new SqlUserData(context).FindAsync(u => u.Email == LoginModel.Email);
                     if ((user?.Password != LoginModel.PasswordEncrypted) || (user?.State != State.Normal))
                     {
                         _snackbar.Add("账号密码错误或账户状态异常", Severity.Error);
@@ -62,8 +64,8 @@ namespace North.Pages.Auth
                             new Claim(ClaimTypes.SerialNumber, user.Id),
                             new Claim(ClaimTypes.Role, user.Permission.ToString())
                         }, CookieAuthenticationDefaults.AuthenticationScheme));
-                        GlobalValues.UnitLoginIdentifies.Add(loginIdentify);
 
+                        _identifies.Add(loginIdentify);
                         _navigationManager.NavigateTo($"signin/?id={loginIdentify.Id}&redirect={Redirect}", true);
                     }
                 }
@@ -98,14 +100,11 @@ namespace North.Pages.Auth
         /// </summary>
         private void GoToRegister()
         {
-            if (!GlobalValues.AppSettings.Register.AllowRegister)
-            {
-                _snackbar.Add("系统当前未开放注册", Severity.Error);
-            }
-            else
+            if (GlobalValues.AppSettings.Register.AllowRegister)
             {
                 _navigationManager.NavigateTo("register", true);
             }
+            _snackbar.Add("系统当前未开放注册", Severity.Error);
         }
     }
 }

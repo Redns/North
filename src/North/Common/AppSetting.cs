@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using North.Core.Data.Entities;
+using North.Core.Entities;
 
 namespace North.Common
 {

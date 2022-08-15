@@ -1,5 +1,5 @@
 ﻿using North.Common;
-using North.Core.Data.Entities;
+using North.Core.Entities;
 using North.Core.Helper;
 using System.Text.RegularExpressions;
 

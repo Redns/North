@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using North.Core.Helper;
 
-namespace North.Core.Data.Entities
+namespace North.Core.Entities
 {
     public class UserEntity
     {

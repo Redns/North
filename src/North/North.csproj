@@ -23,6 +23,7 @@
     <Folder Include="Data\Images\" />
     <Folder Include="Data\Logs\" />
     <Folder Include="wwwroot\css\" />
+    <Folder Include="Plugins\" />
   </ItemGroup>
 
   <ItemGroup>

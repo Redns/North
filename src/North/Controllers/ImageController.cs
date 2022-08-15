@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using North.Core.Data.Access;
+using North.Data.Access;
 
 namespace North.Controllers
 {

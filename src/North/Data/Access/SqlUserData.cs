@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using North.Core.Data.Entities;
+using North.Core.Entities;
 using System.Linq.Expressions;
 
-namespace North.Core.Data.Access
+namespace North.Data.Access
 {
     public class SqlUserData
     {
@@ -48,6 +48,17 @@ namespace North.Core.Data.Access
                 return await _context.Users.AsNoTracking().ToArrayAsync();
             }
             return Enumerable.Empty<UserEntity>();
+        }
+
+
+        /// <summary>
+        /// 判断用户是否存在
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public bool Any(Func<UserEntity, bool> predicate)
+        {
+            return _context.Users?.Any(predicate) ?? false;
         }
 
 

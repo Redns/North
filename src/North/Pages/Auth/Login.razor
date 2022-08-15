@@ -1,12 +1,13 @@
 ﻿@page "/login"
 
-@using North.Core.Data.Access
+@using North.Data.Access
 @using North.Models.Auth
 @using System.Security.Claims
 
 @inject ILogger _logger
 @inject ISnackbar _snackbar
 @inject IHttpContextAccessor _accessor
+@inject List<UnitLoginIdentify> _identifies
 @inject NavigationManager _navigationManager
 
 <MudCard id="login_card">

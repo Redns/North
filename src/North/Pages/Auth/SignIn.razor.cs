@@ -11,6 +11,7 @@ namespace North.Pages.Auth
         [Parameter]
         [SupplyParameterFromQuery]
         public string Id { get; set; } = string.Empty;
+
         [Parameter]
         [SupplyParameterFromQuery]
         public string Redirect { get; set; } = string.Empty;
@@ -22,10 +23,10 @@ namespace North.Pages.Auth
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
-            var identify = GlobalValues.UnitLoginIdentifies.Find(identify => identify.Id == Id);
+            var identify = _identifies.Find(identify => identify.Id == Id);
             if ((_accessor.HttpContext is not null) && identify is not null)
             {
-                GlobalValues.UnitLoginIdentifies.Remove(identify);
+                _identifies.Remove(identify);
                 await _accessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                                                         new ClaimsPrincipal(identify.ClaimsIdentity),
                                                         new AuthenticationProperties());

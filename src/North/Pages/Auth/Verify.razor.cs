@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using North.Common;
-using North.Core.Data.Access;
-using North.Core.Data.Entities;
+using North.Core.Entities;
 using North.Core.Helper;
+using North.Data.Access;
 
 namespace North.Pages.Auth
 {
@@ -68,19 +68,24 @@ namespace North.Pages.Auth
         /// 用户注册验证
         /// </summary>
         /// <returns></returns>
-        private void VerifyRegister()
+        private async ValueTask VerifyRegister()
         {
-            var verifyEmail = GlobalValues.MemoryDatabase.VerifyEmails.Find(e => e.Id == Id);
-            if ((verifyEmail is null) || (IdentifyHelper.TimeStamp > verifyEmail.ExpireTime))
+            using var content = new OurDbContext();
+            var users = new SqlUserData(content);
+            var emails = new SqlVerifyEmailData(content);
+            var email = await emails.FindAsync(e => e.Id == Id);
+            if ((email is null) || (IdentifyHelper.TimeStamp > email.ExpireTime))
             {
                 _snackbar.Add("链接不存在或已过期", Severity.Error);
             }
             else
             {
-                var user = GlobalValues.MemoryDatabase.Users.FirstOrDefault(u => u.Email == verifyEmail.Email);
+                var user = await users.FindAsync(u => u.Email == email.Email);
                 if ((user is not null) && (user.State is State.Checking))
                 {
                     user.State = State.Normal;
+                    await users.UpdateAsync(user);
+
                     _snackbar.Add("验证成功", Severity.Success);
                 }
                 else
@@ -90,9 +95,9 @@ namespace North.Pages.Auth
             }
 
             // 删除验证邮件
-            if (verifyEmail is not null)
+            if (email is not null)
             {
-                GlobalValues.MemoryDatabase.VerifyEmails.Remove(verifyEmail);
+                _ = emails.RemoveAsync(email);
             }
         }
     }

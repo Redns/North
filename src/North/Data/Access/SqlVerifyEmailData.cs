@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using North.Core.Data.Entities;
+using North.Core.Entities;
 using System.Linq.Expressions;
 
-namespace North.Core.Data.Access
+namespace North.Data.Access
 {
     public class SqlVerifyEmailData
     {

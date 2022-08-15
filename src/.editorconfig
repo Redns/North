@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CA2012: 正确使用 ValueTask
+dotnet_diagnostic.CA2012.severity = silent

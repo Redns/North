@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using North.Common;
-using North.Core.Data.Access;
-using North.Core.Data.Entities;
+using North.Core.Entities;
+using North.Data.Access;
 
 namespace North.Controllers
 {
@@ -22,7 +22,7 @@ namespace North.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("generate_token")]
-        public ApiResult<object> GenerateToken()
+        public async ValueTask<ApiResult<object>> GenerateToken()
         {
             var email = Request.Headers["Email"].ToString();
             var password = Request.Headers["Password"].ToString();
@@ -35,11 +35,15 @@ namespace North.Controllers
                 }
                 else
                 {
-                    var user = GlobalValues.MemoryDatabase.Users.FirstOrDefault(u => u.Email == email);
+                    using var context = new OurDbContext();
+                    var users = new SqlUserData(context);
+
+                    var user = await users.FindAsync(u => u.Email == email);
                     if (user?.Password == password)
                     {
                         if (user.GenerateToken(GlobalValues.AppSettings.Api.TokenValidTime))
                         {
+                            _ = users.UpdateAsync(user);
                             return new ApiResult<object>(200, "Token generate succeeded", new
                             {
                                 user.Token,
@@ -64,17 +68,21 @@ namespace North.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("refresh_token")]
-        public ApiResult<object> RefreshToken()
+        public async ValueTask<ApiResult<object>> RefreshToken()
         {
             var token = Request.Headers["Token"].ToString();
 
             try
             {
-                var user = GlobalValues.MemoryDatabase.Users.FirstOrDefault(u => u.Token == token);
+                using var context = new OurDbContext();
+                var users = new SqlUserData(context);
+
+                var user = await users.FindAsync(u => u.Token == token);
                 if (user?.IsTokenValid() is true)
                 {
                     if (user.GenerateToken())
                     {
+                        _ = users.UpdateAsync(user);
                         return new ApiResult<object>(200, "Token refresh succeeded", new
                         {
                             user.Token,
@@ -98,14 +106,17 @@ namespace North.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("user")]
-        public ApiResult<UserDTOEntity> GetUser()
+        public async ValueTask<ApiResult<UserDTOEntity>> GetUser()
         {
             var token = Request.Headers["Token"].ToString();
             var target = Request.Headers["Target"].ToString();
 
             try
             {
-                var user = GlobalValues.MemoryDatabase.Users.FirstOrDefault(u => u.Token == token);
+                using var context = new OurDbContext();
+                var users = new SqlUserData(context);
+
+                var user = await users.FindAsync(u => u.Token == token);
                 if (user?.IsTokenValid() is true)
                 {
                     if (target == string.Empty)
@@ -116,7 +127,7 @@ namespace North.Controllers
                     else
                     {
                         // 查找目标账号信息
-                        var targetUser = GlobalValues.MemoryDatabase.Users.FirstOrDefault(u => (u.Name == target) || (u.Email == target));
+                        var targetUser = await users.FindAsync(u => (u.Name == target) || (u.Email == target));
                         if ((targetUser is not null) && (user.Permission > targetUser.Permission))
                         {
                             return new ApiResult<UserDTOEntity>(200, "User information obtain succeeded", targetUser.ToDTO());
@@ -139,19 +150,20 @@ namespace North.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("users")]
-        public ApiResult<IEnumerable<UserDTOEntity>> GetUsers()
+        public async ValueTask<ApiResult<IEnumerable<UserDTOEntity>>> GetUsers()
         {
             var token = Request.Headers["Token"].ToString();
             try
             {
-                var user = GlobalValues.MemoryDatabase.Users.FirstOrDefault(u => u.Token == token);
+                using var context = new OurDbContext();
+                var sqlUserData = new SqlUserData(context);
+
+                var user = await sqlUserData.FindAsync(u => u.Token == token);
                 if (user?.IsTokenValid() is true)
                 {
-                    var users = Array.ConvertAll(GlobalValues.MemoryDatabase
-                                                             .Users
-                                                             .FindAll(u => u.Permission < user.Permission)
-                                                             .Append(user)
-                                                             .ToArray(),
+                    var users = Array.ConvertAll(sqlUserData.Get(u => u.Permission < user.Permission)
+                                                            .Append(user)
+                                                            .ToArray(),
                                                  u => u.ToDTO());
                     return new ApiResult<IEnumerable<UserDTOEntity>>(200, "User information obtained succeeded", users);
                 }

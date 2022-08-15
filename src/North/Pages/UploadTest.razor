@@ -1,9 +1,12 @@
 ﻿@page "/uploadTest"
+@using Microsoft.EntityFrameworkCore
 @using North.Core.Helper
+@using North.Data.Access
 @using North.Events.PasteMultimediaEvent
 @using System.Reflection.Metadata
+@using System.Diagnostics
 
-
+@inject OurDbContext _context
 @inject IJSRuntime JS
 @inject ISnackbar _snackbar
 

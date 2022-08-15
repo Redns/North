@@ -3,8 +3,9 @@ using Microsoft.JSInterop;
 using MimeKit;
 using MudBlazor;
 using North.Common;
-using North.Core.Data.Entities;
+using North.Core.Entities;
 using North.Core.Helper;
+using North.Data.Access;
 using North.Models.Auth;
 using North.Models.Notification;
 
@@ -52,7 +53,10 @@ namespace North.Pages.Auth
                 else
                 {
                     await Task.Delay(500);
-                    if (GlobalValues.MemoryDatabase.Users.FirstOrDefault(u => u.Email == RegisterModel.Email) is not null)
+
+                    using var context = new OurDbContext();
+                    var users = new SqlUserData(context);
+                    if (users.Any(u => u.Email == RegisterModel.Email))
                     {
                         _snackbar.Add("邮箱已被注册", Severity.Error);
                     }
@@ -64,14 +68,14 @@ namespace North.Pages.Auth
                         var avatarName = $"{IdentifyHelper.Generate()}.{RegisterModel.AvatarExtension}";
 
                         // 保存用户头像
-                        await DownloadBlob(RegisterModel.Avatar, $"Data/Images/{newUser.Id}/{avatarName}", (long)avatarMaxSize);
+                        await JS.DownloadBlob(RegisterModel.Avatar, $"Data/Images/{newUser.Id}/{avatarName}", (long)avatarMaxSize);
 
                         // 发送验证邮件
                         await SendRegisterVerifyEmail();
 
                         // 录入用户
                         newUser.Avatar = $"api/image/{newUser.Id}/{avatarName}";
-                        GlobalValues.MemoryDatabase.Users.Add(newUser);
+                        users.Add(newUser);
 
                         _snackbar.Add("验证邮件已发送", Severity.Success);
                         _navigationManager.NavigateTo("login");
@@ -80,7 +84,7 @@ namespace North.Pages.Auth
             }
             catch (Exception e)
             {
-                await DestroyBlob(RegisterModel.Avatar);
+                await JS.DestroyBlob(RegisterModel.Avatar);
 
                 RegisterModel.Avatar = string.Empty;
                 RegisterModel.AvatarExtension = string.Empty;
@@ -107,7 +111,8 @@ namespace North.Pages.Auth
             var verifyEmail = new VerifyEmailEntity(IdentifyHelper.Generate(), RegisterModel.Email,
                                                     IdentifyHelper.TimeStamp + RegisterSettings.VerifyEmailValidTime,
                                                     VerifyType.Register);
-            GlobalValues.MemoryDatabase.VerifyEmails.Add(verifyEmail);
+            using var context = new OurDbContext();
+            await new SqlVerifyEmailData(context).AddAsync(verifyEmail);
 
             // 构造验证邮件并发送
             var verifyEmailBody = $"欢迎注册 North 图床，" +
@@ -141,7 +146,7 @@ namespace North.Pages.Auth
                     using var avatarReadStream = avatar.OpenReadStream((long)avatarMaxSize);
                     using var avatarReadStreamRef = new DotNetStreamReference(avatarReadStream);
 
-                    RegisterModel.Avatar = await JS.InvokeAsync<string>("upload", avatarReadStreamRef, avatar.ContentType);
+                    RegisterModel.Avatar = await JS.UploadToBlob(avatarReadStream, avatar.ContentType);
                     RegisterModel.AvatarExtension = avatar.ContentType.Split('/').Last();
                 }
             }
@@ -159,59 +164,11 @@ namespace North.Pages.Auth
         {
             if (!string.IsNullOrEmpty(RegisterModel.Avatar))
             {
+                await JS.DestroyBlob(RegisterModel.Avatar);
+
                 RegisterModel.Avatar = string.Empty;
                 RegisterModel.AvatarExtension = string.Empty;
-
-                await DestroyBlob(RegisterModel.Avatar);
             }
-        }
-
-
-        /// <summary>
-        /// 下载浏览器 Blob 文件
-        /// </summary>
-        /// <example>https://docs.microsoft.com/zh-cn/aspnet/core/blazor/javascript-interoperability/call-dotnet-from-javascript?view=aspnetcore-6.0#stream-from-javascript-to-net</example>
-        /// <param name="url">文件链接</param>
-        /// <param name="path">保存路径</param>
-        /// <param name="maxAllowedSize">JavaScript 中读取操作允许的最大字节数（默认：512000字节）</param>
-        /// <returns></returns>
-        private async ValueTask DownloadBlob(string url, string path, long maxAllowedSize = 512000)
-        {
-            // 获取 Blob 文件流
-            using var dataReferenceStream = await GetBlobStream(url, maxAllowedSize);
-
-            // 创建文件夹
-            var rootDirectory = Path.GetDirectoryName(path);
-            if (!string.IsNullOrEmpty(rootDirectory))
-            {
-                Directory.CreateDirectory(rootDirectory);
-            }
-            using var avatarWriteStream = File.OpenWrite(path);
-            await dataReferenceStream.CopyToAsync(avatarWriteStream);
-        }
-
-
-        /// <summary>
-        /// 获取浏览器 Blob 文件数据流
-        /// </summary>
-        /// <param name="url">文件链接</param>
-        /// <param name="maxAllowedSize">JavaScript 中读取操作允许的最大字节数（默认：512000字节）</param>
-        /// <returns></returns>
-        private async ValueTask<Stream> GetBlobStream(string url, long maxAllowedSize = 512000)
-        {
-            var blobReadStreamRef = await JS.InvokeAsync<IJSStreamReference>("getBlobStream", url);
-            return await blobReadStreamRef.OpenReadStreamAsync(maxAllowedSize);
-        }
-
-
-        /// <summary>
-        /// 销毁浏览器 Blob 对象
-        /// </summary>
-        /// <param name="url">对象链接</param>
-        /// <returns></returns>
-        private async ValueTask DestroyBlob(string url)
-        {
-            await JS.InvokeVoidAsync("destroy", url);
         }
     }
 }

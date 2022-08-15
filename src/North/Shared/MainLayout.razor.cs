@@ -1,14 +1,14 @@
 ﻿using North.Common;
+using North.Core.Entities;
 using North.Core.Helper;
-using North.Core.Data.Access;
-using North.Core.Data.Entities;
+using North.Data.Access;
 using System.Security.Claims;
 
 namespace North.Shared
 {
     partial class MainLayout
     {
-        public bool IsExpanded { get; set; } = true;
+        public bool IsExpanded { get; set; } = false;
 
 
         /// <summary>
@@ -63,7 +63,8 @@ namespace North.Shared
                 var signedUserRole = signedUser.Claims
                                                .FirstOrDefault(c => c.Type == ClaimTypes.Role)?
                                                .Value ?? string.Empty;
-                var user = await new SqlUserData(_context).FindAsync(u => u.Id == signedUserId);
+                using var context = new OurDbContext();
+                var user = await new SqlUserData(context).FindAsync(u => u.Id == signedUserId);
                 if ((user?.State != State.Normal) || (user?.Permission.ToString() != signedUserRole))
                 {
                     _navigationManager.NavigateTo("signout", true);
