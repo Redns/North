@@ -75,7 +75,7 @@ class Program
             app.MapControllers();
             app.MapFallbackToPage("/_Host");
             // TODO ÐÞ¸Ä°ó¶¨µÄ URL
-            app.Urls.Add("http://0.0.0.0:12122");
+            app.Urls.Add("http://0.0.0.0:12121");
 
             logger.Info("Application launch success");
 

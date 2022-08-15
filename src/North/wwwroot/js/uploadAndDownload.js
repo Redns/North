@@ -9,6 +9,7 @@ async function download(filename, url) {
     anchorElement.download = filename ?? '';
     anchorElement.click();
     anchorElement.remove();
+    return url;
 }
 
 
@@ -36,4 +37,5 @@ async function getBlobStream(url) {
 
 async function destroy(url) {
     URL.revokeObjectURL(url);
+    return url;
 }

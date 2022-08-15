@@ -1,7 +1,6 @@
 ﻿namespace North.PluginBase
 {
-    public class Class1
+    public interface IBeforeAuth
     {
-
     }
 }

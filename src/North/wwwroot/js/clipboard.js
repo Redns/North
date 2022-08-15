@@ -9,4 +9,5 @@ function copyTextToClipboard(content) {
     aux.select();
     document.execCommand("copy");
     document.body.removeChild(aux);
+    return content;
 }

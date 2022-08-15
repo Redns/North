@@ -1,4 +1,5 @@
 ﻿@page "/uploadTest"
+@using North.Core.Helper
 @using North.Events.PasteMultimediaEvent
 @using System.Reflection.Metadata
 
@@ -23,8 +24,9 @@
         try{
             using (var image = args.GetMultipleFiles()[0].OpenReadStream(10 * 1024 * 1024))
             {
-                var blobUrl = await JS.InvokeAsync<string>("upload", new DotNetStreamReference(image), "image/jpg");
-                await JS.InvokeVoidAsync("copyTextToClipboard", blobUrl);
+                var blobUrl = await JS.UploadToBlob(image, "image/jpg");
+                //await JS.InvokeVoidAsync("copyTextToClipboard", blobUrl);
+                var res = await JS.CopyToClipboard(blobUrl);
                 _snackbar.Add($"[Upload success] {blobUrl}", Severity.Success);
             }
         }
