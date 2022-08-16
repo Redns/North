@@ -3,6 +3,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using NLog.Extensions.Logging;
 using North.Common;
+using North.Data.Access;
 using North.Models.Auth;
 using North.Services.Logger;
 using ILogger = North.Services.Logger.ILogger;
@@ -34,6 +35,7 @@ class Program
                 logger.AddEventSourceLogger();
                 logger.AddNLog();
             });
+            builder.Services.AddDbContext<OurDbContext>();
             builder.Services.AddMudServices(config =>
             {
                 // Snackbar 配置
@@ -54,7 +56,7 @@ class Program
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                             .AddCookie(options =>
                             {
-                                options.ExpireTimeSpan = TimeSpan.FromDays(3);
+                                options.ExpireTimeSpan = TimeSpan.FromSeconds(GlobalValues.AppSettings.Auth.CookieValidTime);
                             });
 
             // 构建 web 应用

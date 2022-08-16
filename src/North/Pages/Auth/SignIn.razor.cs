@@ -26,10 +26,14 @@ namespace North.Pages.Auth
             var identify = _identifies.Find(identify => identify.Id == Id);
             if ((_accessor.HttpContext is not null) && identify is not null)
             {
-                _identifies.Remove(identify);
                 await _accessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                                                         new ClaimsPrincipal(identify.ClaimsIdentity),
-                                                        new AuthenticationProperties());
+                                                        new AuthenticationProperties()
+                                                        {
+                                                            IsPersistent = true,
+                                                            ExpiresUtc = DateTime.Now.AddSeconds(GlobalValues.AppSettings.Auth.CookieValidTime)
+                                                        });
+                _identifies.Remove(identify);
                 _navigationManager.NavigateTo(Redirect, true);
             }
             _navigationManager.NavigateTo($"login?redirect={Redirect}", true);

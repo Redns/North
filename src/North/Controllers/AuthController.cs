@@ -41,7 +41,7 @@ namespace North.Controllers
                     var user = await users.FindAsync(u => u.Email == email);
                     if (user?.Password == password)
                     {
-                        if (user.GenerateToken(GlobalValues.AppSettings.Api.TokenValidTime))
+                        if (user.GenerateToken(GlobalValues.AppSettings.Auth.TokenValidTime))
                         {
                             _ = users.UpdateAsync(user);
                             return new ApiResult<object>(200, "Token generate succeeded", new

@@ -9,18 +9,20 @@ namespace North.Common
         public StorageSetting Storage { get; set; }
         public RegisterSetting Register { get; set; }
         public NotifySetting Notify { get; set; }
-        public ApiSetting Api { get; set; }
+        public AuthSetting Auth { get; set; }
         public LogSetting Log { get; set; }
 
-        public AppSetting(GeneralSetting general, StorageSetting storage, RegisterSetting register, NotifySetting notify, ApiSetting api, LogSetting log)
+        public AppSetting(GeneralSetting general, StorageSetting storage, RegisterSetting register, NotifySetting notify, AuthSetting auth, LogSetting log)
         {
             General = general;
             Storage = storage;
             Register = register;
             Notify = notify;
-            Api = api;
+            Auth = auth;
             Log = log;
         }
+
+
 
 
         /// <summary>
@@ -98,15 +100,9 @@ namespace North.Common
         /// </summary>
         public string ConnStr { get; set; }
 
-        /// <summary>
-        /// 数据库同步时间间隔（单位：s）
-        /// </summary>
-        public long SyncTimeInterval { get; set; }
-
-        public DataBaseSetting(string connStr, long syncTimeInterval)
+        public DataBaseSetting(string connStr)
         {
             ConnStr = connStr;
-            SyncTimeInterval = syncTimeInterval;
         }
     }
 
@@ -198,13 +194,22 @@ namespace North.Common
     }
 
 
-    public class ApiSetting
+    public class AuthSetting
     {
+        /// <summary>
+        /// API 令牌有效期（ms）
+        /// </summary>
         public long TokenValidTime { get; set; }
 
-        public ApiSetting(long tokenValidTime)
+        /// <summary>
+        /// 网页 Cookie 有效期（s）
+        /// </summary>
+        public long CookieValidTime { get; set; }
+
+        public AuthSetting(long tokenValidTime, long cookieValidTime)
         {
             TokenValidTime = tokenValidTime;
+            CookieValidTime = cookieValidTime;
         }
     }
 

@@ -1,3 +1,7 @@
+# doc Start
+doc/~$3_上传流程.drawio.bkp
+# doc End
+
 # Root Start
 src/.vs
 src/.vscode
@@ -34,9 +38,3 @@ src/North.Updater/.vs
 src/North.Updater/bin
 src/North.Updater/obj
 # North.Updater End
-
-
-
-# Other Start
-doc/基本框架.xmind
-# Other End
