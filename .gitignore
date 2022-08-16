@@ -38,3 +38,11 @@ src/North.Updater/.vs
 src/North.Updater/bin
 src/North.Updater/obj
 # North.Updater End
+
+# North.Nsfw Start
+src/North.Nsfw/.vs
+src/North.Nsfw/bin
+src/North.Nsfw/obj
+src/North.Nsfw/Properties
+src/North.Nsfw/appsettings.json
+# North.Nsfw End
