@@ -9,5 +9,8 @@ namespace North.Shared
 
         [Parameter]
         public bool IsExpanded { get; set; } = false;
+
+        [Parameter]
+        public bool OpenMiniOnHover { get; set; } = true;
     }
 }

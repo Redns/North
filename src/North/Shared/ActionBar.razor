@@ -5,20 +5,12 @@
     <MudTooltip Text="@ExpandTooltip" Placement="Placement.Right">
         <MudIconButton Icon="@Icons.Material.Outlined.Menu" OnClick="@OnNavMenuStateChanged" DisableRipple Style="margin-left:-20px;" />
     </MudTooltip>
-    <Title Text="@GlobalValues.AppSettings.General.Name" Style="margin-left:10px; font-size:20px;" />
+    <Title Text="@GlobalValues.AppSettings.Appearance.Name" Style="margin-left:10px; font-size:20px;" />
     <MudSpacer />
     <MudTooltip Text="通知">
         <MudIconButton Icon="@Icons.Material.Outlined.Notifications" />
     </MudTooltip>
-    <MudTooltip Text="上传">
-        <MudIconButton Icon="@Icons.Material.Outlined.FileUpload" />
-    </MudTooltip>
     <MudTooltip>
-        <ChildContent>
-            <MudIconButton Icon="@Icons.Material.Outlined.ManageAccounts" OnClick="SignOut" />
-        </ChildContent>
-        <TooltipContent>
-            <MudText>点击退出登录</MudText>
-        </TooltipContent>
+        <MudIconButton Icon="@Icons.Material.Outlined.ManageAccounts" OnClick="SignOut" />
     </MudTooltip>
 </MudToolBar>

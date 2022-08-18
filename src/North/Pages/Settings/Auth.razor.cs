@@ -3,32 +3,32 @@ using North.Common;
 
 namespace North.Pages.Settings
 {
-    partial class Register
+    partial class Auth
     {
-        public bool SaveRunning { get; set; } = false;
-        public bool RestoreRunning { get; set; } = false;
-        public RegisterSetting RegisterSetting { get; set; } = GlobalValues.AppSettings.Register.Clone();
+        private bool SaveRunning { get; set; } = false;
+        private bool RestoreRunning { get; set; } = false;
+        private AuthSetting AuthSetting { get; set; } = GlobalValues.AppSettings.Auth.Clone();
 
 
         /// <summary>
         /// 保存设置
         /// </summary>
         /// <returns></returns>
-        public async Task SaveSettings()
+        private async Task SaveSettings()
         {
             try
             {
                 SaveRunning = true;
                 await Task.Delay(500);
-                GlobalValues.AppSettings.Register = RegisterSetting.Clone();
+                GlobalValues.AppSettings.Auth = AuthSetting.Clone();
                 GlobalValues.AppSettings.Save();
                 _snackbar.Add("保存成功", Severity.Success);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                RegisterSetting = GlobalValues.AppSettings.Register.Clone();
+                AuthSetting = GlobalValues.AppSettings.Auth.Clone();
                 _snackbar.Add("保存失败，已还原设置", Severity.Error);
-                _logger.Error("Failed to save appearance settings", e);
+                _logger.Error("Failed to save auth settings", e);
             }
             finally
             {
@@ -45,13 +45,13 @@ namespace North.Pages.Settings
         /// 还原设置
         /// </summary>
         /// <returns></returns>
-        public async Task RestoreSaveSettings()
+        private async Task RestoreSettings()
         {
             try
             {
                 RestoreRunning = true;
                 await Task.Delay(500);
-                RegisterSetting = GlobalValues.AppSettings.Register.Clone();
+                AuthSetting = GlobalValues.AppSettings.Auth.Clone();
                 _snackbar.Add("已还原设置", Severity.Success);
             }
             catch (Exception e)
@@ -61,7 +61,11 @@ namespace North.Pages.Settings
             }
             finally
             {
-                RestoreRunning = false;
+                await InvokeAsync(() =>
+                {
+                    RestoreRunning = false;
+                    StateHasChanged();
+                });
             }
         }
     }

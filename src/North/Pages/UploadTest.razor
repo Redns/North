@@ -10,6 +10,7 @@
 @inject IJSRuntime JS
 @inject ISnackbar _snackbar
 
+<Loading Enable="true" />
 <InputFile @onpastemultimedia="(e => Paste(e))" accept="image/*" OnChange="(e => Upload(e))" />
 
 @code {

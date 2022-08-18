@@ -1,28 +1,29 @@
 ﻿using Newtonsoft.Json;
 using North.Core.Entities;
+using North.Pages.Settings;
 
 namespace North.Common
 {
     public class AppSetting
     {
         public GeneralSetting General { get; set; }
+        public AppearanceSetting Appearance { get; set; }
         public StorageSetting Storage { get; set; }
         public RegisterSetting Register { get; set; }
         public NotifySetting Notify { get; set; }
         public AuthSetting Auth { get; set; }
         public LogSetting Log { get; set; }
 
-        public AppSetting(GeneralSetting general, StorageSetting storage, RegisterSetting register, NotifySetting notify, AuthSetting auth, LogSetting log)
+        public AppSetting(GeneralSetting general, AppearanceSetting appearance, StorageSetting storage, RegisterSetting register, NotifySetting notify, AuthSetting auth, LogSetting log)
         {
             General = general;
+            Appearance = appearance;
             Storage = storage;
             Register = register;
             Notify = notify;
             Auth = auth;
             Log = log;
         }
-
-
 
 
         /// <summary>
@@ -67,17 +68,45 @@ namespace North.Common
 
     public class GeneralSetting
     {
+    }
+
+
+    /// <summary>
+    /// 外观设置
+    /// </summary>
+    public class AppearanceSetting
+    {
         /// <summary>
         /// 图床名称
         /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// 侧边栏自动展开
+        /// </summary>
+        public bool NavAutoExpand { get; set; }
+
+        /// <summary>
+        /// 背景每日一图 API
+        /// </summary>
+        public string BackgroundUrl { get; set; }
+
+        /// <summary>
+        /// 页脚
+        /// </summary>
         public string Footer { get; set; }
 
-        public GeneralSetting(string name, string footer)
+        public AppearanceSetting(string name, bool navAutoExpand, string backgroundUrl, string footer)
         {
             Name = name;
+            NavAutoExpand = navAutoExpand;
+            BackgroundUrl = backgroundUrl;
             Footer = footer;
+        }
+
+        public AppearanceSetting Clone()
+        {
+            return new AppearanceSetting(Name, NavAutoExpand, BackgroundUrl, Footer);
         }
     }
 
@@ -89,6 +118,11 @@ namespace North.Common
         public StorageSetting(DataBaseSetting dataBase)
         {
             DataBase = dataBase;
+        }
+
+        public StorageSetting Clone()
+        {
+            return new StorageSetting(DataBase.Clone());
         }
     }
 
@@ -103,6 +137,11 @@ namespace North.Common
         public DataBaseSetting(string connStr)
         {
             ConnStr = connStr;
+        }
+
+        public DataBaseSetting Clone()
+        {
+            return new DataBaseSetting(ConnStr);
         }
     }
 
@@ -136,6 +175,11 @@ namespace North.Common
             VerifyEmailValidTime = verifyEmailValidTime;
             Default = @default;
         }
+
+        public RegisterSetting Clone()
+        {
+            return new RegisterSetting(AllowRegister, MaxAvatarSize, VerifyEmailValidTime, Default.Clone());
+        }
     }
 
 
@@ -160,6 +204,11 @@ namespace North.Common
             SingleMaxUploadNums = singleMaxUploadNums;
             SingleMaxUploadCapacity = singleMaxUploadCapacity;
         }
+
+        public RegisterSettingDefault Clone()
+        {
+            return new RegisterSettingDefault(Permission, IsApiAvailable, MaxUploadNums, MaxUploadCapacity, SingleMaxUploadNums, SingleMaxUploadCapacity);
+        }
     }
 
 
@@ -170,6 +219,11 @@ namespace North.Common
         public NotifySetting(EmailSetting email)
         {
             Email = email;
+        }
+
+        public NotifySetting Clone()
+        {
+            return new NotifySetting(Email.Clone());
         }
     }
 
@@ -191,6 +245,11 @@ namespace North.Common
             Account = account;
             Code = code;
         }
+
+        public EmailSetting Clone()
+        {
+            return new EmailSetting(Account, Code);
+        }
     }
 
 
@@ -211,6 +270,11 @@ namespace North.Common
             TokenValidTime = tokenValidTime;
             CookieValidTime = cookieValidTime;
         }
+
+        public AuthSetting Clone()
+        {
+            return new AuthSetting(TokenValidTime, CookieValidTime);
+        }
     }
 
 
@@ -226,6 +290,11 @@ namespace North.Common
             Level = level;
             Layout = layout;
         }
+
+        public LogSetting Clone()
+        {
+            return new LogSetting(Output, Level.Clone(), Layout);
+        }
     }
 
 
@@ -238,6 +307,11 @@ namespace North.Common
         {
             Min = min;
             Max = max;
+        }
+
+        public Level Clone()
+        {
+            return new Level(Min, Max);
         }
     }
 }

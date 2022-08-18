@@ -17,8 +17,7 @@ namespace North.Shared
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
-            // TODO 使能账户鉴权
-            // await UserAuthorization();
+            await AuthorizationAsync();
             await base.OnInitializedAsync();
         }
 
@@ -32,19 +31,9 @@ namespace North.Shared
         {
             if (!firstRender)
             {
-                // 使能账户鉴权
-                // await UserAuthorization();
+                await AuthorizationAsync();
             }
             await base.OnAfterRenderAsync(firstRender);
-        }
-
-
-        /// <summary>
-        /// 收起/展开侧边栏
-        /// </summary>
-        public void OnNavMenuStateChanged()
-        {
-            IsExpanded = !IsExpanded;
         }
 
 
@@ -52,34 +41,33 @@ namespace North.Shared
         /// 用户授权
         /// </summary>
         /// <returns></returns>
-        public async Task UserAuthorization()
+        public async Task AuthorizationAsync()
         {
             var signedUser = _accessor.HttpContext?.User;
+            var relativeUrl = _navigationManager.ToBaseRelativePath(_navigationManager.Uri).Split('?').First().ToLower();
             if (signedUser?.Identity?.IsAuthenticated is true)
             {
-                var signedUserId = signedUser.Claims
-                                             .FirstOrDefault(c => c.Type == ClaimTypes.SerialNumber)?
-                                             .Value ?? string.Empty;
-                var signedUserRole = signedUser.Claims
-                                               .FirstOrDefault(c => c.Type == ClaimTypes.Role)?
-                                               .Value ?? string.Empty;
-                using var context = new OurDbContext();
-                var user = await new SqlUserData(context).FindAsync(u => u.Id == signedUserId);
+                // 根据 Cookie 信息在数据库中查询用户
+                // 若用户为空、状态改变（被封禁）或权限发生变动时退出登录
+                var signedUserId = signedUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.SerialNumber)?.Value ?? string.Empty;
+                var signedUserRole = signedUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? string.Empty;
+                var user = await new SqlUserData(_context).FindAsync(u => u.Id == signedUserId);
                 if ((user?.State != State.Normal) || (user?.Permission.ToString() != signedUserRole))
                 {
                     _navigationManager.NavigateTo("signout", true);
                 }
-            }
-            else
-            {
-                var relativeUrl = _navigationManager.ToBaseRelativePath(_navigationManager.Uri)
-                                                    .Split('?')
-                                                    .First()
-                                                    .ToLower();
-                if (!relativeUrl.Contains(GlobalValues.WithoutAuthenticationPages, true))
+                else if(relativeUrl.Contains(GlobalValues.WithoutAuthenticationPages, true))
                 {
-                    _navigationManager.NavigateTo($"/login?redirect={relativeUrl}", true);
+                    // 用户已授权且数据库信息未发生变动
+                    // 拒绝其访问授权页面，自动跳转至首页
+                    _navigationManager.NavigateTo("", true);
                 }
+            }
+            else if(!relativeUrl.Contains(GlobalValues.WithoutAuthenticationPages, true))
+            {
+                // 用户未经授权且访问的不是授权界面
+                // 自动跳转至授权页面
+                _navigationManager.NavigateTo($"/login?redirect={relativeUrl}", true);
             }
         }
     }

@@ -34,7 +34,7 @@ namespace North.Pages.Auth
                 {
                     switch (Type.ToLower())
                     {
-                        case "register": VerifyRegister(); break;
+                        case "register": await VerifyRegister(); break;
                         default: break;
                     }
                 }
@@ -68,7 +68,7 @@ namespace North.Pages.Auth
         /// 用户注册验证
         /// </summary>
         /// <returns></returns>
-        private async ValueTask VerifyRegister()
+        private async Task VerifyRegister()
         {
             using var content = new OurDbContext();
             var users = new SqlUserData(content);

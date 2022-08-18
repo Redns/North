@@ -1,0 +1,11 @@
+﻿#footer {
+    width: fit-content;
+    height: fit-content;
+    max-height: 50px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    margin: auto;
+    text-align: center;
+}

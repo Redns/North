@@ -13,87 +13,79 @@
     </MudStack>
 </AuthorizeView>
 <AuthorizeView Roles="System">
-    @if (!PageLoading)
-    {
-        <MudStack Spacing="6" Style="margin-left:37px; margin-top:20px;" id="page">
-            <!-- 日志输出路径 -->
-            <MudStack Spacing="2">
-                <p class="menu_text">输出路径</p>
-                <MudStack Spacing="0" Row AlignItems="AlignItems.Center" Style="width:fit-content; height:35px;">
-                    <MudTextField @bind-Value="@AppSetting.Log.Output"
-                                  Margin="Margin.Dense" Variant="Variant.Outlined"
-                                  Style="width:90%; max-width:260px; height:35px;" />
+    <MudStack Spacing="6" Style="margin-left:37px; margin-top:20px;" id="page">
+        <!-- 日志输出路径 -->
+        <MudStack Spacing="2">
+            <p class="menu_text">输出路径</p>
+            <MudStack Spacing="0" Row AlignItems="AlignItems.Center" Style="width:fit-content; height:35px;">
+                <MudTextField @bind-Value="@LogSetting.Output"
+                            Margin="Margin.Dense" Variant="Variant.Outlined"
+                            Style="width:90%; max-width:260px; height:35px;" />
                     <MudTooltip Text="点击下载日志" Placement="Placement.Right">
-                        <MudIconButton Icon="@Icons.Filled.Download" Variant="Variant.Outlined" Color="Color.Info" OnClick="DownloadLogfile"/>
-                    </MudTooltip>
-                </MudStack>
-            </MudStack>
-            <!-- 日志输出级别 -->
-            <MudStack Spacing="2">
-                <MudTooltip Text="只有等级范围内的日志会被输出" Placement="Placement.Right">
-                    <p class="menu_text">输出级别</p>
+                    <MudIconButton Icon="@Icons.Filled.Download" Variant="Variant.Outlined" Color="Color.Info" OnClick="DownloadLogfile"/>
                 </MudTooltip>
-                <MudStack Row Style="width:fit-content;" AlignItems="AlignItems.Center">
-                    <MudSelect @bind-Value="@AppSetting.Log.Level.Min"
-                               Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter"
-                               Style="width:90%; max-width:140px; max-height:35px;">
-                        <MudSelectItem Value="LogLevel.Trace" Style="height:35px;" />
-                        <MudSelectItem Value="LogLevel.Debug" Style="height:35px;" />
-                        <MudSelectItem Value="LogLevel.Information" Style="height:35px;" />
-                        <MudSelectItem Value="LogLevel.Warning" Style="height:35px;" />
-                        <MudSelectItem Value="LogLevel.Error" Style="height:35px;" />
-                        <MudSelectItem Value="LogLevel.Critical" Style="height:35px;" />
-                    </MudSelect>
-                    <MudIcon Icon="@Icons.Outlined.ArrowRightAlt" />
-                    <MudSelect @bind-Value="@AppSetting.Log.Level.Max"
-                               Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter"
-                               Style="width:90%; max-width:140px; max-height:35px;">
-                        <MudSelectItem Value="LogLevel.Trace" Style="height:35px;" />
-                        <MudSelectItem Value="LogLevel.Debug" Style="height:35px;" />
-                        <MudSelectItem Value="LogLevel.Information" Style="height:35px;" />
-                        <MudSelectItem Value="LogLevel.Warning" Style="height:35px;" />
-                        <MudSelectItem Value="LogLevel.Error" Style="height:35px;" />
-                        <MudSelectItem Value="LogLevel.Critical" Style="height:35px;" />
-                    </MudSelect>
-                </MudStack>
-            </MudStack>
-            <!-- 日志输出格式 -->
-            <MudStack Spacing="2">
-                <MudTooltip Text="构造方法请参照 Nlog" Placement="Placement.Right">
-                    <p class="menu_text">输出格式</p>
-                </MudTooltip>
-                <MudTextField @bind-Value="@AppSetting.Log.Layout" Lines="3"
-                              Margin="Margin.Dense" Variant="Variant.Outlined"
-                              Style="width:90%; max-width:460px; line-height:1.5em;" />
-            </MudStack>
-            <!-- 保存/取消设置 -->
-            <MudStack Row Style="width:100%;">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" 
-                           OnClick="SaveSettings" Disabled="@SaveRunning"
-                           Style="width:100px;">
-                        @if (SaveRunning)
-                        {
-                            <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate/>
-                        }
-                        <MudText>保 存</MudText>
-                </MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Error" 
-                            OnClick="CancelSaveSettings" Disabled="@CencelSaveRunning"
-                            Style="width:100px;">
-                        @if (CencelSaveRunning)
-                        {
-                                <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate/>
-                        }
-                        <MudText>取 消</MudText>
-                </MudButton>
             </MudStack>
         </MudStack>
-    }
-    else
-    {
-        <MudProgressCircular Color="Color.Info" Size="Size.Medium" Indeterminate
-                             Style="left:0; right:0; top:0; bottom:0; position:absolute; margin:auto;"/>
-    }
+        <!-- 日志输 出级别 -->
+        <MudStack Spacing="2">
+            <MudTooltip Text="只有等级范围内的日志会被输出" Placement="Placement.Right">
+                <p class="menu_text">输出级别</p>
+            </MudTooltip>
+            <MudStack Row Style="width:fit-content;" AlignItems="AlignItems.Center">
+                <MudSelect @bind-Value="@LogSetting.Level.Min"
+                            Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter"
+                            Style="width:90%; max-width:140px; max-height:35px;">
+                        <MudSelectItem Value="LogLevel.Trace" Style="height:35px;" />
+                            <MudSelectItem Value="LogLevel.Debug" Style="height:35px;" />
+                        <MudSelectItem Value="LogLevel.Information" Style="height:35px;" />
+                    <MudSelectItem Value="LogLevel.Warning" Style="height:35px;" />
+                    <MudSelectItem Value="LogLevel.Error" Style="height:35px;" />
+                        <MudSelectItem Value="LogLevel.Critical" Style="height:35px;" />
+                    </MudSelect>
+                <MudIcon Icon="@Icons.Outlined.ArrowRightAlt" />
+                <MudSelect @bind-Value="@LogSetting.Level.Max"
+                            Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter"
+                            Style="width:90%; max-width:140px; max-height:35px;">
+                    <MudSelectItem Value="LogLevel.Trace" Style="height:35px;" />
+                    <MudSelectItem Value="LogLevel.Debug" Style="height:35px;" />
+                    <MudSelectItem Value="LogLevel.Information" Style="height:35px;" />
+                    <MudSelectItem Value="LogLevel.Warning" Style="height:35px;" />
+                    <MudSelectItem Value="LogLevel.Error" Style="height:35px;" />
+                    <MudSelectItem Value="LogLevel.Critical" Style="height:35px;" />
+                </MudSelect>
+            </MudStack>
+        </MudStack>
+        <!-- 日志输出格式 -->
+        <MudStack Spacing="2">
+            <MudTooltip Text="构造方法请参照 Nlog" Placement="Placement.Right">
+                <p class="menu_text">输出格式</p>
+            </MudTooltip>
+            <MudTextField @bind-Value="@LogSetting.Layout" Lines="4"
+                            Margin="Margin.Dense" Variant="Variant.Outlined"
+                            Style="width:90%; max-width:460px; line-height:1.5em;" />
+        </MudStack>
+        <!-- 保存/取消设置 -->
+        <MudStack Row Style="width:100%;">
+            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" 
+                        OnClick="SaveSettings" Disabled="@SaveRunning"
+                        Style="width:100px;">
+                @if (SaveRunning)
+                {
+                    <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate/>
+                }
+                <MudText>保 存</MudText>
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" 
+                        OnClick="RestoreSettings" Disabled="RestoreRunning"
+                        Style="width:100px;">
+                @if (RestoreRunning)
+                {
+                    <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate/>
+                }
+                <MudText>还 原</MudText>
+            </MudButton>
+        </MudStack>
+    </MudStack>
 </AuthorizeView>
 
 <style>

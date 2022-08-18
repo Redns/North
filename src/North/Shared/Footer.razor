@@ -5,21 +5,6 @@
     </div>
 }
 
-<style>
-    #footer {
-        width:fit-content;
-        height:fit-content;
-        max-height:50px;
-        position:absolute;
-        left:0;
-        right:0;
-        bottom:10px;
-        font-size:18px;
-        margin:auto;
-        text-align:center;
-    }
-</style>
-
 @code {
     RenderFragment FooterContent => (builder) => builder.AddMarkupContent(0, Content);
 }

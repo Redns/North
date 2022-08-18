@@ -1,0 +1,95 @@
+﻿@page "/settings/appearance"
+
+@inject IJSRuntime JS
+@inject ILogger _logger
+@inject ISnackbar _snackbar
+@inject IHttpContextAccessor _accessor
+@inject NavigationManager _navigationManager
+
+<AuthorizeView Roles="User,Administrator">
+    <MudStack Spacing="10" Row AlignItems="AlignItems.Center" Class="message_warn">
+        <MudImage Src="icons/warn.svg" Width="180" Elevation="0" Class="rounded-lg ma-4" />
+        <MudLink Href="/" Color="Color.Warning" Style="font-weight:bold; font-size:34px;">您的权限不足，无法访问</MudLink>
+    </MudStack>
+</AuthorizeView>
+<AuthorizeView Roles="System">
+    <MudStack Spacing="6" Style="margin-left:37px; margin-top:20px;" id="page">
+        <!-- 图床名称 -->
+        <MudStack Spacing="2">
+            <p class="menu_text">图床名称</p>
+            <MudTextField @bind-Value="@AppearanceSettings.Name" Variant="Variant.Outlined"
+                          Margin="Margin.Dense" Style="width:90%; max-width:140px; height:35px;" />
+        </MudStack>
+        <!-- 侧边栏是否自动展开 -->
+        <MudStack Spacing="2">
+            <MudTooltip Text="开启后鼠标划过侧边栏即可展开" Placement="Placement.Right">
+                <p class="menu_text">侧边栏自动展开</p>
+            </MudTooltip>
+            <MudSwitch @bind-Checked="@AppearanceSettings.NavAutoExpand" DisableRipple
+                       Color="Color.Tertiary" style="width:fit-content;" />
+        </MudStack>
+        <!-- 每日一图 -->
+        <MudStack Spacing="2">
+            <MudTooltip Text="若要指定图片则填写图片链接即可" Placement="Placement.Right">
+                <p class="menu_text">每日一图API</p>
+            </MudTooltip>
+            <MudTextField @bind-Value="@AppearanceSettings.BackgroundUrl" Variant="Variant.Outlined"
+                          Margin="Margin.Dense" Style="width:90%; max-width:300px; height:35px;" />
+        </MudStack>
+        <!-- 页脚 -->
+        <MudStack Spacing="2">
+            <MudTooltip Text="仅支持原生html组件" Placement="Placement.Right">
+                <p class="menu_text">页 脚</p>
+            </MudTooltip>
+            <MudTextField @bind-Value="@AppearanceSettings.Footer" Variant="Variant.Outlined" Lines="4"
+                          Margin="Margin.Dense" Style="width:90%; max-width:460px; line-height:1.5em;" />
+        </MudStack>
+        <!-- 保存/取消设置 -->
+        <MudStack Row Style="width:100%;">
+            <MudButton Variant="Variant.Filled" Color="Color.Tertiary"
+                       OnClick="SaveSettings" Disabled="@SaveRunning"
+                       Style="width:100px;">
+                @if (SaveRunning)
+                {
+                    <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate />
+                }
+                <MudText>保 存</MudText>
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" Style="width:100px;"
+                       OnClick="RestoreSettings" Disabled="RestoreRunning">
+                @if (RestoreRunning)
+                {
+                    <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate />
+                }
+                <MudText>还 原</MudText>
+            </MudButton>
+        </MudStack>
+    </MudStack>
+</AuthorizeView>
+
+<style>
+    .menu_text {
+        font-weight:bold;
+    }
+
+    #page {
+        overflow: scroll;
+        overflow-x: hidden;
+        height: 100%;
+    }
+
+    #page::-webkit-scrollbar {
+        display:none;
+    }
+
+    .message_warn {
+        width:fit-content;
+        height:fit-content;
+        left: 0;
+        top: 0;
+        bottom: 100px;
+        right: 0;
+        position: absolute;
+        margin: auto;
+    }
+</style>

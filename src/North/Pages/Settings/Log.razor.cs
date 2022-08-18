@@ -7,25 +7,9 @@ namespace North.Pages.Settings
 {
     partial class Log
     {
-        public AppSetting AppSetting { get; set; }
-        public bool PageLoading { get; set; } = true;
         public bool SaveRunning { get; set; } = false;
-        public bool CencelSaveRunning { get; set; } = false;
-
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender)
-            {
-                AppSetting = AppSetting.Load();
-                await InvokeAsync(() =>
-                {
-                    PageLoading = false;
-                    StateHasChanged();
-                });
-            }
-            await base.OnAfterRenderAsync(firstRender);
-        }
+        public bool RestoreRunning { get; set; } = false;
+        public LogSetting LogSetting { get; set; } = GlobalValues.AppSettings.Log.Clone();
 
 
         /// <summary>
@@ -36,7 +20,7 @@ namespace North.Pages.Settings
         {
             try
             {
-                using var logReadStream = File.OpenRead(AppSetting.Log.Output);
+                using var logReadStream = File.OpenRead(LogSetting.Output);
                 using var logReadStreamRef = new DotNetStreamReference(logReadStream);
 
                 var logDownloadUrl = await JS.InvokeAsync<string>("upload", logReadStreamRef, "text/plain");
@@ -60,34 +44,32 @@ namespace North.Pages.Settings
             try
             {
                 SaveRunning = true;
-
-                if(AppSetting.Log.Level.Min > AppSetting.Log.Level.Max)
+                if(LogSetting.Level.Min > LogSetting.Level.Max)
                 {
                     _snackbar.Add("日志输出等级不正确", Severity.Error);
                 }
                 else
                 {
                     await Task.Delay(500);
-
-                    // 保存设置
-                    AppSetting.Save();
-                    GlobalValues.AppSettings = AppSetting.Clone();
-
-                    _logger.ConfigLoggers(AppSetting.Log);
+                    GlobalValues.AppSettings.Log = LogSetting.Clone();
+                    GlobalValues.AppSettings.Save();
+                    _logger.ConfigLoggers(LogSetting);
                     _snackbar.Add("保存成功", Severity.Success);
                 }
             }
             catch (Exception e)
             {
-                GlobalValues.AppSettings = AppSetting.Load();
-                AppSetting = GlobalValues.AppSettings.Clone();
-
-                _snackbar.Add("保存失败", Severity.Error);
-                _logger.Error("Failed to save settings", e);
+                LogSetting = GlobalValues.AppSettings.Log.Clone();
+                _snackbar.Add("保存失败，已还原设置", Severity.Error);
+                _logger.Error("Failed to save log settings", e);
             }
             finally
             {
-                SaveRunning = false;
+                await InvokeAsync(() =>
+                {
+                    SaveRunning = false;
+                    StateHasChanged();
+                });
             }
         }
 
@@ -96,15 +78,13 @@ namespace North.Pages.Settings
         /// 还原设置
         /// </summary>
         /// <returns></returns>
-        public async Task CancelSaveSettings()
+        public async Task RestoreSettings()
         {
             try
             {
-                CencelSaveRunning = true;
+                RestoreRunning = true;
                 await Task.Delay(500);
-
-                AppSetting = GlobalValues.AppSettings.Clone();
-
+                LogSetting = GlobalValues.AppSettings.Log.Clone();
                 _snackbar.Add("已还原设置", Severity.Success);
             }
             catch (Exception e)
@@ -114,7 +94,11 @@ namespace North.Pages.Settings
             }
             finally
             {
-                CencelSaveRunning = false;
+                await InvokeAsync(() =>
+                {
+                    RestoreRunning = false;
+                    StateHasChanged();
+                });
             }
         }
     }

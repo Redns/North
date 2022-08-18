@@ -1,5 +1,6 @@
 ﻿@page "/login"
 
+@using North.Common
 @using North.Data.Access
 @using North.Models.Auth
 @using System.Security.Claims
@@ -38,10 +39,10 @@
 
 <style>
     body {
-      background-image: url('images/Background.png');
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-size: cover;
+        background-image: url(@GlobalValues.AppSettings.Appearance.BackgroundUrl);
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
     }
 
     #login_title {

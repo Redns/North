@@ -3,37 +3,44 @@
 @inherits LayoutComponentBase
 
 @inject ILogger _logger
+@inject OurDbContext _context
 @inject IHttpContextAccessor _accessor
 @inject NavigationManager _navigationManager
 
-<PageTitle>North</PageTitle>
+<PageTitle>@GlobalValues.AppSettings.Appearance.Name</PageTitle>
 
-<MudStack Spacing="0" id="action_bar">
-    <ActionBar IsExpanded="@IsExpanded" OnNavMenuStateChanged="@OnNavMenuStateChanged" />
-    <MudDivider />
-</MudStack>
-<MudStack Row id="container">
-    <AuthorizeView>
-        <Authorized>
-            <NavMenu IsExpanded="@IsExpanded" Style="width:240px;" />
-        </Authorized>
-    </AuthorizeView>
-    <MudStack class="d-flex mud-height-full mud-width-full">
-        @Body
-        <Footer Content="@GlobalValues.AppSettings.General.Footer" Style="width:100%;" />
-    </MudStack>
-</MudStack>
+<AuthorizeView>
+    <Authorized>
+        <MudStack Spacing="0" id="action_bar">
+            <ActionBar IsExpanded="@IsExpanded" OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" />
+            <MudDivider />
+        </MudStack>
+        <MudStack Row id="container">
+            <NavMenu IsExpanded="@IsExpanded" OpenMiniOnHover="GlobalValues.AppSettings.Appearance.NavAutoExpand" Style="width:240px;" />
+            <MudStack class="d-flex mud-height-full mud-width-full">
+                @Body
+                <Footer Content="@GlobalValues.AppSettings.Appearance.Footer" Style="width:100%;" />
+            </MudStack>
+        </MudStack>
+    </Authorized>
+    <NotAuthorized>
+        <MudStack class="d-flex mud-height-full mud-width-full">
+            @Body
+            <Footer Content="@GlobalValues.AppSettings.Appearance.Footer" Style="width:100%;" />
+        </MudStack>
+    </NotAuthorized>
+</AuthorizeView>
 
 <style>
     #action_bar {
-        height:50px;
+        height: 50px;
     }
 
     #container {
-        width:100%;
-        position:absolute;
-        top:50px;
-        left:0;
-        bottom:0;
+        width: 100%;
+        position: absolute;
+        top: 50px;
+        left: 0;
+        bottom: 0;
     }
 </style>

@@ -3,30 +3,30 @@ using North.Common;
 
 namespace North.Pages.Settings
 {
-    partial class Register
+    partial class Appearance
     {
-        public bool SaveRunning { get; set; } = false;
-        public bool RestoreRunning { get; set; } = false;
-        public RegisterSetting RegisterSetting { get; set; } = GlobalValues.AppSettings.Register.Clone();
+        private bool SaveRunning { get; set; } = false;
+        private bool RestoreRunning { get; set; } = false;
+        private AppearanceSetting AppearanceSettings { get; set; } = GlobalValues.AppSettings.Appearance.Clone();
 
 
         /// <summary>
         /// 保存设置
         /// </summary>
-        /// <returns></returns>
-        public async Task SaveSettings()
+        private async void SaveSettings()
         {
             try
             {
                 SaveRunning = true;
-                await Task.Delay(500);
-                GlobalValues.AppSettings.Register = RegisterSetting.Clone();
+                await Task.Delay(400);
+                GlobalValues.AppSettings.Appearance = AppearanceSettings.Clone();
                 GlobalValues.AppSettings.Save();
                 _snackbar.Add("保存成功", Severity.Success);
+                _navigationManager.NavigateTo(_navigationManager.Uri, true);
             }
             catch(Exception e)
             {
-                RegisterSetting = GlobalValues.AppSettings.Register.Clone();
+                AppearanceSettings = GlobalValues.AppSettings.Appearance.Clone();
                 _snackbar.Add("保存失败，已还原设置", Severity.Error);
                 _logger.Error("Failed to save appearance settings", e);
             }
@@ -44,24 +44,27 @@ namespace North.Pages.Settings
         /// <summary>
         /// 还原设置
         /// </summary>
-        /// <returns></returns>
-        public async Task RestoreSaveSettings()
+        private async void RestoreSettings()
         {
             try
             {
                 RestoreRunning = true;
                 await Task.Delay(500);
-                RegisterSetting = GlobalValues.AppSettings.Register.Clone();
-                _snackbar.Add("已还原设置", Severity.Success);
+                AppearanceSettings = GlobalValues.AppSettings.Appearance.Clone();
+                _snackbar.Add("设置还原成功", Severity.Success);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 _snackbar.Add("设置还原失败", Severity.Error);
                 _logger.Error("Failed to restore settings", e);
             }
             finally
             {
-                RestoreRunning = false;
+                await InvokeAsync(() =>
+                {
+                    RestoreRunning = false;
+                    StateHasChanged();
+                });
             }
         }
     }
