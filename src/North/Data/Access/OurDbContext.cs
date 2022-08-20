@@ -14,7 +14,7 @@ namespace North.Data.Access
 
         protected override void OnConfiguring(DbContextOptionsBuilder opt)
         {
-            opt.UseSqlite(GlobalValues.AppSettings.Storage.DataBase.ConnStr);
+            opt.UseSqlite(GlobalValues.AppSettings.General.DataBase.ConnStr);
         }
     }
 }

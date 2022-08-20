@@ -41,6 +41,7 @@
                          HideSpinButtons Adornment="Adornment.End" AdornmentText="ms" Variant="Variant.Outlined"
                          Margin="Margin.Dense"  Style="width:90%; max-width:140px; height:35px;" />
         </MudStack>
+        <MudDivider />
         <!-- 默认授予用户的权限 -->
         <MudStack Spacing="2">
             <MudTooltip Text="默认授予的权限" Placement="Placement.Right">
@@ -106,7 +107,7 @@
                 <MudText>保 存</MudText>
             </MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Error" 
-                       OnClick="RestoreSaveSettings" Disabled="RestoreRunning" Style="width:100px;">
+                       OnClick="RestoreSettings" Disabled="RestoreRunning" Style="width:100px;">
                 @if (RestoreRunning)
                 {
                     <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate/>

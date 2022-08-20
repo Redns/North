@@ -19,6 +19,11 @@ namespace North.Pages.Auth
         public bool RegisterRunning { get; set; } = false;
 
         /// <summary>
+        /// 背景图片链接
+        /// </summary>
+        public string BackgroundImageUrl { get; set; } = string.Empty;
+
+        /// <summary>
         /// 注册模型
         /// </summary>
         public RegisterModel RegisterModel { get; set; } = new RegisterModel();
@@ -27,6 +32,25 @@ namespace North.Pages.Auth
         /// 系统注册设置
         /// </summary>
         public RegisterSetting RegisterSettings { get; set; } = GlobalValues.AppSettings.Register;
+
+
+        /// <summary>
+        /// 加载完 css 和 js 之后再加载背景图片，优化用户体验
+        /// </summary>
+        /// <param name="firstRender"></param>
+        /// <returns></returns>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await InvokeAsync(() =>
+                {
+                    BackgroundImageUrl = GlobalValues.AppSettings.Appearance.BackgroundUrl;
+                    StateHasChanged();
+                });
+            }
+            await base.OnAfterRenderAsync(firstRender);
+        }
 
 
         /// <summary>

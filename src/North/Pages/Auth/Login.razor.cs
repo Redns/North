@@ -26,9 +26,33 @@ namespace North.Pages.Auth
         public bool LoginRunning { get; set; } = false;
 
         /// <summary>
+        /// 背景图片链接
+        /// </summary>
+        public string BackgroundImageUrl { get; set; } = string.Empty;
+
+        /// <summary>
         /// 登录模型
         /// </summary>
         public LoginModel LoginModel { get; set; } = new LoginModel();
+
+
+        /// <summary>
+        /// 加载完 css 和 js 之后再加载背景图片，优化用户体验
+        /// </summary>
+        /// <param name="firstRender"></param>
+        /// <returns></returns>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await InvokeAsync(() =>
+                {
+                    BackgroundImageUrl = GlobalValues.AppSettings.Appearance.BackgroundUrl;
+                    StateHasChanged();
+                });
+            }
+            await base.OnAfterRenderAsync(firstRender);
+        }
 
 
         /// <summary>
@@ -104,7 +128,10 @@ namespace North.Pages.Auth
             {
                 _navigationManager.NavigateTo("register", true);
             }
-            _snackbar.Add("系统当前未开放注册", Severity.Error);
+            else
+            {
+                _snackbar.Add("系统当前未开放注册", Severity.Error);
+            }
         }
     }
 }

@@ -8,7 +8,6 @@ namespace North.Common
     {
         public GeneralSetting General { get; set; }
         public AppearanceSetting Appearance { get; set; }
-        public StorageSetting Storage { get; set; }
         public RegisterSetting Register { get; set; }
         public NotifySetting Notify { get; set; }
         public AuthSetting Auth { get; set; }
@@ -18,7 +17,6 @@ namespace North.Common
         {
             General = general;
             Appearance = appearance;
-            Storage = storage;
             Register = register;
             Notify = notify;
             Auth = auth;
@@ -68,6 +66,20 @@ namespace North.Common
 
     public class GeneralSetting
     {
+        // TODO 数据库表不存在时自动创建
+        // 增加测试连接按钮
+        // 修改后弹窗提示是否迁移数据
+        public DataBaseSetting DataBase { get; set; }
+
+        public GeneralSetting(DataBaseSetting dataBase)
+        {
+            DataBase = dataBase;
+        }
+
+        public GeneralSetting Clone()
+        {
+            return new GeneralSetting(DataBase.Clone());
+        }
     }
 
 

@@ -1,7 +1,69 @@
 ﻿@page "/settings/general"
 
-<h3>General</h3>
+@inject ILogger _logger
+@inject ISnackbar _snackbar
+@inject IHttpContextAccessor _accessor
+@inject NavigationManager _navigationManager
 
-@code {
+<AuthorizeView Roles="User,Administrator">
+    <MudStack Spacing="10" Row AlignItems="AlignItems.Center" Class="message_warn">
+        <MudImage Src="icons/warn.svg" Width="180" Elevation="0" Class="rounded-lg ma-4" />
+        <MudLink Href="/" Color="Color.Warning" Style="font-weight:bold; font-size:34px;">您的权限不足，无法访问</MudLink>
+    </MudStack>
+</AuthorizeView>
+<AuthorizeView Roles="System">
+    <MudStack Spacing="6" Style="margin-left:37px; margin-top:20px;" id="page">
+        <!-- 数据库连接字符串 -->
+        <MudStack Spacing="2">
+            <p class="menu_text">数据库连接字符串</p>
+            <MudTextField @bind-Value="GeneralSetting.DataBase.ConnStr" Margin="Margin.Dense"
+                          Variant="Variant.Outlined" Style="width:90%; max-width:360px; height:35px;" />
+        </MudStack>
+        <!-- 保存/取消设置 -->
+        <MudStack Row Style="width:100%;">
+            <MudButton Variant="Variant.Filled" Color="Color.Tertiary"
+                       OnClick="SaveSettings" Disabled="SaveRunning" Style="width:100px;">
+                @if (SaveRunning)
+                {
+                    <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate />
+                }
+                <MudText>保 存</MudText>
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error"
+                       OnClick="RestoreSettings" Disabled="RestoreRunning" Style="width:100px;">
+                @if (RestoreRunning)
+                {
+                    <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate />
+                }
+                <MudText>还 原</MudText>
+            </MudButton>
+        </MudStack>
+    </MudStack>
+</AuthorizeView>
 
-}
+<style>
+    .menu_text {
+        font-weight: bold;
+    }
+
+    #page {
+        overflow: scroll;
+        overflow-x: hidden;
+        height: calc(100% - 70px);
+    }
+
+    #page::-webkit-scrollbar {
+        display: none;
+    }
+
+    .message_warn {
+        width: fit-content;
+        height: fit-content;
+        left: 0;
+        top: 0;
+        bottom: 100px;
+        right: 0;
+        position: absolute;
+        margin: auto;
+    }
+</style>

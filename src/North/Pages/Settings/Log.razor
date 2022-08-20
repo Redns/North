@@ -21,7 +21,7 @@
                 <MudTextField @bind-Value="@LogSetting.Output"
                             Margin="Margin.Dense" Variant="Variant.Outlined"
                             Style="width:90%; max-width:260px; height:35px;" />
-                    <MudTooltip Text="点击下载日志" Placement="Placement.Right">
+                <MudTooltip Text="点击下载日志" Placement="Placement.Right">
                     <MudIconButton Icon="@Icons.Filled.Download" Variant="Variant.Outlined" Color="Color.Info" OnClick="DownloadLogfile"/>
                 </MudTooltip>
             </MudStack>

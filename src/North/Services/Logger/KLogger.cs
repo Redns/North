@@ -11,7 +11,7 @@ namespace North.Services.Logger
         public KLogger(LogSetting setting)
         {
             this.setting = setting;
-            logger = new FileStream(setting.Output, FileMode.Append);
+            logger = new FileStream(setting.Output, FileMode.Append | FileMode.Create);
         }
 
         public void ConfigLoggers(LogSetting settings)

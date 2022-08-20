@@ -6,6 +6,7 @@ using North.Common;
 using North.Data.Access;
 using North.Models.Auth;
 using North.Services.Logger;
+using System.Diagnostics;
 using ILogger = North.Services.Logger.ILogger;
 
 class Program
@@ -13,13 +14,15 @@ class Program
     private static WebApplication? app;
     private static WebApplicationBuilder? builder;
 
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
         try
         {
             // 绑定应用程序域事件
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             AppDomain.CurrentDomain.UnhandledException += OnHandleExpection;
+
+            _ = GetCpuUsageForProcess();
 
             // 创建容器
             builder = WebApplication.CreateBuilder(args);
@@ -75,7 +78,7 @@ class Program
         }
         catch(Exception e)
         {
-            app?.Services.GetService<ILogger>()?.Error("Application abort", e);
+            new KLogger(GlobalValues.AppSettings.Log).Info("Application abort");
         }
     }
 
@@ -100,5 +103,30 @@ class Program
     static void OnProcessExit(object? sender, EventArgs args)
     {
         new KLogger(GlobalValues.AppSettings.Log).Info("Application exit");
+    }
+
+
+    private static async Task GetCpuUsageForProcess()
+    {
+        var startTime = DateTime.UtcNow;
+        var startCpuUsage = Process.GetCurrentProcess().TotalProcessorTime;
+
+        while (true)
+        {
+            await Task.Delay(500);
+
+            var endTime = DateTime.UtcNow;
+            var endCpuUsage = Process.GetCurrentProcess().TotalProcessorTime;
+
+            var cpuUsedMs = (endCpuUsage - startCpuUsage).TotalMilliseconds;
+            var totalMsPassed = (endTime - startTime).TotalMilliseconds;
+
+            var cpuUsageTotal = cpuUsedMs / (Environment.ProcessorCount * totalMsPassed);
+
+
+            var mem = AppDomain.CurrentDomain.MonitoringTotalAllocatedMemorySize;
+            Console.WriteLine($"[CPU]{cpuUsageTotal * 100}%  [Memory]{mem/1024.0/1024.0:f3} MB");
+        }
+        
     }
 }
