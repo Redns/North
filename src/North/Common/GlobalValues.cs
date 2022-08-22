@@ -1,4 +1,4 @@
-﻿using North.Models.Auth;
+﻿using Krins.Nuget;
 
 namespace North.Common
 {
@@ -18,6 +18,19 @@ namespace North.Common
         {
             get { return _appSetting ??= AppSetting.Load(); }
             set { _appSetting = value; }
+        }
+
+        /// <summary>
+        /// Nuget 引擎
+        /// </summary>
+        private static NugetEngine? _nugetEngine;
+        public static NugetEngine NugetEngine
+        {
+            get
+            {
+                return _nugetEngine ??= new NugetEngine();
+            }
+            set { _nugetEngine = value; }
         }
     }
 }

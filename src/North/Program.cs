@@ -22,7 +22,7 @@ class Program
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             AppDomain.CurrentDomain.UnhandledException += OnHandleExpection;
 
-            _ = GetCpuUsageForProcess();
+            //_ = GetCpuUsageForProcess();
 
             // 创建容器
             builder = WebApplication.CreateBuilder(args);
@@ -72,13 +72,15 @@ class Program
             app.MapBlazorHub();
             app.MapControllers();
             app.MapFallbackToPage("/_Host");
-            app.Urls.Add("http://0.0.0.0:12121");
+            //app.Urls.Add("http://0.0.0.0:12121");
+            app.Urls.Add("http://*:12121");
 
             app.Run();
         }
         catch(Exception e)
         {
-            new KLogger(GlobalValues.AppSettings.Log).Info("Application abort");
+            using var logger = new KLogger(GlobalValues.AppSettings.Log);
+            logger.Error($"Application abort", e);
         }
     }
 
@@ -102,10 +104,12 @@ class Program
     /// <param name="args"></param>
     static void OnProcessExit(object? sender, EventArgs args)
     {
-        new KLogger(GlobalValues.AppSettings.Log).Info("Application exit");
+        using var logger = new KLogger(GlobalValues.AppSettings.Log);
+        logger.Info("Application exit");
     }
 
 
+    // TODO 制作工具类
     private static async Task GetCpuUsageForProcess()
     {
         var startTime = DateTime.UtcNow;

@@ -11,7 +11,20 @@ namespace North.Services.Logger
         public KLogger(LogSetting setting)
         {
             this.setting = setting;
-            logger = new FileStream(setting.Output, FileMode.Append | FileMode.Create);
+            if (!File.Exists(setting.Output))
+            {
+                var outputDir = Path.GetDirectoryName(setting.Output);
+                if (!string.IsNullOrEmpty(outputDir))
+                {
+                    Directory.CreateDirectory(outputDir);
+                }
+
+                logger = new FileStream(setting.Output, FileMode.Create);
+            }
+            else
+            {
+                logger = new FileStream(setting.Output, FileMode.Append);
+            }
         }
 
         public void ConfigLoggers(LogSetting settings)
@@ -32,7 +45,13 @@ namespace North.Services.Logger
 
         public void Debug(string message, Exception e)
         {
-            throw new NotImplementedException();
+            if ((LogLevel.Debug >= setting.Level.Min) && (LogLevel.Debug <= setting.Level.Max))
+            {
+                var msg = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [North Debug] {message}, {e.Message}\n{e.StackTrace}";
+
+                Console.Write(msg);
+                logger.Write(Encoding.UTF8.GetBytes(msg));
+            }
         }
 
 
@@ -50,7 +69,13 @@ namespace North.Services.Logger
 
         public void Error(string message, Exception e)
         {
-            throw new NotImplementedException();
+            if ((LogLevel.Error >= setting.Level.Min) && (LogLevel.Error <= setting.Level.Max))
+            {
+                var msg = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [North Error] {message}, {e.Message}\n{e.StackTrace}";
+
+                Console.Write(msg);
+                logger.Write(Encoding.UTF8.GetBytes(msg));
+            }
         }
 
 
@@ -68,7 +93,13 @@ namespace North.Services.Logger
 
         public void Fatal(string message, Exception e)
         {
-            throw new NotImplementedException();
+            if ((LogLevel.Critical >= setting.Level.Min) && (LogLevel.Critical <= setting.Level.Max))
+            {
+                var msg = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [North Fatal] {message}, {e.Message}\n{e.StackTrace}";
+
+                Console.Write(msg);
+                logger.Write(Encoding.UTF8.GetBytes(msg));
+            }
         }
 
 
@@ -86,7 +117,13 @@ namespace North.Services.Logger
 
         public void Info(string message, Exception e)
         {
-            throw new NotImplementedException();
+            if ((LogLevel.Information >= setting.Level.Min) && (LogLevel.Information <= setting.Level.Max))
+            {
+                var msg = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [North Info] {message}, {e.Message}\n{e.StackTrace}";
+
+                Console.Write(msg);
+                logger.Write(Encoding.UTF8.GetBytes(msg));
+            }
         }
 
 
@@ -104,7 +141,13 @@ namespace North.Services.Logger
 
         public void Trace(string message, Exception e)
         {
-            throw new NotImplementedException();
+            if ((LogLevel.Trace >= setting.Level.Min) && (LogLevel.Trace <= setting.Level.Max))
+            {
+                var msg = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [North Trace] {message}, {e.Message}\n{e.StackTrace}";
+
+                Console.Write(msg);
+                logger.Write(Encoding.UTF8.GetBytes(msg));
+            }
         }
 
 
@@ -122,7 +165,13 @@ namespace North.Services.Logger
 
         public void Warn(string message, Exception e)
         {
-            throw new NotImplementedException();
+            if ((LogLevel.Warning >= setting.Level.Min) && (LogLevel.Warning <= setting.Level.Max))
+            {
+                var msg = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [North Warn] {message}, {e.Message}\n{e.StackTrace}";
+
+                Console.Write(msg);
+                logger.Write(Encoding.UTF8.GetBytes(msg));
+            }
         }
 
 
