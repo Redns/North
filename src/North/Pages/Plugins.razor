@@ -22,7 +22,7 @@
             <MudGrid Justify="Justify.FlexStart" id="plugin_list">
                 @foreach (var package in Packages)
                 {
-                    <MudItem xs="6">
+                    <MudItem xs="12" lg="6">
                         <MudCard Elevation="3" Outlined id="plugin_item">
                             <MudStack Row AlignItems="AlignItems.Center" Style="width:100%; height:100%; margin:0 0 10px 10px;">
                                 @if (!string.IsNullOrEmpty(package.IconUrl?.AbsoluteUri))
@@ -86,5 +86,7 @@
 
     #plugin_item {
         height:130px;
+        border-radius:8px;
+        border-width:2px;
     }
 </style>
