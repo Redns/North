@@ -2,7 +2,9 @@
 {
     public interface IStorage
     {
+        string Id { get; }
         string Upload(Stream stream, string imageName);
-        ValueTask<string> UploadAsync(Stream stream, string imageName);
+        bool Delete();
+
     }
 }
