@@ -12,7 +12,7 @@ namespace North.PluginBase
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public virtual SettingBase Load()
+        public static SettingBase Load()
         {
             return JsonConvert.DeserializeObject<SettingBase>(File.ReadAllText("settings.json")) ?? throw new Exception("Load settings failed");
         }

@@ -105,22 +105,19 @@
     public struct Storager
     {
         /// <summary>
-        /// 存储方 ID
-        /// 存储方：指的是实现了 IStorage 接口的插件，North 的本地存储也是通过插件实现的；
-        /// 存储方ID：IStorage 接口的 ID，不是插件本身的 ID（因为一个插件可能会实现若干个 IStorage 接口）；
-        /// 若仅保留图片链接而不保留接口ID，则无法执行图片删除等操作。
+        /// IStorge 插件 ID
         /// </summary>
         public string Id { get; set;}
 
         /// <summary>
-        /// 图片绝对地址
+        /// 图片相对地址
         /// </summary>
-        public string AbsoluteUrl { get; set; }
+        public string RelativeUrl { get; set; }
 
-        public Storager(string id, string absoluteUrl)
+        public Storager(string id, string relativeUrl)
         {
             Id = id;
-            AbsoluteUrl = absoluteUrl;
+            RelativeUrl = relativeUrl;
         }
     }
 }

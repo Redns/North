@@ -1,10 +1,10 @@
 ﻿namespace North.Updater
 {
-    internal class Program
+    class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            
         }
     }
 }

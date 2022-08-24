@@ -3,6 +3,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using NLog.Extensions.Logging;
 using North.Common;
+using North.Core.Helper;
 using North.Data.Access;
 using North.Models.Auth;
 using North.Services.Logger;
@@ -22,7 +23,8 @@ class Program
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             AppDomain.CurrentDomain.UnhandledException += OnHandleExpection;
 
-            //_ = GetCpuUsageForProcess();
+            // TODO DEL HERE
+            var s = AppMonitorHelper.CpuUsage;
 
             // 创建容器
             builder = WebApplication.CreateBuilder(args);
@@ -106,31 +108,5 @@ class Program
     {
         using var logger = new KLogger(GlobalValues.AppSettings.Log);
         logger.Info("Application exit");
-    }
-
-
-    // TODO 制作工具类
-    private static async Task GetCpuUsageForProcess()
-    {
-        var startTime = DateTime.UtcNow;
-        var startCpuUsage = Process.GetCurrentProcess().TotalProcessorTime;
-
-        while (true)
-        {
-            await Task.Delay(500);
-
-            var endTime = DateTime.UtcNow;
-            var endCpuUsage = Process.GetCurrentProcess().TotalProcessorTime;
-
-            var cpuUsedMs = (endCpuUsage - startCpuUsage).TotalMilliseconds;
-            var totalMsPassed = (endTime - startTime).TotalMilliseconds;
-
-            var cpuUsageTotal = cpuUsedMs / (Environment.ProcessorCount * totalMsPassed);
-
-
-            var mem = AppDomain.CurrentDomain.MonitoringTotalAllocatedMemorySize;
-            Console.WriteLine($"[CPU]{cpuUsageTotal * 100}%  [Memory]{mem/1024.0/1024.0:f3} MB");
-        }
-        
     }
 }

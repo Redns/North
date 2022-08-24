@@ -37,7 +37,7 @@
             <MudTextField @bind-Value="RegisterModel.Password" InputType="InputType.Password" MaxLength="32" 
                           Placeholder="密码" Variant="Variant.Outlined" Margin="Margin.Dense" 
                           Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Lock"
-                          Immediate></MudTextField>
+                          Immediate OnKeyDown="@EnterToRegister"></MudTextField>
             <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="UserRegister" Disabled="RegisterRunning">
                 @if (RegisterRunning)
                 {

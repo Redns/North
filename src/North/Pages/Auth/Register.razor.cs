@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MimeKit;
 using MudBlazor;
@@ -120,6 +121,15 @@ namespace North.Pages.Auth
             {
                 RegisterRunning = false;
             } 
+        }
+
+
+        private async Task EnterToRegister(KeyboardEventArgs args)
+        {
+            if(args.Code is "Enter")
+            {
+                await UserRegister();
+            }
         }
 
 
