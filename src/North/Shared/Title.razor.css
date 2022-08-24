@@ -1,6 +1,4 @@
 ﻿#font_title {
-    font-weight: 500;
-    font-family: sans-serif;
     background: linear-gradient(to right, rgb(123, 194, 122) 0%, rgba(63, 174, 162) 50%, rgb(3, 154, 202) 80%);
     -webkit-background-clip: text;
     color: transparent;

@@ -1,2 +1,15 @@
 2022-08-21 16:00:03 [North Info] Application exit
 2022-08-22 21:38:21 [North Info] Application exit
+2022-08-24 19:04:03 [North Error] Application abort, E:\Project\North\North\src\North\wwwroot\
+   at Microsoft.Extensions.FileProviders.PhysicalFileProvider..ctor(String root, ExclusionFilters filters)
+   at Microsoft.Extensions.FileProviders.PhysicalFileProvider..ctor(String root)
+   at Microsoft.AspNetCore.Hosting.StaticWebAssets.StaticWebAssetsLoader.<>c.<UseStaticWebAssetsCore>b__1_0(String contentRoot)
+   at Microsoft.AspNetCore.StaticWebAssets.ManifestStaticWebAssetFileProvider..ctor(StaticWebAssetManifest manifest, Func`2 fileProviderFactory)
+   at Microsoft.AspNetCore.Hosting.StaticWebAssets.StaticWebAssetsLoader.UseStaticWebAssetsCore(IWebHostEnvironment environment, Stream manifest)
+   at Microsoft.AspNetCore.Hosting.StaticWebAssets.StaticWebAssetsLoader.UseStaticWebAssets(IWebHostEnvironment environment, IConfiguration configuration)
+   at Microsoft.AspNetCore.WebHost.<>c.<ConfigureWebDefaults>b__9_0(WebHostBuilderContext ctx, IConfigurationBuilder cb)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostBuilder.<>c__DisplayClass9_0.<ConfigureAppConfiguration>b__0(HostBuilderContext context, IConfigurationBuilder builder)
+   at Microsoft.AspNetCore.Hosting.BootstrapHostBuilder.RunDefaultCallbacks(ConfigurationManager configuration, HostBuilder innerBuilder)
+   at Microsoft.AspNetCore.Builder.WebApplicationBuilder..ctor(WebApplicationOptions options, Action`1 configureDefaults)
+   at Microsoft.AspNetCore.Builder.WebApplication.CreateBuilder(String[] args)
+   at Program.Main(String[] args) in E:\Project\North\North\src\North\Program.cs:line 282022-08-24 19:04:04 [North Info] Application exit

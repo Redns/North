@@ -1,11 +1,7 @@
-﻿using DataAnnotationsExtensions;
-using System.ComponentModel.DataAnnotations;
-
-namespace North.Core.Entities
+﻿namespace North.Core.Entities
 {
     public class ImageEntity
     {
-        [MaxLength(32)]
         public string Id { get; set; }
 
         /// <summary>
@@ -16,7 +12,6 @@ namespace North.Core.Entities
         /// <summary>
         /// 大小（单位：字节）
         /// </summary>
-        [Min(0)]
         public long Size { get; set; }
 
         /// <summary>
@@ -42,7 +37,6 @@ namespace North.Core.Entities
         /// <summary>
         /// 请求次数
         /// </summary>
-        [Min(0)]
         public long Request { get; set; }
 
         public ImageEntity(string id, string name, long size, Dpi dpi, Owner owner, Storager storager)

@@ -16,7 +16,6 @@
     <PackageReference Include="MudBlazor" Version="6.0.14" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="5.1.0" />
-    <PackageReference Include="NuGet.Protocol" Version="6.3.0" />
     <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
   </ItemGroup>
 
