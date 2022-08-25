@@ -1,4 +1,5 @@
 ﻿@page "/plugins"
+@using North.Core.Helper
 
 @inject ILogger _logger
 @inject ISnackbar _snackbar
@@ -11,13 +12,17 @@
 </AuthorizeView>
 <AuthorizeView Roles="System">
     <MudStack Spacing="5" id="page">
-        <MudTextField @bind-Value="@PackageName" DebounceInterval="500" OnDebounceIntervalElapsed="@SearchPackagesAsync"
+        <MudTextField @bind-Value="@PackageName" DebounceInterval="500" OnDebounceIntervalElapsed="@SearchPluginsAsync"
                       Variant="Variant.Text" Placeholder="请输入插件名称..." Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" id="search_field" />
         @if(PackageSearching)
         {
             <Loading Enable Style="position:absolute; left:0; right:0; top:0; bottom:0; margin:auto;" />
         }
-        else
+        else if(!Packages.Any())
+        {
+            <Empty />
+        }
+        else 
         {
             <MudGrid Justify="Justify.FlexStart" id="plugin_list">
                 @foreach (var package in Packages)
@@ -37,9 +42,9 @@
                                     <a href="@($"https://www.nuget.org/packages/{package.Identity.Id}")" style="font-size:22px; font-weight:300; line-height:.9; color:#337ab7;">@package.Identity.Id</a>
                                     <MudStack Row>
                                         <MudIcon Icon="@Icons.Outlined.Group"></MudIcon>
-                                        <MudText>@FormatString(package.Authors, 32)</MudText>
+                                        <MudText>@package.Authors.FormatString(32)</MudText>
                                         <MudIcon Icon="@Icons.Outlined.FileDownload"></MudIcon>
-                                        <MudText>@package.DownloadCount</MudText>
+                                        <MudText>@package.DownloadCount?.FormatNumber()</MudText>
                                         @if(package.LicenseMetadata is not null)
                                         {
                                             <MudIcon Icon="@Icons.Outlined.Lock"></MudIcon>
@@ -48,26 +53,35 @@
                                         <MudIcon Icon="@Icons.Outlined.Flag"></MudIcon>
                                         <MudText>@package.Identity.Version.ToFullString()</MudText>
                                     </MudStack>
-                                    <MudText>@FormatString(package.Description)</MudText>
+                                    <MudText>@package.Description.FormatString()</MudText>
+                                </MudStack>
+                                <MudStack Justify="Justify.FlexEnd" Style="width:fit-content; height:100%; margin-right:20px; margin-bottom:10px;">
+                                    @if(PluginSetting.Plugins.Any(plugin => plugin.Identity.Id == package.Identity.Id))
+                                    {
+                                        <MudIconButton Icon="@Icons.Outlined.Settings" OnClick="@(() => UnInstallPlugin(package))"></MudIconButton>
+                                    }
+                                    else
+                                    {
+                                        <MudTooltip Text="点击安装" Placement="Placement.Bottom">
+                                            <MudIconButton Icon="@Icons.Filled.InstallDesktop" OnClick="@(() => InstallPlugin(package))"></MudIconButton>
+                                        </MudTooltip>
+                                    }
                                 </MudStack>
                             </MudStack>
                         </MudCard>
                     </MudItem>
                 }
             </MudGrid>
-        }
-                      
+        }           
     </MudStack>
 </AuthorizeView>
-
-
-
 
 <style>
     #page {
         margin: 10px 30px;
         overflow-x: hidden;
-        height: calc(100% - 70px);
+        height:fit-content;
+        max-height: calc(100% - 70px);
     }
 
     #page::-webkit-scrollbar {
@@ -77,7 +91,8 @@
     #plugin_list {
         overflow: scroll;
         overflow-x: hidden;
-        height: calc(100% - 40px);
+        height:fit-content;
+        max-height: calc(100% - 40px);
     }
 
     #plugin_list::-webkit-scrollbar {
@@ -88,5 +103,16 @@
         height:130px;
         border-radius:8px;
         border-width:2px;
+    }
+
+    .message_warn {
+        width: fit-content;
+        height: fit-content;
+        left: 0;
+        top: 0;
+        bottom: 100px;
+        right: 0;
+        position: absolute;
+        margin: auto;
     }
 </style>

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using North.Core.Entities;
 using North.Pages.Settings;
+using NuGet.Protocol.Core.Types;
 
 namespace North.Common
 {
@@ -12,8 +13,9 @@ namespace North.Common
         public NotifySetting Notify { get; set; }
         public AuthSetting Auth { get; set; }
         public LogSetting Log { get; set; }
+        public PluginSetting Plugin { get; set; }
 
-        public AppSetting(GeneralSetting general, AppearanceSetting appearance, StorageSetting storage, RegisterSetting register, NotifySetting notify, AuthSetting auth, LogSetting log)
+        public AppSetting(GeneralSetting general, AppearanceSetting appearance, RegisterSetting register, NotifySetting notify, AuthSetting auth, LogSetting log, PluginSetting plugin)
         {
             General = general;
             Appearance = appearance;
@@ -21,6 +23,7 @@ namespace North.Common
             Notify = notify;
             Auth = auth;
             Log = log;
+            Plugin = plugin;
         }
 
 
@@ -324,6 +327,50 @@ namespace North.Common
         public Level Clone()
         {
             return new Level(Min, Max);
+        }
+    }
+
+
+    /// <summary>
+    /// 插件设置
+    /// </summary>
+    public class PluginSetting
+    {
+        public IPackageSearchMetadata[] Plugins { get; set; }
+        public PluginCategory[] Categories { get; set; }
+
+        public PluginSetting(IPackageSearchMetadata[] plugins, PluginCategory[] categories)
+        {
+            Plugins = plugins;
+            Categories = categories;
+        }
+
+        public PluginSetting Clone()
+        {
+            return new PluginSetting((IPackageSearchMetadata[])Plugins.Clone(), (PluginCategory[])Categories.Clone());
+        }
+    }
+
+
+    /// <summary>
+    /// 插件类别
+    /// </summary>
+    public class PluginCategory
+    {
+        /// <summary>
+        /// 类别名称
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 内部执行顺序
+        /// </summary>
+        public int[] ExecuteOrders { get; set; }
+
+        public PluginCategory(string name, int[] executeOrders)
+        {
+            Name = name;
+            ExecuteOrders = executeOrders;
         }
     }
 }

@@ -8,9 +8,15 @@ namespace North.Pages
     {
         private string PackageName { get; set; } = string.Empty;
         private bool PackageSearching { get; set; } = false;
-        private IEnumerable<IPackageSearchMetadata> Packages { get; set; } = Enumerable.Empty<IPackageSearchMetadata>();
+        private PluginSetting PluginSetting { get; set; } = GlobalValues.AppSettings.Plugin;
+        private IPackageSearchMetadata[] Packages { get; set; } = GlobalValues.AppSettings.Plugin.Plugins;
 
-        private async Task SearchPackagesAsync()
+
+        /// <summary>
+        /// 搜索插件
+        /// </summary>
+        /// <returns></returns>
+        private async Task SearchPluginsAsync()
         {
             try
             {
@@ -19,7 +25,7 @@ namespace North.Pages
                     PackageSearching = true;
                     StateHasChanged();
                 });
-                Packages = await GlobalValues.NugetEngine.GetPackagesAsync(PackageName);
+                Packages = string.IsNullOrEmpty(PackageName) ? PluginSetting.Plugins : (await GlobalValues.NugetEngine.GetPackagesAsync(PackageName)).ToArray();
             }
             catch (Exception e)
             {
@@ -33,31 +39,15 @@ namespace North.Pages
         }
 
 
-        /// <summary>
-        /// 格式化字符串
-        /// </summary>
-        /// <param name="str">源字符串</param>
-        /// <param name="maxLength">最大长度</param>
-        /// <returns></returns>
-        private string FormatString(string str, int maxLength = 60)
+        private void InstallPlugin(IPackageSearchMetadata plugin)
         {
-            if(str.Length <= maxLength)
-            {
-                return str;
-            }
-            else
-            {
-                var formatDescription = str[..(maxLength - 3)];
-                var lastSpliterIndex = formatDescription.Length;
-                for(int i = 0; i < formatDescription.Length; i++)
-                {
-                    if((formatDescription[i] == ' ') || (formatDescription[i] == ','))
-                    {
-                        lastSpliterIndex = i;
-                    }
-                }
-                return $"{formatDescription[0..lastSpliterIndex]}...";
-            }
+            PluginSetting.Plugins = PluginSetting.Plugins.Append(plugin).ToArray();
+        }
+
+
+        private void UnInstallPlugin(IPackageSearchMetadata plugin)
+        {
+            PluginSetting.Plugins = PluginSetting.Plugins.Where(p => p.Identity.Id != plugin.Identity.Id).ToArray();
         }
     }
 }

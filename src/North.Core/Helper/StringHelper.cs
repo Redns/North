@@ -1,4 +1,6 @@
-﻿namespace North.Core.Helper
+﻿using System.Text;
+
+namespace North.Core.Helper
 {
     /// <summary>
     /// 字符串辅助类
@@ -29,6 +31,59 @@
                 }
             }
             return false;
+        }
+
+
+        /// <summary>
+        /// 格式化字符串
+        /// </summary>
+        /// <param name="s">源字符串</param>
+        /// <param name="maxLength">最大长度</param>
+        /// <returns></returns>
+        public static string FormatString(this string s, int maxLength = 60)
+        {
+            if (s.Length <= maxLength)
+            {
+                return s;
+            }
+            else
+            {
+                var formatDescription = s[..(maxLength - 3)];
+                var lastSpliterIndex = formatDescription.Length;
+                for (int i = 0; i < formatDescription.Length; i++)
+                {
+                    if ((formatDescription[i] == ' ') || (formatDescription[i] == ','))
+                    {
+                        lastSpliterIndex = i;
+                    }
+                }
+                return $"{formatDescription[0..lastSpliterIndex]}...";
+            }
+        }
+
+
+        public static string FormatNumber(this long l)
+        {
+            if(l < 10000)
+            {
+                return l.ToString();
+            }
+            else
+            {
+                var result = new StringBuilder();
+                var numberStr = l.ToString();
+                var numberStrLen = numberStr.Length;
+                for (int i = 0; i < numberStrLen; i++)
+                {
+                    result.Append(numberStr[i]);
+                    if (((numberStrLen - i - 1) % 4 == 0) && (i != (numberStr.Length - 1))) 
+                    { 
+                        result.Append(',');
+                        result.Append(' ');
+                    }
+                }
+                return result.ToString();
+            }
         }
     }
 }

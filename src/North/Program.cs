@@ -23,9 +23,6 @@ class Program
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             AppDomain.CurrentDomain.UnhandledException += OnHandleExpection;
 
-            // TODO DEL HERE
-            var s = AppMonitorHelper.CpuUsage;
-
             // ´´½¨ÈÝÆ÷
             builder = WebApplication.CreateBuilder(args);
 
