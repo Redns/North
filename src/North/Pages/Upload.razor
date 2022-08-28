@@ -5,20 +5,15 @@
 
 <AuthorizeView Roles="User,Administrator,System">
     <MudStack Style="width:50%; height:calc(95% - 50px); margin:5% 25% 0 25%; ">
-        
-        <MudPaper @ondragenter="@SetDragClass" @ondragleave="@ClearDragClass" @ondragend="@ClearDragClass" Height="300px" Outlined="true" Class="@DragClass">
+        <MudPaper @ondragenter="@SetDragClass" @ondragleave="@ClearDragClass" @ondragend="@ClearDragClass" Height="300px" Outlined Class="@DragClass">
             @if (!Clearing)
             {
-                <InputFile OnChange="OnInputFileChanged" multiple class="absolute mud-width-full mud-height-full overflow-hidden z-20" style="opacity:0;" />
+                <InputFile OnChange="OnInputFileChanged" multiple Class="absolute mud-width-full mud-height-full overflow-hidden z-20" Style="opacity:0;" />
             }
-            <MudStack AlignItems="AlignItems.Center" Class="z-10" Style="width:100%; height:fit-content; position:absolute; top:0; bottom:0; margin:auto;">
-                <MudIcon Icon="@Icons.Outlined.CloudUpload" Style="width:15%; height:15%;" />
+            <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="mud-width-full mud-height-full z-10">
+                <MudIcon Icon="@Icons.Outlined.CloudUpload" Style="width:100px; height:100px;" />
                 <MudText Typo="Typo.h6">点击或拖拽图片至此处上传</MudText>
             </MudStack>
         </MudPaper>
-        <MudToolBar DisableGutters="true" Class="gap-4">
-            <MudButton OnClick="UploadImage" Disabled="@(!fileNames.Any())" Color="Color.Primary" Variant="Variant.Filled">Upload</MudButton>
-            <MudButton OnClick="Clear" Disabled="@(!fileNames.Any())" Color="Color.Error" Variant="Variant.Filled">Clear</MudButton>
-        </MudToolBar>
     </MudStack>
 </AuthorizeView>

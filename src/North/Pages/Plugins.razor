@@ -56,7 +56,7 @@
                                     }
                                     else if(plugin.State is PluginState.Enable)
                                     {
-                                        <MudMenu Icon="@Icons.Outlined.Settings" AnchorOrigin="Origin.BottomRight">
+                                        <MudMenu Icon="@Icons.Outlined.Settings" AnchorOrigin="Origin.BottomRight" ActivationEvent="MouseEvent.MouseOver">
                                             <MudMenuItem OnClick="@(() => DisablePlugin(plugin))">
                                                 <MudStack Row>
                                                     <MudIcon Icon="@Icons.Outlined.LockOpen" />
