@@ -15,11 +15,11 @@ namespace North.Shared
         /// 页面首次加载时核验用户身份
         /// </summary>
         /// <returns></returns>
-        protected override async Task OnInitializedAsync()
-        {
-            await AuthorizationAsync();
-            await base.OnInitializedAsync();
-        }
+        //protected override async Task OnInitializedAsync()
+        //{
+        //    await AuthorizationAsync();
+        //    await base.OnInitializedAsync();
+        //}
 
 
         /// <summary>
@@ -27,14 +27,14 @@ namespace North.Shared
         /// </summary>
         /// <param name="firstRender"></param>
         /// <returns></returns>
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (!firstRender)
-            {
-                await AuthorizationAsync();
-            }
-            await base.OnAfterRenderAsync(firstRender);
-        }
+        //protected override async Task OnAfterRenderAsync(bool firstRender)
+        //{
+        //    if (!firstRender)
+        //    {
+        //        await AuthorizationAsync();
+        //    }
+        //    await base.OnAfterRenderAsync(firstRender);
+        //}
 
 
         /// <summary>

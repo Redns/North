@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using North.Core.Entities;
-using North.Pages.Settings;
 using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 
 namespace North.Common
 {
@@ -32,41 +32,24 @@ namespace North.Common
         /// </summary>
         /// <param name="path">设置文件路径（默认 appsettings.json）</param>
         /// <returns></returns>
-        public static AppSetting Load(string path = "appsettings.json")
-        {
-            return JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText(path)) ?? throw new Exception($"Load {path} failed");
-        }
+        public static AppSetting Load(string path = "appsettings.json") => JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText(path)) ?? throw new Exception($"Load {path} failed");
 
 
         /// <summary>
         /// 保存设置
         /// </summary>
         /// <param name="path"></param>
-        public void Save(string path = "appsettings.json")
-        {
-            File.WriteAllText(path, ToString());
-        }
+        public void Save(string path = "appsettings.json") => File.WriteAllText(path, ToString());
 
+        public AppSetting Clone() => new(General.Clone(), Appearance.Clone(), Register.Clone(), Notify.Clone(), Auth.Clone(), Log.Clone(), Plugin.Clone());
 
-        /// <summary>
-        /// 复制应用设置（注意不能使用 record 和 struct）
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public AppSetting Clone()
-        {
-            // TODO 使用构造函数直接复制
-            return JsonConvert.DeserializeObject<AppSetting>(ToString()) ?? throw new Exception("Clone AppSetting failed");
-        }
-
-
-        public override string ToString()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
+        public override string ToString() => JsonConvert.SerializeObject(this);
     }
 
 
+    /// <summary>
+    /// 通用设置
+    /// </summary>
     public class GeneralSetting
     {
         // TODO 数据库表不存在时自动创建
@@ -74,15 +57,17 @@ namespace North.Common
         // 修改后弹窗提示是否迁移数据
         public DataBaseSetting DataBase { get; set; }
 
+        public GeneralSetting()
+        {
+            DataBase = new DataBaseSetting("Data Source=Data/Databases/North.db;");
+        }
+
         public GeneralSetting(DataBaseSetting dataBase)
         {
             DataBase = dataBase;
         }
 
-        public GeneralSetting Clone()
-        {
-            return new GeneralSetting(DataBase.Clone());
-        }
+        public GeneralSetting Clone() => new(DataBase.Clone());
     }
 
 
@@ -119,29 +104,13 @@ namespace North.Common
             Footer = footer;
         }
 
-        public AppearanceSetting Clone()
-        {
-            return new AppearanceSetting(Name, NavAutoExpand, BackgroundUrl, Footer);
-        }
+        public AppearanceSetting Clone() => new AppearanceSetting(Name, NavAutoExpand, BackgroundUrl, Footer);
     }
 
 
-    public class StorageSetting
-    {
-        public DataBaseSetting DataBase { get; set; }
-
-        public StorageSetting(DataBaseSetting dataBase)
-        {
-            DataBase = dataBase;
-        }
-
-        public StorageSetting Clone()
-        {
-            return new StorageSetting(DataBase.Clone());
-        }
-    }
-
-
+    /// <summary>
+    /// 数据库设置
+    /// </summary>
     public class DataBaseSetting
     {
         /// <summary>
@@ -154,13 +123,13 @@ namespace North.Common
             ConnStr = connStr;
         }
 
-        public DataBaseSetting Clone()
-        {
-            return new DataBaseSetting(ConnStr);
-        }
+        public DataBaseSetting Clone() => new(ConnStr);
     }
 
 
+    /// <summary>
+    /// 注册设置
+    /// </summary>
     public class RegisterSetting
     {
         /// <summary>
@@ -191,10 +160,7 @@ namespace North.Common
             Default = @default;
         }
 
-        public RegisterSetting Clone()
-        {
-            return new RegisterSetting(AllowRegister, MaxAvatarSize, VerifyEmailValidTime, Default.Clone());
-        }
+        public RegisterSetting Clone() => new(AllowRegister, MaxAvatarSize, VerifyEmailValidTime, Default.Clone());
     }
 
 
@@ -220,13 +186,13 @@ namespace North.Common
             SingleMaxUploadCapacity = singleMaxUploadCapacity;
         }
 
-        public RegisterSettingDefault Clone()
-        {
-            return new RegisterSettingDefault(Permission, IsApiAvailable, MaxUploadNums, MaxUploadCapacity, SingleMaxUploadNums, SingleMaxUploadCapacity);
-        }
+        public RegisterSettingDefault Clone() => new(Permission, IsApiAvailable, MaxUploadNums, MaxUploadCapacity, SingleMaxUploadNums, SingleMaxUploadCapacity);
     }
 
 
+    /// <summary>
+    /// 通知设置
+    /// </summary>
     public class NotifySetting
     {
         public EmailSetting Email { get; set; }
@@ -236,13 +202,13 @@ namespace North.Common
             Email = email;
         }
 
-        public NotifySetting Clone()
-        {
-            return new NotifySetting(Email.Clone());
-        }
+        public NotifySetting Clone() => new(Email.Clone());
     }
 
 
+    /// <summary>
+    /// 邮箱设置
+    /// </summary>
     public class EmailSetting
     {
         /// <summary>
@@ -261,13 +227,13 @@ namespace North.Common
             Code = code;
         }
 
-        public EmailSetting Clone()
-        {
-            return new EmailSetting(Account, Code);
-        }
+        public EmailSetting Clone() => new(Account, Code);
     }
 
 
+    /// <summary>
+    /// 授权设置
+    /// </summary>
     public class AuthSetting
     {
         /// <summary>
@@ -286,13 +252,13 @@ namespace North.Common
             CookieValidTime = cookieValidTime;
         }
 
-        public AuthSetting Clone()
-        {
-            return new AuthSetting(TokenValidTime, CookieValidTime);
-        }
+        public AuthSetting Clone() => new(TokenValidTime, CookieValidTime);
     }
 
 
+    /// <summary>
+    /// 日志设置
+    /// </summary>
     public class LogSetting
     {
         public string Output { get; set; }
@@ -306,13 +272,12 @@ namespace North.Common
             Layout = layout;
         }
 
-        public LogSetting Clone()
-        {
-            return new LogSetting(Output, Level.Clone(), Layout);
-        }
+        public LogSetting Clone() => new(Output, Level.Clone(), Layout);
     }
 
-
+    /// <summary>
+    /// 日志等级
+    /// </summary>
     public class Level
     {
         public LogLevel Min { get; set; }
@@ -324,10 +289,7 @@ namespace North.Common
             Max = max;
         }
 
-        public Level Clone()
-        {
-            return new Level(Min, Max);
-        }
+        public Level Clone() => new(Min, Max);
     }
 
 
@@ -336,18 +298,90 @@ namespace North.Common
     /// </summary>
     public class PluginSetting
     {
-        public IPackageSearchMetadata[] Plugins { get; set; }
-        public PluginCategory[] Categories { get; set; }
+        public string InstallDir { get; set; }
+        public List<Plugin> Plugins { get; set; }
+        public List<PluginCategory> Categories { get; set; }
 
-        public PluginSetting(IPackageSearchMetadata[] plugins, PluginCategory[] categories)
+        public PluginSetting(string installDir, List<Plugin> plugins, List<PluginCategory> categories)
         {
+            InstallDir = installDir;
             Plugins = plugins;
             Categories = categories;
         }
 
         public PluginSetting Clone()
         {
-            return new PluginSetting((IPackageSearchMetadata[])Plugins.Clone(), (PluginCategory[])Categories.Clone());
+            var plugins = new List<Plugin>(Plugins.Count);
+            var categories = new List<PluginCategory>(Categories.Count);
+
+            Plugins.ForEach(plugin => plugins.Add(plugin));
+            Categories.ForEach(category => categories.Add(category));
+
+            return new PluginSetting(InstallDir, plugins, categories);
+        }
+    }
+
+
+    /// <summary>
+    /// NuGet 插件
+    /// </summary>
+    public class Plugin
+    {
+        /// <summary>
+        /// 名称
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
+        /// 作者
+        /// </summary>
+        public string Authors { get; set; }
+
+        /// <summary>
+        /// 版本号
+        /// </summary>
+        public SemanticVersion Version { get; set; }
+
+        /// <summary>
+        /// 下载量
+        /// </summary>
+        public long DownloadCount { get; set; }
+
+        /// <summary>
+        /// 图标
+        /// </summary>
+        public string IconUrl { get; set; }
+
+        /// <summary>
+        /// 描述
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// 状态
+        /// </summary>
+        public PluginState State { get; set; }
+
+        public Plugin (IPackageSearchMetadata package, PluginState state)
+        {
+            Id = package.Identity.Id;
+            Authors = package.Authors;
+            Version = package.Identity.Version;
+            DownloadCount = package.DownloadCount ?? 0L;
+            IconUrl = package.IconUrl?.AbsolutePath ?? "https://www.nuget.org/Content/gallery/img/default-package-icon.svg";
+            Description = package.Description;
+            State = state;
+        }
+
+        public Plugin(string id, string authors, SemanticVersion version, long downloadCount, string iconUrl, string description, PluginState state)
+        {
+            Id = id;
+            Authors = authors;
+            Version = version;
+            DownloadCount = downloadCount;
+            IconUrl = iconUrl;
+            Description = description;
+            State = state;
         }
     }
 
@@ -363,14 +397,28 @@ namespace North.Common
         public string Name { get; set; }
 
         /// <summary>
-        /// 内部执行顺序
+        /// 被执行的模块
         /// </summary>
-        public int[] ExecuteOrders { get; set; }
+        public List<string> Executed { get; set; }
 
-        public PluginCategory(string name, int[] executeOrders)
+        /// <summary>
+        /// 未被执行的模块
+        /// </summary>
+        public List<string> UnExecuted { get; set; }
+
+        public PluginCategory(string name, List<string> executed, List<string> unExecuted)
         {
             Name = name;
-            ExecuteOrders = executeOrders;
+            Executed = executed;
+            UnExecuted = unExecuted;
         }
+    }
+
+
+    public enum PluginState
+    {
+        UnInstall = 0,
+        Enable,
+        Disable
     }
 }

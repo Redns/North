@@ -1,8 +1,11 @@
 ﻿@page "/plugins"
+
+@using North.Common
 @using North.Core.Helper
 
 @inject ILogger _logger
 @inject ISnackbar _snackbar
+@inject IDialogService _dialog
 
 <AuthorizeView Roles="User,Administrator">
     <MudStack Spacing="10" Row AlignItems="AlignItems.Center" Class="message_warn">
@@ -12,59 +15,90 @@
 </AuthorizeView>
 <AuthorizeView Roles="System">
     <MudStack Spacing="5" id="page">
-        <MudTextField @bind-Value="@PackageName" DebounceInterval="500" OnDebounceIntervalElapsed="@SearchPluginsAsync"
-                      Variant="Variant.Text" Placeholder="请输入插件名称..." Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" id="search_field" />
-        @if(PackageSearching)
+        <MudTextField @bind-Value="@SearchPluginName" DebounceInterval="500" OnDebounceIntervalElapsed="@SearchPluginsAsync"
+                      Variant="Variant.Text" Placeholder="请输入插件名称..." id="search-field"
+                      Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" OnAdornmentClick="@SearchPluginsAsync" />
+        @if(IsSearching)
         {
             <Loading Enable Style="position:absolute; left:0; right:0; top:0; bottom:0; margin:auto;" />
         }
-        else if(!Packages.Any())
+        else if(!ShowPlugins.Any())
         {
             <Empty />
         }
         else 
         {
-            <MudGrid Justify="Justify.FlexStart" id="plugin_list">
-                @foreach (var package in Packages)
+            <MudGrid Justify="Justify.FlexStart" id="plugin-grid">
+                @foreach (var plugin in ShowPlugins)
                 {
                     <MudItem xs="12" lg="6">
-                        <MudCard Elevation="3" Outlined id="plugin_item">
-                            <MudStack Row AlignItems="AlignItems.Center" Style="width:100%; height:100%; margin:0 0 10px 10px;">
-                                @if (!string.IsNullOrEmpty(package.IconUrl?.AbsoluteUri))
-                                {
-                                    <MudAvatar Image="@package.IconUrl.AbsoluteUri" Square Style="width:60px; height:60px; background-color:white;" />
-                                }
-                                else
-                                {
-                                    <MudAvatar Image="https://api.nuget.org/v3-flatcontainer/nuget.frameworks/6.3.0/icon" Square Style="width:60px; height:60px; background-color:white;" />
-                                }
-                                <MudStack Style="width:100%; height:fit-content; margin-left:10px;">
-                                    <a href="@($"https://www.nuget.org/packages/{package.Identity.Id}")" style="font-size:22px; font-weight:300; line-height:.9; color:#337ab7;">@package.Identity.Id</a>
+                        <MudCard Outlined id="plugin-card">
+                            <MudStack Row AlignItems="AlignItems.Center" id="plugin-stack" >
+                                <MudAvatar Image="@plugin.IconUrl" Square id="plugin-stack-avatar" />
+                                <MudStack id="plugin-stack-mid">
+                                    <a href="@($"https://www.nuget.org/packages/{plugin.Id}")" style="font-size:22px; font-weight:300; line-height:.9; color:#337ab7;">@plugin.Id</a>
                                     <MudStack Row>
                                         <MudIcon Icon="@Icons.Outlined.Group"></MudIcon>
-                                        <MudText>@package.Authors.FormatString(32)</MudText>
+                                        <MudText>@plugin.Authors.FormatString(25)</MudText>
                                         <MudIcon Icon="@Icons.Outlined.FileDownload"></MudIcon>
-                                        <MudText>@package.DownloadCount?.FormatNumber()</MudText>
-                                        @if(package.LicenseMetadata is not null)
-                                        {
-                                            <MudIcon Icon="@Icons.Outlined.Lock"></MudIcon>
-                                            <a href="@package.LicenseMetadata.LicenseUrl.AbsoluteUri" style="color:black;">@package.LicenseMetadata.License</a>
-                                        }
+                                        <MudText>@plugin.DownloadCount.FormatNumber()</MudText>
                                         <MudIcon Icon="@Icons.Outlined.Flag"></MudIcon>
-                                        <MudText>@package.Identity.Version.ToFullString()</MudText>
+                                        <MudText>@plugin.Version.ToNormalizedString()</MudText>
                                     </MudStack>
-                                    <MudText>@package.Description.FormatString()</MudText>
+                                    <MudText Style="white-space:nowrap;">@plugin.Description</MudText>
                                 </MudStack>
-                                <MudStack Justify="Justify.FlexEnd" Style="width:fit-content; height:100%; margin-right:20px; margin-bottom:10px;">
-                                    @if(PluginSetting.Plugins.Any(plugin => plugin.Identity.Id == package.Identity.Id))
-                                    {
-                                        <MudIconButton Icon="@Icons.Outlined.Settings" OnClick="@(() => UnInstallPlugin(package))"></MudIconButton>
-                                    }
-                                    else
+                                <MudStack Justify="Justify.FlexEnd" id="plugin-stack-button">
+                                    @if(plugin.State is PluginState.UnInstall)
                                     {
                                         <MudTooltip Text="点击安装" Placement="Placement.Bottom">
-                                            <MudIconButton Icon="@Icons.Filled.InstallDesktop" OnClick="@(() => InstallPlugin(package))"></MudIconButton>
+                                            <MudIconButton Icon="@Icons.Filled.InstallDesktop" OnClick="@(() => InstallPlugin(plugin))"></MudIconButton>
                                         </MudTooltip>
+                                    }
+                                    else if(plugin.State is PluginState.Enable)
+                                    {
+                                        <MudMenu Icon="@Icons.Outlined.Settings" AnchorOrigin="Origin.BottomRight">
+                                            <MudMenuItem OnClick="@(() => DisablePlugin(plugin))">
+                                                <MudStack Row>
+                                                    <MudIcon Icon="@Icons.Outlined.LockOpen" />
+                                                    <MudText>禁 用</MudText>
+                                                </MudStack>
+                                            </MudMenuItem>
+                                            <MudMenuItem OnClick="@(() => UpdatePlugin(plugin))">
+                                                <MudStack Row>
+                                                    <MudIcon Icon="@Icons.Outlined.Sync" />
+                                                    <MudText>更 新</MudText>
+                                                </MudStack>
+                                            </MudMenuItem>
+                                            <MudMenuItem OnClick="@(() => UnInstallPlugin(plugin))">
+                                                <MudStack Row>
+                                                    <MudIcon Icon="@Icons.Outlined.Delete" />
+                                                    <MudText>卸 载</MudText>
+                                                </MudStack>
+                                            </MudMenuItem>
+                                        </MudMenu>
+                                    }
+                                    else if(plugin.State is PluginState.Disable)
+                                    {
+                                        <MudMenu Icon="@Icons.Outlined.Settings" AnchorOrigin="Origin.BottomRight">
+                                            <MudMenuItem OnClick="@(() => EnablePlugin(plugin))">
+                                                <MudStack Row>
+                                                    <MudIcon Icon="@Icons.Outlined.Lock" />
+                                                    <MudText>启 用</MudText>
+                                                </MudStack>
+                                            </MudMenuItem>
+                                            <MudMenuItem  OnClick="@(() => UpdatePlugin(plugin))">
+                                                <MudStack Row>
+                                                    <MudIcon Icon="@Icons.Outlined.Sync" />
+                                                    <MudText>更 新</MudText>
+                                                </MudStack>
+                                            </MudMenuItem>
+                                            <MudMenuItem  OnClick="@(() => UnInstallPlugin(plugin))">
+                                                <MudStack Row>
+                                                    <MudIcon Icon="@Icons.Outlined.Delete" />
+                                                    <MudText>卸 载</MudText>
+                                                </MudStack>
+                                            </MudMenuItem>
+                                        </MudMenu>
                                     }
                                 </MudStack>
                             </MudStack>
@@ -78,31 +112,58 @@
 
 <style>
     #page {
-        margin: 10px 30px;
-        overflow-x: hidden;
-        height:fit-content;
-        max-height: calc(100% - 70px);
+        margin: 0 30px;
+        width:calc(100% - 30px);
+        height: fit-content;
+        max-height: calc(100% - 55px);
     }
 
-    #page::-webkit-scrollbar {
-        display: none;
+    #search-field {
+        max-width:100%;
     }
 
-    #plugin_list {
-        overflow: scroll;
-        overflow-x: hidden;
-        height:fit-content;
-        max-height: calc(100% - 40px);
+    #plugin-grid {
+        height: fit-content;
+        max-width:100%;
+        max-height: calc(100% - 30px);
+        overflow:scroll;
+        overflow-x:hidden;
     }
 
-    #plugin_list::-webkit-scrollbar {
-        display: none;
+    #plugin-grid::-webkit-scrollbar {
+        display:none;
     }
 
-    #plugin_item {
+    #plugin-card {
         height:130px;
         border-radius:8px;
         border-width:2px;
+    }
+
+    #plugin-stack {
+        width:100%; 
+        height:100%; 
+    }
+
+    #plugin-stack-avatar {
+        width:60px; 
+        height:60px; 
+        margin-left:10px;
+        background-color:white;
+    }
+
+    #plugin-stack-mid {
+        width:calc(100% - 130px);
+        height:fit-content;
+        overflow-x:hidden;
+        margin-left:10px;
+    }
+
+    #plugin-stack-button {
+        width:45px; 
+        height:100%; 
+        margin-right:5px;
+        margin-bottom:5px;
     }
 
     .message_warn {
