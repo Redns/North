@@ -1,10 +1,27 @@
-﻿namespace North.Launcher
+﻿using System.Diagnostics;
+
+namespace North.Launcher
 {
-    internal class Program
+    class Program
     {
-        static void Main(string[] args)
+        public static async Task Main()
         {
-            Console.WriteLine("Hello, World!");
+            var stopwatch = new Stopwatch();
+            var Tasks = new List<Task>() { Upload(), Upload(2000), Upload(3000) };
+
+            stopwatch.Start();
+            while (Tasks.Any())
+            {
+                Tasks.Remove(await Task.WhenAny(Tasks));
+            }
+            stopwatch.Stop();
+            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+        }
+
+        public static async Task Upload(int delay = 1000)
+        {
+            await Task.Delay(delay);
+            Console.WriteLine($"[Delay {delay} ms]");
         }
     }
 }

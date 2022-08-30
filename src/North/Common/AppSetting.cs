@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using North.Core.Entities;
+﻿using North.Core.Entities;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
+using System.Text.Json;
 
 namespace North.Common
 {
@@ -32,7 +32,7 @@ namespace North.Common
         /// </summary>
         /// <param name="path">设置文件路径（默认 appsettings.json）</param>
         /// <returns></returns>
-        public static AppSetting Load(string path = "appsettings.json") => JsonConvert.DeserializeObject<AppSetting>(File.ReadAllText(path)) ?? throw new Exception($"Load {path} failed");
+        public static AppSetting Load(string path = "appsettings.json") => JsonSerializer.Deserialize<AppSetting>(File.ReadAllText(path)) ?? throw new Exception($"Load {path} failed");
 
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace North.Common
 
         public AppSetting Clone() => new(General.Clone(), Appearance.Clone(), Register.Clone(), Notify.Clone(), Auth.Clone(), Log.Clone(), Plugin.Clone());
 
-        public override string ToString() => JsonConvert.SerializeObject(this);
+        public override string ToString() => JsonSerializer.Serialize(this);
     }
 
 

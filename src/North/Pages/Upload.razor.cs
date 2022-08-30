@@ -1,40 +1,102 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
+using North.Core.Entities;
+using North.Core.Helper;
+using North.Models;
+using System.Diagnostics;
+using System.Text;
 
 namespace North.Pages
 {
     partial class Upload
     {
-        private bool Clearing = false;
-        private static string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full";
+        private static readonly string DefaultDragClass = "flex-none relative rounded-lg border-2 border-dashed ";
         private string DragClass = DefaultDragClass;
-        private List<string> fileNames = new List<string>();
+        private bool Clearing = false;
+        private List<ImageUploadModel> Images { get; set; } = new(64);
 
-        private void OnInputFileChanged(InputFileChangeEventArgs e)
+        private async Task OnInputImagesChanged(InputFileChangeEventArgs e)
         {
-        ClearDragClass();
-        var files = e.GetMultipleFiles();
-        foreach (var file in files)
-        {
-            fileNames.Add(file.Name);
-        }
+            ClearDragClass();
+            foreach(var file in e.GetMultipleFiles())
+            {
+                using var stream = file.OpenReadStream(51200000);
+                var thumbnailUrl = await JS.UploadToBlob(stream, file.ContentType);
+                Images.Add(new ImageUploadModel(file.Name, file.ContentType, thumbnailUrl, stream, new ImageSize() { Length = file.Size }, new Storager()));
+                await InvokeAsync(StateHasChanged);
+            }
         }
 
-        private async Task Clear()
+
+        /// <summary>
+        /// 上传图片
+        /// </summary>
+        /// <param name="image">待上传的图片</param>
+        private void UploadImage(ImageUploadModel image)
         {
-        Clearing = true;
-        fileNames.Clear();
-        ClearDragClass();
-        await Task.Delay(100);
-        Clearing = false;
+            image.State = ImageUploadState.Success;
+            image.Progress = 100;
+            image.Message = "上传完成";
+            image.Storager.RelativeUrl = image.Name;
         }
-        private void UploadImage()
+
+
+        /// <summary>
+        /// 清除图片
+        /// </summary>
+        /// <param name="image"></param>
+        private void ClearImage(ImageUploadModel image)
         {
-        //Upload the files here
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-        Snackbar.Add("TODO: Upload your files!", Severity.Normal);
+            Images.Remove(image);
+            _ = JS.DestroyBlob(image.ThumbnailUrl);
         }
+
+
+        /// <summary>
+        /// 拷贝图片链接
+        /// </summary>
+        /// <param name="image">待拷贝的图片</param>
+        private async Task CopyImageUrl(ImageUploadModel image)
+        {
+            var imageAbsoluteUrl = new Uri(new Uri(_nav.BaseUri), image.Storager.RelativeUrl);
+            await JS.CopyToClipboard(imageAbsoluteUrl.AbsoluteUri);
+            _snackbar.Add("已拷贝图片链接", Severity.Success);
+        }
+
+
+        private void UploadImages()
+        {
+            Images.FindAll(image => image.State is ImageUploadState.UnStart or ImageUploadState.Failed)
+                  .ForEach(image => UploadImage(image));
+        }
+
+
+        /// <summary>
+        /// 清空图片列表
+        /// </summary>
+        /// <returns></returns>
+        private void ClearImages()
+        {
+            Images.ForEach(image =>
+            {
+                _ = JS.DestroyBlob(image.ThumbnailUrl);
+            });
+            Images.Clear();
+        }
+
+
+        private async void CopyImagesUrl()
+        {
+            var imageUrls = new StringBuilder();
+            Images.FindAll(image => image.State is ImageUploadState.Success)
+                  .ForEach(image =>
+                  {
+                      imageUrls.Append(new Uri(new Uri(_nav.BaseUri), image.Storager.RelativeUrl).AbsoluteUri);
+                  });
+            await JS.CopyToClipboard(imageUrls.ToString());
+            _snackbar.Add("已拷贝图片链接", Severity.Success);
+        }
+        
 
         private void SetDragClass()
         {

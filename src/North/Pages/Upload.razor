@@ -1,19 +1,76 @@
 ﻿@page "/"
 @page "/upload"
 
-@inject ISnackbar Snackbar
+@inject IJSRuntime JS
+@inject ISnackbar _snackbar
+@inject NavigationManager _nav
+@inject IHttpContextAccessor _accessor
+
+@using North.Events.PasteMultimediaEvent
+@using North.Models
 
 <AuthorizeView Roles="User,Administrator,System">
-    <MudStack Style="width:50%; height:calc(95% - 50px); margin:5% 25% 0 25%; ">
-        <MudPaper @ondragenter="@SetDragClass" @ondragleave="@ClearDragClass" @ondragend="@ClearDragClass" Height="300px" Outlined Class="@DragClass">
-            @if (!Clearing)
+    <MudStack Row Spacing="0" Class="mud-width-full mud-height-full overflow-scroll">
+        <MudStack Class="mud-height-full" id="upload-mid-stack">
+            <MudPaper @ondragenter="@SetDragClass" @ondragleave="@ClearDragClass" @ondragend="@ClearDragClass"
+                      Outlined Style="height:50%; min-height:350px; margin-top:20%;" Class="@DragClass">
+                @if (!Clearing)
+                {
+                    <InputFile OnChange="@OnInputImagesChanged" multiple accept="image/*" Class="absolute mud-width-full mud-height-full overflow-hidden z-20" Style="opacity:0;" />
+                }
+                <MudStack Class="d-flex mud-width-full mud-height-full z-10 align-center justify-center">
+                    <MudIcon Icon="@Icons.Outlined.CloudUpload" Style="width:100px; height:100px;" />
+                    <MudText Typo="Typo.h6">点击或拖拽图片至此处上传</MudText>
+                </MudStack>
+            </MudPaper>
+            @foreach (var image in Images)
             {
-                <InputFile OnChange="OnInputFileChanged" multiple Class="absolute mud-width-full mud-height-full overflow-hidden z-20" Style="opacity:0;" />
+                <MudPaper Outlined Square Class="mud-width-full mb-4">
+                    <MudStack Row Class="mud-width-full">
+                        <MudAvatar Image="@image.ThumbnailUrl" Square Style="width:50px; height:50px;" />
+                        <MudStack Spacing="0" Class="mud-width-full">
+                            <MudText>@image.Name</MudText>
+                            <MudText Class="d-flex mud-width-full align-center">@($"{image.Size.Length / (1024.0 * 1024.0):f2} MB, {image.Message}")</MudText>
+                        </MudStack>
+                        <MudStack Row Spacing="1" Class="d-flex mud-height-full  align-center" Style="width:fit-content;">
+                            <MudIconButton Icon="@Icons.Outlined.FileUpload" Color="Color.Tertiary"
+                                           OnClick="@(() => UploadImage(image))" Disabled="@(image.State is ImageUploadState.Success or ImageUploadState.Uploading)"></MudIconButton>
+                            <MudIconButton Icon="@Icons.Outlined.Clear" Color="Color.Error" 
+                                           OnClick="@(() => ClearImage(image))"></MudIconButton>
+                            <MudIconButton Icon="@Icons.Outlined.ContentCopy" Color="Color.Info"
+                                           OnClick="@(() => CopyImageUrl(image))" Disabled="@(image.State is not ImageUploadState.Success)"></MudIconButton>
+                        </MudStack>
+                    </MudStack>
+                    <MudProgressLinear Color="@image.ProgressColor" Size="Size.Small" Value="@image.Progress" Class="mud-width-full" />
+                </MudPaper>
             }
-            <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="mud-width-full mud-height-full z-10">
-                <MudIcon Icon="@Icons.Outlined.CloudUpload" Style="width:100px; height:100px;" />
-                <MudText Typo="Typo.h6">点击或拖拽图片至此处上传</MudText>
-            </MudStack>
-        </MudPaper>
+        </MudStack>
+        <MudStack Class="d-flex flex-column gap-y-4 justify-center align-center" Style="width:100px;">
+            <MudTooltip Text="上传图片" Placement="Placement.Left">
+                <MudFab Color="Color.Tertiary" StartIcon="@Icons.Outlined.FileUpload"
+                        OnClick="@UploadImages" Disabled="@(!Images.Any(image => image.State is not ImageUploadState.Success))" />
+            </MudTooltip>
+            <MudTooltip Text="清空列表" Placement="Placement.Left">
+                <MudFab Color="Color.Error" StartIcon="@Icons.Outlined.Clear" 
+                        OnClick="@ClearImages" Disabled="@(!Images.Any())" />
+            </MudTooltip>
+            <MudTooltip Text="复制图片链接" Placement="Placement.Left">
+                <MudFab Color="Color.Info" StartIcon="@Icons.Outlined.ContentCopy"
+                        OnClick="@CopyImagesUrl" Disabled="@(!Images.Any(image => image.State is ImageUploadState.Success))"/>
+            </MudTooltip>
+        </MudStack>
     </MudStack>
 </AuthorizeView>
+
+<style>
+    #upload-mid-stack {
+        width:46%; 
+        margin-left:calc(27% + 50px); 
+        margin-right:calc(27% - 50px);
+        overflow:scroll;
+    }
+
+    #upload-mid-stack::-webkit-scrollbar {
+        display: none;
+    }
+</style>

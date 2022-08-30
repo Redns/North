@@ -2,7 +2,7 @@
     width: fit-content;
     height: fit-content;
     max-height: 50px;
-    position: absolute;
+    position: relative;
     left: 0;
     right: 0;
     bottom: 10px;

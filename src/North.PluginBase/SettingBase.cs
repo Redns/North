@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 
 namespace North.PluginBase
 {
@@ -14,7 +14,7 @@ namespace North.PluginBase
         /// <exception cref="Exception"></exception>
         public static SettingBase Load()
         {
-            return JsonConvert.DeserializeObject<SettingBase>(File.ReadAllText("settings.json")) ?? throw new Exception("Load settings failed");
+            return JsonSerializer.Deserialize<SettingBase>(File.ReadAllText("settings.json")) ?? throw new Exception("Load settings failed");
         }
 
 
@@ -29,7 +29,7 @@ namespace North.PluginBase
 
         public override string ToString()
         {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
+            return JsonSerializer.Serialize(this);
         }
     }
 }
