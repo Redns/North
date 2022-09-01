@@ -45,7 +45,10 @@ namespace North.Common
 
         public AppSetting Clone() => new(General.Clone(), Appearance.Clone(), Register.Clone(), Notify.Clone(), Auth.Clone(), Log.Clone(), Plugin.Clone());
 
-        public override string ToString() => JsonSerializer.Serialize(this);
+        public override string ToString() => JsonSerializer.Serialize(this, new JsonSerializerOptions()
+        {
+            WriteIndented = true
+        });
     }
 
 
@@ -213,22 +216,16 @@ namespace North.Common
     public class AuthSetting
     {
         /// <summary>
-        /// API 令牌有效期（ms）
-        /// </summary>
-        public long TokenValidTime { get; set; }
-
-        /// <summary>
         /// 网页 Cookie 有效期（s）
         /// </summary>
         public long CookieValidTime { get; set; }
 
-        public AuthSetting(long tokenValidTime, long cookieValidTime)
+        public AuthSetting(long cookieValidTime)
         {
-            TokenValidTime = tokenValidTime;
             CookieValidTime = cookieValidTime;
         }
 
-        public AuthSetting Clone() => new(TokenValidTime, CookieValidTime);
+        public AuthSetting Clone() => new(CookieValidTime);
     }
 
 

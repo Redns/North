@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using North.Core.Helpers;
+﻿using System.Security.Claims;
+using System.Text.Json;
 
 namespace North.Core.Entities
 {
@@ -36,16 +36,6 @@ namespace North.Core.Entities
         public State State { get; set; }
 
         /// <summary>
-        /// 令牌
-        /// </summary>
-        public string Token { get; set; }
-
-        /// <summary>
-        /// 令牌过期时间
-        /// </summary>
-        public long TokenExpireTime { get; set; }
-
-        /// <summary>
         /// 用户权限
         /// </summary>
         public Permission Permission { get; set; }
@@ -80,7 +70,7 @@ namespace North.Core.Entities
         /// </summary>
         public string RegisterTime { get; set; } = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
-        public UserEntity(string id, string name, string email, string password, string avatar, State state, string token, long tokenExpireTime, Permission permission, bool isApiAvailable, long maxUploadNums, double maxUploadCapacity, long singleMaxUploadNums, double singleMaxUploadCapacity)
+        public UserEntity(string id, string name, string email, string password, string avatar, State state, Permission permission, bool isApiAvailable, long maxUploadNums, double maxUploadCapacity, long singleMaxUploadNums, double singleMaxUploadCapacity)
         {
             Id = id;
             Name = name;
@@ -88,43 +78,12 @@ namespace North.Core.Entities
             Password = password;
             Avatar = avatar;
             State = state;
-            Token = token;
-            TokenExpireTime = tokenExpireTime;
             Permission = permission;
             IsApiAvailable = isApiAvailable;
             MaxUploadNums = maxUploadNums;
             MaxUploadCapacity = maxUploadCapacity;
             SingleMaxUploadNums = singleMaxUploadNums;
             SingleMaxUploadCapacity = singleMaxUploadCapacity;
-        }
-
-
-
-
-        /// <summary>
-        /// 生成令牌
-        /// </summary>
-        /// <param name="validTime">令牌有效期（ms）</param>
-        /// <returns></returns>
-        public bool GenerateToken(long validTime = 86400000)
-        {
-            if (State is State.Normal && IsApiAvailable)
-            {
-                Token = IdentifyHelper.Generate();
-                TokenExpireTime = IdentifyHelper.TimeStamp + validTime;
-                return true;
-            }
-            return false;
-        }
-
-
-        /// <summary>
-        /// 判断令牌是否有效
-        /// </summary>
-        /// <returns></returns>
-        public bool IsTokenValid()
-        {
-            return !string.IsNullOrEmpty(Token) && IdentifyHelper.TimeStamp < TokenExpireTime && IsApiAvailable && State is State.Normal;
         }
 
 
@@ -140,10 +99,23 @@ namespace North.Core.Entities
         }
 
 
-        public override string ToString()
+        public ClaimsIdentity ToClaimsIdentify()
         {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
+            return new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.SerialNumber, Id),
+                new Claim(ClaimTypes.Name, Name),
+                new Claim(ClaimTypes.Email, Email),
+                new Claim(ClaimTypes.Role, Permission.ToString()),
+                new Claim(ClaimTypes.Actor, Avatar)
+            });
         }
+
+
+        public override string ToString() => JsonSerializer.Serialize(this, new JsonSerializerOptions()
+        {
+            WriteIndented = true
+        });
     }
 
 
@@ -169,6 +141,9 @@ namespace North.Core.Entities
     }
 
 
+    /// <summary>
+    /// 用户 DTO 实体
+    /// </summary>
     public class UserDTOEntity
     {
         /// <summary>
@@ -239,6 +214,28 @@ namespace North.Core.Entities
             MaxUploadCapacity = maxUploadCapacity;
             SingleMaxUploadNums = singleMaxUploadNums;
             SingleMaxUploadCapacity = singleMaxUploadCapacity;
+        }
+    }
+
+
+    /// <summary>
+    /// 用户 Claim 实体
+    /// </summary>
+    public class UserClaimEntity
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Role { get; set; }
+        public string Avatar { get; set; }
+
+        public UserClaimEntity(string id, string name, string email, string role, string avatar)
+        {
+            Id = id;
+            Name = name;
+            Email = email;
+            Role = role;
+            Avatar = avatar;
         }
     }
 }

@@ -21,3 +21,11 @@
    at North.Core.Helper.AppMonitorHelper.DataRefreshTimerInit(Int32 refreshInterval) in E:\Project\North\src\North.Core\Helper\AppMonitorHelper.cs:line 39
    at North.Core.Helper.AppMonitorHelper.get_CpuUsage() in E:\Project\North\src\North.Core\Helper\AppMonitorHelper.cs:line 30
    at Program.Main(String[] args) in E:\Project\North\src\North\Program.cs:line 272022-08-25 02:42:12 [North Info] Application exit
+2022-09-01 23:57:20 [North Info] () login success, id: 
+2022-09-01 23:57:38 [North Info] Application exit
+2022-09-02 00:01:45 [North Info] () login success, id: 
+2022-09-02 00:02:15 [North Info] Krins(ljing431@163.com) logout success, id: f18c85ed43bb4e32aa9f3a429f7a3dae
+2022-09-02 00:02:25 [North Info] Application exit
+2022-09-02 00:15:39 [North Info] Krins(ljing431@163.com) login success, id: f18c85ed43bb4e32aa9f3a429f7a3dae
+2022-09-02 00:15:46 [North Info] Krins(ljing431@163.com) logout success, id: f18c85ed43bb4e32aa9f3a429f7a3dae
+2022-09-02 00:15:53 [North Info] Application exit

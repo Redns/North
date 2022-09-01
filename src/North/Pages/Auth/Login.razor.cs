@@ -80,7 +80,8 @@ namespace North.Pages.Auth
                             new Claim(ClaimTypes.SerialNumber, user.Id),
                             new Claim(ClaimTypes.Name, user.Name),
                             new Claim(ClaimTypes.Email, user.Email),
-                            new Claim(ClaimTypes.Role, user.Permission.ToString())
+                            new Claim(ClaimTypes.Role, user.Permission.ToString()),
+                            new Claim(ClaimTypes.Actor, user.Avatar)
                     }, CookieAuthenticationDefaults.AuthenticationScheme));
 
                     _identifies.Add(loginIdentify);

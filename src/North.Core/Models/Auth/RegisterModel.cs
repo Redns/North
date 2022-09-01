@@ -73,8 +73,6 @@ namespace North.Core.Models.Auth
                                   $"{Email}:{Password}".MD5(),
                                   $"api/image/avatar/{Avatar}",
                                   State.Checking,
-                                  string.Empty,
-                                  0L,
                                   @default.Permission,
                                   @default.IsApiAvailable,
                                   @default.MaxUploadNums,

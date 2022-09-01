@@ -3,6 +3,7 @@
 @using North.Common
 @using North.Core.Services.Poster
 @using North.Data.Access
+@using North.RCL.Text
 
 @inject IJSRuntime JS
 @inject ILogger _logger
@@ -14,7 +15,7 @@
 <MudCard id="register_card">
     <MudCardContent id="register_form">
         <MudStack>
-            <Title Text="@GlobalValues.AppSettings.Appearance.Name" Style="margin-top:10px; font-size:35px; font-weight:500; text-align:center;" />
+            <TitleText Text="@GlobalValues.AppSettings.Appearance.Name" Style="margin-top:10px; font-size:35px; font-weight:500; text-align:center;" />
             @if(string.IsNullOrEmpty(RegisterModel.Avatar))
             {
                 <MudIconButton HtmlTag="label" for="avatar_upload"

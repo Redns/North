@@ -7,8 +7,5 @@ namespace North.Shared
     {
         [Parameter]
         public string Content { get; set; } = string.Empty;
-
-        [Parameter]
-        public string Style { get; set; } = string.Empty;
     }
 }
