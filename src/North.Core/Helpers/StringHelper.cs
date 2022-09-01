@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace North.Core.Helper
+namespace North.Core.Helpers
 {
     /// <summary>
     /// 字符串辅助类
@@ -52,7 +52,7 @@ namespace North.Core.Helper
                 var lastSpliterIndex = formatDescription.Length;
                 for (int i = 0; i < formatDescription.Length; i++)
                 {
-                    if ((formatDescription[i] == ' ') || (formatDescription[i] == ','))
+                    if (formatDescription[i] == ' ' || formatDescription[i] == ',')
                     {
                         lastSpliterIndex = i;
                     }
@@ -64,7 +64,7 @@ namespace North.Core.Helper
 
         public static string FormatNumber(this long l)
         {
-            if(l < 10000)
+            if (l < 10000)
             {
                 return l.ToString();
             }
@@ -76,8 +76,8 @@ namespace North.Core.Helper
                 for (int i = 0; i < numberStrLen; i++)
                 {
                     result.Append(numberStr[i]);
-                    if (((numberStrLen - i - 1) % 4 == 0) && (i != (numberStr.Length - 1))) 
-                    { 
+                    if ((numberStrLen - i - 1) % 4 == 0 && i != numberStr.Length - 1)
+                    {
                         result.Append(',');
                         result.Append(' ');
                     }

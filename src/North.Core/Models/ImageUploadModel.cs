@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.JSInterop;
-using MudBlazor;
+﻿using MudBlazor;
 using North.Core.Entities;
-using North.Core.Helper;
-using System.Security.Claims;
 
-namespace North.Models
+namespace North.Core.Models
 {
     /// <summary>
     /// 图片上传页面模型
@@ -23,9 +19,19 @@ namespace North.Models
         public string ContentType { get; private set; }
 
         /// <summary>
-        /// 图片缩略图链接
+        /// 图片预览图链接
         /// </summary>
-        public string ThumbnailUrl { get; private set; }
+        public string PreviewUrl { get; private set; }
+
+        /// <summary>
+        /// 图片数据流
+        /// </summary>
+        public Stream Stream { get; set; }
+
+        /// <summary>
+        /// 图片大小（单位：字节）
+        /// </summary>
+        public long Length => Stream.Length;
 
         /// <summary>
         /// 图片上传进度（0-100）
@@ -43,19 +49,14 @@ namespace North.Models
         public ImageUploadState State { get; set; }
 
         /// <summary>
-        /// 图片数据流
-        /// </summary>
-        public Stream Stream { get; private set; }
-
-        /// <summary>
         /// 图片尺寸
         /// </summary>
-        public ImageSize Size { get; set; }
+        public ImageSize? Size { get; set; }
 
         /// <summary>
-        /// 图片存储信息
+        /// 图片链接
         /// </summary>
-        public Storager Storager { get; set; }
+        public ImageUrl? Url { get; set; }
 
         /// <summary>
         /// 进度条颜色
@@ -67,27 +68,30 @@ namespace North.Models
             _ => Color.Info
         };
 
-        public ImageUploadModel(string name, string contentType, string thumbnailUrl, Stream stream, ImageSize size, Storager storager, int progress = 0, string message = "等待上传", ImageUploadState state = ImageUploadState.UnStart)
+        public ImageUploadModel(string name, string contentType, string previewUrl, Stream stream, int progress = 0, string? message = null, ImageUploadState state = ImageUploadState.UnStart, ImageSize? size = null, ImageUrl? url = null)
         {
             Name = name;
             ContentType = contentType;
-            ThumbnailUrl = thumbnailUrl;
-            Progress = progress;
-            Message = message;
-            State = state;
+            PreviewUrl = previewUrl;
             Stream = stream;
+            Progress = progress;
+            Message = message ?? "等待上传";
+            State = state;
             Size = size;
-            Storager = storager;
+            Url = url;
         }
 
-        public ImageEntity ToEntity(IHttpContextAccessor accessor)
+
+        /// <summary>
+        /// 模型转实体
+        /// </summary>
+        /// <param name="owner">图片所有者</param>
+        /// <param name="storager">存储模块ID</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public ImageEntity ToEntity(Owner owner, string storager)
         {
-            return new ImageEntity(Name, Size, new Owner()
-            {
-                Id = accessor.HttpContext?.User.Claims.First(c => c.Type == ClaimTypes.SerialNumber).Value ?? throw new ArgumentException("Cannot get user_id in cookies"),
-                Name = accessor.HttpContext?.User.Claims.First(c => c.Type == ClaimTypes.Name).Value ?? throw new ArgumentException("Cannot get user_name in cookies"),
-                Email = accessor.HttpContext?.User.Claims.First(c => c.Type == ClaimTypes.SerialNumber).Value ?? throw new ArgumentException("Cannot get user_email in cookies")
-            }, Storager);
+            return new ImageEntity(Name, Size ?? new ImageSize(0, 0, Length), owner, storager, Url ?? throw new ArgumentException($"{Name}'s url is null"));
         }
     }
 

@@ -23,7 +23,7 @@
         /// <summary>
         /// 验证类型
         /// </summary>
-        public VerifyType VerifyType { get; set; }  
+        public VerifyType VerifyType { get; set; }
 
         public VerifyEmailEntity(string id, string email, long expireTime, VerifyType verifyType)
         {

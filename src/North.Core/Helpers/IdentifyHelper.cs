@@ -1,4 +1,4 @@
-﻿namespace North.Core.Helper
+﻿namespace North.Core.Helpers
 {
     /// <summary>
     /// 标识符辅助类
@@ -61,7 +61,7 @@
                 IdentifyType.TimeStamp => TimeStamp.ToString(),
                 _ => string.Empty
             };
-            return ((uniqueCheck is null) || uniqueCheck(id)) ? id : Generate(type, uniqueCheck);
+            return uniqueCheck is null || uniqueCheck(id) ? id : Generate(type, uniqueCheck);
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using MudBlazor;
-using North.Common;
-using North.Core.Helper;
+using North.Core.Helpers;
 using North.Events.PasteMultimediaEvent;
 
 namespace North.Pages

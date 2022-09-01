@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using Timer = System.Timers.Timer;
 
-namespace North.Core.Helper
+namespace North.Core.Helpers
 {
     /// <summary>
     /// 应用监测辅助类，收集应用程序 CPU、内存、磁盘等资源占用
@@ -23,7 +23,7 @@ namespace North.Core.Helper
         {
             get
             {
-                if(_dataRefreshTimer is null)
+                if (_dataRefreshTimer is null)
                 {
                     DataRefreshTimerInit();
                 }

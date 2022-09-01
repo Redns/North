@@ -3,12 +3,11 @@ using MudBlazor;
 using MudBlazor.Services;
 using NLog.Extensions.Logging;
 using North.Common;
-using North.Core.Helper;
+using North.Core.Models.Auth;
+using North.Core.Services.Logger;
+using North.Core.Services.Poster;
 using North.Data.Access;
-using North.Models.Auth;
-using North.Services.Logger;
-using System.Diagnostics;
-using ILogger = North.Services.Logger.ILogger;
+using ILogger = North.Core.Services.Logger.ILogger;
 
 class Program
 {
@@ -60,6 +59,7 @@ class Program
                             {
                                 options.ExpireTimeSpan = TimeSpan.FromSeconds(GlobalValues.AppSettings.Auth.CookieValidTime);
                             });
+            builder.Services.AddSingleton<IPoster, MineKitPoster>(poster => new MineKitPoster());
 
             // 构建 web 应用
             app = builder.Build();
@@ -71,7 +71,6 @@ class Program
             app.MapBlazorHub();
             app.MapControllers();
             app.MapFallbackToPage("/_Host");
-            //app.Urls.Add("http://0.0.0.0:12121");
             app.Urls.Add("http://*:12121");
 
             app.Run();

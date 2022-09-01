@@ -9,9 +9,9 @@ namespace North.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly Services.Logger.ILogger _logger;
+        private readonly Core.Services.Logger.ILogger _logger;
 
-        public AuthController(Services.Logger.ILogger logger)
+        public AuthController(Core.Services.Logger.ILogger logger)
         {
             _logger = logger;
         }

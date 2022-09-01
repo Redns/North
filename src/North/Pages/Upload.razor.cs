@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using MudBlazor;
 using North.Core.Entities;
-using North.Core.Helper;
-using North.Models;
-using System.Diagnostics;
+using North.Core.Helpers;
+using North.Core.Models;
 using System.Text;
 
 namespace North.Pages
@@ -21,8 +20,8 @@ namespace North.Pages
             foreach(var file in e.GetMultipleFiles())
             {
                 using var stream = file.OpenReadStream(51200000);
-                var thumbnailUrl = await JS.UploadToBlob(stream, file.ContentType);
-                Images.Add(new ImageUploadModel(file.Name, file.ContentType, thumbnailUrl, stream, new ImageSize() { Length = file.Size }, new Storager()));
+                var previewUrl = await JS.UploadToBlob(stream, file.ContentType);
+                Images.Add(new ImageUploadModel(file.Name, file.ContentType, previewUrl, stream));
                 await InvokeAsync(StateHasChanged);
             }
         }
@@ -37,7 +36,7 @@ namespace North.Pages
             image.State = ImageUploadState.Success;
             image.Progress = 100;
             image.Message = "上传完成";
-            image.Storager.RelativeUrl = image.Name;
+            image.Url = new ImageUrl(image.Name, image.Name);
         }
 
 
@@ -48,7 +47,7 @@ namespace North.Pages
         private void ClearImage(ImageUploadModel image)
         {
             Images.Remove(image);
-            _ = JS.DestroyBlob(image.ThumbnailUrl);
+            _ = JS.DestroyBlob(image.PreviewUrl);
         }
 
 
@@ -58,7 +57,7 @@ namespace North.Pages
         /// <param name="image">待拷贝的图片</param>
         private async Task CopyImageUrl(ImageUploadModel image)
         {
-            var imageAbsoluteUrl = new Uri(new Uri(_nav.BaseUri), image.Storager.RelativeUrl);
+            var imageAbsoluteUrl = new Uri(new Uri(_nav.BaseUri), image.Url?.Source);
             await JS.CopyToClipboard(imageAbsoluteUrl.AbsoluteUri);
             _snackbar.Add("已拷贝图片链接", Severity.Success);
         }
@@ -79,7 +78,7 @@ namespace North.Pages
         {
             Images.ForEach(image =>
             {
-                _ = JS.DestroyBlob(image.ThumbnailUrl);
+                _ = JS.DestroyBlob(image.PreviewUrl);
             });
             Images.Clear();
         }
@@ -91,7 +90,7 @@ namespace North.Pages
             Images.FindAll(image => image.State is ImageUploadState.Success)
                   .ForEach(image =>
                   {
-                      imageUrls.Append(new Uri(new Uri(_nav.BaseUri), image.Storager.RelativeUrl).AbsoluteUri);
+                      imageUrls.Append(new Uri(new Uri(_nav.BaseUri), image.Url?.Source).AbsoluteUri);
                   });
             await JS.CopyToClipboard(imageUrls.ToString());
             _snackbar.Add("已拷贝图片链接", Severity.Success);

@@ -20,13 +20,14 @@
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="3.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.JSInterop" Version="6.0.8" />
+    <PackageReference Include="MudBlazor" Version="6.0.14" />
+    <PackageReference Include="NetVips" Version="2.2.0" />
+    <PackageReference Include="NetVips.Native" Version="8.13.0" />
+    <PackageReference Include="NLog" Version="5.0.2" />
     <PackageReference Include="NuGet.Protocol" Version="6.3.0" />
     <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Common\" />
   </ItemGroup>
 
 </Project>

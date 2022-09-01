@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using North.Core.Helper;
+using North.Core.Helpers;
 
 namespace North.Core.Entities
 {
@@ -108,7 +108,7 @@ namespace North.Core.Entities
         /// <returns></returns>
         public bool GenerateToken(long validTime = 86400000)
         {
-            if((State is State.Normal) && IsApiAvailable)
+            if (State is State.Normal && IsApiAvailable)
             {
                 Token = IdentifyHelper.Generate();
                 TokenExpireTime = IdentifyHelper.TimeStamp + validTime;
@@ -124,7 +124,7 @@ namespace North.Core.Entities
         /// <returns></returns>
         public bool IsTokenValid()
         {
-            return !string.IsNullOrEmpty(Token) && (IdentifyHelper.TimeStamp < TokenExpireTime) && IsApiAvailable && (State is State.Normal);
+            return !string.IsNullOrEmpty(Token) && IdentifyHelper.TimeStamp < TokenExpireTime && IsApiAvailable && State is State.Normal;
         }
 
 
@@ -179,8 +179,8 @@ namespace North.Core.Entities
         /// <summary>
         /// 用户名
         /// </summary>
-        public string Name { get; set; }                
-        
+        public string Name { get; set; }
+
         /// <summary>
         /// 用户邮箱
         /// </summary>
@@ -224,7 +224,7 @@ namespace North.Core.Entities
         /// <summary>
         /// 单次最大上传容量（MB）
         /// </summary>
-        public double SingleMaxUploadCapacity { get; set; }       
+        public double SingleMaxUploadCapacity { get; set; }
 
         public UserDTOEntity(string id, string name, string email, string avatar, State state, Permission permission, bool isApiAvailable, long maxUploadNums, double maxUploadCapacity, long singleMaxUploadNums, double singleMaxUploadCapacity)
         {

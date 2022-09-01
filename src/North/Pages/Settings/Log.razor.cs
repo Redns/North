@@ -1,7 +1,7 @@
 ﻿using Microsoft.JSInterop;
 using MudBlazor;
 using North.Common;
-using static MudBlazor.CategoryTypes;
+using North.Core.Services.Logger;
 
 namespace North.Pages.Settings
 {

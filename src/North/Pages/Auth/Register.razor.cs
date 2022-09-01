@@ -5,10 +5,10 @@ using MimeKit;
 using MudBlazor;
 using North.Common;
 using North.Core.Entities;
-using North.Core.Helper;
+using North.Core.Helpers;
+using North.Core.Models.Auth;
+using North.Core.Models.Notification;
 using North.Data.Access;
-using North.Models.Auth;
-using North.Models.Notification;
 
 namespace North.Pages.Auth
 {
@@ -88,7 +88,7 @@ namespace North.Pages.Auth
                     else
                     {
                         // TODO 此处后期根据 AppSetting 中的设置项确定保存路径
-                        var newUser = RegisterModel.ToUser();
+                        var newUser = RegisterModel.ToUser(RegisterSettings.Default);
                         var avatarMaxSize = RegisterSettings.MaxAvatarSize * 1024 * 1024;
                         var avatarName = $"{IdentifyHelper.Generate()}.{RegisterModel.AvatarExtension}";
 
@@ -152,12 +152,12 @@ namespace North.Pages.Auth
             var verifyEmailBody = $"欢迎注册 North 图床，" +
                                   $"<a href=\"{_navigationManager.BaseUri}verify?type=register&id={verifyEmail.Id}\">点击链接</a> " +
                                   $"以验证您的账户 {RegisterModel.Name}";
-            await new Mail(new MailboxAddress("North", emailSettings.Account),
-                           new MailboxAddress(RegisterModel.Name, RegisterModel.Email),
-                           "North 图床注册验证",
-                           verifyEmailBody,
-                           emailSettings.Code,
-                           true).SendAsync();
+            _ = _poster.SendAsync(new MailModel(new MailAddress("North", emailSettings.Account),
+                                                new MailAddress(RegisterModel.Name, RegisterModel.Email),
+                                                "North 图床注册验证",
+                                                verifyEmailBody,
+                                                emailSettings.Code,
+                                                true));
         }
 
 

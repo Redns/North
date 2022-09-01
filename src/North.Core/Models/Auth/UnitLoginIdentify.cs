@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace North.Models.Auth
+namespace North.Core.Models.Auth
 {
     public class UnitLoginIdentify
     {

@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using North.Common;
 using North.Core.Entities;
-using North.Core.Helper;
+using North.Core.Helpers;
 using North.Data.Access;
 
 namespace North.Pages.Auth

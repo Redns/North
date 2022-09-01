@@ -1,9 +1,8 @@
 ﻿using NLog;
 using NLog.Config;
 using NLog.Targets;
-using North.Common;
 
-namespace North.Services.Logger
+namespace North.Core.Services.Logger
 {
     public class NLogger : ILogger
     {

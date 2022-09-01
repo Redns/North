@@ -1,10 +1,12 @@
 ﻿@page "/register"
 
 @using North.Common
+@using North.Core.Services.Poster
 @using North.Data.Access
 
 @inject IJSRuntime JS
 @inject ILogger _logger
+@inject IPoster _poster
 @inject ISnackbar _snackbar
 @inject IHttpContextAccessor _accessor
 @inject NavigationManager _navigationManager

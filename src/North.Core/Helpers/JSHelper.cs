@@ -1,6 +1,6 @@
 ﻿using Microsoft.JSInterop;
 
-namespace North.Core.Helper
+namespace North.Core.Helpers
 {
     /// <summary>
     /// .NET 与 JS 互操作辅助类
@@ -40,7 +40,7 @@ namespace North.Core.Helper
         public static async ValueTask<(double, double)> GetScreenSize(this IJSRuntime JS)
         {
             var sizes = (await JS.InvokeAsync<string>("getScreenSize")).Split(',');
-            if(sizes.Length is not 2)
+            if (sizes.Length is not 2)
             {
                 return (0, 0);
             }
@@ -75,7 +75,7 @@ namespace North.Core.Helper
         public static async ValueTask<string> UploadToBlob(this IJSRuntime JS, string path, string contentType)
         {
             using var fileReadStream = File.OpenRead(path);
-            return await UploadToBlob(JS, fileReadStream, contentType);
+            return await JS.UploadToBlob(fileReadStream, contentType);
         }
 
 

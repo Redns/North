@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using North.Common;
 using North.Core.Entities;
-using North.Core.Helper;
+using North.Core.Helpers;
+using North.Core.Models.Auth;
 using North.Data.Access;
-using North.Models.Auth;
+using North.RCL.Forms;
 using System.Security.Claims;
 
 namespace North.Pages.Auth
@@ -65,35 +66,25 @@ namespace North.Pages.Auth
 
             try
             {
-                // 校验用户登录信息
-                var loginValidCheckMessage = LoginModel.ValidCheck();
-                if (!string.IsNullOrEmpty(loginValidCheckMessage))
+                await Task.Delay(500);
+                using var context = new OurDbContext();
+                var user = await new SqlUserData(context).FindAsync(u => u.Email == LoginModel.Email);
+                if ((user?.Password != $"{LoginModel.Email}:{LoginModel.Password}".MD5()) || (user?.State != State.Normal))
                 {
-                    _snackbar.Add(loginValidCheckMessage, Severity.Error);
+                    _snackbar.Add("账号密码错误或账户状态异常", Severity.Error);
                 }
                 else
                 {
-                    await Task.Delay(500);
-
-                    using var context = new OurDbContext();
-                    var user = await new SqlUserData(context).FindAsync(u => u.Email == LoginModel.Email);
-                    if ((user?.Password != LoginModel.PasswordEncrypted) || (user?.State != State.Normal))
+                    var loginIdentify = new UnitLoginIdentify(IdentifyHelper.Generate(), new ClaimsIdentity(new Claim[]
                     {
-                        _snackbar.Add("账号密码错误或账户状态异常", Severity.Error);
-                    }
-                    else
-                    {
-                        var loginIdentify = new UnitLoginIdentify(IdentifyHelper.Generate(), new ClaimsIdentity(new Claim[]
-                        {
                             new Claim(ClaimTypes.SerialNumber, user.Id),
                             new Claim(ClaimTypes.Name, user.Name),
                             new Claim(ClaimTypes.Email, user.Email),
                             new Claim(ClaimTypes.Role, user.Permission.ToString())
-                        }, CookieAuthenticationDefaults.AuthenticationScheme));
+                    }, CookieAuthenticationDefaults.AuthenticationScheme));
 
-                        _identifies.Add(loginIdentify);
-                        _navigationManager.NavigateTo($"signin/?id={loginIdentify.Id}&redirect={Redirect}", true);
-                    }
+                    _identifies.Add(loginIdentify);
+                    _navigationManager.NavigateTo($"signin/?id={loginIdentify.Id}&redirect={Redirect}", true);
                 }
             }
             catch(Exception e)
@@ -117,22 +108,6 @@ namespace North.Pages.Auth
             if(args.Code is "Enter")
             {
                 await UserLogin();
-            }
-        }
-
-
-        /// <summary>
-        /// 前往登录界面
-        /// </summary>
-        private void GoToRegister()
-        {
-            if (GlobalValues.AppSettings.Register.AllowRegister)
-            {
-                _navigationManager.NavigateTo("register", true);
-            }
-            else
-            {
-                _snackbar.Add("系统当前未开放注册", Severity.Error);
             }
         }
     }

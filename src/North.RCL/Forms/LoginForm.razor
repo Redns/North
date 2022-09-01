@@ -1,0 +1,34 @@
+﻿@using MudBlazor
+@using Microsoft.AspNetCore.Components.Forms
+@using North.RCL.Text
+
+<MudPaper Class="d-flex flex-column justify-center px-5 pt-5 pb-3" Style="@Style">
+    <TitleText Text="@Title" Class="mb-3" Style="font-size:35px; font-weight:500; text-align:center;" />
+    <EditForm Model="@Model" OnValidSubmit="@OnLogin">
+        <DataAnnotationsValidator/>
+        <MudTextField @bind-Value="@Model.Email" For="@(() => Model.Email)"
+                      Placeholder="邮 箱" Variant="Variant.Outlined" Margin="Margin.Dense" 
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Person" 
+                      Class="mb-3"></MudTextField>
+        <MudTextField @bind-Value="@Model.Password" InputType="InputType.Password"  For="@(() => Model.Password)"
+                      Placeholder="密码" Variant="Variant.Outlined" Margin="Margin.Dense" 
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Lock" Immediate
+                      OnKeyDown="@OnEnter" Class="mb-3"></MudTextField>
+        <MudButton ButtonType="ButtonType.Submit" Class="mb-3"
+                   Variant="Variant.Filled" Color="Color.Tertiary" FullWidth 
+                   Disabled="@LoginRunning">
+            @if (LoginRunning)
+            {
+                <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate />
+            }
+            <MudText>登 录</MudText>
+        </MudButton>
+        <MudStack Row Justify="Justify.SpaceBetween">
+            <MudStack Row Spacing="1" Style="width:fit-content;">
+                <MudText Typo="Typo.body2" Style="width:fit-content;">还没有账号?</MudText>
+                <MudLink Typo="Typo.body2" Href="@RegisterLink" Underline="Underline.None" Target="_parent" Style="width:fit-content;">点击注册</MudLink>
+            </MudStack>
+            <MudLink Typo="Typo.body2" Href="@RetrievePasswordLink" Underline="Underline.None" Style="width:fit-content;">忘记密码</MudLink>
+        </MudStack>
+    </EditForm>
+</MudPaper>

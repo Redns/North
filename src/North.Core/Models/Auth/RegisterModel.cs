@@ -1,9 +1,8 @@
-﻿using North.Common;
-using North.Core.Entities;
-using North.Core.Helper;
+﻿using North.Core.Entities;
+using North.Core.Helpers;
 using System.Text.RegularExpressions;
 
-namespace North.Models.Auth
+namespace North.Core.Models.Auth
 {
     public class RegisterModel
     {
@@ -66,23 +65,48 @@ namespace North.Models.Auth
         /// 生成注册用户
         /// </summary>
         /// <returns></returns>
-        public UserEntity ToUser()
+        public UserEntity ToUser(RegisterSettingDefault @default)
         {
-            var registerDefaultSettings = GlobalValues.AppSettings.Register.Default;
             return new UserEntity(IdentifyHelper.Generate(),
                                   Name,
                                   Email,
-                                  EncryptHelper.MD5($"{Email}:{Password}"),
+                                  $"{Email}:{Password}".MD5(),
                                   $"api/image/avatar/{Avatar}",
                                   State.Checking,
                                   string.Empty,
                                   0L,
-                                  registerDefaultSettings.Permission,
-                                  registerDefaultSettings.IsApiAvailable,
-                                  registerDefaultSettings.MaxUploadNums,
-                                  registerDefaultSettings.MaxUploadCapacity,
-                                  registerDefaultSettings.SingleMaxUploadNums,
-                                  registerDefaultSettings.SingleMaxUploadCapacity);
+                                  @default.Permission,
+                                  @default.IsApiAvailable,
+                                  @default.MaxUploadNums,
+                                  @default.MaxUploadCapacity,
+                                  @default.SingleMaxUploadNums,
+                                  @default.SingleMaxUploadCapacity);
         }
+    }
+
+
+    /// <summary>
+    /// 默认注册设置
+    /// </summary>
+    public class RegisterSettingDefault
+    {
+        public Permission Permission { get; set; }          // 用户权限
+        public bool IsApiAvailable { get; set; }            // 是否启用 API
+        public long MaxUploadNums { get; set; }            // 最大上传数量（张）
+        public double MaxUploadCapacity { get; set; }        // 最大上传容量（MB）
+        public long SingleMaxUploadNums { get; set; }      // 单次最大上传数量（张）
+        public double SingleMaxUploadCapacity { get; set; }  // 单次最大上传容量（MB）
+
+        public RegisterSettingDefault(Permission permission, bool isApiAvailable, long maxUploadNums, double maxUploadCapacity, long singleMaxUploadNums, double singleMaxUploadCapacity)
+        {
+            Permission = permission;
+            IsApiAvailable = isApiAvailable;
+            MaxUploadNums = maxUploadNums;
+            MaxUploadCapacity = maxUploadCapacity;
+            SingleMaxUploadNums = singleMaxUploadNums;
+            SingleMaxUploadCapacity = singleMaxUploadCapacity;
+        }
+
+        public RegisterSettingDefault Clone() => new(Permission, IsApiAvailable, MaxUploadNums, MaxUploadCapacity, SingleMaxUploadNums, SingleMaxUploadCapacity);
     }
 }

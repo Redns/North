@@ -1,4 +1,4 @@
-﻿using North.Core.Helper;
+﻿using North.Core.Helpers;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -32,45 +32,29 @@ namespace North.Core.Entities
         public string UploadTime { get; set; }
 
         /// <summary>
-        /// 存储方
+        /// 存储方 ID
         /// </summary>
-        public Storager Storager { get; set; }
+        public string Storager { get; set; }
+
+        /// <summary>
+        /// 图片链接
+        /// </summary>
+        public ImageUrl Url { get; set; }
 
         /// <summary>
         /// 请求次数
         /// </summary>
         public long Request { get; set; }
 
-        public ImageEntity(string name, ImageSize size, Owner owner, Storager storager)
+        public ImageEntity(string name, ImageSize size, Owner owner, string storager, ImageUrl url, string? id = null, long request = 0L)
         {
-            Id = IdentifyHelper.Generate();
+            Id = id ?? IdentifyHelper.Generate();
             Name = name;
             Size = size;
             Owner = owner;
             UploadTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             Storager = storager;
-            Request = 0;
-        }
-
-        public ImageEntity(string id, string name, ImageSize size, Owner owner, Storager storager)
-        {
-            Id = id;
-            Name = name;
-            Size = size;
-            Owner = owner;
-            UploadTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            Storager = storager;
-            Request = 0;
-        }
-
-        public ImageEntity(string id, string name, ImageSize size, Owner owner, string uploadTime, Storager storager, long request)
-        {
-            Id = id;
-            Name = name;
-            Size = size;
-            Owner = owner;
-            UploadTime = uploadTime;
-            Storager = storager;
+            Url = url;
             Request = request;
         }
     }
@@ -79,7 +63,7 @@ namespace North.Core.Entities
     /// <summary>
     /// 图片尺寸
     /// </summary>
-    public class ImageSize
+    public struct ImageSize
     {
         [Column("Height")]
         public int Height { get; set; }
@@ -89,13 +73,6 @@ namespace North.Core.Entities
 
         [Column("Length")]
         public long Length { get; set; }
-
-        public ImageSize()
-        {
-            Height = 0;
-            Width = 0;
-            Length = 0L;
-        }
 
         public ImageSize(int height, int width, long length)
         {
@@ -109,7 +86,7 @@ namespace North.Core.Entities
     /// <summary>
     /// 图片所有者
     /// </summary>
-    public class Owner
+    public struct Owner
     {
         [MaxLength(32)]
         [Column("OwnerId")]
@@ -123,7 +100,6 @@ namespace North.Core.Entities
         [Column("OwnerEmail")]
         public string Email { get; set; }
 
-        public Owner() { }
         public Owner(string id, string name, string email)
         {
             Id = id;
@@ -134,43 +110,28 @@ namespace North.Core.Entities
 
 
     /// <summary>
-    /// 存储方
+    /// 图片链接
     /// </summary>
-    public class Storager
+    public struct ImageUrl
     {
         /// <summary>
-        /// IStorge 插件 ID
-        /// </summary>
-        [MaxLength(128)]
-        [Column("StoragerId")]
-        public string Id { get; set;}
-
-        /// <summary>
-        /// 图片链接（相对）
+        /// 图片链接
         /// </summary>
         [MaxLength(256)]
-        [Column("StoragerUrl")]
-        public string RelativeUrl { get; set; }
+        [Column("Url_Source")]
+        public string Source { get; set; }
 
         /// <summary>
-        /// 图片缩略图链接（相对）
+        /// 图片缩略图链接
         /// </summary>
         [MaxLength(256)]
-        [Column("StoragerThumbnailUrl")]
-        public string RelativeThumbnailUrl { get; set; }
+        [Column("Url_Thumbnail")]
+        public string Thumbnail { get; set; }
 
-        public Storager()
+        public ImageUrl(string source, string thumbnail)
         {
-            Id = string.Empty;
-            RelativeUrl = string.Empty;
-            RelativeThumbnailUrl = string.Empty;
-        }
-
-        public Storager(string id, string relativeUrl, string relativeThumbnailUrl)
-        {
-            Id = id;
-            RelativeUrl = relativeUrl;
-            RelativeThumbnailUrl = relativeThumbnailUrl;
+            Source = source;
+            Thumbnail = thumbnail;
         }
     }
 }

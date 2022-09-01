@@ -46,3 +46,9 @@ src/North.Nsfw/obj
 src/North.Nsfw/Properties
 src/North.Nsfw/appsettings.json
 # North.Nsfw End
+
+# North.RCL Start
+src/North.RCL/.vs
+src/North.RCL/bin
+src/North.RCL/obj
+# North.RCL End

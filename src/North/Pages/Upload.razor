@@ -6,8 +6,8 @@
 @inject NavigationManager _nav
 @inject IHttpContextAccessor _accessor
 
+@using North.Core.Models
 @using North.Events.PasteMultimediaEvent
-@using North.Models
 
 <AuthorizeView Roles="User,Administrator,System">
     <MudStack Row Spacing="0" Class="mud-width-full mud-height-full overflow-scroll">
@@ -27,10 +27,10 @@
             {
                 <MudPaper Outlined Square Class="mud-width-full mb-4">
                     <MudStack Row Class="mud-width-full">
-                        <MudAvatar Image="@image.ThumbnailUrl" Square Style="width:50px; height:50px;" />
+                        <MudAvatar Image="@image.PreviewUrl" Square Style="width:50px; height:50px;" />
                         <MudStack Spacing="0" Class="mud-width-full">
                             <MudText>@image.Name</MudText>
-                            <MudText Class="d-flex mud-width-full align-center">@($"{image.Size.Length / (1024.0 * 1024.0):f2} MB, {image.Message}")</MudText>
+                            <MudText Class="d-flex mud-width-full align-center">@($"{image.Length / (1024.0 * 1024.0):f2} MB, {image.Message}")</MudText>
                         </MudStack>
                         <MudStack Row Spacing="1" Class="d-flex mud-height-full  align-center" Style="width:fit-content;">
                             <MudIconButton Icon="@Icons.Outlined.FileUpload" Color="Color.Tertiary"

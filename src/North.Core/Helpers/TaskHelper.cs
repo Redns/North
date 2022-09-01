@@ -1,4 +1,4 @@
-﻿namespace North.Core.Helper
+﻿namespace North.Core.Helpers
 {
     /// <summary>
     /// 异步操作辅助类

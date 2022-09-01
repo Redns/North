@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace North.Core.Helper
+namespace North.Core.Helpers
 {
     /// <summary>
     /// 加密辅助类
