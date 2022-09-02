@@ -14,15 +14,6 @@
 </AuthorizeView>
 <AuthorizeView Roles="System">
     <MudStack Spacing="6" Style="margin-left:37px; margin-top:20px;" id="page">
-        <!-- API 令牌有效期 -->
-        <MudStack Spacing="2">
-            <MudTooltip Text="令牌过期后需要通过API重新申请" Placement="Placement.Right">
-                <p class="menu_text">API令牌有效期</p>
-            </MudTooltip>
-            <MudNumericField @bind-Value="@AuthSetting.TokenValidTime" Min="0"
-                            HideSpinButtons Margin="Margin.Dense" Adornment="Adornment.End" AdornmentText="ms" 
-                            Variant="Variant.Outlined" Style="width:90%; max-width:140px; height:35px;" />
-        </MudStack>
         <!-- Cookie 有效期 -->
             <MudStack Spacing="2">
             <MudTooltip Text="Cookie过期后网页端需要重新登录" Placement="Placement.Right">

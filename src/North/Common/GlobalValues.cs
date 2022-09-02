@@ -1,4 +1,6 @@
 ﻿using Krins.Nuget;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace North.Common
 {
@@ -7,8 +9,19 @@ namespace North.Common
     /// </summary>
     public static class GlobalValues
     {
-        public static readonly string AvatarDir = "Data/Images/Avatars";
-        public static readonly string[] WithoutAuthenticationPages = new string[] { "login", "register", "signin", "verify" };
+        /// <summary>
+        /// 以下页面无需授权即可访问（防止 MainLayout 认证陷入死循环）
+        /// </summary>
+        public static string[] WithoutAuthenticationPages { get; } = new string[] { "login", "register", "signin", "verify" };
+
+        /// <summary>
+        /// 身份认证属性
+        /// </summary>
+        public static AuthenticationProperties AuthenticationProperties { get; } = new AuthenticationProperties()
+        {
+            IsPersistent = true,
+            ExpiresUtc = DateTime.Now.AddSeconds(AppSettings.Auth.CookieValidTime)
+        };
 
         /// <summary>
         /// 应用设置

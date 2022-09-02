@@ -3,6 +3,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using NLog.Extensions.Logging;
 using North.Common;
+using North.Controllers;
 using North.Core.Helpers;
 using North.Core.Models.Auth;
 using North.Core.Services.Logger;
@@ -60,7 +61,11 @@ class Program
                 // JS 互调用超时事件设置
                 option.JSInteropDefaultCallTimeout = TimeSpan.FromSeconds(10);
             });
-            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            builder.Services.AddAuthentication(options =>
+                            {
+                                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                                options.RequireAuthenticatedSignIn = false;
+                            })
                             .AddCookie(options =>
                             {
                                 // 确定用于创建 Cookie 的设置
@@ -89,18 +94,18 @@ class Program
                                         var user = app?.Services
                                                       ?.GetService<List<UnitLoginIdentify>>()
                                                       ?.FirstOrDefault(i => i.Id == context.Request.Query.First(q => q.Key == "id").Value)
-                                                      ?.ClaimsIdentity.Claims.GetClaimEntity();
+                                                      ?.ClaimsIdentity.GetUserClaimEntity();
                                         if(user is not null)
                                         {
-                                            logger.Info($"{user.Name} login (Id: {user.Id}, Email: {user.Email}, Role: {user.Role})");
+                                            logger.Info($"{user.Role} {user.Email} login");
                                         }
                                         return Task.CompletedTask;
                                     },
                                     // 注销时调用
                                     OnSigningOut = (context) =>
                                     {
-                                        var user = context.HttpContext.User.Claims.GetClaimEntity();
-                                        logger.Info($"{user.Name} logout (Id: {user.Id}, Email: {user.Email}, Role: {user.Role})");
+                                        var user = context.HttpContext.User.Identities.First().GetUserClaimEntity();
+                                        logger.Info($"{user.Role} {user.Email} logout");
                                         return Task.CompletedTask;
                                     }
                                 };

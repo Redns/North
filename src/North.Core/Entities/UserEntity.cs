@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using North.Core.Helpers;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace North.Core.Entities
@@ -66,6 +67,11 @@ namespace North.Core.Entities
         public double SingleMaxUploadCapacity { get; set; }
 
         /// <summary>
+        /// 用户令牌
+        /// </summary>
+        public string Token { get; set; } = string.Empty;
+
+        /// <summary>
         /// 注册时间
         /// </summary>
         public string RegisterTime { get; set; } = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -88,28 +94,45 @@ namespace North.Core.Entities
 
 
         /// <summary>
+        /// 令牌是否有效
+        /// </summary>
+        /// <returns></returns>
+        public bool HasValidToken => !string.IsNullOrWhiteSpace(Token);
+
+
+        /// <summary>
+        /// 生成令牌
+        /// </summary>
+        /// <param name="tokens">已生成的所有令牌</param>
+        /// <returns></returns>
+        public void GenerateToken(IEnumerable<string> tokens)
+        {
+            if (!HasValidToken)
+            {
+                Token = IdentifyHelper.Generate(uniqueCheck: (token) => !tokens.Contains(token));
+            }
+        }
+
+
+        /// <summary>
         /// 生成 DTO 对象
         /// </summary>
         /// <returns></returns>
-        public UserDTOEntity ToDTO()
-        {
-            return new UserDTOEntity(Id, Name, Email, Avatar, State, Permission,
+        public UserDTOEntity DTO => new(Id, Name, Email, Avatar, State, Permission,
                                      IsApiAvailable, MaxUploadNums, MaxUploadCapacity,
                                      SingleMaxUploadNums, SingleMaxUploadCapacity);
-        }
 
 
-        public ClaimsIdentity ToClaimsIdentify()
+        /// <summary>
+        /// 生成 Claims 认证对象
+        /// </summary>
+        /// <returns></returns>
+        public ClaimsIdentity ClaimsIdentify => new(new Claim[]
         {
-            return new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.SerialNumber, Id),
-                new Claim(ClaimTypes.Name, Name),
-                new Claim(ClaimTypes.Email, Email),
-                new Claim(ClaimTypes.Role, Permission.ToString()),
-                new Claim(ClaimTypes.Actor, Avatar)
-            });
-        }
+            new Claim(ClaimTypes.Email, Email),
+            new Claim(ClaimTypes.SerialNumber, Token),
+            new Claim(ClaimTypes.Role, Permission.ToString())
+        });
 
 
         public override string ToString() => JsonSerializer.Serialize(this, new JsonSerializerOptions()
@@ -223,19 +246,15 @@ namespace North.Core.Entities
     /// </summary>
     public class UserClaimEntity
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
         public string Email { get; set; }
+        public string Token { get; set; }
         public string Role { get; set; }
-        public string Avatar { get; set; }
 
-        public UserClaimEntity(string id, string name, string email, string role, string avatar)
+        public UserClaimEntity(string email, string token, string role)
         {
-            Id = id;
-            Name = name;
             Email = email;
+            Token = token;
             Role = role;
-            Avatar = avatar;
         }
     }
 }

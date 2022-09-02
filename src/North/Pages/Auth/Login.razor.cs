@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using North.Common;
@@ -8,7 +7,6 @@ using North.Core.Helpers;
 using North.Core.Models.Auth;
 using North.Data.Access;
 using North.RCL.Forms;
-using System.Security.Claims;
 
 namespace North.Pages.Auth
 {
@@ -67,30 +65,33 @@ namespace North.Pages.Auth
             try
             {
                 await Task.Delay(500);
-                using var context = new OurDbContext();
-                var user = await new SqlUserData(context).FindAsync(u => u.Email == LoginModel.Email);
-                if ((user?.Password != $"{LoginModel.Email}:{LoginModel.Password}".MD5()) || (user?.State != State.Normal))
+
+                // 检索用户
+                var sqlUserData = new SqlUserData(_context);
+                var encryptedPassword = $"{LoginModel.Email}:{LoginModel.Password}".MD5();
+                var user = await sqlUserData.FindAsync(u => (u.Email == LoginModel.Email) && (u.Password == encryptedPassword) && (u.State == State.Normal));
+                if (user is null)
                 {
                     _snackbar.Add("账号密码错误或账户状态异常", Severity.Error);
                 }
                 else
                 {
-                    var loginIdentify = new UnitLoginIdentify(IdentifyHelper.Generate(), new ClaimsIdentity(new Claim[]
+                    // 检查用户是否包含有效 Token
+                    if (!user.HasValidToken)
                     {
-                            new Claim(ClaimTypes.SerialNumber, user.Id),
-                            new Claim(ClaimTypes.Name, user.Name),
-                            new Claim(ClaimTypes.Email, user.Email),
-                            new Claim(ClaimTypes.Role, user.Permission.ToString()),
-                            new Claim(ClaimTypes.Actor, user.Avatar)
-                    }, CookieAuthenticationDefaults.AuthenticationScheme));
+                        user.GenerateToken(Array.ConvertAll((await sqlUserData.GetAsync(u => u.HasValidToken)).ToArray(), u => u.Token));
+                        await sqlUserData.UpdateAsync(user);
+                    }
+                    var loginIdentify = new UnitLoginIdentify(IdentifyHelper.Generate(), user.ClaimsIdentify);
 
+                    // 存储并写入认证信息
                     _identifies.Add(loginIdentify);
                     _navigationManager.NavigateTo($"signin/?id={loginIdentify.Id}&redirect={Redirect}", true);
                 }
             }
             catch(Exception e)
             {
-                _logger.Error("Failed to login", e);
+                _logger.Error("Fail to login", e);
                 _snackbar.Add("登陆失败，系统内部错误", Severity.Error);
             }
             finally
