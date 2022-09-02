@@ -1,5 +1,46 @@
-﻿<h3>RegisterForm</h3>
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using MudBlazor
+@using North.RCL.Text
 
-@code {
-
-}
+<MudPaper Class="d-flex flex-column justify-center px-5 pt-5 pb-3" Style="@Style">
+    <TitleText Text="@Title" Class="mb-3" Style="font-size:35px; font-weight:500; text-align:center;" />
+    @if (string.IsNullOrEmpty(Model.Avatar))
+    {
+        <MudIconButton HtmlTag="label" for="avatar_upload" Color="Color.Success" Icon="@Icons.Filled.CloudUpload"
+                       Class="mb-3" Style="width:fit-content; margin:auto; min-width:55px; min-height:55px;">
+        </MudIconButton>
+    }
+    else
+    {
+        <MudAvatar Image="@Model.Avatar" Class="cursor-pointer mb-3" Style="width:fit-content; margin:auto; min-width:55px; min-height:55px;" onclick="@OnAvatarClear" />
+    }
+    <EditForm Model="@Model" OnValidSubmit="@OnRegister">
+        <DataAnnotationsValidator/>
+        <MudTextField @bind-Value="@Model.Name" For="@(() => Model.Name)"
+                      Placeholder="用户名" Variant="Variant.Outlined" Margin="Margin.Dense"
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Person"
+                      Class="mb-3"></MudTextField>
+        <MudTextField @bind-Value="@Model.Email" For="@(() => Model.Email)"
+                      Placeholder="邮 箱" Variant="Variant.Outlined" Margin="Margin.Dense" 
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Outlined.Email"
+                      Class="mb-3"></MudTextField>
+        <MudTextField @bind-Value="@Model.Password" InputType="InputType.Password"  For="@(() => Model.Password)"
+                      Placeholder="密 码" Variant="Variant.Outlined" Margin="Margin.Dense" 
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Lock" Immediate
+                      OnKeyDown="@OnEnter" Class="mb-3"></MudTextField>
+        <MudButton ButtonType="ButtonType.Submit" Class="mb-3"
+                   Variant="Variant.Filled" Color="Color.Tertiary" FullWidth 
+                   Disabled="@RegisterRunning">
+            @if (RegisterRunning)
+            {
+                <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate />
+            }
+            <MudText>注 册</MudText>
+        </MudButton>
+        <MudStack Row Justify="Justify.FlexStart">
+            <MudText Typo="Typo.body2" Style="width:fit-content;">已有账号?</MudText>
+            <MudLink Typo="Typo.body2" Href="@LoginLink" Underline="Underline.None" Target="_parent" Style="width:fit-content;">点击登录</MudLink>
+        </MudStack>
+    </EditForm>
+</MudPaper>
+<InputFile id="avatar_upload" OnChange="@OnAvatarUpload" accept="image/*" hidden />

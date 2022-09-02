@@ -3,56 +3,22 @@
 @using North.Common
 @using North.Core.Services.Poster
 @using North.Data.Access
+@using North.RCL.Forms
 @using North.RCL.Text
 
 @inject IJSRuntime JS
 @inject ILogger _logger
 @inject IPoster _poster
 @inject ISnackbar _snackbar
+@inject OurDbContext _context
+@inject NavigationManager _nav
 @inject IHttpContextAccessor _accessor
-@inject NavigationManager _navigationManager
 
-<MudCard id="register_card">
-    <MudCardContent id="register_form">
-        <MudStack>
-            <TitleText Text="@GlobalValues.AppSettings.Appearance.Name" Style="margin-top:10px; font-size:35px; font-weight:500; text-align:center;" />
-            @if(string.IsNullOrEmpty(RegisterModel.Avatar))
-            {
-                <MudIconButton HtmlTag="label" for="avatar_upload"
-                               Color="Color.Success" Icon="@Icons.Filled.CloudUpload"
-                               Style="width:fit-content; margin:auto; min-width:50px; min-height:50px;">
-                </MudIconButton>
-            }
-            else
-            {
-                <MudBadge Icon="@Icons.Filled.Clear" Color="Color.Dark" Origin="Origin.BottomRight" 
-                          Overlap Bordered Style="width:fit-content; margin:auto; cursor:pointer;"
-                          OnClick="ClearAvatar">
-                    <MudAvatar Image="@RegisterModel.Avatar" Style="min-width:50px; min-height:50px;"/>
-                </MudBadge>
-            }
-            <MudTextField @bind-Value="RegisterModel.Name" MaxLength="16"
-                          Placeholder="用户名" Variant="Variant.Outlined" Margin="Margin.Dense"
-                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Person"></MudTextField>
-            <MudTextField @bind-Value="RegisterModel.Email" MaxLength="32"
-                          Placeholder="邮 箱" Variant="Variant.Outlined" Margin="Margin.Dense" 
-                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Email"></MudTextField>
-            <MudTextField @bind-Value="RegisterModel.Password" InputType="InputType.Password" MaxLength="32" 
-                          Placeholder="密码" Variant="Variant.Outlined" Margin="Margin.Dense" 
-                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Lock"
-                          Immediate OnKeyDown="@EnterToRegister"></MudTextField>
-            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="UserRegister" Disabled="RegisterRunning">
-                @if (RegisterRunning)
-                {
-                    <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate/>
-                }
-                <MudText>注 册</MudText>
-            </MudButton>
-        </MudStack>
-    </MudCardContent>
-</MudCard>
-<InputFile id="avatar_upload" OnChange="UploadAvatar" accept="image/*" hidden/>
-
+<MudStack Class="d-flex justify-center align-center mud-width-full mud-height-full">
+    <RegisterForm Model="@Model" Title="@GlobalValues.AppSettings.Appearance.Name"
+                  OnRegister="@UserRegister" OnEnter="@EnterToRegister" OnAvatarUpload="@UploadAvatar" OnAvatarClear="@ClearAvatar"
+                  RegisterRunning="@RegisterRunning"  LoginLink="login" />
+</MudStack>
 
 <style>
     body {
@@ -60,30 +26,5 @@
         background-repeat: no-repeat;
         background-attachment: fixed;
         background-size: cover;
-    }
-
-    #register_card {
-        width: 90%;
-        height: 400px;
-        max-width: 330px;
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 60px;
-        right: 0;
-        margin: auto;
-        border-radius: 5px;
-        box-shadow: 0 6px 6px rgba(0, 0, 0, .2);
-        border-color: #eee;
-    }
-
-    #register_form {
-        width: 90%;
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        margin: auto;
     }
 </style>

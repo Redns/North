@@ -12,15 +12,17 @@
 
 <AuthorizeView>
     <Authorized>
-        <MudStack Spacing="0" Style="height:50px;">
-            <ActionBar IsExpanded="@IsExpanded" OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" />
-            <MudDivider />
-        </MudStack>
-        <MudStack Row Spacing="0" Class="mud-width-full" Style="position:absolute; top:50px;">
-            <NavMenu IsExpanded="@IsExpanded" OpenMiniOnHover="GlobalValues.AppSettings.Appearance.NavAutoExpand" Style="width:240px;" />
-            <MudStack Spacing="0" Class="d-flex flex-column mud-height-full mud-width-full">
-                @Body
-                <Footer Content="@GlobalValues.AppSettings.Appearance.Footer" />
+        <MudStack Spacing="0" Class="mud-width-full mud-height-full">
+            <MudStack Spacing="0" Style="height:50px;">
+                <ActionBar IsExpanded="@IsExpanded" OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" />
+                <MudDivider />
+            </MudStack>
+            <MudStack Row Spacing="0" Class="mud-width-full" Style="position:absolute; top:50px;">
+                <NavMenu IsExpanded="@IsExpanded" OpenMiniOnHover="GlobalValues.AppSettings.Appearance.NavAutoExpand" Style="width:240px;" />
+                <MudStack Spacing="0" Class="d-flex flex-column mud-height-full mud-width-full">
+                        @Body
+                    <Footer Content="@GlobalValues.AppSettings.Appearance.Footer" />
+                </MudStack>
             </MudStack>
         </MudStack>
     </Authorized>

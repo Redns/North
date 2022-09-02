@@ -170,6 +170,32 @@ namespace North.Common
 
 
     /// <summary>
+    /// 默认注册设置
+    /// </summary>
+    public class RegisterSettingDefault
+    {
+        public Permission Permission { get; set; }          // 用户权限
+        public bool IsApiAvailable { get; set; }            // 是否启用 API
+        public long MaxUploadNums { get; set; }            // 最大上传数量（张）
+        public double MaxUploadCapacity { get; set; }        // 最大上传容量（MB）
+        public long SingleMaxUploadNums { get; set; }      // 单次最大上传数量（张）
+        public double SingleMaxUploadCapacity { get; set; }  // 单次最大上传容量（MB）
+
+        public RegisterSettingDefault(Permission permission, bool isApiAvailable, long maxUploadNums, double maxUploadCapacity, long singleMaxUploadNums, double singleMaxUploadCapacity)
+        {
+            Permission = permission;
+            IsApiAvailable = isApiAvailable;
+            MaxUploadNums = maxUploadNums;
+            MaxUploadCapacity = maxUploadCapacity;
+            SingleMaxUploadNums = singleMaxUploadNums;
+            SingleMaxUploadCapacity = singleMaxUploadCapacity;
+        }
+
+        public RegisterSettingDefault Clone() => new(Permission, IsApiAvailable, MaxUploadNums, MaxUploadCapacity, SingleMaxUploadNums, SingleMaxUploadCapacity);
+    }
+
+
+    /// <summary>
     /// 通知设置
     /// </summary>
     public class NotifySetting

@@ -72,22 +72,20 @@ namespace North.Pages.Auth
                 var user = await sqlUserData.FindAsync(u => (u.Email == LoginModel.Email) && (u.Password == encryptedPassword) && (u.State == State.Normal));
                 if (user is null)
                 {
-                    _snackbar.Add("账号密码错误或账户状态异常", Severity.Error);
+                    _snackbar.Add("账号密码错误或账户状态异常", Severity.Error); return;
                 }
-                else
-                {
-                    // 检查用户是否包含有效 Token
-                    if (!user.HasValidToken)
-                    {
-                        user.GenerateToken(Array.ConvertAll((await sqlUserData.GetAsync(u => u.HasValidToken)).ToArray(), u => u.Token));
-                        await sqlUserData.UpdateAsync(user);
-                    }
-                    var loginIdentify = new UnitLoginIdentify(IdentifyHelper.Generate(), user.ClaimsIdentify);
 
-                    // 存储并写入认证信息
-                    _identifies.Add(loginIdentify);
-                    _navigationManager.NavigateTo($"signin/?id={loginIdentify.Id}&redirect={Redirect}", true);
+                // 检查用户是否包含有效 Token
+                if (!user.HasValidToken)
+                {
+                    user.GenerateToken(Array.ConvertAll((await sqlUserData.GetAsync(u => u.HasValidToken)).ToArray(), u => u.Token));
+                    await sqlUserData.UpdateAsync(user);
                 }
+                var loginIdentify = new UnitLoginIdentify(IdentifyHelper.Generate(), user.ClaimsIdentify);
+
+                // 存储并写入认证信息
+                _identifies.Add(loginIdentify);
+                _navigationManager.NavigateTo($"signin/?id={loginIdentify.Id}&redirect={Redirect}", true);
             }
             catch(Exception e)
             {

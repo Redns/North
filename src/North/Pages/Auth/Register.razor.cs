@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using MimeKit;
 using MudBlazor;
 using North.Common;
 using North.Core.Entities;
 using North.Core.Helpers;
-using North.Core.Models.Auth;
 using North.Core.Models.Notification;
 using North.Data.Access;
+using North.RCL.Forms;
 
 namespace North.Pages.Auth
 {
@@ -27,12 +26,27 @@ namespace North.Pages.Auth
         /// <summary>
         /// 注册模型
         /// </summary>
-        public RegisterModel RegisterModel { get; set; } = new RegisterModel();
+        public RegisterModel Model { get; set; } = new RegisterModel();
 
         /// <summary>
         /// 系统注册设置
         /// </summary>
         public RegisterSetting RegisterSettings { get; set; } = GlobalValues.AppSettings.Register;
+
+
+        /// <summary>
+        /// 检查系统是否开放注册
+        /// </summary>
+        /// <returns></returns>
+        protected override async Task OnInitializedAsync()
+        {
+            if (!RegisterSettings.AllowRegister)
+            {
+                _snackbar.Add("系统当前未开放注册", Severity.Error);
+                _nav.NavigateTo("login", true);
+            }
+            await base.OnInitializedAsync();
+        }
 
 
         /// <summary>
@@ -64,56 +78,26 @@ namespace North.Pages.Auth
 
             try
             {
-                if (!RegisterSettings.AllowRegister)
+                // 判断用户是否上传头像
+                await Task.Delay(500);
+                if (string.IsNullOrEmpty(Model.Avatar))
                 {
-                    _snackbar.Add("系统当前未开放注册", Severity.Error); return; 
+                    _snackbar.Add("头像不能为空", Severity.Error); return;
                 }
 
-                // 校验用户输入
-                var validCheckMessage = RegisterModel.ValidCheck();
-                if (!string.IsNullOrEmpty(validCheckMessage))
+                // 判断账号是否已被注册
+                var sqlUserData = new SqlUserData(_context);
+                if (sqlUserData.Any(u => u.Email == Model.Email))
                 {
-                    _snackbar.Add(validCheckMessage, Severity.Error);
+                    _snackbar.Add("邮箱已被注册", Severity.Error); return;
                 }
-                else
-                {
-                    await Task.Delay(500);
 
-                    using var context = new OurDbContext();
-                    var users = new SqlUserData(context);
-                    if (users.Any(u => u.Email == RegisterModel.Email))
-                    {
-                        _snackbar.Add("邮箱已被注册", Severity.Error);
-                    }
-                    else
-                    {
-                        // TODO 此处后期根据 AppSetting 中的设置项确定保存路径
-                        var newUser = RegisterModel.ToUser(RegisterSettings.Default);
-                        var avatarMaxSize = RegisterSettings.MaxAvatarSize * 1024 * 1024;
-                        var avatarName = $"{IdentifyHelper.Generate()}.{RegisterModel.AvatarExtension}";
-
-                        // 保存用户头像
-                        await JS.DownloadBlob(RegisterModel.Avatar, $"Data/Images/{newUser.Id}/{avatarName}", (long)avatarMaxSize);
-
-                        // 发送验证邮件
-                        await SendRegisterVerifyEmail();
-
-                        // 录入用户
-                        newUser.Avatar = $"api/image/{newUser.Id}/{avatarName}";
-                        users.Add(newUser);
-
-                        _snackbar.Add("验证邮件已发送", Severity.Success);
-                        _navigationManager.NavigateTo("login");
-                    }
-                }
+                // TODO 添加注册逻辑
+                _nav.NavigateTo("login", true);
             }
             catch (Exception e)
             {
-                await JS.DestroyBlob(RegisterModel.Avatar);
-
-                RegisterModel.Avatar = string.Empty;
-                RegisterModel.AvatarExtension = string.Empty;
-
+                await ClearAvatar();
                 _logger.Error("Register failed", e);
                 _snackbar.Add("注册失败，系统内部错误", Severity.Error);
             }
@@ -124,6 +108,11 @@ namespace North.Pages.Auth
         }
 
 
+        /// <summary>
+        /// 监测 Enter 键
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         private async Task EnterToRegister(KeyboardEventArgs args)
         {
             if(args.Code is "Enter")
@@ -137,27 +126,26 @@ namespace North.Pages.Auth
         /// 发送注册验证邮件
         /// </summary>
         /// <returns></returns>
-        private async ValueTask SendRegisterVerifyEmail()
+        private async Task SendRegisterVerifyEmail()
         {
             var emailSettings = GlobalValues.AppSettings.Notify.Email;
 
             // 添加验证邮件至数据库
-            var verifyEmail = new VerifyEmailEntity(IdentifyHelper.Generate(), RegisterModel.Email,
+            var verifyEmail = new VerifyEmailEntity(IdentifyHelper.Generate(), Model.Email,
                                                     IdentifyHelper.TimeStamp + RegisterSettings.VerifyEmailValidTime,
                                                     VerifyType.Register);
-            using var context = new OurDbContext();
-            await new SqlVerifyEmailData(context).AddAsync(verifyEmail);
+            await new SqlVerifyEmailData(_context).AddAsync(verifyEmail);
 
             // 构造验证邮件并发送
-            var verifyEmailBody = $"欢迎注册 North 图床，" +
-                                  $"<a href=\"{_navigationManager.BaseUri}verify?type=register&id={verifyEmail.Id}\">点击链接</a> " +
-                                  $"以验证您的账户 {RegisterModel.Name}";
-            _ = _poster.SendAsync(new MailModel(new MailAddress("North", emailSettings.Account),
-                                                new MailAddress(RegisterModel.Name, RegisterModel.Email),
-                                                "North 图床注册验证",
-                                                verifyEmailBody,
-                                                emailSettings.Code,
-                                                true));
+            var verifyEmailBody = $"欢迎注册 {GlobalValues.AppSettings.Appearance.Name} 图床，" +
+                                  $"<a href=\"{_nav.BaseUri}verify?type=register&id={verifyEmail.Id}\">点击链接</a> " +
+                                  $"以验证您的账户 {Model.Name}";
+            await _poster.SendAsync(new MailModel(new MailAddress(GlobalValues.AppSettings.Appearance.Name, emailSettings.Account),
+                                                  new MailAddress(Model.Name, Model.Email),
+                                                  $"{GlobalValues.AppSettings.Appearance.Name} 图床注册验证",
+                                                  verifyEmailBody,
+                                                  emailSettings.Code,
+                                                  true));
         }
 
 
@@ -169,24 +157,23 @@ namespace North.Pages.Auth
         {
             try
             {
-                var avatar = args.GetMultipleFiles()[0];
+                var avatar = args.File;
                 var avatarMaxSize = RegisterSettings.MaxAvatarSize * 1024 * 1024;
                 if (avatar.Size > avatarMaxSize)
                 {
-                    _snackbar.Add($"头像大小不能超过 {RegisterSettings.MaxAvatarSize} MB", Severity.Error);
+                    _snackbar.Add($"头像大小不能超过 {RegisterSettings.MaxAvatarSize} MB", Severity.Error); return;
                 }
-                else
-                {
-                    using var avatarReadStream = avatar.OpenReadStream((long)avatarMaxSize);
-                    using var avatarReadStreamRef = new DotNetStreamReference(avatarReadStream);
 
-                    RegisterModel.Avatar = await JS.UploadToBlob(avatarReadStream, avatar.ContentType);
-                    RegisterModel.AvatarExtension = avatar.ContentType.Split('/').Last();
-                }
+                // 上传图片至 Blob
+                using var avatarReadStream = avatar.OpenReadStream((long)avatarMaxSize);
+                using var avatarReadStreamRef = new DotNetStreamReference(avatarReadStream);
+                Model.Avatar = await JS.UploadToBlob(avatarReadStream, avatar.ContentType);
+                Model.AvatarContentType = avatar.ContentType;
             }
             catch(Exception e)
             {
-                _logger.Error("Avatar upload failed", e);
+                _logger.Error("Fail to upload avatar", e);
+                _snackbar.Add("头像上传失败，服务器内部错误", Severity.Error);
             }
         }
 
@@ -196,13 +183,33 @@ namespace North.Pages.Auth
         /// </summary>
         private async Task ClearAvatar()
         {
-            if (!string.IsNullOrEmpty(RegisterModel.Avatar))
+            if (!string.IsNullOrEmpty(Model.Avatar))
             {
-                await JS.DestroyBlob(RegisterModel.Avatar);
-
-                RegisterModel.Avatar = string.Empty;
-                RegisterModel.AvatarExtension = string.Empty;
+                await JS.DestroyBlob(Model.Avatar);
+                Model.Avatar = string.Empty;
+                Model.AvatarContentType = string.Empty;
             }
+        }
+
+
+        /// <summary>
+        /// 生成注册用户
+        /// </summary>
+        /// <returns></returns>
+        public UserEntity ToUserEntity(RegisterModel model, RegisterSettingDefault @default)
+        {
+            return new UserEntity(IdentifyHelper.Generate(),
+                                  model.Name,
+                                  model.Email,
+                                  $"{model.Email}:{model.Password}".MD5(),
+                                  $"api/image/avatar/{model.Avatar}",
+                                  State.Checking,
+                                  @default.Permission,
+                                  @default.IsApiAvailable,
+                                  @default.MaxUploadNums,
+                                  @default.MaxUploadCapacity,
+                                  @default.SingleMaxUploadNums,
+                                  @default.SingleMaxUploadCapacity);
         }
     }
 }

@@ -65,11 +65,17 @@ namespace North.RCL.Forms
     /// </summary>
     public class LoginModel
     {
+        /// <summary>
+        /// 邮箱
+        /// </summary>
         [Required(ErrorMessage = "请输入邮箱")]
         [StringLength(32, ErrorMessage = "邮箱长度不能超过32")]
         [EmailAddress(ErrorMessage = "邮箱格式错误")]
         public string Email { get; set; } = string.Empty;
 
+        /// <summary>
+        /// 密码
+        /// </summary>
         [Required(ErrorMessage = "密码不能为空")]
         [StringLength(32, MinimumLength = 8, ErrorMessage = "密码长度必须介于8 ~ 32之间")]
         public string Password { get; set; } = string.Empty;
