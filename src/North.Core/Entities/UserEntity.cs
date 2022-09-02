@@ -74,7 +74,7 @@ namespace North.Core.Entities
         /// <summary>
         /// 注册时间
         /// </summary>
-        public string RegisterTime { get; set; } = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        public DateTime RegisterTime { get; set; } = DateTime.Now;
 
         public UserEntity(string id, string name, string email, string password, string avatar, State state, Permission permission, bool isApiAvailable, long maxUploadNums, double maxUploadCapacity, long singleMaxUploadNums, double singleMaxUploadCapacity)
         {

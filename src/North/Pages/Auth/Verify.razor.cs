@@ -73,7 +73,7 @@ namespace North.Pages.Auth
             var users = new SqlUserData(content);
             var emails = new SqlVerifyEmailData(content);
             var email = await emails.FindAsync(e => e.Id == Id);
-            if ((email is null) || (IdentifyHelper.TimeStamp > email.ExpireTime))
+            if ((email is null) || (DateTime.Now > email.ExpireTime))
             {
                 _snackbar.Add("链接不存在或已过期", Severity.Error);
             }

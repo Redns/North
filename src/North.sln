@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "North.NSFW", "North.NSFW\North.NSFW.csproj", "{ADE73496-B151-4E77-9431-B11A60A83C54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "North.RCL", "North.RCL\North.RCL.csproj", "{47F0B295-4368-4AB0-B97A-7233C193E1AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "North.RCL", "North.RCL\North.RCL.csproj", "{47F0B295-4368-4AB0-B97A-7233C193E1AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

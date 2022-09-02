@@ -18,14 +18,14 @@
         /// <summary>
         /// 链接到期时间
         /// </summary>
-        public long ExpireTime { get; set; }
+        public DateTime ExpireTime { get; set; }
 
         /// <summary>
         /// 验证类型
         /// </summary>
         public VerifyType VerifyType { get; set; }
 
-        public VerifyEmailEntity(string id, string email, long expireTime, VerifyType verifyType)
+        public VerifyEmailEntity(string id, string email, DateTime expireTime, VerifyType verifyType)
         {
             Id = id;
             Email = email;

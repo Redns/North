@@ -1,7 +1,58 @@
 ﻿@page "/users"
+@using North.Core.Entities
+@using North.Data.Access
+@using North.RCL.Text
 
-<h3>Users</h3>
+@inject OurDbContext _context
 
-@code {
-
-}
+<MudStack Class="mud-width-full mud-height-full pa-5">
+    <MudTable Items="@UsersShow" Loading="@DataLoading" Filter="@UserFilter" Height="510px" Virtualize Hover FixedHeader FixedFooter >
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Periodic Elements</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="@SearchText" Placeholder="Search"
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><IconText Icon="@Icons.Outlined.Person" Text="用户名" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
+            <MudTh><IconText Icon="@Icons.Outlined.Email" Text="邮 箱" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
+            <MudTh><IconText Icon="@Icons.Outlined.AdminPanelSettings" Text="权 限" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
+            <MudTh><IconText Icon="@Icons.Outlined.Bolt" Text="状 态" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
+            <MudTh><IconText Icon="@Icons.Outlined.Link" Text="API" Typo="Typo.subtitle1" IconStyle="transform:rotate(135deg)" Style="width:100%;"></IconText></MudTh>
+            <MudTh><IconText Icon="@Icons.Outlined.FormatListBulleted" Text="最大上传数量 (张)" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
+            <MudTh><IconText Icon="@Icons.Outlined.Storage" Text="最大上传容量 (MB)" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
+            <MudTh><IconText Icon="@Icons.Outlined.ModeEdit" Text="编 辑" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="用户名" Style="text-align:center;">@context.Name</MudTd>
+            <MudTd DataLabel="邮 箱" Style="text-align:center;">@context.Email</MudTd>
+            <MudTd DataLabel="权 限" Style="text-align:center;">
+                <MudChip Color="@PermissionChipColor(context.Permission)">@PermissionChipText(context.Permission)</MudChip>
+            </MudTd>
+            <MudTd DataLabel="状 态" Style="text-align:center;">
+                <MudChip Color="@StateChipColor(context.State)">@StateChipText(context.State)</MudChip>
+            </MudTd>
+            <MudTd DataLabel="API" Style="text-align:center;">
+                @if (context.IsApiAvailable)
+                {
+                    <MudChip Color="Color.Success">可 用</MudChip>
+                }
+                else
+                {
+                    <MudChip Color="Color.Error">禁 用</MudChip>
+                }
+            </MudTd>
+            <MudTd DataLabel="最大上传数量 (张)" Style="text-align:center;">@($"{context.SingleMaxUploadNums} / {context.MaxUploadNums}")</MudTd>
+            <MudTd DataLabel="最大上传容量 (MB)" Style="text-align:center;">@($"{context.SingleMaxUploadCapacity} / {context.MaxUploadCapacity}")</MudTd>
+            <MudTd DataLabel="编 辑" Style="text-align:center;">
+                <MudButtonGroup OverrideStyles="false">
+                    <MudButton Color="Color.Info" Variant="Variant.Outlined">修 改</MudButton>
+                    <MudButton Color="Color.Error" Variant="Variant.Outlined">删 除</MudButton>
+                </MudButtonGroup>
+            </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+</MudStack>

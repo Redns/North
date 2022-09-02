@@ -29,3 +29,16 @@
 2022-09-02 00:15:39 [North Info] Krins(ljing431@163.com) login success, id: f18c85ed43bb4e32aa9f3a429f7a3dae
 2022-09-02 00:15:46 [North Info] Krins(ljing431@163.com) logout success, id: f18c85ed43bb4e32aa9f3a429f7a3dae
 2022-09-02 00:15:53 [North Info] Application exit
+2022-09-03 03:17:58 [North Error] Application abort, Unrecognized scheme in server address '*://*:12121'. Only 'http://' and 'https://' are supported.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.ParseAddress(String address, Boolean& https)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.AddressesStrategy.BindAsync(AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindAsync(IEnumerable`1 listenOptions, AddressBindContext context, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.BindAsync(CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerImpl.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
+   at Microsoft.AspNetCore.Builder.WebApplication.Run(String url)
+   at Program.Main(String[] args) in E:\Project\North\src\North\Program.cs:line 1272022-09-03 03:17:58 [North Info] Application exit

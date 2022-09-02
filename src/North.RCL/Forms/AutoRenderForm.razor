@@ -1,0 +1,16 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using MudBlazor
+
+<MudStack Class="d-flex flex-column justify-center px-5 pt-5 pb-3 hhh" Style="@Style">
+    <EditForm Model="@Model">
+        <DataAnnotationsValidator />
+        @foreach (var p in Model.GetType().GetProperties())
+        {
+            <MudTextField T="string" Value="@p.GetValue(Model)?.ToString()" ValueChanged="(e) => p.SetValue(Model, e)"
+                          Placeholder="@p.Name" Variant="Variant.Outlined" Margin="Margin.Dense"
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Person"
+                          Class="mb-3"></MudTextField>
+            <MudText>@p.GetValue(Model)</MudText>
+        }
+    </EditForm>
+</MudStack>

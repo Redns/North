@@ -1,13 +1,20 @@
 ﻿@page "/uploadTest"
+
 @using Microsoft.EntityFrameworkCore
 @using North.Core.Helpers
 @using North.Data.Access
 @using North.Events.PasteMultimediaEvent
 @using System.Reflection.Metadata
 @using System.Diagnostics
+@using North.RCL.Forms
 
 @inject OurDbContext _context
 @inject IJSRuntime JS
+@inject OurDbContext _context
 @inject ISnackbar _snackbar
 
-<InputFile @onpastemultimedia="(e => Paste(e))" accept="image/*" OnChange="(e => Upload(e))" />
+@*<InputFile @onpastemultimedia="(e => Paste(e))" accept="image/*" OnChange="(e => Upload(e))" />*@
+
+<MudStack  Class="d-flex flex-column justify-center align-center mud-width-full mud-height-full">
+    <AutoRenderForm Model="@Model" />
+</MudStack>

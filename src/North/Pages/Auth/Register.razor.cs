@@ -132,7 +132,7 @@ namespace North.Pages.Auth
 
             // 添加验证邮件至数据库
             var verifyEmail = new VerifyEmailEntity(IdentifyHelper.Generate(), Model.Email,
-                                                    IdentifyHelper.TimeStamp + RegisterSettings.VerifyEmailValidTime,
+                                                    DateTime.Now.AddMilliseconds(RegisterSettings.VerifyEmailValidTime),
                                                     VerifyType.Register);
             await new SqlVerifyEmailData(_context).AddAsync(verifyEmail);
 
