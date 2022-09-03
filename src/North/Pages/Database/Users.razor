@@ -5,8 +5,8 @@
 
 @inject OurDbContext _context
 
-<MudStack Spacing="0" Class="mud-width-full mud-height-full px-5" Style="">
-    <MudTable Items="@UsersShow" Loading="@DataLoading" Filter="@UserFilter" Height="calc(100% - 116px)" Virtualize MultiSelection Hover FixedHeader FixedFooter Elevation="0" Class="mud-width-full" Style="height:100%;">
+<MudStack Spacing="0" Class="mud-width-full mud-height-full overflow-hidden px-5">
+    <MudTable Items="@UsersShow" Loading="@DataLoading" Filter="@UserFilter" Height="calc(100% - 116px)" Virtualize MultiSelection Hover FixedHeader FixedFooter Elevation="0" Class="mud-width-full" Style="min-height:calc(100% - 50px);">
         <ToolBarContent>
             <MudStack Row Spacing="5" Class="d-flex align-end mud-width-full ml-n4">
                 <MudStack Class="mud-height-full" Style="width:300px;">

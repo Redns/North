@@ -20,9 +20,9 @@
                            OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" OnSwitchTheme="@SwitchTheme" OnUserClick="@(() => SignOut())" />
             <MudDivider />
         </MudStack>
-        <MudStack Row Style="width: 100%; position: absolute; top: 50px; left: 0; bottom: 0;">
+        <MudStack Row Spacing="0" Style="width: 100%; position: absolute; top: 50px; left: 0; bottom: 0;">
             <NavMenu IsExpanded="@IsExpanded" OpenMiniOnHover="GlobalValues.AppSettings.Appearance.NavAutoExpand" Style="width:240px;" />
-            <MudStack Class="mud-height-full mud-width-full">
+            <MudStack Spacing="0" Class="mud-height-full mud-width-full">
                 @Body
                 <FooterText Content="@GlobalValues.AppSettings.Appearance.Footer" />
             </MudStack>
