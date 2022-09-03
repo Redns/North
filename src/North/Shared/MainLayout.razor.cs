@@ -9,6 +9,7 @@ namespace North.Shared
     partial class MainLayout
     {
         public bool IsExpanded { get; set; } = false;
+        public bool DarkTheme { get; set; } = false;
 
 
         /// <summary>
@@ -69,6 +70,33 @@ namespace North.Shared
                 // 自动跳转至授权页面
                 _nav.NavigateTo($"/login?redirect={relativeUrl}", true);
             }
+        }
+
+
+        /// <summary>
+        /// 切换主题
+        /// </summary>
+        /// <returns></returns>
+        public async Task SwitchTheme()
+        {
+            DarkTheme = !DarkTheme;
+            if (DarkTheme)
+            {
+                await JS.SetBodyStyle("#1A1A27", "invert(1) hue-rotate(180deg)");
+            }
+            else
+            {
+                await JS.SetBodyStyle(string.Empty, string.Empty);
+            }
+        }
+
+
+        /// <summary>
+        /// 退出登录
+        /// </summary>
+        public void SignOut()
+        {
+            _nav.NavigateTo("signout", true);
         }
     }
 }

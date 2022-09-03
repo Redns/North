@@ -1,17 +1,21 @@
 ﻿@page "/users"
 @using North.Core.Entities
 @using North.Data.Access
-@using North.RCL.Text
+@using North.RCL.Texts
 
 @inject OurDbContext _context
 
-<MudStack Class="mud-width-full mud-height-full pa-5">
-    <MudTable Items="@UsersShow" Loading="@DataLoading" Filter="@UserFilter" Height="" Virtualize Hover FixedHeader FixedFooter >
+<MudStack Spacing="0" Class="mud-width-full mud-height-full px-5" Style="">
+    <MudTable Items="@UsersShow" Loading="@DataLoading" Filter="@UserFilter" Height="calc(100% - 116px)" Virtualize MultiSelection Hover FixedHeader FixedFooter Elevation="0" Class="mud-width-full" Style="height:100%;">
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Periodic Elements</MudText>
-            <MudSpacer />
-            <MudTextField @bind-Value="@SearchText" Placeholder="Search"
-                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            <MudStack Row Spacing="5" Class="d-flex align-end mud-width-full ml-n4">
+                <MudStack Class="mud-height-full" Style="width:300px;">
+                    <MudTextField @bind-Value="@SearchText" Placeholder="搜索用户..." Style="height:40px;"
+                                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Variant="Variant.Outlined"></MudTextField>
+                </MudStack>
+                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Outlined.Sync" Color="Color.Info" Style="height:40px;">视 图</MudButton> 
+                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Outlined.Add" Color="Color.Success" Style="height:40px;">新 增</MudButton>
+            </MudStack>
         </ToolBarContent>
         <HeaderContent>
             <MudTh><IconText Icon="@Icons.Outlined.Person" Text="用户名" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
@@ -51,12 +55,12 @@
             <MudTd DataLabel="编 辑" Style="text-align:center;">
                 <MudButtonGroup OverrideStyles="false">
                     <MudButton Color="Color.Info" Variant="Variant.Outlined">修 改</MudButton>
-                    <MudButton Color="Color.Error" Variant="Variant.Outlined">删 除</MudButton>
+                    <MudButton Color="Color.Error" Variant="Variant.Outlined" OnClick="@(async () => await RemoveUser(context))">删 除</MudButton>
                 </MudButtonGroup>
             </MudTd>
             </RowTemplate>
-            <PagerContent>
-                <MudTablePager />
-            </PagerContent>
-        </MudTable>
+        <PagerContent>
+            <MudTablePager RowsPerPageString="每页显示数量" PageSizeOptions="@(new int[] { 10, 15, 20, 25, 30 })" InfoFormat="{first_item} - {last_item} of {all_items}" />
+        </PagerContent>
+    </MudTable>
 </MudStack>

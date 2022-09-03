@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
 @using MudBlazor
-@using North.RCL.Text
+@using North.RCL.Texts
 
 <MudPaper Class="d-flex flex-column justify-center px-5 pt-5 pb-3" Style="@Style">
     <TitleText Text="@Title" Class="mb-3" Style="font-size:35px; font-weight:500; text-align:center;" />
@@ -37,9 +37,12 @@
             }
             <MudText>注 册</MudText>
         </MudButton>
-        <MudStack Row Justify="Justify.FlexStart">
-            <MudText Typo="Typo.body2" Style="width:fit-content;">已有账号?</MudText>
-            <MudLink Typo="Typo.body2" Href="@LoginLink" Underline="Underline.None" Target="_parent" Style="width:fit-content;">点击登录</MudLink>
+        <MudStack Row Justify="Justify.SpaceBetween">
+            <MudStack Row Spacing="1" Style="width:fit-content;">
+                <MudText Typo="Typo.body2" Style="width:fit-content;">已有账号?</MudText>
+                <MudLink Typo="Typo.body2" Href="@LoginLink" Underline="Underline.None" Target="_parent" Style="width:fit-content;">点击登录</MudLink>
+            </MudStack>
+            <MudLink Typo="Typo.body2" Href="@RetrievePasswordLink" Underline="Underline.None" Style="width:fit-content;">忘记密码</MudLink>
         </MudStack>
     </EditForm>
 </MudPaper>

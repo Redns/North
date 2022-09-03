@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace North.RCL.Text
+namespace North.RCL.Texts
 {
     partial class IconText
     {

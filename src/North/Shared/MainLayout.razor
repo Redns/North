@@ -1,8 +1,11 @@
 ﻿@using North.Common
 @using North.Data.Access
+@using North.RCL.Texts
+@using North.RCL.ToolBars
 
 @inherits LayoutComponentBase
 
+@inject IJSRuntime JS
 @inject ILogger _logger
 @inject OurDbContext _context
 @inject NavigationManager _nav
@@ -13,21 +16,22 @@
 <AuthorizeView>
     <Authorized>
         <MudStack Spacing="0" Style="height:50px;">
-            <ActionBar IsExpanded="@IsExpanded" OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" />
+            <ActionToolBar IsExpanded="@IsExpanded" DarkTheme="@DarkTheme"
+                           OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" OnSwitchTheme="@SwitchTheme" OnUserClick="@(() => SignOut())" />
             <MudDivider />
         </MudStack>
         <MudStack Row Style="width: 100%; position: absolute; top: 50px; left: 0; bottom: 0;">
             <NavMenu IsExpanded="@IsExpanded" OpenMiniOnHover="GlobalValues.AppSettings.Appearance.NavAutoExpand" Style="width:240px;" />
-            <MudStack Class="d-flex mud-height-full mud-width-full">
+            <MudStack Class="mud-height-full mud-width-full">
                 @Body
-                <Footer Content="@GlobalValues.AppSettings.Appearance.Footer" />
+                <FooterText Content="@GlobalValues.AppSettings.Appearance.Footer" />
             </MudStack>
         </MudStack>
     </Authorized>
     <NotAuthorized>
-        <MudStack Class="d-flex mud-height-full mud-width-full">
+        <MudStack Class="mud-height-full mud-width-full">
             @Body
-            <Footer Content="@GlobalValues.AppSettings.Appearance.Footer" />
+            <FooterText Content="@GlobalValues.AppSettings.Appearance.Footer" />
         </MudStack>
     </NotAuthorized>
 </AuthorizeView>

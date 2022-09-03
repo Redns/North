@@ -115,7 +115,7 @@ namespace North.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("users")]
-        [Authorize]
+        [Authorize(Roles = "System,Administrator")]
         public async ValueTask<ApiResult<IEnumerable<UserDTOEntity>>> GetUsers()
         {
             try

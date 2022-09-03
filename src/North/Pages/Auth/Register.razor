@@ -4,7 +4,7 @@
 @using North.Core.Services.Poster
 @using North.Data.Access
 @using North.RCL.Forms
-@using North.RCL.Text
+@using North.RCL.Texts
 
 @inject IJSRuntime JS
 @inject ILogger _logger
@@ -17,7 +17,7 @@
 <MudStack Class="d-flex justify-center align-center mud-width-full mud-height-full">
     <RegisterForm Model="@Model" Title="@GlobalValues.AppSettings.Appearance.Name"
                   OnRegister="@UserRegister" OnEnter="@EnterToRegister" OnAvatarUpload="@UploadAvatar" OnAvatarClear="@ClearAvatar"
-                  RegisterRunning="@RegisterRunning"  LoginLink="login" />
+                  RegisterRunning="@RegisterRunning"  LoginLink="login" RetrievePasswordLink="findpwd" />
 </MudStack>
 
 <style>

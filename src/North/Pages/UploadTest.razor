@@ -13,7 +13,7 @@
 @inject OurDbContext _context
 @inject ISnackbar _snackbar
 
-@*<InputFile @onpastemultimedia="(e => Paste(e))" accept="image/*" OnChange="(e => Upload(e))" />*@
+<InputFile @onpastemultimedia="(e => Paste(e))" accept="image/*" OnChange="(e => Upload(e))" />
 
 <MudStack  Class="d-flex flex-column justify-center align-center mud-width-full mud-height-full">
     <AutoRenderForm Model="@Model" />

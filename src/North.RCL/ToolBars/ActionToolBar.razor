@@ -1,22 +1,20 @@
-﻿@using North.Common
-@using North.RCL.Text
-
-@inject IJSRuntime JS
-@inject NavigationManager _nav
+﻿@using Microsoft.JSInterop
+@using MudBlazor
+@using North.RCL.Texts
 
 <MudToolBar Style="@Style">
     <MudTooltip Text="@ExpandTooltip" Placement="Placement.Right">
         <MudIconButton Icon="@Icons.Material.Outlined.Menu" OnClick="@OnNavMenuStateChanged" DisableRipple Style="margin-left:-20px;" />
     </MudTooltip>
-    <TitleText Text="@GlobalValues.AppSettings.Appearance.Name" Style="margin-left:10px; font-size:22px;" />
+    <TitleText Text="@Title" Style="margin-left:10px; font-size:22px;" />
     <MudSpacer />
     <MudTooltip Text="通知">
         <MudIconButton Icon="@Icons.Material.Outlined.Notifications" />
     </MudTooltip>
     <MudTooltip Text="用 户">
-        <MudIconButton Icon="@Icons.Material.Outlined.ManageAccounts" OnClick="@SignOut" />
+        <MudIconButton Icon="@Icons.Material.Outlined.ManageAccounts" OnClick="@OnUserClick" />
     </MudTooltip>
     <MudTooltip Text="@ThemeSwitchTooltip">
-        <MudIconButton Icon="@ThemeSwitchIcon" OnClick="@SwitchTheme" />
+        <MudIconButton Icon="@ThemeSwitchIcon" OnClick="@OnSwitchTheme" />
     </MudTooltip>
 </MudToolBar>

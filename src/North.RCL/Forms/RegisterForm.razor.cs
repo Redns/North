@@ -50,6 +50,12 @@ namespace North.RCL.Forms
         public string LoginLink { get; set; } = string.Empty;
 
         /// <summary>
+        /// 密码找回链接
+        /// </summary>
+        [Parameter]
+        public string RetrievePasswordLink { get; set; } = string.Empty;
+
+        /// <summary>
         /// 组件样式
         /// </summary>
         [Parameter]
