@@ -33,6 +33,19 @@ namespace North.Core.Helpers
 
 
         /// <summary>
+        /// 设置页面 Body 样式
+        /// </summary>
+        /// <param name="JS"></param>
+        /// <param name="backgroundColor">背景颜色</param>
+        /// <param name="filter">过滤器</param>
+        /// <returns></returns>
+        public static async ValueTask<string> SetBodyStyle(this IJSRuntime JS, string backgroundColor, string filter)
+        {
+            return await JS.InvokeAsync<string>("setBodyStyle", backgroundColor, filter);
+        }
+
+
+        /// <summary>
         /// 获取屏幕尺寸
         /// </summary>
         /// <param name="JS"></param>

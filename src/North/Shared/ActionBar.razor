@@ -1,6 +1,8 @@
 ﻿@using North.Common
 @using North.RCL.Text
-@inject NavigationManager _navigationManager
+
+@inject IJSRuntime JS
+@inject NavigationManager _nav
 
 <MudToolBar Style="@Style">
     <MudTooltip Text="@ExpandTooltip" Placement="Placement.Right">
@@ -11,7 +13,10 @@
     <MudTooltip Text="通知">
         <MudIconButton Icon="@Icons.Material.Outlined.Notifications" />
     </MudTooltip>
-    <MudTooltip>
-        <MudIconButton Icon="@Icons.Material.Outlined.ManageAccounts" OnClick="SignOut" />
+    <MudTooltip Text="用 户">
+        <MudIconButton Icon="@Icons.Material.Outlined.ManageAccounts" OnClick="@SignOut" />
+    </MudTooltip>
+    <MudTooltip Text="@ThemeSwitchTooltip">
+        <MudIconButton Icon="@ThemeSwitchIcon" OnClick="@SwitchTheme" />
     </MudTooltip>
 </MudToolBar>
