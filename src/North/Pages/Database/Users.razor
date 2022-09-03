@@ -19,13 +19,17 @@
             <MudTh><IconText Icon="@Icons.Outlined.AdminPanelSettings" Text="权 限" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
             <MudTh><IconText Icon="@Icons.Outlined.Bolt" Text="状 态" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
             <MudTh><IconText Icon="@Icons.Outlined.Link" Text="API" Typo="Typo.subtitle1" IconStyle="transform:rotate(135deg)" Style="width:100%;"></IconText></MudTh>
-            <MudTh><IconText Icon="@Icons.Outlined.FormatListBulleted" Text="最大上传数量 (张)" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
-            <MudTh><IconText Icon="@Icons.Outlined.Storage" Text="最大上传容量 (MB)" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
+            <MudTh><IconText Icon="@Icons.Outlined.FormatListBulleted" Text="上传数量 / 容量（单次）" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
+            <MudTh><IconText Icon="@Icons.Outlined.Storage" Text="上传数量 / 容量（全部）" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
             <MudTh><IconText Icon="@Icons.Outlined.ModeEdit" Text="编 辑" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="用户名" Style="text-align:center;">@context.Name</MudTd>
-            <MudTd DataLabel="邮 箱" Style="text-align:center;">@context.Email</MudTd>
+            <MudTd DataLabel="用户名" Style="text-align:center;">
+                <MudLink Typo="Typo.body2" Color="Color.Info" Href="@($"/user/{context.Id}")" Underline="Underline.None" Style="width:fit-content;">@context.Name</MudLink>
+            </MudTd>
+            <MudTd DataLabel="邮 箱" Style="text-align:center;">
+                <MudLink Typo="Typo.body2" Color="Color.Info" Href="@($"/user/{context.Id}")" Underline="Underline.None" Style="width:fit-content;">@context.Email</MudLink>
+            </MudTd>
             <MudTd DataLabel="权 限" Style="text-align:center;">
                 <MudChip Color="@PermissionChipColor(context.Permission)">@PermissionChipText(context.Permission)</MudChip>
             </MudTd>
@@ -42,8 +46,8 @@
                     <MudChip Color="Color.Error">禁 用</MudChip>
                 }
             </MudTd>
-            <MudTd DataLabel="最大上传数量 (张)" Style="text-align:center;">@($"{context.SingleMaxUploadNums} / {context.MaxUploadNums}")</MudTd>
-            <MudTd DataLabel="最大上传容量 (MB)" Style="text-align:center;">@($"{context.SingleMaxUploadCapacity} / {context.MaxUploadCapacity}")</MudTd>
+            <MudTd DataLabel="上传数量 / 容量（单次）" Style="text-align:center;">@($"{context.SingleMaxUploadNums} 张 / {context.SingleMaxUploadCapacity} MB")</MudTd>
+            <MudTd DataLabel="上传数量 / 容量（全部）" Style="text-align:center;">@($"{context.MaxUploadNums} 张 / {context.MaxUploadCapacity} MB")</MudTd>
             <MudTd DataLabel="编 辑" Style="text-align:center;">
                 <MudButtonGroup OverrideStyles="false">
                     <MudButton Color="Color.Info" Variant="Variant.Outlined">修 改</MudButton>

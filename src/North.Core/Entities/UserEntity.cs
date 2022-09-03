@@ -1,4 +1,5 @@
-﻿using North.Core.Helpers;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using North.Core.Helpers;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -132,7 +133,7 @@ namespace North.Core.Entities
             new Claim(ClaimTypes.Email, Email),
             new Claim(ClaimTypes.SerialNumber, Token),
             new Claim(ClaimTypes.Role, Permission.ToString())
-        });
+        }, CookieAuthenticationDefaults.AuthenticationScheme);
 
 
         public override string ToString() => JsonSerializer.Serialize(this, new JsonSerializerOptions()

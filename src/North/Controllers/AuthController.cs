@@ -81,7 +81,7 @@ namespace North.Controllers
         /// <param name="email">用户邮箱</param>
         /// <returns></returns>
         [HttpGet("user/{email}")]
-        [Authorize(Roles = "User,Administrator,System")]
+        [Authorize]
         public async ValueTask<ApiResult<UserDTOEntity?>> GetUser(string email)
         {
             try
@@ -115,7 +115,7 @@ namespace North.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("users")]
-        [Authorize(Roles = "User,Administrator,System")]
+        [Authorize]
         public async ValueTask<ApiResult<IEnumerable<UserDTOEntity>>> GetUsers()
         {
             try

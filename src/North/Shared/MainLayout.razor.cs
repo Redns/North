@@ -17,7 +17,7 @@ namespace North.Shared
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
-            //await AuthorizationAsync();
+            // await AuthorizationAsync();
             await base.OnInitializedAsync();
         }
 
@@ -31,7 +31,7 @@ namespace North.Shared
         {
             if (!firstRender)
             {
-                //await AuthorizationAsync();
+                // await AuthorizationAsync();
             }
             await base.OnAfterRenderAsync(firstRender);
         }

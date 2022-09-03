@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="3.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.JSInterop" Version="6.0.8" />
     <PackageReference Include="MudBlazor" Version="6.0.14" />
