@@ -44,7 +44,7 @@ namespace North.Shared
         public async Task AuthorizationAsync()
         {
             var signedUser = _accessor.HttpContext?.User;
-            var relativeUrl = _navigationManager.ToBaseRelativePath(_navigationManager.Uri).Split('?').First().ToLower();
+            var relativeUrl = _nav.ToBaseRelativePath(_nav.Uri).Split('?').First().ToLower();
             if (signedUser?.Identity?.IsAuthenticated is true)
             {
                 // 根据 Cookie 信息在数据库中查询用户
@@ -54,20 +54,20 @@ namespace North.Shared
                 var user = await new SqlUserData(_context).FindAsync(u => u.Id == signedUserId);
                 if ((user?.State != State.Normal) || (user?.Permission.ToString() != signedUserRole))
                 {
-                    _navigationManager.NavigateTo("signout", true);
+                    _nav.NavigateTo("signout", true);
                 }
                 else if(relativeUrl.Contains(GlobalValues.WithoutAuthenticationPages, true))
                 {
                     // 用户已授权且数据库信息未发生变动
                     // 拒绝其访问授权页面，自动跳转至首页
-                    _navigationManager.NavigateTo("", true);
+                    _nav.NavigateTo("", true);
                 }
             }
             else if(!relativeUrl.Contains(GlobalValues.WithoutAuthenticationPages, true))
             {
                 // 用户未经授权且访问的不是授权界面
                 // 自动跳转至授权页面
-                _navigationManager.NavigateTo($"/login?redirect={relativeUrl}", true);
+                _nav.NavigateTo($"/login?redirect={relativeUrl}", true);
             }
         }
     }

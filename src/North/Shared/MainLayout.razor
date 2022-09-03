@@ -5,29 +5,27 @@
 
 @inject ILogger _logger
 @inject OurDbContext _context
+@inject NavigationManager _nav
 @inject IHttpContextAccessor _accessor
-@inject NavigationManager _navigationManager
 
 <PageTitle>@GlobalValues.AppSettings.Appearance.Name</PageTitle>
 
 <AuthorizeView>
     <Authorized>
-        <MudStack Spacing="0" Class="d-flex flex-column mud-width-full mud-height-full">
-            <MudStack Spacing="0" Style="height:50px;">
-                <ActionBar IsExpanded="@IsExpanded" OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" />
-                <MudDivider />
-            </MudStack>
-            <MudStack Row Spacing="0" Class="mud-width-full" Style="position:absolute; top:50px;">
-                <NavMenu IsExpanded="@IsExpanded" OpenMiniOnHover="GlobalValues.AppSettings.Appearance.NavAutoExpand" Style="width:240px;" />
-                <MudStack Spacing="0" Class="d-flex flex-column mud-height-full mud-width-full">
-                        @Body
-                    <Footer Content="@GlobalValues.AppSettings.Appearance.Footer" />
-                </MudStack>
+        <MudStack Spacing="0" Style="height:50px;">
+            <ActionBar IsExpanded="@IsExpanded" OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" />
+            <MudDivider />
+        </MudStack>
+        <MudStack Row Style="width: 100%; position: absolute; top: 50px; left: 0; bottom: 0;">
+            <NavMenu IsExpanded="@IsExpanded" OpenMiniOnHover="GlobalValues.AppSettings.Appearance.NavAutoExpand" Style="width:240px;" />
+            <MudStack Class="d-flex mud-height-full mud-width-full">
+                @Body
+                <Footer Content="@GlobalValues.AppSettings.Appearance.Footer" />
             </MudStack>
         </MudStack>
     </Authorized>
     <NotAuthorized>
-        <MudStack Spacing="0" Class="d-flex flex-column mud-height-full mud-width-full">
+        <MudStack Class="d-flex mud-height-full mud-width-full">
             @Body
             <Footer Content="@GlobalValues.AppSettings.Appearance.Footer" />
         </MudStack>

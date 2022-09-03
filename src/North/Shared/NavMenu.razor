@@ -30,8 +30,8 @@
     </MudDrawer>
 </AuthorizeView>*@
 <AuthorizeView Roles="System">
-    <MudDrawer @bind-Open="@IsExpanded" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="OpenMiniOnHover" Style="overflow-x:hidden;" id="nav">
-        <MudNavMenu Rounded Margin="Margin.Normal" Color="Color.Tertiary" Style="@Style">
+    <MudDrawer @bind-Open="@IsExpanded" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="OpenMiniOnHover" Class="mud-height-full" Style="overflow-x:hidden;" id="nav">
+        <MudNavMenu Rounded Margin="Margin.Normal" Color="Color.Tertiary" Class="mud-heigth-full" Style="@Style">
             <MudNavLink Href="/upload" Icon="@Icons.Material.Outlined.FileUpload">上 传</MudNavLink>
             <MudNavLink Href="/dashboard" Icon="@Icons.Outlined.Speed">仪表盘</MudNavLink>
             <MudNavLink Href="/images" Icon="@Icons.Outlined.BrokenImage">图 库</MudNavLink>
