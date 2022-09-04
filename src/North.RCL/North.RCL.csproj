@@ -15,6 +15,10 @@
     <PackageReference Include="MudBlazor" Version="6.0.15" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\North.Core\North.Core.csproj" />
+  </ItemGroup>
+
 
 
 </Project>

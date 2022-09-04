@@ -15,7 +15,13 @@ namespace North.RCL.Texts
         public Typo Typo { get; set; }
 
         [Parameter]
+        public string? Link { get; set; } = null;
+
+        [Parameter]
         public string IconStyle { get; set; } = string.Empty;
+
+        [Parameter]
+        public string Class { get; set; } = string.Empty;
 
         [Parameter]
         public string Style { get; set; } = "width:fit-content; height:fit-content;";

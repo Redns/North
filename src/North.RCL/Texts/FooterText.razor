@@ -1,11 +1,8 @@
 ﻿@using MudBlazor
 
-@if(!string.IsNullOrEmpty(Content))
-{
-    <MudStack Class="@Class" Style="@Style">
-        @FooterContent
-    </MudStack>
-}
+<MudStack Class="@Class" Style="@Style">
+    @FooterContent
+</MudStack>
 
 @code {
     RenderFragment FooterContent => (builder) => builder.AddMarkupContent(0, Content);

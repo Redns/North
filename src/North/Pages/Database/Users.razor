@@ -1,66 +1,145 @@
 ﻿@page "/users"
+
 @using North.Core.Entities
 @using North.Data.Access
+@using North.RCL.Cards
 @using North.RCL.Texts
 
+@inject ISnackbar _snackbar
 @inject OurDbContext _context
-
-<MudStack Spacing="0" Class="mud-width-full mud-height-full overflow-hidden px-5">
-    <MudTable Items="@UsersShow" Loading="@DataLoading" Filter="@UserFilter" Height="calc(100% - 116px)" Virtualize MultiSelection Hover FixedHeader FixedFooter Elevation="0" Class="mud-width-full" Style="min-height:calc(100% - 50px);">
-        <ToolBarContent>
-            <MudStack Row Spacing="5" Class="d-flex align-end mud-width-full ml-n4">
-                <MudStack Class="mud-height-full" Style="width:300px;">
-                    <MudTextField @bind-Value="@SearchText" Placeholder="搜索用户..." Style="height:40px;"
-                                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Variant="Variant.Outlined"></MudTextField>
-                </MudStack>
-                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Outlined.Sync" Color="Color.Info" Style="height:40px;">视 图</MudButton> 
-                <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Outlined.Add" Color="Color.Success" Style="height:40px;">新 增</MudButton>
-            </MudStack>
-        </ToolBarContent>
-        <HeaderContent>
-            <MudTh><IconText Icon="@Icons.Outlined.Person" Text="用户名" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
-            <MudTh><IconText Icon="@Icons.Outlined.Email" Text="邮 箱" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
-            <MudTh><IconText Icon="@Icons.Outlined.AdminPanelSettings" Text="权 限" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
-            <MudTh><IconText Icon="@Icons.Outlined.Bolt" Text="状 态" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
-            <MudTh><IconText Icon="@Icons.Outlined.Link" Text="API" Typo="Typo.subtitle1" IconStyle="transform:rotate(135deg)" Style="width:100%;"></IconText></MudTh>
-            <MudTh><IconText Icon="@Icons.Outlined.FormatListBulleted" Text="上传数量 / 容量（单次）" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
-            <MudTh><IconText Icon="@Icons.Outlined.Storage" Text="上传数量 / 容量（全部）" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
-            <MudTh><IconText Icon="@Icons.Outlined.ModeEdit" Text="编 辑" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="用户名" Style="text-align:center;">
-                <MudLink Typo="Typo.body2" Color="Color.Info" Href="@($"/user/{context.Id}")" Underline="Underline.None" Style="width:fit-content;">@context.Name</MudLink>
-            </MudTd>
-            <MudTd DataLabel="邮 箱" Style="text-align:center;">
-                <MudLink Typo="Typo.body2" Color="Color.Info" Href="@($"/user/{context.Id}")" Underline="Underline.None" Style="width:fit-content;">@context.Email</MudLink>
-            </MudTd>
-            <MudTd DataLabel="权 限" Style="text-align:center;">
-                <MudChip Color="@PermissionChipColor(context.Permission)">@PermissionChipText(context.Permission)</MudChip>
-            </MudTd>
-            <MudTd DataLabel="状 态" Style="text-align:center;">
-                <MudChip Color="@StateChipColor(context.State)">@StateChipText(context.State)</MudChip>
-            </MudTd>
-            <MudTd DataLabel="API" Style="text-align:center;">
-                @if (context.IsApiAvailable)
-                {
-                    <MudChip Color="Color.Success">可 用</MudChip>
-                }
-                else
-                {
-                    <MudChip Color="Color.Error">禁 用</MudChip>
-                }
-            </MudTd>
-            <MudTd DataLabel="上传数量 / 容量（单次）" Style="text-align:center;">@($"{context.SingleMaxUploadNums} 张 / {context.SingleMaxUploadCapacity} MB")</MudTd>
-            <MudTd DataLabel="上传数量 / 容量（全部）" Style="text-align:center;">@($"{context.MaxUploadNums} 张 / {context.MaxUploadCapacity} MB")</MudTd>
-            <MudTd DataLabel="编 辑" Style="text-align:center;">
-                <MudButtonGroup OverrideStyles="false">
-                    <MudButton Color="Color.Info" Variant="Variant.Outlined">修 改</MudButton>
-                    <MudButton Color="Color.Error" Variant="Variant.Outlined" OnClick="@(async () => await RemoveUser(context))">删 除</MudButton>
-                </MudButtonGroup>
-            </MudTd>
-            </RowTemplate>
-        <PagerContent>
-            <MudTablePager RowsPerPageString="每页显示数量" PageSizeOptions="@(new int[] { 10, 15, 20, 25, 30 })" InfoFormat="{first_item} - {last_item} of {all_items}" />
-        </PagerContent>
-    </MudTable>
-</MudStack>
+  
+<div class="mud-width-full mud-height-full px-5">
+    @* 上方操作栏 *@
+    <div class="d-flex flex-row align-end gap-x-3 mud-width-full" style="height:60px;">
+        <div class="mud-height-full " style="width:300px; height:fit-content;">
+            <MudTextField @bind-Value="@SearchText" Immediate Placeholder="搜索用户..." OnKeyDown="@(async (args) => { if(args.Code == "Enter") { await SearchUsers(); } })" OnAdornmentClick="@(async () => await SearchUsers())"
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" 
+                          Variant="Variant.Outlined" Style="height:40px;"></MudTextField>
+        </div>
+        <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Outlined.Sync" Color="Color.Info" Style="height:40px;" OnClick="@(() => SwitchView())">视 图</MudButton>
+        <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Outlined.Add" Color="Color.Success" Style="height:40px;">新 增</MudButton>
+        @if(UsersSelected.Any())
+        {
+            <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Outlined.Delete" Color="Color.Error" Style="height:40px;">删 除</MudButton>
+        }
+    </div>
+    @if(ShowInTable)
+    {
+        @* 表格 *@
+        <MudTable Items="@UsersShow" @bind-SelectedItems="@UsersSelected" Loading="@DataLoading" Breakpoint="Breakpoint.Sm"
+                  Height="calc(100% - 52px)"  Class="mud-width-full" Style="height:calc(100% - 50px);"
+                  Virtualize MultiSelection Hover FixedHeader FixedFooter AllowUnsorted="false" Elevation="0">
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<UserEntity, object>(u => u.Name)" SortIcon="" Class="mud-width-full">
+                        <IconText Icon="@Icons.Outlined.Person" Text="用户名" Typo="Typo.subtitle1" Style="margin-left:23px; width:100%;"></IconText>
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<UserEntity, object>(u => u.Email)" SortIcon="" Class="mud-width-full">
+                        <IconText Icon="@Icons.Outlined.Email" Text="邮 箱" Typo="Typo.subtitle1" Style="margin-left:23px; width:100%;"></IconText>
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<UserEntity, object>(u => u.Permission)" SortIcon="" Class="mud-width-full">
+                        <IconText Icon="@Icons.Outlined.AdminPanelSettings" Text="权 限" Typo="Typo.subtitle1" Style="margin-left:23px; width:100%;"></IconText>
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<UserEntity, object>(u => u.State)" SortIcon="" Class="mud-width-full">
+                        <IconText Icon="@Icons.Outlined.Bolt" Text="状 态" Typo="Typo.subtitle1" Style="margin-left:23px; width:100%;"></IconText>
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<UserEntity, object>(u => u.IsApiAvailable)" SortIcon="" Class="mud-width-full">
+                        <IconText Icon="@Icons.Outlined.Link" Text="API" Typo="Typo.subtitle1" IconStyle="transform:rotate(135deg)" Style="margin-left:23px; width:100%;"></IconText>
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<UserEntity, object>(u => u.SingleMaxUploadNums)" SortIcon="" Class="mud-width-full">
+                        <IconText Icon="@Icons.Outlined.FormatListBulleted" Text="单次上传" Typo="Typo.subtitle1" Style="margin-left:23px; width:100%;"></IconText>
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<UserEntity, object>(u => u.MaxUploadNums)" SortIcon="" Class="mud-width-full">
+                        <IconText Icon="@Icons.Outlined.Storage" Text="总容量" Typo="Typo.subtitle1" Style="margin-left:23px; width:100%;"></IconText>
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh><IconText Icon="@Icons.Outlined.ModeEdit" Text="编 辑" Typo="Typo.subtitle1" Style="width:100%;"></IconText></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="用户名" Style="text-align:center;">
+                    <MudLink Typo="Typo.body2" Color="Color.Info" Href="@($"/user/{context.Id}")" Underline="Underline.None" Style="width:fit-content;">@context.Name</MudLink>
+                </MudTd>
+                <MudTd DataLabel="邮 箱" Style="text-align:center;">
+                    <MudLink Typo="Typo.body2" Color="Color.Info" Href="@($"/user/{context.Id}")" Underline="Underline.None" Style="width:fit-content;">@context.Email</MudLink>
+                </MudTd>
+                <MudTd DataLabel="权 限" Style="text-align:center;">
+                    <MudChip Color="@PermissionChipColor(context.Permission)">@PermissionChipText(context.Permission)</MudChip>
+                </MudTd>
+                <MudTd DataLabel="状 态" Style="text-align:center;">
+                    <MudChip Color="@StateChipColor(context.State)">@StateChipText(context.State)</MudChip>
+                </MudTd>
+                <MudTd DataLabel="API" Style="text-align:center;">
+                    @if (context.IsApiAvailable)
+                    {
+                        <MudChip Color="Color.Success">可 用</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip Color="Color.Error">禁 用</MudChip>
+                    }
+                </MudTd>
+                <MudTd DataLabel="单次上传" Style="text-align:center;">@($"{context.SingleMaxUploadNums} 张 / {context.SingleMaxUploadCapacity:f2} MB")</MudTd>
+                    <MudTd DataLabel="总容量" Style="text-align:center;">@($"{context.MaxUploadNums} 张 / {context.MaxUploadCapacity:f2} MB")</MudTd>
+                    <MudTd DataLabel="编 辑" Style="text-align:center;">
+                        <MudButton Color="Color.Info" Variant="Variant.Outlined">修 改</MudButton>
+                        <MudButton Color="Color.Error" Variant="Variant.Outlined" OnClick="@(async () => await RemoveUser(context))">删 除</MudButton>
+                    </MudTd>
+                </RowTemplate>
+            <PagerContent>
+                <MudTablePager RowsPerPageString="每页显示数量" PageSizeOptions="@(new int[] { 10, 15, 20, 25, 30 })" InfoFormat="{first_item} - {last_item} of {all_items}" />
+            </PagerContent>
+        </MudTable>
+    }
+    else
+    {
+        @* 列表 *@
+        <div class="mud-width-full" style="margin-top:15px; height:calc(100% - 65px); overflow:scroll;">
+            <MudHidden Breakpoint="Breakpoint.LgAndUp">
+                <Virtualize Items="@UsersShow" Context="User" OverscanCount="3" ItemSize="100">
+                    <ItemContent>
+                        <UserCard User="@User" OnDelete="@(async () => await RemoveUser(User))" Style="margin-bottom:10px;" />
+                    </ItemContent>
+                    <Placeholder>
+                        <MudText>Loading...</MudText>
+                    </Placeholder>
+                </Virtualize>
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                <div class="d-flex flex-row mud-width-full mud-height-full">
+                    <div class="pr-2" style="width:50%;">
+                        <Virtualize Items="@UsersShow.Take(ListLeftCount).ToList()" Context="User" OverscanCount="3" ItemSize="100">
+                            <ItemContent>
+                                <UserCard User="@User" OnDelete="@(async () => await RemoveUser(User))" Style="margin-bottom:10px;" />
+                            </ItemContent>
+                            <Placeholder>
+                                <MudText>Loading...</MudText>
+                            </Placeholder>
+                        </Virtualize>
+                    </div>
+                    <div class="pl-2" style="width:50%;">
+                        <Virtualize Items="@UsersShow.Skip(ListLeftCount).Take(ListRightCount).ToList()" Context="User" OverscanCount="3" ItemSize="100">
+                            <ItemContent>
+                                <UserCard User="@User" OnDelete="@(async () => await RemoveUser(User))" Style="margin-bottom:10px;" />
+                            </ItemContent>
+                            <Placeholder>
+                                <MudText>Loading...</MudText>
+                            </Placeholder>
+                        </Virtualize>
+                    </div>
+                </div>
+            </MudHidden>
+        </div>
+    }
+</div>

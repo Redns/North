@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Routing.Matching;
 using MudBlazor;
 using MudBlazor.Services;
 using NLog.Extensions.Logging;
@@ -9,6 +10,7 @@ using North.Core.Models.Auth;
 using North.Core.Services.Logger;
 using North.Core.Services.Poster;
 using North.Data.Access;
+using North.PluginBase;
 using ILogger = North.Core.Services.Logger.ILogger;
 
 class Program

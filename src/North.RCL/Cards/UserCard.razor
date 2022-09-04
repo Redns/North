@@ -1,0 +1,23 @@
+﻿@using MudBlazor
+@using North.RCL.Texts
+
+<MudCard Outlined Class="d-flex flex-row gap-0 align-center py-2" Style="@Style">
+    <MudBadge Color="@UserStateColor" Overlap Bordered Class="d-flex flex-column justify-center ml-3">
+        <MudAvatar Image="@User.Avatar" Style="width:60px; height:60px;" />
+    </MudBadge>
+    <MudPaper Elevation="0" Class="d-flex flex-column flex-auto ml-5">
+        <div class="d-flex flex-row align-center gap-x-0">
+            <IconText Icon="@Icons.Outlined.Person" Text="@User.Name" Typo="Typo.subtitle1" Link="@($"/user/{User.Id}")"></IconText>
+            <div class="d-flex flex-row gap-0 ml-2">
+                <MudChip Color="@PermissionChipColor" Size="Size.Small">@PermissionChipText</MudChip>
+                <MudChip Color="@ApiChipColor" Size="Size.Small">API</MudChip>
+            </div>
+        </div>
+        <IconText Icon="@Icons.Outlined.Email" Text="@User.Email" Typo="Typo.subtitle1" Link="@($"/user/{User.Id}")"></IconText>
+        <IconText Icon="@Icons.Outlined.CloudUpload" Text="@($"{User.SingleMaxUploadNums} 张 / {User.SingleMaxUploadCapacity:f2} MB (单次)，{User.MaxUploadNums} 张 / {User.MaxUploadCapacity:f2} MB（全部）")" Typo="Typo.subtitle1"></IconText>
+    </MudPaper>
+    <MudPaper Elevation="0" Class="d-flex flex-column gap-x-0 mx-2" Style="width:fit-content;">
+        <MudButton Color="Color.Info" Variant="Variant.Text" OnClick="@OnEdit">修 改</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Text" OnClick="@OnDelete">删 除</MudButton>
+    </MudPaper>
+</MudCard>

@@ -12,7 +12,7 @@
     }
     else
     {
-        <MudAvatar Image="@Model.Avatar" Class="cursor-pointer mb-3" Style="width:fit-content; margin:auto; min-width:55px; min-height:55px;" onclick="@OnAvatarClear" />
+        <MudAvatar Image="@Model.Avatar" Class="cursor-pointer mb-3" Style=" width:55px; height:55px; margin:auto;" onclick="@OnAvatarClear" />
     }
     <EditForm Model="@Model" OnValidSubmit="@OnRegister">
         <DataAnnotationsValidator/>

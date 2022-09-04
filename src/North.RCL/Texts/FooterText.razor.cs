@@ -8,9 +8,9 @@ namespace North.RCL.Texts
         public string Content { get; set; } = string.Empty;
 
         [Parameter]
-        public string Class { get; set; } = "d-flex mud-width-full justify-center py-2 overflow-hidden";
+        public string Class { get; set; } = "d-flex justify-center overflow-hidden";
 
         [Parameter]
-        public string Style { get; set; } = "height:fit-content; max-height:50px; text-align:center;";
+        public string Style { get; set; } = string.Empty;
     }
 }

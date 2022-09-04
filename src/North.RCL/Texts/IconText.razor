@@ -1,6 +1,13 @@
 ﻿@using MudBlazor
 
-<MudStack Row Class="d-flex justify-center" Style="@Style">
+<div class="d-flex flex-row justify-center align-center gap-x-2 @Class" style="@Style">
     <MudIcon Icon="@Icon" Style="@IconStyle" />
-    <MudText Typo="@Typo">@Text</MudText>
-</MudStack>
+    @if(Link is not null)
+    {
+        <MudLink Typo="@Typo" Color="Color.Info" Href="@Link" Underline="Underline.None" Style="width:fit-content;">@Text</MudLink>
+    }
+    else
+    {
+        <MudText Typo="@Typo">@Text</MudText>
+    }
+</div>
