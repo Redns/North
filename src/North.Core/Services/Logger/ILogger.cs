@@ -26,33 +26,33 @@ namespace North.Core.Services.Logger
     public class LogSetting
     {
         public string Output { get; set; }
-        public Level Level { get; set; }
+        public LogLevels Levels { get; set; }
         public string Layout { get; set; }
 
-        public LogSetting(string output, Level level, string layout)
+        public LogSetting(string output, LogLevels levels, string layout)
         {
             Output = output;
-            Level = level;
+            Levels = levels;
             Layout = layout;
         }
 
-        public LogSetting Clone() => new(Output, Level.Clone(), Layout);
+        public LogSetting Clone() => new(Output, Levels.Clone(), Layout);
     }
 
     /// <summary>
     /// 日志输出等级
     /// </summary>
-    public class Level
+    public class LogLevels
     {
         public LogLevel Min { get; set; }
         public LogLevel Max { get; set; }
 
-        public Level(LogLevel min, LogLevel max)
+        public LogLevels(LogLevel min, LogLevel max)
         {
             Min = min;
             Max = max;
         }
 
-        public Level Clone() => new(Min, Max);
+        public LogLevels Clone() => new(Min, Max);
     }
 }

@@ -1,15 +1,29 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 using MudBlazor;
+using North.Core.Entities;
 using North.Core.Helpers;
-using North.Data.Access;
 using North.Events.PasteMultimediaEvent;
 
 namespace North.Pages
 {
     partial class UploadTest
     {
+        private List<UserEntity> Users { get; set; } = new();
         private TestModel Model { get; set; } = new TestModel();
+
+        protected override async Task OnInitializedAsync()
+        {
+            try
+            {
+                var len = Program.app.Services.GetRequiredService<string>().Length;
+            }
+            catch(Exception e)
+            {
+                _logger.Error("Get service string error", e);
+            }
+        }
 
         private async Task Paste(PasteMultimediaEventsArgs args)
         {

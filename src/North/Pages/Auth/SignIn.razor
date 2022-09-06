@@ -1,7 +1,6 @@
 ﻿@page "/signin"
+@using System.Security.Claims
 
-@using North.Core.Models.Auth
-
+@inject NavigationManager _nav
 @inject IHttpContextAccessor _accessor
-@inject List<UnitLoginIdentify> _identifies
-@inject NavigationManager _navigationManager
+@inject Dictionary<string, ClaimsIdentity> _identifies

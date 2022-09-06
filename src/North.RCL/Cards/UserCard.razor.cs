@@ -33,8 +33,8 @@ namespace North.RCL.Cards
         /// </summary>
         public Color UserStateColor => User.State switch
         {
-            State.Checking => Color.Warning,
-            State.Normal => Color.Success,
+            UserState.Checking => Color.Warning,
+            UserState.Normal => Color.Success,
             _ => Color.Error
         };
 
@@ -43,9 +43,9 @@ namespace North.RCL.Cards
         /// </summary>
         public string PermissionChipText => User.Permission switch
         {
-            Permission.System => "系统",
-            Permission.Administrator => "管理员",
-            Permission.User => "用户",
+            UserPermission.System => "系统",
+            UserPermission.Administrator => "管理员",
+            UserPermission.User => "用户",
             _ => "未知"
         };
 
@@ -54,9 +54,9 @@ namespace North.RCL.Cards
         /// </summary>
         public Color PermissionChipColor => User.Permission switch
         {
-            Permission.System => Color.Success,
-            Permission.Administrator => Color.Primary,
-            Permission.User => Color.Info,
+            UserPermission.System => Color.Success,
+            UserPermission.Administrator => Color.Primary,
+            UserPermission.User => Color.Info,
             _ => Color.Error
         };
 

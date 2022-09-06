@@ -32,7 +32,7 @@
                 <p class="menu_text">输出级别</p>
             </MudTooltip>
             <MudStack Row Style="width:fit-content;" AlignItems="AlignItems.Center">
-                <MudSelect @bind-Value="@LogSetting.Level.Min"
+                <MudSelect @bind-Value="@LogSetting.Levels.Min"
                             Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter"
                             Style="width:90%; max-width:140px; max-height:35px;">
                         <MudSelectItem Value="LogLevel.Trace" Style="height:35px;" />
@@ -43,7 +43,7 @@
                         <MudSelectItem Value="LogLevel.Critical" Style="height:35px;" />
                     </MudSelect>
                 <MudIcon Icon="@Icons.Outlined.ArrowRightAlt" />
-                <MudSelect @bind-Value="@LogSetting.Level.Max"
+                <MudSelect @bind-Value="@LogSetting.Levels.Max"
                             Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter"
                             Style="width:90%; max-width:140px; max-height:35px;">
                     <MudSelectItem Value="LogLevel.Trace" Style="height:35px;" />

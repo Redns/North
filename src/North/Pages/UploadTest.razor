@@ -1,20 +1,30 @@
 ﻿@page "/uploadTest"
 
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.EntityFrameworkCore.Infrastructure
+@using North.Core.Entities
 @using North.Core.Helpers
-@using North.Data.Access
 @using North.Events.PasteMultimediaEvent
 @using System.Reflection.Metadata
 @using System.Diagnostics
 @using North.RCL.Forms
 
-@inject OurDbContext _context
+@inject ILogger _logger
 @inject IJSRuntime JS
-@inject OurDbContext _context
 @inject ISnackbar _snackbar
+@inject NorthDbContext _context
 
-<InputFile @onpastemultimedia="(e => Paste(e))" accept="image/*" OnChange="(e => Upload(e))" />
+@*<InputFile @onpastemultimedia="(e => Paste(e))" accept="image/*" OnChange="(e => Upload(e))" />
 
 <MudStack  Class="d-flex flex-column justify-center align-center mud-width-full mud-height-full">
     <AutoRenderForm Model="@Model" />
-</MudStack>
+</MudStack>*@
+
+@foreach(var user in Users)
+{
+    <p>@user.Name</p>
+}
+
+@code {
+    
+}

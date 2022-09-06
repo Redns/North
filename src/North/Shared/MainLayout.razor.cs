@@ -1,7 +1,7 @@
 ﻿using North.Common;
 using North.Core.Entities;
 using North.Core.Helpers;
-using North.Data.Access;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System.Security.Claims;
 
 namespace North.Shared
@@ -44,16 +44,20 @@ namespace North.Shared
         /// <returns></returns>
         public async Task AuthorizationAsync()
         {
-            var signedUser = _accessor.HttpContext?.User;
             var relativeUrl = _nav.ToBaseRelativePath(_nav.Uri).Split('?').First().ToLower();
-            if (signedUser?.Identity?.IsAuthenticated is true)
+            if (_accessor.HttpContext?.User.Identities.FirstOrDefault()?.IsAuthenticated is true)
             {
-                // 根据 Cookie 信息在数据库中查询用户
-                // 若用户为空、状态改变（被封禁）或权限发生变动时退出登录
-                var signedUserId = signedUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.SerialNumber)?.Value ?? string.Empty;
-                var signedUserRole = signedUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value ?? string.Empty;
-                var user = await new SqlUserData(_context).FindAsync(u => u.Id == signedUserId);
-                if ((user?.State != State.Normal) || (user?.Permission.ToString() != signedUserRole))
+                // 检查 Cookie 信息
+                // 账户封禁、权限更改等均会清空当前用户数据库中的令牌，造成之前获取的 Cookie 失效
+                var token = _accessor.HttpContext
+                                     .User
+                                     .Identities
+                                     .First()
+                                     .FindFirst("Token")
+                                     ?.Value;
+                var sqlUserData = new SqlUserData(_context);
+                var user = await sqlUserData.FindAsync(u => u.Token == token);
+                if (user?.HasValidToken is not true)
                 {
                     _nav.NavigateTo("signout", true);
                 }

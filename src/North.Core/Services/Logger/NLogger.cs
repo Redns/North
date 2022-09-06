@@ -4,6 +4,9 @@ using NLog.Targets;
 
 namespace North.Core.Services.Logger
 {
+    /// <summary>
+    /// NLog 打印组件
+    /// </summary>
     public class NLogger : ILogger
     {
         private const string Target_Name_File = "FileTarget";
@@ -48,8 +51,8 @@ namespace North.Core.Services.Logger
                 consoleRule.DisableLoggingForLevels(consoleRule.Levels.First(), consoleRule.Levels.Last());
             }
 
-            var minLogLevel = ParseLogLevel(settings.Level.Min);
-            var maxLogLevel = ParseLogLevel(settings.Level.Max);
+            var minLogLevel = ParseLogLevel(settings.Levels.Min);
+            var maxLogLevel = ParseLogLevel(settings.Levels.Max);
             if (minLogLevel < maxLogLevel)
             {
                 fileRule.EnableLoggingForLevels(minLogLevel, maxLogLevel);
@@ -70,17 +73,17 @@ namespace North.Core.Services.Logger
         /// </summary>
         /// <param name="level"></param>
         /// <returns></returns>
-        private static NLog.LogLevel ParseLogLevel(Microsoft.Extensions.Logging.LogLevel level)
+        private static LogLevel ParseLogLevel(Microsoft.Extensions.Logging.LogLevel level)
         {
             return level switch
             {
-                Microsoft.Extensions.Logging.LogLevel.Trace => NLog.LogLevel.Trace,
-                Microsoft.Extensions.Logging.LogLevel.Debug => NLog.LogLevel.Debug,
-                Microsoft.Extensions.Logging.LogLevel.Information => NLog.LogLevel.Info,
-                Microsoft.Extensions.Logging.LogLevel.Warning => NLog.LogLevel.Warn,
-                Microsoft.Extensions.Logging.LogLevel.Error => NLog.LogLevel.Error,
-                Microsoft.Extensions.Logging.LogLevel.Critical => NLog.LogLevel.Fatal,
-                _ => NLog.LogLevel.Off
+                Microsoft.Extensions.Logging.LogLevel.Trace => LogLevel.Trace,
+                Microsoft.Extensions.Logging.LogLevel.Debug => LogLevel.Debug,
+                Microsoft.Extensions.Logging.LogLevel.Information => LogLevel.Info,
+                Microsoft.Extensions.Logging.LogLevel.Warning => LogLevel.Warn,
+                Microsoft.Extensions.Logging.LogLevel.Error => LogLevel.Error,
+                Microsoft.Extensions.Logging.LogLevel.Critical => LogLevel.Fatal,
+                _ => LogLevel.Off
             };
         }
 
@@ -93,7 +96,8 @@ namespace North.Core.Services.Logger
 
         public void Debug(string message, Exception e)
         {
-            _logger.Debug(message, e);
+            // TODO 注意！此处需要调用异常类型 e 放在信息 message 前方的方法，否则无法打印异常信息！
+            _logger.Debug(e, message);
         }
 
         public void Error(string message)
@@ -103,7 +107,7 @@ namespace North.Core.Services.Logger
 
         public void Error(string message, Exception e)
         {
-            _logger.Error(message, e);
+            _logger.Error(e, message);
         }
 
         public void Fatal(string message)
@@ -113,7 +117,7 @@ namespace North.Core.Services.Logger
 
         public void Fatal(string message, Exception e)
         {
-            _logger.Fatal(message, e);
+            _logger.Fatal(e, message);
         }
 
         public void Info(string message)
@@ -123,7 +127,7 @@ namespace North.Core.Services.Logger
 
         public void Info(string message, Exception e)
         {
-            _logger.Info(message, e);
+            _logger.Info(e, message);
         }
 
         public void Trace(string message)
@@ -133,7 +137,7 @@ namespace North.Core.Services.Logger
 
         public void Trace(string message, Exception e)
         {
-            _logger.Trace(message, e);
+            _logger.Trace(e, message);
         }
 
         public void Warn(string message)
@@ -143,7 +147,7 @@ namespace North.Core.Services.Logger
 
         public void Warn(string message, Exception e)
         {
-            _logger.Warn(message, e);
+            _logger.Warn(e, message);
         }
         #endregion
     }

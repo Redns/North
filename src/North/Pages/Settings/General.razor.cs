@@ -1,5 +1,8 @@
-﻿using MudBlazor;
+﻿using Microsoft.EntityFrameworkCore;
+using MudBlazor;
 using North.Common;
+using North.Core.Common;
+using North.Core.Entities;
 
 namespace North.Pages.Settings
 {
@@ -18,25 +21,27 @@ namespace North.Pages.Settings
         {
             try
             {
-                SaveRunning = true;
-                await Task.Delay(500);
+                await InvokeAsync(() =>
+                {
+                    SaveRunning = true;
+                    StateHasChanged();
+                });
+
                 GlobalValues.AppSettings.General = GeneralSetting.Clone();
                 GlobalValues.AppSettings.Save();
+
                 _snackbar.Add("保存成功", Severity.Success);
             }
             catch (Exception e)
             {
                 GeneralSetting = GlobalValues.AppSettings.General.Clone();
+
                 _snackbar.Add("保存失败，已还原设置", Severity.Error);
                 _logger.Error("Failed to save general settings", e);
             }
             finally
             {
-                await InvokeAsync(() =>
-                {
-                    SaveRunning = false;
-                    StateHasChanged();
-                });
+                SaveRunning = false;
             }
         }
 
@@ -49,9 +54,14 @@ namespace North.Pages.Settings
         {
             try
             {
-                RestoreRunning = true;
-                await Task.Delay(500);
+                await InvokeAsync(() =>
+                {
+                    RestoreRunning = true;
+                    StateHasChanged();
+                });
+
                 GeneralSetting = GlobalValues.AppSettings.General.Clone();
+
                 _snackbar.Add("已还原设置", Severity.Success);
             }
             catch (Exception e)
@@ -63,6 +73,42 @@ namespace North.Pages.Settings
             {
                 RestoreRunning = false;
             }
+        }
+
+
+        /// <summary>
+        /// 生成连接字符串模板
+        /// </summary>
+        /// <exception cref="NotSupportedException"></exception>
+        private void GenerateConnectStringTemplate()
+        {
+            GeneralSetting.DataBase.ConnStr = GeneralSetting.DataBase.Type switch
+            {
+                DatabaseType.Sqlite => "Data Source={DATABASE_LOCATION};",
+                DatabaseType.SqlServer => "Data Source={SERVER_ADDRESS};Initial Catalog={DATABASE_NAME};User Id={USER_NAME};Password={USER_PASSWORD};",
+                DatabaseType.MySql => "Server={SERVER_ADDRESS};Database={DATABASE_NAME};Uid={USER_NAME};Pwd={USER_PASSWORD};",
+                DatabaseType.NpgSql => "Host={SERVER_ADDRESS};Port={PORT};Database={DATABASE_NAME};Username={USER_NAME};Password={USER_PASSWORD};",
+                _ => throw new NotSupportedException("Database not supported")
+            };
+        }
+
+
+        /// <summary>
+        /// 迁移数据库
+        /// </summary>
+        /// <returns></returns>
+        private async Task MigrateDatabaseAsync(DataBaseSetting oldSetting, DataBaseSetting newSetting)
+        {
+            var oldDbContextOptionsBuilder = new DbContextOptionsBuilder();
+            var newDbContextOptionsBuilder = new DbContextOptionsBuilder();
+
+            oldSetting.InitDbContextBuilder(oldDbContextOptionsBuilder);
+            newSetting.InitDbContextBuilder(newDbContextOptionsBuilder);
+
+            using var oldContext = new NorthDbContext(oldDbContextOptionsBuilder.Options);
+            using var newContext = new NorthDbContext(newDbContextOptionsBuilder.Options);
+
+            await oldContext.MigrateDatabaseAsync(newContext);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Krins.Nuget;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using North.Core.Common;
 
 namespace North.Common
 {

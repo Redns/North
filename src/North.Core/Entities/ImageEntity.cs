@@ -1,110 +1,98 @@
-﻿using North.Core.Helpers;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace North.Core.Entities
 {
     public class ImageEntity
     {
-        [MaxLength(32)]
-        public string Id { get; set; }
+        [Required]
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// 文件名
         /// </summary>
+        [Required]
         [MaxLength(64)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// 尺寸
+        /// 图片高度
         /// </summary>
-        public ImageSize Size { get; set; }
+        [Required]
+        public int Height { get; set; } = 0;
 
         /// <summary>
-        /// 所有者
+        /// 图片宽度
         /// </summary>
-        public Owner Owner { get; set; }
+        [Required]
+        public int Width { get; set; } = 0;
+
+        /// <summary>
+        /// 图片大小
+        /// </summary>
+        [Required]
+        public long Length { get; set; } = 0L;
 
         /// <summary>
         /// 上传时间
         /// </summary>
-        [MaxLength(32)]
-        public string UploadTime { get; set; }
+        [Required]
+        public DateTime UploadTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// 存储方 ID
         /// </summary>
-        public string Storager { get; set; }
+        [Required]
+        [MaxLength(64)]
+        public string Storager { get; set; } = string.Empty;
 
         /// <summary>
         /// 图片链接
         /// </summary>
-        public ImageUrl Url { get; set; }
+        [Required]
+        [MaxLength(256)]
+        public string SourceUrl { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 图片缩略图链接
+        /// </summary>
+        [Required]
+        [MaxLength(256)]
+        public string ThumbnailUrl { get; set; } = string.Empty;
 
         /// <summary>
         /// 请求次数
         /// </summary>
-        public long Request { get; set; }
+        [Required]
+        public long Request { get; set; } = 0;
 
-        public ImageEntity(string name, ImageSize size, Owner owner, string storager, ImageUrl url, string? id = null, long request = 0L)
-        {
-            Id = id ?? IdentifyHelper.Generate();
-            Name = name;
-            Size = size;
-            Owner = owner;
-            UploadTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            Storager = storager;
-            Url = url;
-            Request = request;
-        }
+        /// <summary>
+        /// 所有者
+        /// </summary>
+        public UserEntity Owner { get; set; }
     }
 
 
     /// <summary>
     /// 图片尺寸
     /// </summary>
+    // TODO 增加图片编码等信息，更新为 ImageInfo
     public struct ImageSize
     {
-        [Column("Height")]
+        /// <summary>
+        /// 图片高度
+        /// </summary>
         public int Height { get; set; }
 
-        [Column("Width")]
+        /// <summary>
+        /// 图片宽度
+        /// </summary>
         public int Width { get; set; }
 
-        [Column("Length")]
-        public long Length { get; set; }
-
-        public ImageSize(int height, int width, long length)
+        public ImageSize(int height, int width)
         {
             Height = height;
             Width = width;
-            Length = length;
-        }
-    }
-
-
-    /// <summary>
-    /// 图片所有者
-    /// </summary>
-    public struct Owner
-    {
-        [MaxLength(32)]
-        [Column("OwnerId")]
-        public string Id { get; set; }
-
-        [MaxLength(32)]
-        [Column("OwnerName")]
-        public string Name { get; set; }
-
-        [MaxLength(32)]
-        [Column("OwnerEmail")]
-        public string Email { get; set; }
-
-        public Owner(string id, string name, string email)
-        {
-            Id = id;
-            Name = name;
-            Email = email;
         }
     }
 
@@ -117,15 +105,11 @@ namespace North.Core.Entities
         /// <summary>
         /// 图片链接
         /// </summary>
-        [MaxLength(256)]
-        [Column("Url_Source")]
         public string Source { get; set; }
 
         /// <summary>
         /// 图片缩略图链接
         /// </summary>
-        [MaxLength(256)]
-        [Column("Url_Thumbnail")]
         public string Thumbnail { get; set; }
 
         public ImageUrl(string source, string thumbnail)

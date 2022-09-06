@@ -1,5 +1,6 @@
-﻿@using North.Common
-@using North.Data.Access
+﻿@using Microsoft.EntityFrameworkCore.Infrastructure
+@using North.Common
+@using North.Core.Entities
 @using North.RCL.Texts
 @using North.RCL.ToolBars
 
@@ -7,7 +8,7 @@
 
 @inject IJSRuntime JS
 @inject ILogger _logger
-@inject OurDbContext _context
+@inject NorthDbContext _context
 @inject NavigationManager _nav
 @inject IHttpContextAccessor _accessor
 
@@ -16,7 +17,7 @@
 <AuthorizeView>
     <Authorized>
         <MudStack Spacing="0" Style="height:50px;">
-            <ActionToolBar IsExpanded="@IsExpanded" DarkTheme="@DarkTheme"
+            <ActionToolBar IsExpanded="@IsExpanded" DarkTheme="@DarkTheme" Title="@GlobalValues.AppSettings.Appearance.Name"
                            OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" OnSwitchTheme="@SwitchTheme" OnUserClick="@(() => SignOut())" />
             <MudDivider />
         </MudStack>

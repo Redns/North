@@ -44,7 +44,7 @@ namespace North.Pages.Settings
             try
             {
                 SaveRunning = true;
-                if(LogSetting.Level.Min > LogSetting.Level.Max)
+                if(LogSetting.Levels.Min > LogSetting.Levels.Max)
                 {
                     _snackbar.Add("日志输出等级不正确", Severity.Error);
                 }

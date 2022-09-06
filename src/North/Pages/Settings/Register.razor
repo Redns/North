@@ -50,12 +50,12 @@
             <MudSelect @bind-Value="@RegisterSetting.Default.Permission" Immediate
                        Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter"
                        Style="width:90%; max-width:140px; max-height:35px;">
-                <MudSelectItem Value="Permission.User" Style="height:35px;">
+                <MudSelectItem Value="UserPermission.User" Style="height:35px;">
                     <MudStack Row AlignItems="AlignItems.Center">
                         <MudIcon Icon="@Icons.Outlined.PersonOutline" />用 户
                     </MudStack>
                 </MudSelectItem>
-                <MudSelectItem Value="Permission.Administrator" Style="height:35px;">
+                <MudSelectItem Value="UserPermission.Administrator" Style="height:35px;">
                     <MudStack Row AlignItems="AlignItems.Center">
                         <MudIcon Icon="@Icons.Outlined.AdminPanelSettings" />管理员
                     </MudStack>

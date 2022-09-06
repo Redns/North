@@ -1,11 +1,12 @@
-﻿using North.Core.Entities;
-using North.Core.Models.Auth;
+﻿using Microsoft.EntityFrameworkCore;
+using North.Core.Entities;
 using North.Core.Services.Logger;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace North.Common
+namespace North.Core.Common
 {
     public class AppSetting
     {
@@ -57,15 +58,7 @@ namespace North.Common
     /// </summary>
     public class GeneralSetting
     {
-        // TODO 数据库表不存在时自动创建
-        // 增加测试连接按钮
-        // 修改后弹窗提示是否迁移数据
         public DataBaseSetting DataBase { get; set; }
-
-        public GeneralSetting()
-        {
-            DataBase = new DataBaseSetting("Data Source=Data/Databases/North.db;");
-        }
 
         public GeneralSetting(DataBaseSetting dataBase)
         {
@@ -109,7 +102,7 @@ namespace North.Common
             Footer = footer;
         }
 
-        public AppearanceSetting Clone() => new AppearanceSetting(Name, NavAutoExpand, BackgroundUrl, Footer);
+        public AppearanceSetting Clone() => new(Name, NavAutoExpand, BackgroundUrl, Footer);
     }
 
 
@@ -123,12 +116,47 @@ namespace North.Common
         /// </summary>
         public string ConnStr { get; set; }
 
-        public DataBaseSetting(string connStr)
+        /// <summary>
+        /// 数据库类型
+        /// </summary>
+        public DatabaseType Type { get; set; }
+
+        /// <summary>
+        /// 初始化 EFCore 上下文
+        /// </summary>
+        [JsonIgnore]
+        public Action<DbContextOptionsBuilder> InitDbContextBuilder => (builder) => 
+        {
+            switch (Type)
+            {
+                case DatabaseType.Sqlite: builder.UseSqlite(ConnStr); break;
+                case DatabaseType.SqlServer: builder.UseSqlServer(ConnStr); break;
+                case DatabaseType.MySql: builder.UseMySql(ServerVersion.AutoDetect(ConnStr)); break;
+                case DatabaseType.NpgSql: builder.UseNpgsql(ConnStr); break;
+                default: throw new NotSupportedException("Database is unsupported");
+            }
+        };  
+
+
+        public DataBaseSetting(string connStr, DatabaseType type)
         {
             ConnStr = connStr;
+            Type = type;
         }
 
-        public DataBaseSetting Clone() => new(ConnStr);
+        public DataBaseSetting Clone() => new(ConnStr, Type);
+    }
+
+
+    /// <summary>
+    /// 数据库类型
+    /// </summary>
+    public enum DatabaseType
+    {
+        Sqlite = 0,
+        SqlServer,
+        MySql,
+        NpgSql
     }
 
 
@@ -145,8 +173,8 @@ namespace North.Common
         /// <summary>
         /// 头像最大尺寸（MB）
         /// </summary>
-        public double MaxAvatarSize { get; set; }       
-        
+        public double MaxAvatarSize { get; set; }
+
         /// <summary>
         /// 验证邮件有效期（ms）
         /// </summary>
@@ -174,14 +202,14 @@ namespace North.Common
     /// </summary>
     public class RegisterSettingDefault
     {
-        public Permission Permission { get; set; }          // 用户权限
+        public UserPermission Permission { get; set; }          // 用户权限
         public bool IsApiAvailable { get; set; }            // 是否启用 API
         public long MaxUploadNums { get; set; }            // 最大上传数量（张）
         public double MaxUploadCapacity { get; set; }        // 最大上传容量（MB）
         public long SingleMaxUploadNums { get; set; }      // 单次最大上传数量（张）
         public double SingleMaxUploadCapacity { get; set; }  // 单次最大上传容量（MB）
 
-        public RegisterSettingDefault(Permission permission, bool isApiAvailable, long maxUploadNums, double maxUploadCapacity, long singleMaxUploadNums, double singleMaxUploadCapacity)
+        public RegisterSettingDefault(UserPermission permission, bool isApiAvailable, long maxUploadNums, double maxUploadCapacity, long singleMaxUploadNums, double singleMaxUploadCapacity)
         {
             Permission = permission;
             IsApiAvailable = isApiAvailable;
@@ -324,7 +352,7 @@ namespace North.Common
         /// </summary>
         public PluginState State { get; set; }
 
-        public Plugin (IPackageSearchMetadata package, PluginState state)
+        public Plugin(IPackageSearchMetadata package, PluginState state)
         {
             Id = package.Identity.Id;
             Authors = package.Authors;

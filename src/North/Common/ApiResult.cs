@@ -36,6 +36,7 @@
     /// <summary>
     /// 状态码
     /// </summary>
+    [Flags]
     public enum ApiStatusCode
     {
         None = 0,               // 未指定

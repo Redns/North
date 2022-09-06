@@ -10,23 +10,19 @@
 
   <ItemGroup>
     <PackageReference Include="Krins.Nuget" Version="1.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.8" />
-    <PackageReference Include="MudBlazor" Version="6.0.15" />
-    <PackageReference Include="NLog.Web.AspNetCore" Version="5.1.2" />
-    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Data\Images\" />
-    <Folder Include="wwwroot\css\" />
+    <Folder Include="Data\Logs\" />
     <Folder Include="Plugins\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\North.Core\North.Core.csproj" />
-    <ProjectReference Include="..\North.PluginBase\North.PluginBase.csproj" />
+    <ProjectReference Include="..\North.PluginBase\North.PluginBase.csproj">
+      <TreatAsUsed>true</TreatAsUsed>
+    </ProjectReference>
     <ProjectReference Include="..\North.RCL\North.RCL.csproj" />
   </ItemGroup>
 
@@ -34,12 +30,6 @@
     <Content Update="wwwroot\images\North.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Data\Databases\North.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

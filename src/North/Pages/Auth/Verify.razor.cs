@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using North.Core.Entities;
-using North.Core.Helpers;
-using North.Data.Access;
 
 namespace North.Pages.Auth
 {
@@ -69,10 +67,9 @@ namespace North.Pages.Auth
         /// <returns></returns>
         private async Task VerifyRegister()
         {
-            using var content = new OurDbContext();
-            var users = new SqlUserData(content);
-            var emails = new SqlVerifyEmailData(content);
-            var email = await emails.FindAsync(e => e.Id == Id);
+            var users = new SqlUserData(_context);
+            var emails = new SqlVerifyEmailData(_context);
+            var email = await emails.FindAsync(e => e.Id.ToString() == Id);
             if ((email is null) || (DateTime.Now > email.ExpireTime))
             {
                 _snackbar.Add("链接不存在或已过期", Severity.Error);
@@ -80,9 +77,9 @@ namespace North.Pages.Auth
             else
             {
                 var user = await users.FindAsync(u => u.Email == email.Email);
-                if ((user is not null) && (user.State is State.Checking))
+                if ((user is not null) && (user.State is UserState.Checking))
                 {
-                    user.State = State.Normal;
+                    user.State = UserState.Normal;
                     await users.UpdateAsync(user);
 
                     _snackbar.Add("验证成功", Severity.Success);

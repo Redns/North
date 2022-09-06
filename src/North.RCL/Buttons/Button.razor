@@ -1,0 +1,11 @@
+﻿<div class="@Class" style="@Style">
+    @if(!string.IsNullOrWhiteSpace(IconStart))
+    {
+        <i class="@IconStart" style="font-size:@IconSize;"></i>
+    }
+    <p style="font-size:@TextSize;">@Text</p>
+    @if(!string.IsNullOrWhiteSpace(IconEnd))
+    {
+        <i class="@IconEnd" style="font-size:@IconSize;"></i>
+    }
+</div>

@@ -14,15 +14,22 @@ namespace North.Pages
         private bool Clearing = false;
         private List<ImageUploadModel> Images { get; set; } = new(64);
 
-        private async Task OnInputImagesChanged(InputFileChangeEventArgs e)
+        private async Task OnInputImagesChanged(InputFileChangeEventArgs args)
         {
-            ClearDragClass();
-            foreach(var file in e.GetMultipleFiles())
+            try
             {
-                using var stream = file.OpenReadStream(51200000);
-                var previewUrl = await JS.UploadToBlob(stream, file.ContentType);
-                Images.Add(new ImageUploadModel(file.Name, file.ContentType, previewUrl, stream));
-                await InvokeAsync(StateHasChanged);
+                ClearDragClass();
+                foreach (var file in args.GetMultipleFiles())
+                {
+                    using var stream = file.OpenReadStream(512);
+                    var previewUrl = await JS.UploadToBlob(stream, file.ContentType);
+                    Images.Add(new ImageUploadModel(file.Name, file.ContentType, previewUrl, stream));
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+            catch(Exception e)
+            {
+                _logger.Info("Failed to upload", e);
             }
         }
 
@@ -36,7 +43,11 @@ namespace North.Pages
             image.State = ImageUploadState.Success;
             image.Progress = 100;
             image.Message = "上传完成";
-            image.Url = new ImageUrl(image.Name, image.Name);
+            image.Url = new ImageUrl
+            {
+                Source = image.Name,
+                Thumbnail = image.Name
+            };
         }
 
 

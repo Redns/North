@@ -1,8 +1,9 @@
 ﻿@page "/register"
 
+@using Microsoft.EntityFrameworkCore.Infrastructure
 @using North.Common
+@using North.Core.Entities
 @using North.Core.Services.Poster
-@using North.Data.Access
 @using North.RCL.Forms
 @using North.RCL.Texts
 
@@ -10,7 +11,7 @@
 @inject ILogger _logger
 @inject IPoster _poster
 @inject ISnackbar _snackbar
-@inject OurDbContext _context
+@inject NorthDbContext _context
 @inject NavigationManager _nav
 @inject IHttpContextAccessor _accessor
 

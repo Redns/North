@@ -80,19 +80,6 @@ namespace North.Core.Models
             Size = size;
             Url = url;
         }
-
-
-        /// <summary>
-        /// 模型转实体
-        /// </summary>
-        /// <param name="owner">图片所有者</param>
-        /// <param name="storager">存储模块ID</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        public ImageEntity ToEntity(Owner owner, string storager)
-        {
-            return new ImageEntity(Name, Size ?? new ImageSize(0, 0, Length), owner, storager, Url ?? throw new ArgumentException($"{Name}'s url is null"));
-        }
     }
 
 

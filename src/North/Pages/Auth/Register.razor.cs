@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MudBlazor;
 using North.Common;
+using North.Core.Common;
 using North.Core.Entities;
 using North.Core.Helpers;
 using North.Core.Models.Notification;
-using North.Data.Access;
 using North.RCL.Forms;
 
 namespace North.Pages.Auth
@@ -93,6 +93,20 @@ namespace North.Pages.Auth
                 }
 
                 // TODO 添加注册逻辑
+                var user = new UserEntity
+                {
+                    Name = Model.Name,
+                    Email = Model.Email,
+                    Password = $"{Model.Email}:{Model.Password}".MD5(),
+                    Images = new HashSet<ImageEntity>() { new ImageEntity
+                        {
+                            Name = "test.jpg",
+                            Length = 12632
+                        } 
+                    }
+                };
+                await sqlUserData.AddAsync(user);
+
                 _nav.NavigateTo("login", true);
             }
             catch (Exception e)
@@ -131,9 +145,12 @@ namespace North.Pages.Auth
             var emailSettings = GlobalValues.AppSettings.Notify.Email;
 
             // 添加验证邮件至数据库
-            var verifyEmail = new VerifyEmailEntity(IdentifyHelper.Generate(), Model.Email,
-                                                    DateTime.Now.AddMilliseconds(RegisterSettings.VerifyEmailValidTime),
-                                                    VerifyType.Register);
+            var verifyEmail = new EmailEntity 
+            {
+                Email = Model.Email,
+                ExpireTime = DateTime.Now.AddMilliseconds(RegisterSettings.VerifyEmailValidTime),
+                VerifyType = VerifyType.Register
+            };
             await new SqlVerifyEmailData(_context).AddAsync(verifyEmail);
 
             // 构造验证邮件并发送
@@ -198,18 +215,20 @@ namespace North.Pages.Auth
         /// <returns></returns>
         public UserEntity ToUserEntity(RegisterModel model, RegisterSettingDefault @default)
         {
-            return new UserEntity(IdentifyHelper.Generate(),
-                                  model.Name,
-                                  model.Email,
-                                  $"{model.Email}:{model.Password}".MD5(),
-                                  $"api/image/avatar/{model.Avatar}",
-                                  State.Checking,
-                                  @default.Permission,
-                                  @default.IsApiAvailable,
-                                  @default.MaxUploadNums,
-                                  @default.MaxUploadCapacity,
-                                  @default.SingleMaxUploadNums,
-                                  @default.SingleMaxUploadCapacity);
+            return new UserEntity 
+            {
+                Name = model.Name,
+                Email = model.Email,
+                Password = $"{model.Email}:{model.Password}".MD5(),
+                Avatar = $"api/image/avatar/{model.Avatar}",
+                State = UserState.Checking,
+                Permission = @default.Permission,
+                IsApiAvailable = @default.IsApiAvailable,
+                MaxUploadNums = @default.MaxUploadNums,
+                MaxUploadCapacity = @default.MaxUploadCapacity,
+                SingleMaxUploadNums = @default.SingleMaxUploadNums,
+                SingleMaxUploadCapacity = @default.SingleMaxUploadCapacity
+            };
         }
     }
 }

@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Components.Web;
+﻿using Microsoft.EntityFrameworkCore;
 using MudBlazor;
 using North.Core.Entities;
-using North.Data.Access;
-using System.Data;
 
 namespace North.Pages.Database
 {
@@ -28,7 +26,10 @@ namespace North.Pages.Database
         {
             if (firstRender)
             {
+                var users = _context.Users.AsNoTracking().Include(u => u.Images).ToArray();
+                var images = _context.Images.Include(i => i.Owner).ToArray();
 
+                // 加载数据
                 UsersAll.AddRange(await (SqlUserData = new SqlUserData(_context)).GetAsync());
                 UsersShow.AddRange(UsersAll);
                 await InvokeAsync(() =>
@@ -56,8 +57,47 @@ namespace North.Pages.Database
             });
 
             // 检索用户
-            UsersShow.AddRange(string.IsNullOrWhiteSpace(SearchText) ? UsersAll : UsersAll.FindAll(user => user.Name.Contains(SearchText) || user.Email.Contains(SearchText)));
+            UsersShow.AddRange(string.IsNullOrWhiteSpace(SearchText) ? UsersAll : UsersAll.FindAll(user => UserFilter(user)));
             DataLoading = false;
+        }
+
+
+        private bool UserFilter(UserEntity user) => user.Name.Contains(SearchText) || user.Email.Contains(SearchText);
+
+
+        /// <summary>
+        /// 添加用户
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private async Task AddUser()
+        {
+            var r = new Random(DateTime.Now.Millisecond);
+            var id = Guid.NewGuid().ToString();
+            var user = new UserEntity 
+            {
+                Name = id[0..5],
+                Email = $"{r.Next()}@163.com",
+                Password = id[10..15],
+                Avatar = id[15..20],
+                State = r.NextDouble() switch
+                        {
+                            < 0.2 => UserState.Checking,
+                            < 0.9 => UserState.Normal,
+                            _ => UserState.Forbidden
+                        },
+                Permission = r.NextDouble() switch
+                             {
+                                 < 0.1 => UserPermission.Administrator,
+                                 _ => UserPermission.User
+                             },
+                IsApiAvailable = r.NextDouble() > 0.8,
+                SingleMaxUploadNums = r.Next(10) + 1,
+                SingleMaxUploadCapacity = r.Next(100) + 1,
+                MaxUploadNums = r.Next(100) + 11,
+                MaxUploadCapacity = r.Next(1000) + 101
+            };
+            await SqlUserData.AddAsync(user);
         }
 
 
@@ -116,10 +156,10 @@ namespace North.Pages.Database
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        private Color PermissionChipColor(Permission permission) => permission switch
+        private Color PermissionChipColor(UserPermission permission) => permission switch
         {
-            Permission.System => Color.Success,
-            Permission.Administrator => Color.Primary,
+            UserPermission.System => Color.Success,
+            UserPermission.Administrator => Color.Primary,
             _ => Color.Info
         };
 
@@ -128,11 +168,11 @@ namespace North.Pages.Database
         /// </summary>
         /// <param name="permission"></param>
         /// <returns></returns>
-        private string PermissionChipText(Permission permission) => permission switch
+        private string PermissionChipText(UserPermission permission) => permission switch
         {
-            Permission.System => "系 统",
-            Permission.Administrator => "管理员",
-            Permission.User => "用 户",
+            UserPermission.System => "系 统",
+            UserPermission.Administrator => "管理员",
+            UserPermission.User => "用 户",
             _ => "未 知"
         };
 
@@ -141,10 +181,10 @@ namespace North.Pages.Database
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        private Color StateChipColor(State state) => state switch
+        private Color StateChipColor(UserState state) => state switch
         {
-            State.Checking => Color.Warning,
-            State.Normal => Color.Success,
+            UserState.Checking => Color.Warning,
+            UserState.Normal => Color.Success,
             _ => Color.Error
         };
 
@@ -153,11 +193,11 @@ namespace North.Pages.Database
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        private string StateChipText(State state) => state switch
+        private string StateChipText(UserState state) => state switch
         {
-            State.Checking => "待验证",
-            State.Normal => "正 常",
-            State.Forbidden => "已封禁",
+            UserState.Checking => "待验证",
+            UserState.Normal => "正 常",
+            UserState.Forbidden => "已封禁",
             _ => "异 常"
         };
     }

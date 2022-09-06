@@ -10,7 +10,7 @@ namespace North.Pages.Auth
     {
         [Parameter]
         [SupplyParameterFromQuery]
-        public string Id { get; set; } = string.Empty;
+        public string Key { get; set; } = string.Empty;
 
         [Parameter]
         [SupplyParameterFromQuery]
@@ -23,20 +23,20 @@ namespace North.Pages.Auth
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
-            var identify = _identifies.Find(identify => identify.Id == Id);
-            if ((_accessor.HttpContext is not null) && identify is not null)
+            var claimsIdentify = _identifies.GetValueOrDefault(Key);
+            if ((_accessor.HttpContext is not null) && claimsIdentify is not null)
             {
                 await _accessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                                                        new ClaimsPrincipal(identify.ClaimsIdentity),
+                                                        new ClaimsPrincipal(claimsIdentify),
                                                         new AuthenticationProperties()
                                                         {
                                                             IsPersistent = true,
                                                             ExpiresUtc = DateTime.Now.AddSeconds(GlobalValues.AppSettings.Auth.CookieValidTime)
                                                         });
-                _identifies.Remove(identify);
-                _navigationManager.NavigateTo(Redirect, true);
+                _identifies.Remove(Key);
+                _nav.NavigateTo(Redirect, true);
             }
-            _navigationManager.NavigateTo($"login?redirect={Redirect}", true);
+            _nav.NavigateTo($"login?redirect={Redirect}", true);
         }
     }
 }

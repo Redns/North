@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 using MudBlazor;
 using North.Common;
 using North.Core.Entities;
 using North.Core.Helpers;
-using North.Core.Models.Auth;
-using North.Data.Access;
 using North.RCL.Forms;
 
 namespace North.Pages.Auth
@@ -68,9 +66,8 @@ namespace North.Pages.Auth
                 await Task.Delay(500);
 
                 // 检索用户
-                var sqlUserData = new SqlUserData(_context);
                 var encryptedPassword = $"{LoginModel.Email}:{LoginModel.Password}".MD5();
-                var user = await sqlUserData.FindAsync(u => (u.Email == LoginModel.Email) && (u.Password == encryptedPassword) && (u.State == State.Normal));
+                var user = _context.Users.FirstOrDefault(u => (u.Email == LoginModel.Email) && (u.Password == encryptedPassword) && (u.State == UserState.Normal));
                 if (user is null)
                 {
                     _snackbar.Add("账号密码错误或账户状态异常", Severity.Error); return;
@@ -79,14 +76,18 @@ namespace North.Pages.Auth
                 // 检查用户是否包含有效 Token
                 if (!user.HasValidToken)
                 {
-                    user.GenerateToken(Array.ConvertAll((await sqlUserData.GetAsync(u => u.HasValidToken)).ToArray(), u => u.Token));
-                    await sqlUserData.UpdateAsync(user);
+                    user.GenerateToken();
+                    _context.Users.Update(user);
+                    _context.SaveChanges();
                 }
-                var loginIdentify = new UnitLoginIdentify(IdentifyHelper.Generate(), user.ClaimsIdentify);
 
                 // 存储并写入认证信息
-                _identifies.Add(loginIdentify);
-                _navigationManager.NavigateTo($"signin/?id={loginIdentify.Id}&redirect={Redirect}", true);
+                var userClaimsIdentifyKey = Guid.NewGuid().ToString();
+                var userClaimsIdentify = user.ClaimsIdentify;
+                _identifies.Add(userClaimsIdentifyKey, userClaimsIdentify);
+
+                // 前往 Signin 页面写入注册信息
+                _nav.NavigateTo($"signin/?key={userClaimsIdentifyKey}&redirect={Redirect}", true);
             }
             catch(Exception e)
             {
