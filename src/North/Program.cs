@@ -19,7 +19,6 @@ class Program
         builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddRazorPages();
-        builder.Services.AddHttpClient();
         builder.Services.AddControllers();
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddMudServices(config =>
@@ -41,7 +40,19 @@ class Program
             // JS 互调用超时事件设置
             option.JSInteropDefaultCallTimeout = TimeSpan.FromSeconds(10);
         });
-        builder.Services.AddDbContextPool<NorthDbContext>(builder => GlobalValues.AppSettings.General.DataBase.InitDbContextBuilder(builder));
+        builder.Services.AddDbContextPool<NorthDbContext>(builder =>
+        {
+            var enabledDatabaseName = GlobalValues.AppSettings.General.DataBase.EnabledName;
+            var enabledDatabase = GlobalValues.AppSettings.General.DataBase.Databases.FirstOrDefault(d => d.Name == enabledDatabaseName);
+            if(enabledDatabase is null)
+            {
+                throw new KeyNotFoundException("Cannot load database, please check appsettings.json");
+            }
+            else
+            {
+                enabledDatabase.InitDbContextBuilder(builder);
+            }
+        });
         builder.Services.AddLogging(logging =>
         {
             // 清除默认日志组件
@@ -109,16 +120,20 @@ class Program
         builder.Services.AddSingleton<IPoster, MineKitPoster>(poster => new MineKitPoster());
         builder.Services.AddSingleton(loginIdentify => new Dictionary<string, ClaimsIdentity>());
 
+
         // 构建 web 应用
         app = builder.Build();
 
         app.UseRouting();
+        app.UseStaticFiles();
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseStaticFiles();
-        app.MapBlazorHub();
-        app.MapControllers();
-        app.MapFallbackToPage("/_Host");
+        app.UseEndpoints(endpoint =>
+        {
+            endpoint.MapBlazorHub();
+            endpoint.MapControllers();
+            endpoint.MapFallbackToPage("/_Host");
+        });
         app.Urls.Add("http://*:12121");
 
         app.Run();

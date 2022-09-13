@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using North.Core.Entities;
 using North.Core.Services.Logger;
 using NuGet.Protocol.Core.Types;
@@ -111,10 +112,33 @@ namespace North.Core.Common
     /// </summary>
     public class DataBaseSetting
     {
+        public string EnabledName { get; set; }
+        public Database[] Databases { get; set; }
+
+        public DataBaseSetting(string enabledName, Database[] databases)
+        {
+            EnabledName = enabledName;
+            Databases = databases;
+        }
+
+        public DataBaseSetting Clone()
+        {
+            var databases = new List<Database>(Databases.Length);
+            foreach(var database in Databases)
+            {
+                databases.Add(database.Clone());
+            }
+            return new DataBaseSetting(EnabledName, databases.ToArray());
+        }
+    }
+
+
+    public class Database
+    {
         /// <summary>
-        /// 数据库连接字符串
+        /// 数据库名称
         /// </summary>
-        public string ConnStr { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// 数据库类型
@@ -122,29 +146,67 @@ namespace North.Core.Common
         public DatabaseType Type { get; set; }
 
         /// <summary>
+        /// 数据库连接字符串
+        /// </summary>
+        public string ConnectionString { get; set; }
+
+        public Database(string name, DatabaseType type, string connectionString)
+        {
+            Name = name;
+            Type = type;
+            ConnectionString = connectionString;
+        }
+
+
+        /// <summary>
         /// 初始化 EFCore 上下文
         /// </summary>
         [JsonIgnore]
-        public Action<DbContextOptionsBuilder> InitDbContextBuilder => (builder) => 
+        public Action<DbContextOptionsBuilder> InitDbContextBuilder => (builder) =>
         {
             switch (Type)
             {
-                case DatabaseType.Sqlite: builder.UseSqlite(ConnStr); break;
-                case DatabaseType.SqlServer: builder.UseSqlServer(ConnStr); break;
-                case DatabaseType.MySql: builder.UseMySql(ServerVersion.AutoDetect(ConnStr)); break;
-                case DatabaseType.NpgSql: builder.UseNpgsql(ConnStr); break;
+                case DatabaseType.Sqlite: builder.UseSqlite(ConnectionString); break;
+                case DatabaseType.SqlServer: builder.UseSqlServer(ConnectionString); break;
+                case DatabaseType.MySQL: builder.UseMySql(ServerVersion.AutoDetect(ConnectionString)); break;
+                case DatabaseType.PostgreSQL: builder.UseNpgsql(ConnectionString); break;
                 default: throw new NotSupportedException("Database is unsupported");
             }
-        };  
+        };
 
 
-        public DataBaseSetting(string connStr, DatabaseType type)
+        /// <summary>
+        /// 验证数据库连接字符串是否有效
+        /// </summary>
+        /// <returns></returns>
+        public async ValueTask<bool> CheckConnection(TimeSpan? timeout = null)
         {
-            ConnStr = connStr;
-            Type = type;
+            if (Type is DatabaseType.Sqlite)
+            {
+                var databaseLocation = ConnectionString.Split('=').Last();
+                return File.Exists(!databaseLocation.EndsWith(';') ? databaseLocation : databaseLocation[..^1]);
+            }
+            else
+            {
+                var conn = new SqlConnection(ConnectionString);
+                try
+                {
+                    await conn.OpenAsync().WaitAsync(timeout ?? TimeSpan.FromSeconds(3));
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+                finally
+                {
+                    _ = conn.CloseAsync();
+                    _ = conn.DisposeAsync();
+                }
+            }
         }
 
-        public DataBaseSetting Clone() => new(ConnStr, Type);
+        public Database Clone() => new(Name, Type, ConnectionString);
     }
 
 
@@ -155,8 +217,8 @@ namespace North.Core.Common
     {
         Sqlite = 0,
         SqlServer,
-        MySql,
-        NpgSql
+        MySQL,
+        PostgreSQL
     }
 
 

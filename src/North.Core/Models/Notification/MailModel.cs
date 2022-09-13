@@ -1,5 +1,6 @@
 ﻿namespace North.Core.Models.Notification;
 
+// TODO 抽离 Code 等配置字段，作为 IPoster 的参数
 public class MailModel
 {
     /// <summary>

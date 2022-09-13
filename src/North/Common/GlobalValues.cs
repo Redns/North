@@ -1,8 +1,6 @@
 ﻿using Krins.Nuget;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using North.Core.Common;
-
 namespace North.Common
 {
     /// <summary>
@@ -14,6 +12,7 @@ namespace North.Common
         /// 以下页面无需授权即可访问（防止 MainLayout 认证陷入死循环）
         /// </summary>
         public static string[] WithoutAuthenticationPages { get; } = new string[] { "login", "register", "signin", "verify" };
+
 
         /// <summary>
         /// 身份认证属性

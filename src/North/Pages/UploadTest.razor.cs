@@ -13,17 +13,12 @@ namespace North.Pages
         private List<UserEntity> Users { get; set; } = new();
         private TestModel Model { get; set; } = new TestModel();
 
+
         protected override async Task OnInitializedAsync()
         {
-            try
-            {
-                var len = Program.app.Services.GetRequiredService<string>().Length;
-            }
-            catch(Exception e)
-            {
-                _logger.Error("Get service string error", e);
-            }
+            await base.OnInitializedAsync();
         }
+
 
         private async Task Paste(PasteMultimediaEventsArgs args)
         {

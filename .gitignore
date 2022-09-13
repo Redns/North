@@ -25,6 +25,7 @@ src/North.Core/obj
 src/North.Launcher/.vs
 src/North.Launcher/bin
 src/North.Launcher/obj
+src/North.Launcher/Properties
 # North.Launcher End
 
 # North.PluginBase Start
@@ -51,4 +52,17 @@ src/North.Nsfw/appsettings.json
 src/North.RCL/.vs
 src/North.RCL/bin
 src/North.RCL/obj
+src/North.RCL/Properties
 # North.RCL End
+
+# North.Benchmark Start
+src/North.Benchmark/.vs
+src/North.Benchmark/bin
+src/North.Benchmark/obj
+#  North.Benchmark End
+
+# North.Plugin.Demo Start
+src/North.Plugin.Demo/.vs
+src/North.Plugin.Demo/bin
+src/North.Plugin.Demo/obj
+# North.Plugin.Demo End

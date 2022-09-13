@@ -21,29 +21,17 @@
     <div class="d-flex flex-column gap-4 mud-width-full mud-height-full overflow-scroll px-6 py-4" id="page">
         <div class="d-flex flex-column gap-2">
             <p class="menu_text">数据库类型</p>
-            <div class="d-flex flex-row align-center" style="width:220px; height:40px;">
-                <MudSelect @bind-Value="@GeneralSetting.DataBase.Type" T="DatabaseType" Immediate SelectedValuesChanged="@((e) => GenerateConnectStringTemplate())"
+            <div class="d-flex flex-row align-center" style="width:230px; height:40px;">
+                <MudSelect @bind-Value="@GeneralSetting.DataBase.EnabledName" T="string" Immediate SelectedValuesChanged="@((e) => GenerateConnectStringTemplate())"
                            Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
-                    <MudSelectItem Value="DatabaseType.Sqlite" Style="height:40px;">
-                        <div class="d-flex flex-row gap-2 justify-start align-center">
-                            <i class="iconfont icon-sqlite" style="font-size:20px; color:#49A5DB;"></i>Sqlite
-                        </div>
-                    </MudSelectItem>
-                    <MudSelectItem Value="DatabaseType.SqlServer" Style="height:40px;">
-                        <div class="d-flex flex-row gap-2 justify-start align-center">
-                            <i class="iconfont icon-SQLserver" style="font-size:20px; color:#81C784;"></i>SQL Server
-                        </div>
-                    </MudSelectItem>
-                    <MudSelectItem Value="DatabaseType.MySql" Style="height:40px;">
-                        <div class="d-flex flex-row gap-2 justify-start align-center">
-                            <i class="iconfont icon-mysql" style="font-size:20px; color:#007890;"></i>MySQL
-                        </div>
-                    </MudSelectItem>
-                    <MudSelectItem Value="DatabaseType.NpgSql" Style="height:40px;">
-                        <div class="d-flex flex-row gap-2 justify-start align-center">
-                            <i class="iconfont icon-postgresql" style="font-size:20px; color:#326590;"></i>NpgSql
-                        </div>
-                    </MudSelectItem>
+                    @foreach(var database in GeneralSetting.DataBase.Databases)
+                    {
+                        <MudSelectItem Value="database.Name" Style="height:40px;">
+                            <div class="d-flex flex-row gap-2 justify-start align-center">
+                                <i class="@DatabaseIconClass(database.Type)" style="font-size:20px; color:#49A5DB;"></i>@database.Name
+                            </div>
+                        </MudSelectItem>
+                    }
                 </MudSelect>
                 <MudTooltip Text="生成模板" Placement="Placement.Right">
                     <MudIconButton Icon="@Icons.Outlined.Lightbulb" OnClick="@GenerateConnectStringTemplate" Class="ml-2"></MudIconButton>
@@ -52,11 +40,11 @@
             
         </div>
         <!-- 数据库连接字符串 -->
-        <div class="d-flex flex-column gap-2">
+        @*<div class="d-flex flex-column gap-2">
             <p class="menu_text">连接字符串</p>
-            <MudTextField @bind-Value="GeneralSetting.DataBase.ConnStr" Margin="Margin.Dense" Lines="3"
+            <MudTextField @bind-Value="GeneralSetting.DataBase.ConnectionString" Margin="Margin.Dense" Lines="3"
                           Variant="Variant.Outlined" Style="width:90%; max-width:460px; line-height:1.5em;" />
-        </div>
+        </div>*@
         <!-- 保存/取消设置 -->
         <div class="d-flex flex-row gap-2">
             <MudButton Variant="Variant.Filled" Color="Color.Tertiary"

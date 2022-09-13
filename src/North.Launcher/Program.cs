@@ -1,25 +1,42 @@
-﻿using System.Diagnostics;
+﻿using CZGL.SystemInfo;
+using System.Diagnostics;
 
 namespace North.Launcher
 {
     class Program
     {
-        public delegate void OrderTestDelegate(string message);
-        public static event OrderTestDelegate OrderTestEvent;
+        public static readonly double KB = 1024.0;
+        public static readonly double MB = 1024 * 1024.0;
+        public static readonly double GB = 1024 * 1024 * 1024.0;
+
         public static async Task Main()
         {
-            DelegateOrderTest();
+            // 获取磁盘信息
+            var disks = DiskInfo.GetDisks();
+
+            // 获取进程 CPU 占用
+            var count = 0;
+            var process = ProcessInfo.GetCurrentProcess();
+            while (true)
+            {
+                if(count++ % 5 == 0)
+                {
+                    await File.ReadAllBytesAsync("src.png");
+                }
+                await Task.Delay(200);
+                Console.WriteLine(ProcessInfo.GetCpuUsage(process));
+            }
         }
 
 
-        public static async Task DelegateOrderTest()
+        /// <summary>
+        /// 获取进程运行内存占用
+        /// </summary>
+        /// <param name="process"></param>
+        /// <returns></returns>
+        public static long GetProcessRAM(Process process)
         {
-            for(int i = 0; i < 100; i++)
-            {
-                var prefix = $"[{i}] ";
-                OrderTestEvent += (msg) => Console.WriteLine($"{prefix}{msg}");
-            }
-            OrderTestEvent("Hello, World");
+            return process.WorkingSet64;
         }
 
 
@@ -41,6 +58,12 @@ namespace North.Launcher
             Console.WriteLine(stopwatch.ElapsedMilliseconds);
         }
 
+
+        /// <summary>
+        /// 图片上传模拟
+        /// </summary>
+        /// <param name="delay"></param>
+        /// <returns></returns>
         public static async Task Upload(int delay = 1000)
         {
             await Task.Delay(delay);

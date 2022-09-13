@@ -9,7 +9,7 @@ namespace North.Pages
         private string SearchPluginName { get; set; } = string.Empty;
         private bool IsSearching { get; set; } = true;
         private PluginSetting PluginSetting { get; set; } = GlobalValues.AppSettings.Plugin;
-        private List<Plugin> ShowPlugins { get; set; } = new List<Plugin>(1024);
+        private List<Core.Common.Plugin> ShowPlugins { get; set; } = new(1024);
 
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -58,7 +58,7 @@ namespace North.Pages
                     var localSearchedPlugins = PluginSetting.Plugins.Where(plugin => plugin.Id.Contains(SearchPluginName));
                     foreach(var metadata in await GlobalValues.NugetEngine.GetPackagesAsync(SearchPluginName))
                     {
-                        ShowPlugins.Add(localSearchedPlugins.FirstOrDefault(plugin => plugin.Id == metadata.Identity.Id) ?? new Plugin(metadata, PluginState.UnInstall));
+                        ShowPlugins.Add(localSearchedPlugins.FirstOrDefault(plugin => plugin.Id == metadata.Identity.Id) ?? new Core.Common.Plugin(metadata, PluginState.UnInstall));
                     }
                 }
             }
@@ -78,7 +78,7 @@ namespace North.Pages
         /// 安装插件
         /// </summary>
         /// <param name="plugin">待安装的插件</param>
-        private async Task InstallPlugin(Plugin plugin)
+        private async Task InstallPlugin(Core.Common.Plugin plugin)
         {
             try
             {
@@ -125,7 +125,7 @@ namespace North.Pages
         /// 更新插件
         /// </summary>
         /// <param name="plugin">待更新的插件</param>
-        private async Task UpdatePlugin(Plugin plugin)
+        private async Task UpdatePlugin(Core.Common.Plugin plugin)
         {
             try
             {
@@ -161,7 +161,7 @@ namespace North.Pages
         /// </summary>
         /// <param name="plugin"></param>
         /// <returns></returns>
-        private void EnablePlugin(Plugin plugin)
+        private void EnablePlugin(Core.Common.Plugin plugin)
         {
             try
             {
@@ -186,7 +186,7 @@ namespace North.Pages
         /// 禁用插件
         /// </summary>
         /// <returns></returns>
-        private void DisablePlugin(Plugin plugin)
+        private void DisablePlugin(Core.Common.Plugin plugin)
         {
             try
             {
@@ -211,7 +211,7 @@ namespace North.Pages
         /// 卸载插件
         /// </summary>
         /// <param name="plugin">待卸载的插件</param>
-        private void UnInstallPlugin(Plugin plugin)
+        private void UnInstallPlugin(Core.Common.Plugin plugin)
         {
             try
             {

@@ -318,7 +318,7 @@ namespace North.Core.Entities
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public bool Any(Func<UserEntity, bool> predicate)
+        public bool Any(Expression<Func<UserEntity, bool>> predicate)
         {
             return _context.Users?.Any(predicate) ?? false;
         }
@@ -329,7 +329,7 @@ namespace North.Core.Entities
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public UserEntity? Find(Func<UserEntity, bool> predicate)
+        public UserEntity? Find(Expression<Func<UserEntity, bool>> predicate)
         {
             return _context.Users?.AsNoTracking().FirstOrDefault(predicate);
         }
