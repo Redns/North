@@ -1,6 +1,8 @@
 ﻿using Krins.Nuget;
 using Microsoft.AspNetCore.Authentication;
 using North.Core.Common;
+using System.Reflection;
+
 namespace North.Common
 {
     /// <summary>
@@ -45,5 +47,8 @@ namespace North.Common
             }
             set { _nugetEngine = value; }
         }
+
+        // TODO 在 App.razor 中引用以动态加载 Razor 页面
+        public static List<Assembly> PluginAssemblies { get; set; } = new();
     }
 }

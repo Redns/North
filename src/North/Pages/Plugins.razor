@@ -37,7 +37,7 @@
                             <MudStack Row AlignItems="AlignItems.Center" id="plugin-stack" >
                                 <MudAvatar Image="@plugin.IconUrl" Square id="plugin-stack-avatar" />
                                 <MudStack id="plugin-stack-mid">
-                                    <a href="@($"https://www.nuget.org/packages/{plugin.Id}")" style="font-size:22px; font-weight:300; line-height:.9; color:#337ab7;">@plugin.Id</a>
+                                    <a href="@($"https://www.nuget.org/packages/{plugin.Name}")" style="font-size:22px; font-weight:300; line-height:.9; color:#337ab7;">@plugin.Name</a>
                                     <MudStack Row>
                                         <MudIcon Icon="@Icons.Outlined.Group"></MudIcon>
                                         <MudText>@plugin.Authors.FormatString(25)</MudText>

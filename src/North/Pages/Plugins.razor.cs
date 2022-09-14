@@ -55,10 +55,10 @@ namespace North.Pages
                 }
                 else
                 {
-                    var localSearchedPlugins = PluginSetting.Plugins.Where(plugin => plugin.Id.Contains(SearchPluginName));
+                    var localSearchedPlugins = PluginSetting.Plugins.Where(plugin => plugin.Name.Contains(SearchPluginName));
                     foreach(var metadata in await GlobalValues.NugetEngine.GetPackagesAsync(SearchPluginName))
                     {
-                        ShowPlugins.Add(localSearchedPlugins.FirstOrDefault(plugin => plugin.Id == metadata.Identity.Id) ?? new Core.Common.Plugin(metadata, PluginState.UnInstall));
+                        ShowPlugins.Add(localSearchedPlugins.FirstOrDefault(plugin => plugin.Name == metadata.Identity.Id) ?? new Core.Common.Plugin(metadata, PluginState.UnInstall));
                     }
                 }
             }
@@ -83,8 +83,8 @@ namespace North.Pages
             try
             {
                 // 下载插件包
-                var pluginInstallDir = Path.Combine(PluginSetting.InstallDir, plugin.Id);
-                var pluginPackage = await GlobalValues.NugetEngine.GetPackageAsync(plugin.Id, plugin.Version.ToNormalizedString());
+                var pluginInstallDir = Path.Combine(PluginSetting.InstallDir, plugin.Name);
+                var pluginPackage = await GlobalValues.NugetEngine.GetPackageAsync(plugin.Name, plugin.Version.ToNormalizedString());
                 if(pluginPackage is not null)
                 {
                     await GlobalValues.NugetEngine.InstallAsync(pluginPackage, pluginInstallDir, (packageId, extractDir) =>
@@ -111,11 +111,11 @@ namespace North.Pages
                 PluginSetting.Plugins.Add(plugin);
                 GlobalValues.AppSettings.Save();
 
-                _snackbar.Add($"{plugin.Id} 安装成功", Severity.Success);
+                _snackbar.Add($"{plugin.Name} 安装成功", Severity.Success);
             }
             catch(Exception e)
             {
-                _logger.Error($"Failed to install plugin {plugin.Id}", e);
+                _logger.Error($"Failed to install plugin {plugin.Name}", e);
                 _snackbar.Add("插件安装失败，服务器内部错误", Severity.Error);
             }
         }
@@ -129,7 +129,7 @@ namespace North.Pages
         {
             try
             {
-                var package = await GlobalValues.NugetEngine.GetPackageAsync(plugin.Id, plugin.Version.ToNormalizedString());
+                var package = await GlobalValues.NugetEngine.GetPackageAsync(plugin.Name, plugin.Version.ToNormalizedString());
                 var latestVersion = (await package.GetVersionsAsync()).LastOrDefault();
                 if (plugin.Version < latestVersion?.Version)
                 {
@@ -150,7 +150,7 @@ namespace North.Pages
             }
             catch(Exception e)
             {
-                _logger.Error($"Failed to check update {plugin.Id}", e);
+                _logger.Error($"Failed to check update {plugin.Name}", e);
                 _snackbar.Add("检查更新失败，服务器内部错误", Severity.Error);
             }
         }
@@ -172,11 +172,11 @@ namespace North.Pages
                 PluginSetting.Plugins.First(p => p.Equals(plugin)).State = PluginState.Enable;
                 GlobalValues.AppSettings.Save();
 
-                _snackbar.Add($"已启用插件 {plugin.Id}", Severity.Success);
+                _snackbar.Add($"已启用插件 {plugin.Name}", Severity.Success);
             }
             catch(Exception e)
             {
-                _logger.Error($"Failed to enable plugin {plugin.Id}", e);
+                _logger.Error($"Failed to enable plugin {plugin.Name}", e);
                 _snackbar.Add("插件启动失败，服务器内部错误", Severity.Error);
             }
         }
@@ -197,11 +197,11 @@ namespace North.Pages
                 PluginSetting.Plugins.First(p => p.Equals(plugin)).State = PluginState.Disable;
                 GlobalValues.AppSettings.Save();
 
-                _snackbar.Add($"已禁用插件 {plugin.Id}", Severity.Success);
+                _snackbar.Add($"已禁用插件 {plugin.Name}", Severity.Success);
             }
             catch (Exception e)
             {
-                _logger.Error($"Failed to disable plugin {plugin.Id}", e);
+                _logger.Error($"Failed to disable plugin {plugin.Name}", e);
                 _snackbar.Add("插件禁用失败，服务器内部错误", Severity.Error);
             }
         }
@@ -218,7 +218,7 @@ namespace North.Pages
                 plugin.State = PluginState.UnInstall;
 
                 // 删除本地文件
-                var pluginInstallDir = Path.Combine(PluginSetting.InstallDir, plugin.Id);
+                var pluginInstallDir = Path.Combine(PluginSetting.InstallDir, plugin.Name);
                 if (Directory.Exists(pluginInstallDir))
                 {
                     Directory.Delete(pluginInstallDir, true);
@@ -232,7 +232,7 @@ namespace North.Pages
             }
             catch(Exception e)
             {
-                _logger.Error($"Failed to uninstall plugin {plugin.Id}", e);
+                _logger.Error($"Failed to uninstall plugin {plugin.Name}", e);
                 _snackbar.Add("插件卸载失败，服务器内部错误", Severity.Error);
             }
         }

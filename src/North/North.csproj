@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\North.Core\North.Core.csproj" />
-    <ProjectReference Include="..\North.Plugin.Demo\North.Plugin.Demo.csproj" />
     <ProjectReference Include="..\North.PluginBase\North.PluginBase.csproj">
       <TreatAsUsed>true</TreatAsUsed>
     </ProjectReference>

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "9oVJDrWBaAdDGaU9jX3iNmiX2FzjiMFHfOebElHB0JU=",
+  "Source": "North.Plugin.HelloWorld",
+  "BasePath": "_content/North.Plugin.HelloWorld",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

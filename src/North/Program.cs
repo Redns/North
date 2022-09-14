@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using MudBlazor;
 using MudBlazor.Services;
 using North.Common;
+using North.Core.Common;
 using North.Core.Entities;
 using North.Core.Services.Logger;
 using North.Core.Services.Poster;
@@ -119,7 +121,9 @@ class Program
                         });
         builder.Services.AddSingleton<IPoster, MineKitPoster>(poster => new MineKitPoster());
         builder.Services.AddSingleton(loginIdentify => new Dictionary<string, ClaimsIdentity>());
-
+        // TODO 动态加载控制器测试
+        builder.Services.AddSingleton<IActionDescriptorChangeProvider>(NorthActionDescriptorChangeProvider.Instance);
+        builder.Services.AddSingleton(NorthActionDescriptorChangeProvider.Instance);
 
         // 构建 web 应用
         app = builder.Build();

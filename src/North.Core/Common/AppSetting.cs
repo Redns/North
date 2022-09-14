@@ -53,6 +53,7 @@ namespace North.Core.Common
         });
     }
 
+    #region 通用设置
 
     /// <summary>
     /// 通用设置
@@ -67,43 +68,6 @@ namespace North.Core.Common
         }
 
         public GeneralSetting Clone() => new(DataBase.Clone());
-    }
-
-
-    /// <summary>
-    /// 外观设置
-    /// </summary>
-    public class AppearanceSetting
-    {
-        /// <summary>
-        /// 图床名称
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 侧边栏自动展开
-        /// </summary>
-        public bool NavAutoExpand { get; set; }
-
-        /// <summary>
-        /// 背景每日一图 API
-        /// </summary>
-        public string BackgroundUrl { get; set; }
-
-        /// <summary>
-        /// 页脚
-        /// </summary>
-        public string Footer { get; set; }
-
-        public AppearanceSetting(string name, bool navAutoExpand, string backgroundUrl, string footer)
-        {
-            Name = name;
-            NavAutoExpand = navAutoExpand;
-            BackgroundUrl = backgroundUrl;
-            Footer = footer;
-        }
-
-        public AppearanceSetting Clone() => new(Name, NavAutoExpand, BackgroundUrl, Footer);
     }
 
 
@@ -124,7 +88,7 @@ namespace North.Core.Common
         public DataBaseSetting Clone()
         {
             var databases = new List<Database>(Databases.Length);
-            foreach(var database in Databases)
+            foreach (var database in Databases)
             {
                 databases.Add(database.Clone());
             }
@@ -133,6 +97,9 @@ namespace North.Core.Common
     }
 
 
+    /// <summary>
+    /// 数据库
+    /// </summary>
     public class Database
     {
         /// <summary>
@@ -221,6 +188,49 @@ namespace North.Core.Common
         PostgreSQL
     }
 
+    #endregion
+
+    #region 外观设置
+
+    /// <summary>
+    /// 外观设置
+    /// </summary>
+    public class AppearanceSetting
+    {
+        /// <summary>
+        /// 图床名称
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 侧边栏自动展开
+        /// </summary>
+        public bool NavAutoExpand { get; set; }
+
+        /// <summary>
+        /// 背景每日一图 API
+        /// </summary>
+        public string BackgroundUrl { get; set; }
+
+        /// <summary>
+        /// 页脚
+        /// </summary>
+        public string Footer { get; set; }
+
+        public AppearanceSetting(string name, bool navAutoExpand, string backgroundUrl, string footer)
+        {
+            Name = name;
+            NavAutoExpand = navAutoExpand;
+            BackgroundUrl = backgroundUrl;
+            Footer = footer;
+        }
+
+        public AppearanceSetting Clone() => new(Name, NavAutoExpand, BackgroundUrl, Footer);
+    }
+
+    #endregion
+
+    #region 注册设置
 
     /// <summary>
     /// 注册设置
@@ -284,6 +294,9 @@ namespace North.Core.Common
         public RegisterSettingDefault Clone() => new(Permission, IsApiAvailable, MaxUploadNums, MaxUploadCapacity, SingleMaxUploadNums, SingleMaxUploadCapacity);
     }
 
+    #endregion
+
+    #region 通知设置
 
     /// <summary>
     /// 通知设置
@@ -325,6 +338,9 @@ namespace North.Core.Common
         public EmailSetting Clone() => new(Account, Code);
     }
 
+    #endregion
+
+    #region 授权设置
 
     /// <summary>
     /// 授权设置
@@ -344,45 +360,64 @@ namespace North.Core.Common
         public AuthSetting Clone() => new(CookieValidTime);
     }
 
+    #endregion
+
+    #region 插件设置
 
     /// <summary>
     /// 插件设置
     /// </summary>
     public class PluginSetting
     {
+        /// <summary>
+        /// 插件安装路径
+        /// </summary>
         public string InstallDir { get; set; }
-        public List<Plugin> Plugins { get; set; }
-        public List<PluginCategory> Categories { get; set; }
 
-        public PluginSetting(string installDir, List<Plugin> plugins, List<PluginCategory> categories)
+        /// <summary>
+        /// 已安装的插件集合
+        /// </summary>
+        public List<Plugin> Plugins { get; set; }
+
+        public PluginSetting(string installDir, List<Plugin> plugins)
         {
             InstallDir = installDir;
             Plugins = plugins;
-            Categories = categories;
         }
 
         public PluginSetting Clone()
         {
             var plugins = new List<Plugin>(Plugins.Count);
-            var categories = new List<PluginCategory>(Categories.Count);
 
-            Plugins.ForEach(plugin => plugins.Add(plugin));
-            Categories.ForEach(category => categories.Add(category));
+            Plugins.ForEach(plugins.Add);
 
-            return new PluginSetting(InstallDir, plugins, categories);
+            return new PluginSetting(InstallDir, plugins);
         }
     }
 
 
     /// <summary>
-    /// NuGet 插件
+    /// 插件
     /// </summary>
     public class Plugin
     {
         /// <summary>
         /// 名称
         /// </summary>
-        public string Id { get; set; }
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 状态
+        /// </summary>
+        public PluginState State { get; set; }
+
+        /// <summary>
+        /// 插件模块
+        /// </summary>
+        [JsonIgnore]
+        public PluginModule[] Modules { get; set; } = Array.Empty<PluginModule>();
+
+        #region 插件基本信息
 
         /// <summary>
         /// 作者
@@ -409,14 +444,11 @@ namespace North.Core.Common
         /// </summary>
         public string Description { get; set; }
 
-        /// <summary>
-        /// 状态
-        /// </summary>
-        public PluginState State { get; set; }
+        #endregion
 
         public Plugin(IPackageSearchMetadata package, PluginState state)
         {
-            Id = package.Identity.Id;
+            Name = package.Identity.Id;
             Authors = package.Authors;
             Version = package.Identity.Version;
             DownloadCount = package.DownloadCount ?? 0L;
@@ -427,7 +459,7 @@ namespace North.Core.Common
 
         public Plugin(string id, string authors, SemanticVersion version, long downloadCount, string iconUrl, string description, PluginState state)
         {
-            Id = id;
+            Name = id;
             Authors = authors;
             Version = version;
             DownloadCount = downloadCount;
@@ -439,38 +471,43 @@ namespace North.Core.Common
 
 
     /// <summary>
-    /// 插件类别
+    /// 插件状态
     /// </summary>
-    public class PluginCategory
+    public enum PluginState
+    {
+        UnInstall = 0,      // 未安装
+        Enable,             // 已启用
+        Disable             // 已禁用
+    }
+
+
+    /// <summary>
+    /// 插件内部模块（应用 --> 插件 --> 模块）
+    /// </summary>
+    public class PluginModule
     {
         /// <summary>
-        /// 类别名称
+        /// 模块名称
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// 被执行的模块
+        /// 插件类型
         /// </summary>
-        public List<string> Executed { get; set; }
+        public Type Type { get; set; }
 
         /// <summary>
-        /// 未被执行的模块
+        /// 是否启用模块
         /// </summary>
-        public List<string> UnExecuted { get; set; }
+        public bool IsEnabled { get; set; }
 
-        public PluginCategory(string name, List<string> executed, List<string> unExecuted)
+        public PluginModule(string name, Type type, bool isEnabled)
         {
             Name = name;
-            Executed = executed;
-            UnExecuted = unExecuted;
+            Type = type;
+            IsEnabled = isEnabled;
         }
     }
 
-
-    public enum PluginState
-    {
-        UnInstall = 0,
-        Enable,
-        Disable
-    }
+    #endregion
 }

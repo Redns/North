@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "North.Plugin.HelloWorld/1.0.0": {
+        "runtime": {
+          "North.Plugin.HelloWorld.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "North.Plugin.HelloWorld/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
