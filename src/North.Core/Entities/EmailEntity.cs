@@ -7,14 +7,8 @@ namespace North.Core.Entities
     /// <summary>
     /// 邮箱验证类
     /// </summary>
-    public class EmailEntity
+    public class EmailEntity : BaseEntity
     {
-        /// <summary>
-        /// 验证链接为 verify?type={nameof(VerifyType)}&id={Id}
-        /// </summary>
-        [Required]
-        public Guid Id { get; set; } = Guid.NewGuid();
-
         /// <summary>
         /// 待验证的邮箱地址
         /// </summary>
@@ -33,6 +27,14 @@ namespace North.Core.Entities
         /// </summary>
         [Required]
         public VerifyType VerifyType { get; set; }
+
+        #region 构造函数
+        /// <summary>
+        /// 验证链接为 verify?type={nameof(VerifyType)}&id={Id}
+        /// </summary>
+        public EmailEntity() : base(new Guid()) { }
+        public EmailEntity(Guid id) : base(id) { }
+        #endregion
     }
 
 

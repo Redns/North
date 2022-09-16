@@ -10,6 +10,8 @@ namespace North.Core.Entities
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<ImageEntity> Images { get; set; }
         public DbSet<EmailEntity> Emails { get; set; }
+        public DbSet<PluginEntity> Plugins { get; set; }
+        public DbSet<PluginModuleEntity> PluginsModules { get; set; }
 
         // TODO 避免使用常量值建立查询
         public NorthDbContext(DbContextOptions options) : base(options) 

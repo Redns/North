@@ -1,6 +1,13 @@
 ﻿@page "/dashboard"
 
-<h3>Dashboard</h3>
+<AuthorizeView>
+    <Authorized>
+
+    </Authorized>
+    <NotAuthorized>
+
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
 

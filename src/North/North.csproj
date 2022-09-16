@@ -10,9 +10,11 @@
 
   <ItemGroup>
     <PackageReference Include="Krins.Nuget" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.9" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\Databases\" />
     <Folder Include="Data\Images\" />
     <Folder Include="Data\Logs\" />
     <Folder Include="Plugins\" />

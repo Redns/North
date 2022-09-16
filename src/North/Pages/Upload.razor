@@ -27,20 +27,38 @@
         <div class="d-flex flex-row justify-center gap-3 mt-4">
             <MudButton Variant="Variant.Filled" Color="Color.Tertiary" StartIcon="@Icons.Outlined.FileUpload">上 传</MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Outlined.Clear">清 空</MudButton>
-            <MudMenu ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.CenterRight" TransformOrigin="Origin.TopLeft">
+            <MudMenu ActivationEvent="@MouseEvent.MouseOver" 
+                     AnchorOrigin="Origin.CenterRight" TransformOrigin="Origin.TopLeft">
                 <ActivatorContent>
                     <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Outlined.ContentCopy">拷 贝</MudButton>
                 </ActivatorContent>
                 <ChildContent>
-                    <MudMenuItem Style="height:40px;">
+                    <MudList Clickable @bind-SelectedValue="@UrlType">
+                        <MudListItem Value="ImageUrlType.Markdown" Style="height:40px;">
+                            <IconfontText Icon="icon-file-markdown" Text="Markdown" Color="#B0BEC5" />
+                        </MudListItem>
+                        <MudListItem Value="ImageUrlType.Url" Style="height:40px;">
+                            <IconfontText Icon="icon-URLScheme" Text="Url" Color="#81C784" />
+                        </MudListItem>
+                        <MudListItem Value="ImageUrlType.Html" Style="height:40px;">
+                            <IconfontText Icon="icon-html" Text="Html" Color="#E1A983" />
+                        </MudListItem>
+                        <MudListItem Value="ImageUrlType.UBB" Style="height:40px;">
+                            <IconfontText Icon="icon-14" Text="UBB" Color="#2196F3" />
+                        </MudListItem>
+                    </MudList>
+                    @*<MudMenuItem Style="height:40px;">
                         <IconfontText Icon="icon-file-markdown" Text="Markdown" Color="#B0BEC5" />
+                    </MudMenuItem>
+                    <MudMenuItem Style="height:40px;">
+                        <IconfontText Icon="icon-URLScheme" Text="Url" Color="#81C784" />
                     </MudMenuItem>
                     <MudMenuItem Style="height:40px;">
                         <IconfontText Icon="icon-html" Text="Html" Color="#E1A983" />
                     </MudMenuItem>
                     <MudMenuItem Style="height:40px;">
-                        <IconfontText Icon="icon-URLScheme" Text="Url" Color="#81C784" />
-                    </MudMenuItem>
+                        <IconfontText Icon="icon-14" Text="UBB" Color="#2196F3" />
+                    </MudMenuItem>*@
                 </ChildContent>
             </MudMenu>
         </div>

@@ -373,140 +373,15 @@ namespace North.Core.Common
         /// 插件安装路径
         /// </summary>
         public string InstallDir { get; set; }
+        public string ImageSource { get; set; }
 
-        /// <summary>
-        /// 已安装的插件集合
-        /// </summary>
-        public List<Plugin> Plugins { get; set; }
-
-        public PluginSetting(string installDir, List<Plugin> plugins)
+        public PluginSetting(string installDir, string imageSource)
         {
             InstallDir = installDir;
-            Plugins = plugins;
+            ImageSource = imageSource;
         }
 
-        public PluginSetting Clone()
-        {
-            var plugins = new List<Plugin>(Plugins.Count);
-
-            Plugins.ForEach(plugins.Add);
-
-            return new PluginSetting(InstallDir, plugins);
-        }
-    }
-
-
-    /// <summary>
-    /// 插件
-    /// </summary>
-    public class Plugin
-    {
-        /// <summary>
-        /// 名称
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 状态
-        /// </summary>
-        public PluginState State { get; set; }
-
-        /// <summary>
-        /// 插件模块
-        /// </summary>
-        [JsonIgnore]
-        public PluginModule[] Modules { get; set; } = Array.Empty<PluginModule>();
-
-        #region 插件基本信息
-
-        /// <summary>
-        /// 作者
-        /// </summary>
-        public string Authors { get; set; }
-
-        /// <summary>
-        /// 版本号
-        /// </summary>
-        public SemanticVersion Version { get; set; }
-
-        /// <summary>
-        /// 下载量
-        /// </summary>
-        public long DownloadCount { get; set; }
-
-        /// <summary>
-        /// 图标
-        /// </summary>
-        public string IconUrl { get; set; }
-
-        /// <summary>
-        /// 描述
-        /// </summary>
-        public string Description { get; set; }
-
-        #endregion
-
-        public Plugin(IPackageSearchMetadata package, PluginState state)
-        {
-            Name = package.Identity.Id;
-            Authors = package.Authors;
-            Version = package.Identity.Version;
-            DownloadCount = package.DownloadCount ?? 0L;
-            IconUrl = package.IconUrl?.AbsolutePath ?? "https://www.nuget.org/Content/gallery/img/default-package-icon.svg";
-            Description = package.Description;
-            State = state;
-        }
-
-        public Plugin(string id, string authors, SemanticVersion version, long downloadCount, string iconUrl, string description, PluginState state)
-        {
-            Name = id;
-            Authors = authors;
-            Version = version;
-            DownloadCount = downloadCount;
-            IconUrl = iconUrl;
-            Description = description;
-            State = state;
-        }
-    }
-
-
-    /// <summary>
-    /// 插件状态
-    /// </summary>
-    public enum PluginState
-    {
-        UnInstall = 0,      // 未安装
-        Enable,             // 已启用
-        Disable             // 已禁用
-    }
-
-
-    /// <summary>
-    /// 插件内部模块（应用 --> 插件 --> 模块）
-    /// </summary>
-    public class PluginModule
-    {
-        /// <summary>
-        /// 模块名称
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// 插件类型
-        /// </summary>
-        public Type Type { get; set; }
-
-        /// <summary>
-        /// 是否启用模块
-        /// </summary>
-        public bool IsEnabled { get; set; }
-
-        public PluginModule(string name, Type type, bool isEnabled)
-        {
-            Name = name;
-            Type = type;
-            IsEnabled = isEnabled;
-        }
+        public PluginSetting Clone() => new(InstallDir, ImageSource);
     }
 
     #endregion

@@ -1,13 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace North.Core.Entities
 {
-    public class ImageEntity
+    public class ImageEntity : BaseEntity
     {
-        [Required]
-        public Guid Id { get; set; } = Guid.NewGuid();
-
         /// <summary>
         /// 文件名
         /// </summary>
@@ -18,13 +14,11 @@ namespace North.Core.Entities
         /// <summary>
         /// 图片高度
         /// </summary>
-        [Required]
         public int Height { get; set; } = 0;
 
         /// <summary>
         /// 图片宽度
         /// </summary>
-        [Required]
         public int Width { get; set; } = 0;
 
         /// <summary>
@@ -36,7 +30,6 @@ namespace North.Core.Entities
         /// <summary>
         /// 上传时间
         /// </summary>
-        [Required]
         public DateTime UploadTime { get; set; } = DateTime.Now;
 
         /// <summary>
@@ -46,6 +39,7 @@ namespace North.Core.Entities
         [MaxLength(64)]
         public string Storager { get; set; } = string.Empty;
 
+        #region 图片链接
         /// <summary>
         /// 图片链接
         /// </summary>
@@ -59,17 +53,23 @@ namespace North.Core.Entities
         [Required]
         [MaxLength(256)]
         public string ThumbnailUrl { get; set; } = string.Empty;
+        #endregion
 
         /// <summary>
         /// 请求次数
         /// </summary>
-        [Required]
         public long Request { get; set; } = 0;
 
         /// <summary>
         /// 所有者
         /// </summary>
         public UserEntity Owner { get; set; }
+
+
+        #region 构造函数
+        public ImageEntity() : base(new Guid()) { }
+        public ImageEntity(Guid id) : base(id) { }
+        #endregion
     }
 
 

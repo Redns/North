@@ -10,11 +10,9 @@ namespace North.Core.Entities
     /// <summary>
     /// 用户实体
     /// </summary>
-    public class UserEntity
+    public class UserEntity : BaseEntity
     {
-        [Required]
-        public Guid Id { get; set; } = Guid.NewGuid();
-
+        #region 账户信息
         /// <summary>
         /// 用户名
         /// </summary>
@@ -45,6 +43,14 @@ namespace North.Core.Entities
         public string Avatar { get; set; } = string.Empty;
 
         /// <summary>
+        /// 注册时间
+        /// </summary>
+        [Required]
+        public DateTime RegisterTime { get; set; } = DateTime.Now;
+        #endregion
+
+        #region 权限信息
+        /// <summary>
         /// 账户状态
         /// </summary>
         [Required]
@@ -63,46 +69,46 @@ namespace North.Core.Entities
         public bool IsApiAvailable { get; set; } = true;
 
         /// <summary>
-        /// 最大上传数量（张）
-        /// </summary>
-        [Required]
-        public long MaxUploadNums { get; set; } = 0;
-
-        /// <summary>
-        /// 最大存储容量（MB）
-        /// </summary>
-        [Required]
-        public double MaxUploadCapacity { get; set; } = 0;
-
-        /// <summary>
-        /// 单次最大上传数量（张）
-        /// </summary>
-        [Required]
-        public long SingleMaxUploadNums { get; set; } = 0L;
-
-        /// <summary>
-        /// 单次最大上传容量（MB）
-        /// </summary>
-        [Required]
-        public double SingleMaxUploadCapacity { get; set; } = 0;
-
-        /// <summary>
         /// 用户令牌
         /// </summary>
         [Required]
         [MaxLength(32)]
         public string Token { get; set; } = string.Empty;
+        #endregion
+
+        #region 图片上传限制
+        /// <summary>
+        /// 最大上传数量（张）
+        /// </summary>
+        public long MaxUploadNums { get; set; } = 0;
 
         /// <summary>
-        /// 注册时间
+        /// 最大存储容量（MB）
         /// </summary>
-        [Required]
-        public DateTime RegisterTime { get; set; } = DateTime.Now;
+        public double MaxUploadCapacity { get; set; } = 0;
 
+        /// <summary>
+        /// 单次最大上传数量（张）
+        /// </summary>
+        public long SingleMaxUploadNums { get; set; } = 0L;
+
+        /// <summary>
+        /// 单次最大上传容量（MB）
+        /// </summary>
+        public double SingleMaxUploadCapacity { get; set; } = 0;
+        #endregion
+
+        #region 导航属性
         /// <summary>
         /// 用户存储的图片
         /// </summary>
         public ICollection<ImageEntity> Images { get; set; }
+        #endregion
+
+        #region 构造函数
+        public UserEntity() : base(new Guid()) { }
+        public UserEntity(Guid id) : base(id) { }
+        #endregion
 
 
         /// <summary>
@@ -124,6 +130,7 @@ namespace North.Core.Entities
         }
 
 
+        #region 相关对象生成
         /// <summary>
         /// 生成 DTO 对象
         /// </summary>
@@ -152,6 +159,7 @@ namespace North.Core.Entities
             new Claim(ClaimTypes.Email, Email),
             new Claim(ClaimTypes.Role, Permission.ToString("G"))
         }, CookieAuthenticationDefaults.AuthenticationScheme);
+        #endregion
 
 
         public override string ToString() => JsonSerializer.Serialize(this, new JsonSerializerOptions()

@@ -82,7 +82,7 @@ class Program
                                 // Always: 要求登录页及之后所有需要身份验证的页面均为 HTTPS
                                 // None: 登录页为 HTTPS，但其他 HTTP 页也需要身份验证信息
                                 // SameAsRequest: 若提供 Cookie 的 URI 为 HTTPS，则只会在后续 HTTPS 请求上将 Cookie 返回服务器；若提供 Cookie 的 URI 为 HTTP，则会在后续 HTTP 和 HTTPS 请求上将 Cookie 返回服务器。
-                                SecurePolicy = CookieSecurePolicy.SameAsRequest,
+                                SecurePolicy = CookieSecurePolicy.SameAsRequest
                             };
                             // 订阅 Cookie 身份验证期间发生的事件
                             options.Events = new CookieAuthenticationEvents
@@ -121,9 +121,9 @@ class Program
                         });
         builder.Services.AddSingleton<IPoster, MineKitPoster>(poster => new MineKitPoster());
         builder.Services.AddSingleton(loginIdentify => new Dictionary<string, ClaimsIdentity>());
-        // TODO 动态加载控制器测试
-        builder.Services.AddSingleton<IActionDescriptorChangeProvider>(NorthActionDescriptorChangeProvider.Instance);
+        // 动态加载控制器
         builder.Services.AddSingleton(NorthActionDescriptorChangeProvider.Instance);
+        builder.Services.AddSingleton<IActionDescriptorChangeProvider>(NorthActionDescriptorChangeProvider.Instance);
 
         // 构建 web 应用
         app = builder.Build();

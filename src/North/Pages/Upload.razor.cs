@@ -13,6 +13,7 @@ namespace North.Pages
         private string DragClass = DefaultDragClass;
         private bool Clearing = false;
         private List<ImageUploadModel> Images { get; set; } = new(64);
+        private object UrlType { get; set; } = ImageUrlType.Markdown;
 
         private async Task OnInputImagesChanged(InputFileChangeEventArgs args)
         {
@@ -117,5 +118,14 @@ namespace North.Pages
         {
         DragClass = DefaultDragClass;
         }
+    }
+
+
+    public enum ImageUrlType
+    {
+        Markdown = 0,
+        Url,
+        Html,
+        UBB
     }
 }
