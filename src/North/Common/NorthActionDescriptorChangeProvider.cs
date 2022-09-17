@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Primitives;
 
-namespace North.Core.Common
+namespace North.Common
 {
     public class NorthActionDescriptorChangeProvider : IActionDescriptorChangeProvider
     {
-        public static NorthActionDescriptorChangeProvider Instance { get; } = new ();
+        public static NorthActionDescriptorChangeProvider Instance { get; } = new();
 
         public CancellationTokenSource TokenSource { get; private set; }
 

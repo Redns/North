@@ -8,6 +8,14 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Krins.Nuget" Version="1.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.9" />

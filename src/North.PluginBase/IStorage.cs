@@ -30,7 +30,7 @@ namespace North.PluginBase
         /// <param name="url">图片链接</param>
         /// <returns>图片数据流</returns>
         Stream Download(IServiceProvider services, SettingBase settings, string url, in HttpRequest? request = null);
-        ValueTask<Stream> DownloadAsync(IServiceProvider services, SettingBase, string url, in HttpRequest? request = null);
+        ValueTask<Stream> DownloadAsync(IServiceProvider services, SettingBase setting, string url, in HttpRequest? request = null);
 
 
         bool Rename(IServiceProvider services, SettingBase settings);

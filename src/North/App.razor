@@ -1,7 +1,10 @@
-﻿@using North.Common
+﻿@inject PluginContext _pluginContext
+
+@using North.Common
+
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly"
-            AdditionalAssemblies="@GlobalValues.PluginAssemblies">
+            AdditionalAssemblies="@_pluginContext.Assemblies">
         <Found Context="routeData">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
