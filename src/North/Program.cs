@@ -2,7 +2,6 @@ using Krins.Nuget;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using MudBlazor;
 using MudBlazor.Services;
 using North.Common;
@@ -135,14 +134,9 @@ namespace North
             {
                 var logger = app.Services.GetRequiredService<ILogger>();
                 var applicationPartManager = app.Services.GetRequiredService<ApplicationPartManager>();
-                var plugins = app.Services.GetRequiredService<NorthDbContext>().Plugins
-                                                                               .Include(plugin => plugin.Modules)
-                                                                               .ToList();
-
-                return new PluginContext(plugins, GlobalValues.AppSettings.Plugin.InstallDir, applicationPartManager)
+                return new PluginContext(GlobalValues.AppSettings.Plugin.InstallDir, applicationPartManager)
                 {
-                    Logger = logger,
-                    OnReloadControllers = (applicationParts) =>
+                    OnRefreshControllers = (applicationParts) =>
                     {
                         NorthActionDescriptorChangeProvider.Instance.HasChanged = true;
                         NorthActionDescriptorChangeProvider.Instance.TokenSource.Cancel();

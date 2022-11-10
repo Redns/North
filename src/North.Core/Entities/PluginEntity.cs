@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace North.Core.Entities
 {
-    public class PluginEntity : BaseEntity
+    public class PluginEntity : Entity
     {
         /// <summary>
         /// 名称

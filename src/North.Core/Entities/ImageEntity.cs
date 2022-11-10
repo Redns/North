@@ -2,7 +2,7 @@
 
 namespace North.Core.Entities
 {
-    public class ImageEntity : BaseEntity
+    public class ImageEntity : Entity
     {
         /// <summary>
         /// 文件名

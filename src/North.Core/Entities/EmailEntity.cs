@@ -7,7 +7,7 @@ namespace North.Core.Entities
     /// <summary>
     /// 邮箱验证类
     /// </summary>
-    public class EmailEntity : BaseEntity
+    public class EmailEntity : Entity
     {
         /// <summary>
         /// 待验证的邮箱地址

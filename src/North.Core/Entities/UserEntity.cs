@@ -10,7 +10,7 @@ namespace North.Core.Entities
     /// <summary>
     /// 用户实体
     /// </summary>
-    public class UserEntity : BaseEntity
+    public class UserEntity : Entity
     {
         #region 账户信息
         /// <summary>

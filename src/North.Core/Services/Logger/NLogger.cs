@@ -96,7 +96,6 @@ namespace North.Core.Services.Logger
 
         public void Debug(string message, Exception e)
         {
-            // TODO 注意！此处需要调用异常类型 e 放在信息 message 前方的方法，否则无法打印异常信息！
             _logger.Debug(e, message);
         }
 
