@@ -44,13 +44,5 @@ namespace North.Core.Entities
         #region 导航属性
         public PluginEntity Plugin { get; set; }
         #endregion
-
-
-        #region 构造函数
-
-        public PluginModuleEntity() : base(new Guid()) { }
-        public PluginModuleEntity(Guid id) : base(id) { }
-        
-        #endregion
     }
 }

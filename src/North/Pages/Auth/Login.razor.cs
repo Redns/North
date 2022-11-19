@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.EntityFrameworkCore;
 using MudBlazor;
 using North.Common;
 using North.Core.Entities;

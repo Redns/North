@@ -51,38 +51,6 @@ namespace North.Core.Entities
         public ICollection<PluginModuleEntity> Modules { get; set; }
         
         #endregion
-
-
-        #region 构造函数
-
-        public PluginEntity() : base(new Guid())
-        {
-
-        }
-
-        public PluginEntity(IPackageSearchMetadata metadata, PluginState state) : base(new Guid())
-        {
-            State = state;
-            Name = metadata.Identity.Id;
-            Authors = metadata.Authors;
-            Version = metadata.Identity.Version.ToNormalizedString();
-            DownloadCount = metadata.DownloadCount ?? 0L;
-            IconUrl = metadata.IconUrl?.AbsolutePath ?? "https://www.nuget.org/Content/gallery/img/default-package-icon.svg";
-            Description = metadata.Description;
-        }
-
-        public PluginEntity(Guid id, IPackageSearchMetadata metadata, PluginState state) : base(id)
-        {
-            State = state;
-            Name = metadata.Identity.Id;
-            Authors = metadata.Authors;
-            Version = metadata.Identity.Version.ToNormalizedString();
-            DownloadCount = metadata.DownloadCount ?? 0L;
-            IconUrl = metadata.IconUrl?.AbsolutePath ?? "https://www.nuget.org/Content/gallery/img/default-package-icon.svg";
-            Description = metadata.Description;
-        }
-
-        #endregion
     }
 
 

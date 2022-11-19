@@ -1,32 +1,51 @@
 ﻿using MudBlazor;
-using North.Core.Entities;
 
 namespace North.Core.Models
 {
     /// <summary>
-    /// 图片上传页面模型
+    /// 图片上传模型
     /// </summary>
     public class ImageUploadModel
     {
         /// <summary>
-        /// 图片名称
+        /// 图片名称（含后缀）
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
         /// 图片类型
         /// </summary>
-        public string ContentType { get; private set; }
+        public string ContentType { get; init; }
 
         /// <summary>
         /// 图片预览图链接
         /// </summary>
-        public string PreviewUrl { get; private set; }
+        public string PreviewUrl { get; init; }
+
+        /// <summary>
+        /// 图片缩略图链接
+        /// </summary>
+        public string ThumbnailUrl { get; set; }
+
+        /// <summary>
+        /// 图片链接
+        /// </summary>
+        public string SourceUrl { get; set; }
+
+        /// <summary>
+        /// 图片高度
+        /// </summary>
+        public int Height { get; set; }
+
+        /// <summary>
+        /// 图片宽度
+        /// </summary>
+        public int Width { get; set; }
 
         /// <summary>
         /// 图片数据流
         /// </summary>
-        public Stream Stream { get; set; }
+        public Stream Stream { get; init; }
 
         /// <summary>
         /// 图片大小（单位：字节）
@@ -49,16 +68,6 @@ namespace North.Core.Models
         public ImageUploadState State { get; set; }
 
         /// <summary>
-        /// 图片尺寸
-        /// </summary>
-        public ImageSize? Size { get; set; }
-
-        /// <summary>
-        /// 图片链接
-        /// </summary>
-        public ImageUrl? Url { get; set; }
-
-        /// <summary>
         /// 进度条颜色
         /// </summary>
         public Color ProgressColor => State switch
@@ -67,19 +76,6 @@ namespace North.Core.Models
             ImageUploadState.Success => Color.Tertiary,
             _ => Color.Info
         };
-
-        public ImageUploadModel(string name, string contentType, string previewUrl, Stream stream, int progress = 0, string? message = null, ImageUploadState state = ImageUploadState.UnStart, ImageSize? size = null, ImageUrl? url = null)
-        {
-            Name = name;
-            ContentType = contentType;
-            PreviewUrl = previewUrl;
-            Stream = stream;
-            Progress = progress;
-            Message = message ?? "等待上传";
-            State = state;
-            Size = size;
-            Url = url;
-        }
     }
 
 

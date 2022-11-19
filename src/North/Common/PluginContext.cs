@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Primitives;
 using North.Core.Common;
 using North.Core.Entities;
-using North.PluginBase;
+using North.Plugin;
 using System.Reflection;
 using System.Runtime.Loader;
 
@@ -31,7 +31,7 @@ namespace North.Common
 
         #region 图片上传模块集合
         private readonly List<IStorage> _storages = new();
-        private readonly Dictionary<string, List<INode>> _nodes = new()
+        private readonly Dictionary<string, List<IDownloadNode>> _nodes = new()
         {
             { "BeforeAuth", new() },
             { "BeforeStorage", new() },
@@ -109,7 +109,7 @@ namespace North.Common
                 }
                 else
                 {
-                    _nodes[module.Category].Add(module.Type as INode ?? throw new Exception($"Unable to convert module {module.Name}-{module.Id} to INode"));
+                    _nodes[module.Category].Add(module.Type as IDownloadNode ?? throw new Exception($"Unable to convert module {module.Name}-{module.Id} to INode"));
                 }
             }
 

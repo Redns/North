@@ -1,0 +1,15 @@
+E:\Project\North\src\North.PluginBase\bin\Debug\net6.0\North.Plugin.deps.json
+E:\Project\North\src\North.PluginBase\bin\Debug\net6.0\North.Plugin.dll
+E:\Project\North\src\North.PluginBase\bin\Debug\net6.0\North.Plugin.pdb
+E:\Project\North\src\North.PluginBase\bin\Debug\net6.0\North.Core.dll
+E:\Project\North\src\North.PluginBase\bin\Debug\net6.0\North.Core.pdb
+E:\Project\North\src\North.PluginBase\obj\Debug\net6.0\North.Plugin.csproj.AssemblyReference.cache
+E:\Project\North\src\North.PluginBase\obj\Debug\net6.0\North.Plugin.GeneratedMSBuildEditorConfig.editorconfig
+E:\Project\North\src\North.PluginBase\obj\Debug\net6.0\North.Plugin.AssemblyInfoInputs.cache
+E:\Project\North\src\North.PluginBase\obj\Debug\net6.0\North.Plugin.AssemblyInfo.cs
+E:\Project\North\src\North.PluginBase\obj\Debug\net6.0\North.Plugin.csproj.CoreCompileInputs.cache
+E:\Project\North\src\North.PluginBase\obj\Debug\net6.0\North.Plugin.csproj.CopyComplete
+E:\Project\North\src\North.PluginBase\obj\Debug\net6.0\North.Plugin.dll
+E:\Project\North\src\North.PluginBase\obj\Debug\net6.0\refint\North.Plugin.dll
+E:\Project\North\src\North.PluginBase\obj\Debug\net6.0\North.Plugin.pdb
+E:\Project\North\src\North.PluginBase\obj\Debug\net6.0\ref\North.Plugin.dll

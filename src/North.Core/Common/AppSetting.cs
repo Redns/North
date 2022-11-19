@@ -1,11 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using North.Core.Entities;
 using North.Core.Services.Logger;
-using NuGet.Protocol.Core.Types;
-using NuGet.Versioning;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace North.Core.Common
 {
@@ -123,23 +119,6 @@ namespace North.Core.Common
             Type = type;
             ConnectionString = connectionString;
         }
-
-
-        /// <summary>
-        /// 初始化 EFCore 上下文
-        /// </summary>
-        [JsonIgnore]
-        public Action<DbContextOptionsBuilder> InitDbContextBuilder => (builder) =>
-        {
-            switch (Type)
-            {
-                case DatabaseType.Sqlite: builder.UseSqlite(ConnectionString); break;
-                case DatabaseType.SqlServer: builder.UseSqlServer(ConnectionString); break;
-                case DatabaseType.MySQL: builder.UseMySql(ServerVersion.AutoDetect(ConnectionString)); break;
-                case DatabaseType.PostgreSQL: builder.UseNpgsql(ConnectionString); break;
-                default: throw new NotSupportedException("Database is unsupported");
-            }
-        };
 
 
         /// <summary>

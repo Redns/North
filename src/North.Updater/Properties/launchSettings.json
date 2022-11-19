@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "North.Updater": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:3279;http://localhost:3282"
+    }
+  }
+}
