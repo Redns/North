@@ -23,9 +23,9 @@
 
   <ItemGroup>
     <Folder Include="Data\Databases\" />
-    <Folder Include="Data\Images\" />
     <Folder Include="Data\Logs\" />
     <Folder Include="Plugins\" />
+    <Folder Include="Resources\Images\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +33,7 @@
     <ProjectReference Include="..\North.PluginBase\North.Plugin.csproj">
       <TreatAsUsed>true</TreatAsUsed>
     </ProjectReference>
+    <ProjectReference Include="..\North.Plugin\North.Plugin.csproj" />
     <ProjectReference Include="..\North.RCL\North.RCL.csproj" />
   </ItemGroup>
 

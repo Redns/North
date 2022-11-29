@@ -1,7 +1,7 @@
 ﻿using North.Common;
 using North.Core.Entities;
 using North.Core.Helpers;
-using Org.BouncyCastle.Asn1.Ocsp;
+using North.Core.Repository;
 using System.Security.Claims;
 
 namespace North.Shared
@@ -18,7 +18,7 @@ namespace North.Shared
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
-            // await AuthorizationAsync();
+            await AuthorizationAsync();
             await base.OnInitializedAsync();
         }
 
@@ -32,7 +32,7 @@ namespace North.Shared
         {
             if (!firstRender)
             {
-                // await AuthorizationAsync();
+                await AuthorizationAsync();
             }
             await base.OnAfterRenderAsync(firstRender);
         }
@@ -45,27 +45,28 @@ namespace North.Shared
         public async Task AuthorizationAsync()
         {
             var relativeUrl = _nav.ToBaseRelativePath(_nav.Uri).Split('?').First().ToLower();
-            if (_accessor.HttpContext?.User.Identities.FirstOrDefault()?.IsAuthenticated is true)
+            var userIdentify = _accessor.HttpContext?.User.Identities.FirstOrDefault();
+            if (userIdentify?.IsAuthenticated is true)
             {
-                // 检查 Cookie 信息
-                // 账户封禁、权限更改等均会清空当前用户数据库中的令牌，造成之前获取的 Cookie 失效
-                var token = _accessor.HttpContext
-                                     .User
-                                     .Identities
-                                     .First()
-                                     .FindFirst("Token")
-                                     ?.Value;
-                var sqlUserData = new SqlUserData(_context);
-                var user = await sqlUserData.FindAsync(u => u.Token == token);
-                if (user?.HasValidToken is not true)
+                // 解析 ClaimIdentifies 中的用户信息
+                var userId = userIdentify.FindFirst(ClaimTypes.SerialNumber)?.Value;
+                var userLastModifyTime = userIdentify.FindFirst("LastModifyTime")?.Value;
+                if(!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(userLastModifyTime))
                 {
-                    _nav.NavigateTo("signout", true);
-                }
-                else if(relativeUrl.Contains(GlobalValues.WithoutAuthenticationPages, true))
-                {
-                    // 用户已授权且数据库信息未发生变动
-                    // 拒绝其访问授权页面，自动跳转至首页
-                    _nav.NavigateTo("", true);
+                    // 检索用户
+                    var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+                    var user = await userRepository.SingleAsync(u => u.Id.ToString() == userId);
+                    if ((user?.State is not UserState.Normal) || (user.LastModifyTime.ToString("G") != userLastModifyTime))
+                    {
+                        // 用户不存在或状态异常，清除登录信息
+                        _nav.NavigateTo("signout", true);
+                    }
+                    else if (relativeUrl.Contains(GlobalValues.WithoutAuthenticationPages, true))
+                    {
+                        // 用户已授权且数据库信息未发生变动
+                        // 拒绝其访问授权页面，自动跳转至首页
+                        _nav.NavigateTo("", true);
+                    }
                 }
             }
             else if(!relativeUrl.Contains(GlobalValues.WithoutAuthenticationPages, true))

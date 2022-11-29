@@ -1,17 +1,17 @@
 ﻿@page "/settings/general"
 
-@using Microsoft.EntityFrameworkCore.Internal
 @using North.Core.Common
 @using North.Core.Entities
 @using North.RCL.Buttons
+@using SqlSugar
 
 @inject ILogger _logger
 @inject ISnackbar _snackbar
 @inject NavigationManager _nav
-@inject NorthDbContext _context
+@inject ISqlSugarClient _client
 @inject IHttpContextAccessor _accessor
 
-<AuthorizeView Roles="User,Administrator">
+<AuthorizeView Roles="User">
     <div class="flex-row justify-center align-center message_warn">
         <MudImage Src="icons/warn.svg" Width="180" Elevation="0" Class="rounded-lg ma-4" />
         <MudLink Href="/" Color="Color.Warning" Style="font-weight:bold; font-size:34px;">您的权限不足，无法访问</MudLink>
@@ -39,12 +39,6 @@
             </div>
             
         </div>
-        <!-- 数据库连接字符串 -->
-        @*<div class="d-flex flex-column gap-2">
-            <p class="menu_text">连接字符串</p>
-            <MudTextField @bind-Value="GeneralSetting.DataBase.ConnectionString" Margin="Margin.Dense" Lines="3"
-                          Variant="Variant.Outlined" Style="width:90%; max-width:460px; line-height:1.5em;" />
-        </div>*@
         <!-- 保存/取消设置 -->
         <div class="d-flex flex-row gap-2">
             <MudButton Variant="Variant.Filled" Color="Color.Tertiary"

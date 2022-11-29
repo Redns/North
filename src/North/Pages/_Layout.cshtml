@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
+@using North.Common
 @using North.Pages.Auth
 @namespace North.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -10,7 +11,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <base href="~/" />
         <!-- 标签栏图标 -->
-        <link rel="shortcut icon" href="~/images//North_round_64.ico" type="image/x-icon"/>
+        <link rel="shortcut icon" href="@GlobalValues.AppSettings.Appearance.Icon" type="image/x-icon"/>
         <link href="North.styles.css" rel="stylesheet" />
         <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
     </head>

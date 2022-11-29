@@ -6,14 +6,14 @@
 @inject IHttpContextAccessor _accessor
 @inject NavigationManager _navigationManager
 
-<AuthorizeView Roles="User,Administrator">
+<AuthorizeView Roles="User">
     <MudStack Spacing="10" Row AlignItems="AlignItems.Center" Class="message_warn">
         <MudImage Src="icons/warn.svg" Width="180" Elevation="0" Class="rounded-lg ma-4" />
         <MudLink Href="/" Color="Color.Warning" Style="font-weight:bold; font-size:34px;">您的权限不足，无法访问</MudLink>
     </MudStack>
 </AuthorizeView>
 <AuthorizeView Roles="System">
-    <MudStack Spacing="6" Style="margin-left:37px; margin-top:20px;" id="page">
+    <MudStack Spacing="6" Style="padding-left:37px; margin-top:20px;" id="page">
         <!-- Cookie 有效期 -->
             <MudStack Spacing="2">
             <MudTooltip Text="Cookie过期后网页端需要重新登录" Placement="Placement.Right">

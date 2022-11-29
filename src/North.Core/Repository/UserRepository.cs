@@ -5,7 +5,7 @@ namespace North.Core.Repository
 {
     public class UserRepository : Repository<UserEntity>
     {
-        public UserRepository(SqlSugarClient client) : base(client)
+        public UserRepository(ISqlSugarClient client, string dbConfigId) : base(client, dbConfigId)
         {
         }
     }

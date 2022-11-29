@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MudBlazor;
+﻿using MudBlazor;
 using North.Common;
 using North.Core.Common;
 using North.Core.Entities;
+using SqlSugar;
 
 namespace North.Pages.Settings
 {
@@ -12,12 +12,12 @@ namespace North.Pages.Settings
         private bool RestoreRunning { get; set; } = false;
         private GeneralSetting GeneralSetting { get; set; } = GlobalValues.AppSettings.General.Clone();
 
-        private string DatabaseIconClass(DatabaseType type) => type switch
+        private string DatabaseIconClass(DbType type) => type switch
         {
-            DatabaseType.Sqlite => "iconfont icon-sqlite",
-            DatabaseType.SqlServer => "iconfont icon-SQLserver",
-            DatabaseType.MySQL => "iconfont icon-mysql",
-            DatabaseType.PostgreSQL => "iconfont icon-postgresql",
+            DbType.Sqlite => "iconfont icon-sqlite",
+            DbType.SqlServer => "iconfont icon-SQLserver",
+            DbType.MySql => "iconfont icon-mysql",
+            DbType.PostgreSQL => "iconfont icon-postgresql",
             _ => throw new NotSupportedException("Database not supported")
         };
 

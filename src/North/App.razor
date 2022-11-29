@@ -1,10 +1,10 @@
-﻿@inject PluginContext _pluginContext
+﻿@inject PluginsContext _pluginContext
 
 @using North.Common
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly"
-            AdditionalAssemblies="@_pluginContext.Assemblies">
+            AdditionalAssemblies="@_pluginContext.RazorPageAssembies">
         <Found Context="routeData">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />

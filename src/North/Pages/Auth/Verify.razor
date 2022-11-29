@@ -1,12 +1,12 @@
 ﻿@page "/verify"
 
-@using Microsoft.EntityFrameworkCore.Infrastructure
 @using North.Core.Entities
+@using SqlSugar
 
 @inject ILogger _logger
 @inject ISnackbar _snackbar
 @inject NavigationManager _navigationManager
-@inject NorthDbContext _context
+@inject SqlSugarClient _client
 
 <MudStack Row AlignItems="AlignItems.Center" id="verify_stack">
     @if (VerifyRunning)

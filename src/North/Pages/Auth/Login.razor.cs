@@ -4,6 +4,7 @@ using MudBlazor;
 using North.Common;
 using North.Core.Entities;
 using North.Core.Helpers;
+using North.Core.Repository;
 using North.RCL.Forms;
 
 namespace North.Pages.Auth
@@ -65,33 +66,32 @@ namespace North.Pages.Auth
                 await Task.Delay(500);
 
                 // 检索用户
-                var encryptedPassword = $"{LoginModel.Email}:{LoginModel.Password}".MD5();
-                var user = _context.Users.FirstOrDefault(u => (u.Email == LoginModel.Email) && (u.Password == encryptedPassword) && (u.State == UserState.Normal));
-                if (user is null)
+                var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+                var user = await userRepository.SingleAsync(u => u.Email == LoginModel.Email && 
+                                                                 u.Password == LoginModel.EncryptedPassword);
+                if(user is null)
                 {
-                    _snackbar.Add("账号密码错误或账户状态异常", Severity.Error); return;
+                    _snackbar.Add("账号不存在或密码错误", Severity.Error);
                 }
-
-                // 检查用户是否包含有效 Token
-                if (!user.HasValidToken)
+                else if(user.State is not UserState.Normal)
                 {
-                    user.GenerateToken();
-                    _context.Users.Update(user);
-                    _context.SaveChanges();
+                    _snackbar.Add("账户状态异常", Severity.Error);
                 }
+                else
+                {
+                    // 存储并写入认证信息
+                    var userClaimsIdentifyKey = Guid.NewGuid().ToString();
+                    var userClaimsIdentify = user.ClaimsIdentify;
+                    _identifies.Add(userClaimsIdentifyKey, userClaimsIdentify);
 
-                // 存储并写入认证信息
-                var userClaimsIdentifyKey = Guid.NewGuid().ToString();
-                var userClaimsIdentify = user.ClaimsIdentify;
-                _identifies.Add(userClaimsIdentifyKey, userClaimsIdentify);
-
-                // 前往 Signin 页面写入注册信息
-                _nav.NavigateTo($"signin/?key={userClaimsIdentifyKey}&redirect={Redirect}", true);
+                    // 前往 Signin 页面写入注册信息
+                    _nav.NavigateTo($"signin?key={userClaimsIdentifyKey}&redirect={Redirect}", true);
+                }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.Error("Fail to login", e);
-                _snackbar.Add("登陆失败，系统内部错误", Severity.Error);
+                _snackbar.Add("登陆失败，服务器内部出错", Severity.Error);
             }
             finally
             {

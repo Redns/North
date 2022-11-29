@@ -13,7 +13,7 @@ namespace North.Pages
 
         private async Task OnInputImagesChanged(InputFileChangeEventArgs args)
         {
-            
+            await _pluginsContext.OnImageUpload(Images, null);
         }
 
 

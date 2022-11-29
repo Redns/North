@@ -7,6 +7,7 @@ using North.Core.Common;
 using North.Core.Entities;
 using North.Core.Helpers;
 using North.Core.Models.Notification;
+using North.Core.Repository;
 using North.RCL.Forms;
 
 namespace North.Pages.Auth
@@ -86,26 +87,20 @@ namespace North.Pages.Auth
                 }
 
                 // 判断账号是否已被注册
-                var sqlUserData = new SqlUserData(_context);
-                if (sqlUserData.Any(u => u.Email == Model.Email))
+                var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+                if (await userRepository.AnyAsync(u => u.Email == Model.Email))
                 {
                     _snackbar.Add("邮箱已被注册", Severity.Error); return;
                 }
 
                 // TODO 添加注册逻辑
-                var user = new UserEntity
+                await userRepository.AddAsync(new UserEntity
                 {
                     Name = Model.Name,
                     Email = Model.Email,
-                    Password = $"{Model.Email}:{Model.Password}".MD5(),
-                    Images = new HashSet<ImageEntity>() { new ImageEntity
-                        {
-                            Name = "test.jpg",
-                            Length = 12632
-                        } 
-                    }
-                };
-                await sqlUserData.AddAsync(user);
+                    Password = Model.EncryptedPassword,
+                    LastModifyTime = DateTime.Now
+                });
 
                 _nav.NavigateTo("login", true);
             }
@@ -151,7 +146,7 @@ namespace North.Pages.Auth
                 ExpireTime = DateTime.Now.AddMilliseconds(RegisterSettings.VerifyEmailValidTime),
                 VerifyType = VerifyType.Register
             };
-            await new SqlVerifyEmailData(_context).AddAsync(verifyEmail);
+            await new EmailRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName).AddAsync(verifyEmail);
 
             // 构造验证邮件并发送
             var verifyEmailBody = $"欢迎注册 {GlobalValues.AppSettings.Appearance.Name} 图床，" +
@@ -206,29 +201,6 @@ namespace North.Pages.Auth
                 Model.Avatar = string.Empty;
                 Model.AvatarContentType = string.Empty;
             }
-        }
-
-
-        /// <summary>
-        /// 生成注册用户
-        /// </summary>
-        /// <returns></returns>
-        public UserEntity ToUserEntity(RegisterModel model, RegisterSettingDefault @default)
-        {
-            return new UserEntity 
-            {
-                Name = model.Name,
-                Email = model.Email,
-                Password = $"{model.Email}:{model.Password}".MD5(),
-                Avatar = $"api/image/avatar/{model.Avatar}",
-                State = UserState.Checking,
-                Permission = @default.Permission,
-                IsApiAvailable = @default.IsApiAvailable,
-                MaxUploadNums = @default.MaxUploadNums,
-                MaxUploadCapacity = @default.MaxUploadCapacity,
-                SingleMaxUploadNums = @default.SingleMaxUploadNums,
-                SingleMaxUploadCapacity = @default.SingleMaxUploadCapacity
-            };
         }
     }
 }

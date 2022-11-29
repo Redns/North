@@ -1,5 +1,6 @@
 ﻿//using MudBlazor;
 //using North.Core.Entities;
+//using North.Core.Repository;
 
 //namespace North.Pages.Database
 //{
@@ -8,12 +9,12 @@
 //        private bool ShowInTable { get; set; } = true;
 //        private bool DataLoading { get; set; } = true;
 //        private string SearchText { get; set; } = string.Empty;
-//        private int ListLeftCount  => UsersShow.Count / 2 + UsersShow.Count % 2;
+//        private int ListLeftCount => UsersShow.Count / 2 + UsersShow.Count % 2;
 //        private int ListRightCount => UsersShow.Count - ListLeftCount;
-//        private SqlUserData? SqlUserData { get; set; } = null;
+//        private UserRepository? UserRepository { get; set; } = null;
 //        private List<UserEntity> UsersAll { get; set; } = new();
 //        private List<UserEntity> UsersShow { get; set; } = new();
-//        private HashSet<UserEntity> UsersSelected{ get; set; } = new();
+//        private HashSet<UserEntity> UsersSelected { get; set; } = new();
 
 
 //        /// <summary>
@@ -73,23 +74,23 @@
 //        {
 //            var r = new Random(DateTime.Now.Millisecond);
 //            var id = Guid.NewGuid().ToString();
-//            var user = new UserEntity 
+//            var user = new UserEntity
 //            {
 //                Name = id[0..5],
 //                Email = $"{r.Next()}@163.com",
 //                Password = id[10..15],
 //                Avatar = id[15..20],
 //                State = r.NextDouble() switch
-//                        {
-//                            < 0.2 => UserState.Checking,
-//                            < 0.9 => UserState.Normal,
-//                            _ => UserState.Forbidden
-//                        },
+//                {
+//                    < 0.2 => UserState.Checking,
+//                    < 0.9 => UserState.Normal,
+//                    _ => UserState.Forbidden
+//                },
 //                Permission = r.NextDouble() switch
-//                             {
-//                                 < 0.1 => UserPermission.Administrator,
-//                                 _ => UserPermission.User
-//                             },
+//                {
+//                    < 0.1 => UserPermission.Administrator,
+//                    _ => UserPermission.User
+//                },
 //                IsApiAvailable = r.NextDouble() > 0.8,
 //                SingleMaxUploadNums = r.Next(10) + 1,
 //                SingleMaxUploadCapacity = r.Next(100) + 1,
@@ -121,13 +122,13 @@
 //                });
 
 //                // 清除用户数据表中的信息
-//                if(SqlUserData is null || !await SqlUserData.RemoveAsync(user))
+//                if (SqlUserData is null || !await SqlUserData.RemoveAsync(user))
 //                {
 //                    _snackbar.Add("删除失败", Severity.Error);
 //                }
 
 //                // 清除图片信息
-                
+
 //            }
 //            catch
 //            {

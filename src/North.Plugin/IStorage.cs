@@ -22,6 +22,6 @@ namespace North.Plugin
         /// </summary>
         /// <param name="request">下载请求</param>
         /// <returns>图片</returns>
-        ValueTask<FileContentResult> DownloadAsync(HttpRequest request);
+        ValueTask<IActionResult> DownloadAsync(HttpRequest request);
     }
 }

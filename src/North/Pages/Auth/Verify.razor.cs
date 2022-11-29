@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using North.Common;
 using North.Core.Entities;
+using North.Core.Repository;
 
 namespace North.Pages.Auth
 {
@@ -67,20 +69,20 @@ namespace North.Pages.Auth
         /// <returns></returns>
         private async Task VerifyRegister()
         {
-            var users = new SqlUserData(_context);
-            var emails = new SqlVerifyEmailData(_context);
-            var email = await emails.FindAsync(e => e.Id.ToString() == Id);
+            var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+            var emailRepository = new EmailRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+            var email = await emailRepository.FirstAsync(e => e.Id.ToString() == Id);
             if ((email is null) || (DateTime.Now > email.ExpireTime))
             {
                 _snackbar.Add("链接不存在或已过期", Severity.Error);
             }
             else
             {
-                var user = await users.FindAsync(u => u.Email == email.Email);
+                var user = await userRepository.FirstAsync(u => u.Email == email.Email);
                 if ((user is not null) && (user.State is UserState.Checking))
                 {
                     user.State = UserState.Normal;
-                    await users.UpdateAsync(user);
+                    await userRepository.UpdateAsync(user);
 
                     _snackbar.Add("验证成功", Severity.Success);
                 }
@@ -93,7 +95,7 @@ namespace North.Pages.Auth
             // 删除验证邮件
             if (email is not null)
             {
-                _ = emails.RemoveAsync(email);
+                _ = emailRepository.DeleteAsync(email);
             }
         }
     }

@@ -6,19 +6,27 @@
 @inject IHttpContextAccessor _accessor
 @inject NavigationManager _navigationManager
 
-<AuthorizeView Roles="User,Administrator">
+<AuthorizeView Roles="User">
     <MudStack Spacing="10" Row AlignItems="AlignItems.Center" Class="message_warn">
         <MudImage Src="icons/warn.svg" Width="180" Elevation="0" Class="rounded-lg ma-4" />
         <MudLink Href="/" Color="Color.Warning" Style="font-weight:bold; font-size:34px;">您的权限不足，无法访问</MudLink>
     </MudStack>
 </AuthorizeView>
 <AuthorizeView Roles="System">
-    <MudStack Spacing="6" Style="margin-left:37px; margin-top:20px;" id="page">
+    <MudStack Spacing="6" Style="padding-left:37px; margin-top:20px;" id="page">
         <!-- 图床名称 -->
         <MudStack Spacing="2">
             <p class="menu_text">图床名称</p>
             <MudTextField @bind-Value="@AppearanceSettings.Name" Variant="Variant.Outlined"
                           Margin="Margin.Dense" Style="width:90%; max-width:140px; height:35px;" />
+        </MudStack>
+        <!-- 图床图标 -->
+        <MudStack Spacing="2">
+            <MudTooltip Text="建议使用 64*64 图标" Placement="Placement.Right">
+                <p class="menu_text">图床图标</p>
+            </MudTooltip>
+            <MudTextField @bind-Value="@AppearanceSettings.Icon" Variant="Variant.Outlined"
+                          Margin="Margin.Dense" Style="width:90%; max-width:300px; height:35px;" />
         </MudStack>
         <!-- 侧边栏是否自动展开 -->
         <MudStack Spacing="2">
@@ -31,14 +39,14 @@
         <!-- 每日一图 -->
         <MudStack Spacing="2">
             <MudTooltip Text="若要指定图片则填写图片链接即可" Placement="Placement.Right">
-                <p class="menu_text">每日一图API</p>
+                <p class="menu_text">每日一图</p>
             </MudTooltip>
             <MudTextField @bind-Value="@AppearanceSettings.BackgroundUrl" Variant="Variant.Outlined"
                           Margin="Margin.Dense" Style="width:90%; max-width:300px; height:35px;" />
         </MudStack>
         <!-- 页脚 -->
         <MudStack Spacing="2">
-            <MudTooltip Text="仅支持原生html组件" Placement="Placement.Right">
+            <MudTooltip Text="请谨防 XSS 注入" Placement="Placement.Right">
                 <p class="menu_text">页 脚</p>
             </MudTooltip>
             <MudTextField @bind-Value="@AppearanceSettings.Footer" Variant="Variant.Outlined" Lines="4"

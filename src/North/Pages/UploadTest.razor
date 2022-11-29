@@ -1,7 +1,5 @@
 ﻿@page "/uploadTest"
 
-@using Microsoft.EntityFrameworkCore
-@using Microsoft.EntityFrameworkCore.Infrastructure
 @using North.Core.Entities
 @using North.Core.Helpers
 @using North.Events.PasteMultimediaEvent
@@ -12,7 +10,6 @@
 @inject ILogger _logger
 @inject IJSRuntime JS
 @inject ISnackbar _snackbar
-@inject NorthDbContext _context
 
 @*<InputFile @onpastemultimedia="(e => Paste(e))" accept="image/*" OnChange="(e => Upload(e))" />
 

@@ -24,7 +24,7 @@
                 ApiStatusCode.UnAuthorized => "UnAuthorized",
                 ApiStatusCode.PermissionDenied => "Permission denied",
                 ApiStatusCode.OperationDenied => "Operation denied",
-                ApiStatusCode.AccountStateChanged => "Account state changed",
+                ApiStatusCode.AccountStateAbnormal => "Account state changed",
                 ApiStatusCode.ServerInternalError => "Server Internal Error",
                 _ => string.Empty
             };
@@ -36,7 +36,6 @@
     /// <summary>
     /// 状态码
     /// </summary>
-    [Flags]
     public enum ApiStatusCode
     {
         None = 0,               // 未指定
@@ -46,7 +45,7 @@
         UnAuthorized,           // 未授权
         PermissionDenied,       // 权限不足
         OperationDenied,        // 拒绝操作
-        AccountStateChanged,    // 账户状态改变
+        AccountStateAbnormal,   // 账户状态异常
         ServerInternalError,    // 服务器内部错误
     }
 }

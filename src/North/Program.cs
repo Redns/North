@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using MudBlazor;
 using MudBlazor.Services;
 using North.Common;
-using North.Core.Entities;
 using North.Core.Services.Logger;
 using North.Core.Services.Poster;
+using SqlSugar;
 using System.Security.Claims;
 using ILogger = North.Core.Services.Logger.ILogger;
 
@@ -45,18 +45,16 @@ namespace North
                 // JS 互调用超时事件设置
                 option.JSInteropDefaultCallTimeout = TimeSpan.FromSeconds(10);
             });
-            builder.Services.AddDbContextPool<NorthDbContext>(builder =>
+            // 数据库对象配置
+            builder.Services.AddScoped<ISqlSugarClient>(client =>
             {
-                var enabledDatabaseName = GlobalValues.AppSettings.General.DataBase.EnabledName;
-                var enabledDatabase = GlobalValues.AppSettings.General.DataBase.Databases.FirstOrDefault(d => d.Name == enabledDatabaseName);
-                if (enabledDatabase is null)
+                return new SqlSugarClient(Array.ConvertAll(GlobalValues.AppSettings.General.DataBase.Databases, db => new ConnectionConfig
                 {
-                    throw new KeyNotFoundException("Cannot load database, please check appsettings.json");
-                }
-                else
-                {
-                    enabledDatabase.InitDbContextBuilder(builder);
-                }
+                    ConfigId = db.Name,
+                    DbType = db.Type,
+                    ConnectionString = db.ConnectionString,
+                    IsAutoCloseConnection = db.IsAutoCloseConnection,
+                }).ToList());
             });
             builder.Services.AddLogging(logging =>
             {
@@ -92,34 +90,9 @@ namespace North
                                 {
                                     // 登录完成后调用
                                     // 此时实际上并没有完成 Cookie 写入，因此无法通过 context.HttpContext.User.Claims 获取用户信息
-                                    OnSignedIn = (context) =>
-                                    {
-                                        var email = app?.Services
-                                                       ?.GetService<Dictionary<string, ClaimsIdentity>>()
-                                                       ?.GetValueOrDefault(context.Request.Query.First(q => q.Key == "key").Value)
-                                                       ?.FindFirst(ClaimTypes.Email)
-                                                       ?.Value;
-                                        if (!string.IsNullOrWhiteSpace(email))
-                                        {
-                                            app?.Services.GetRequiredService<ILogger>().Info($"{email} login");
-                                        }
-                                        return Task.CompletedTask;
-                                    },
+                                    OnSignedIn = (context) => Task.CompletedTask,
                                     // 注销时调用
-                                    OnSigningOut = (context) =>
-                                    {
-                                        var email = context.HttpContext
-                                                           .User
-                                                           .Identities
-                                                           .First()
-                                                           .FindFirst(ClaimTypes.Email)
-                                                           ?.Value;
-                                        if (!string.IsNullOrWhiteSpace(email))
-                                        {
-                                            app?.Services.GetRequiredService<ILogger>().Info($"{email} logout");
-                                        }
-                                        return Task.CompletedTask;
-                                    }
+                                    OnSigningOut = (context) => Task.CompletedTask
                                 };
                             });
             builder.Services.AddSingleton<IPoster, MineKitPoster>(poster => new MineKitPoster());
@@ -134,7 +107,7 @@ namespace North
             {
                 var logger = app.Services.GetRequiredService<ILogger>();
                 var applicationPartManager = app.Services.GetRequiredService<ApplicationPartManager>();
-                return new PluginContext(GlobalValues.AppSettings.Plugin.InstallDir, applicationPartManager)
+                return new PluginsContext(applicationPartManager, NorthActionDescriptorChangeProvider.Instance)
                 {
                     OnRefreshControllers = (applicationParts) =>
                     {
@@ -143,6 +116,7 @@ namespace North
                     }
                 };
             });
+
 
             // 构建 web 应用
             app = builder.Build();

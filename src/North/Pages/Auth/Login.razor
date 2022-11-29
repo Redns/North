@@ -1,15 +1,15 @@
 ﻿@page "/login"
 
-@using Microsoft.EntityFrameworkCore.Infrastructure
 @using North.Common
 @using North.Core.Entities
 @using System.Security.Claims
 @using North.RCL.Forms
+@using SqlSugar
 
 @inject ILogger _logger
 @inject ISnackbar _snackbar
 @inject NavigationManager _nav
-@inject NorthDbContext _context
+@inject ISqlSugarClient _client
 @inject IHttpContextAccessor _accessor
 @inject Dictionary<string, ClaimsIdentity> _identifies
 

@@ -44,7 +44,6 @@ namespace North.RCL.Cards
         public string PermissionChipText => User.Permission switch
         {
             UserPermission.System => "系统",
-            UserPermission.Administrator => "管理员",
             UserPermission.User => "用户",
             _ => "未知"
         };
@@ -55,7 +54,6 @@ namespace North.RCL.Cards
         public Color PermissionChipColor => User.Permission switch
         {
             UserPermission.System => Color.Success,
-            UserPermission.Administrator => Color.Primary,
             UserPermission.User => Color.Info,
             _ => Color.Error
         };

@@ -56,6 +56,7 @@ namespace North.Core.Entities
         /// <summary>
         /// 用户角色
         /// </summary>
+        [SugarColumn(IsIgnore = true)]
         public string Role => Permission switch
         {
             UserPermission.User => "User",
@@ -114,6 +115,7 @@ namespace North.Core.Entities
         /// <summary>
         /// 用户 DTO 对象
         /// </summary>
+        [SugarColumn(IsIgnore = true)]
         public UserDTOEntity DTO => new()
         {
             Name = Name,
@@ -133,10 +135,12 @@ namespace North.Core.Entities
         /// <summary>
         /// 用户 Claims 认证对象
         /// </summary>
+        [SugarColumn(IsIgnore = true)]
         public ClaimsIdentity ClaimsIdentify => new(new Claim[]
         {
             new Claim(ClaimTypes.Role, Role),
-            new Claim(ClaimTypes.NameIdentifier, Id.ToString())
+            new Claim(ClaimTypes.SerialNumber, Id.ToString()),
+            new Claim("LastModifyTime", LastModifyTime.ToString("G"))
         }, CookieAuthenticationDefaults.AuthenticationScheme);
 
 

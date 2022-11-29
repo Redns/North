@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using North.Core.Entities;
 using North.Core.Services.Logger;
+using SqlSugar;
 using System.Text.Json;
 
 namespace North.Core.Common
@@ -72,7 +73,14 @@ namespace North.Core.Common
     /// </summary>
     public class DataBaseSetting
     {
+        /// <summary>
+        /// 使能的数据库名称
+        /// </summary>
         public string EnabledName { get; set; }
+
+        /// <summary>
+        /// 可用的数据库
+        /// </summary>
         public Database[] Databases { get; set; }
 
         public DataBaseSetting(string enabledName, Database[] databases)
@@ -106,18 +114,24 @@ namespace North.Core.Common
         /// <summary>
         /// 数据库类型
         /// </summary>
-        public DatabaseType Type { get; set; }
+        public DbType Type { get; set; }
 
         /// <summary>
         /// 数据库连接字符串
         /// </summary>
         public string ConnectionString { get; set; }
 
-        public Database(string name, DatabaseType type, string connectionString)
+        /// <summary>
+        /// 是否自动关闭连接
+        /// </summary>
+        public bool IsAutoCloseConnection { get; set; }
+
+        public Database(string name, DbType type, string connectionString, bool isAutoCloseConnection)
         {
             Name = name;
             Type = type;
             ConnectionString = connectionString;
+            IsAutoCloseConnection = isAutoCloseConnection;
         }
 
 
@@ -127,7 +141,7 @@ namespace North.Core.Common
         /// <returns></returns>
         public async ValueTask<bool> CheckConnection(TimeSpan? timeout = null)
         {
-            if (Type is DatabaseType.Sqlite)
+            if (Type is DbType.Sqlite)
             {
                 var databaseLocation = ConnectionString.Split('=').Last();
                 return File.Exists(!databaseLocation.EndsWith(';') ? databaseLocation : databaseLocation[..^1]);
@@ -152,7 +166,7 @@ namespace North.Core.Common
             }
         }
 
-        public Database Clone() => new(Name, Type, ConnectionString);
+        public Database Clone() => new(Name, Type, ConnectionString, IsAutoCloseConnection);
     }
 
 
@@ -182,6 +196,11 @@ namespace North.Core.Common
         public string Name { get; set; }
 
         /// <summary>
+        /// 图床图标
+        /// </summary>
+        public string Icon { get; set; }
+
+        /// <summary>
         /// 侧边栏自动展开
         /// </summary>
         public bool NavAutoExpand { get; set; }
@@ -196,15 +215,16 @@ namespace North.Core.Common
         /// </summary>
         public string Footer { get; set; }
 
-        public AppearanceSetting(string name, bool navAutoExpand, string backgroundUrl, string footer)
+        public AppearanceSetting(string name, string icon, bool navAutoExpand, string backgroundUrl, string footer)
         {
             Name = name;
+            Icon = icon;
             NavAutoExpand = navAutoExpand;
             BackgroundUrl = backgroundUrl;
             Footer = footer;
         }
 
-        public AppearanceSetting Clone() => new(Name, NavAutoExpand, BackgroundUrl, Footer);
+        public AppearanceSetting Clone() => new(Name, Icon, NavAutoExpand, BackgroundUrl, Footer);
     }
 
     #endregion
@@ -253,16 +273,14 @@ namespace North.Core.Common
     /// </summary>
     public class RegisterSettingDefault
     {
-        public UserPermission Permission { get; set; }          // 用户权限
         public bool IsApiAvailable { get; set; }            // 是否启用 API
         public long MaxUploadNums { get; set; }            // 最大上传数量（张）
         public double MaxUploadCapacity { get; set; }        // 最大上传容量（MB）
         public long SingleMaxUploadNums { get; set; }      // 单次最大上传数量（张）
         public double SingleMaxUploadCapacity { get; set; }  // 单次最大上传容量（MB）
 
-        public RegisterSettingDefault(UserPermission permission, bool isApiAvailable, long maxUploadNums, double maxUploadCapacity, long singleMaxUploadNums, double singleMaxUploadCapacity)
+        public RegisterSettingDefault(bool isApiAvailable, long maxUploadNums, double maxUploadCapacity, long singleMaxUploadNums, double singleMaxUploadCapacity)
         {
-            Permission = permission;
             IsApiAvailable = isApiAvailable;
             MaxUploadNums = maxUploadNums;
             MaxUploadCapacity = maxUploadCapacity;
@@ -270,7 +288,7 @@ namespace North.Core.Common
             SingleMaxUploadCapacity = singleMaxUploadCapacity;
         }
 
-        public RegisterSettingDefault Clone() => new(Permission, IsApiAvailable, MaxUploadNums, MaxUploadCapacity, SingleMaxUploadNums, SingleMaxUploadCapacity);
+        public RegisterSettingDefault Clone() => new(IsApiAvailable, MaxUploadNums, MaxUploadCapacity, SingleMaxUploadNums, SingleMaxUploadCapacity);
     }
 
     #endregion
@@ -349,18 +367,16 @@ namespace North.Core.Common
     public class PluginSetting
     {
         /// <summary>
-        /// 插件安装路径
+        /// 镜像地址
         /// </summary>
-        public string InstallDir { get; set; }
         public string ImageSource { get; set; }
 
-        public PluginSetting(string installDir, string imageSource)
+        public PluginSetting(string imageSource)
         {
-            InstallDir = installDir;
             ImageSource = imageSource;
         }
 
-        public PluginSetting Clone() => new(InstallDir, ImageSource);
+        public PluginSetting Clone() => new(ImageSource);
     }
 
     #endregion

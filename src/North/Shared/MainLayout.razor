@@ -1,14 +1,14 @@
-﻿@using Microsoft.EntityFrameworkCore.Infrastructure
-@using North.Common
+﻿@using North.Common
 @using North.Core.Entities
 @using North.RCL.Texts
 @using North.RCL.ToolBars
+@using SqlSugar
 
 @inherits LayoutComponentBase
 
 @inject IJSRuntime JS
 @inject ILogger _logger
-@inject NorthDbContext _context
+@inject ISqlSugarClient _client
 @inject NavigationManager _nav
 @inject IHttpContextAccessor _accessor
 

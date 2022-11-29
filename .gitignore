@@ -28,10 +28,10 @@ src/North.Launcher/obj
 src/North.Launcher/Properties
 # North.Launcher End
 
-# North.PluginBase Start
-src/North.PluginBase/.vs
-src/North.PluginBase/bin
-src/North.PluginBase/obj
+# North.Plugin Start
+src/North.Plugin/.vs
+src/North.Plugin/bin
+src/North.Plugin/obj
 # North.PluginBase End
 
 # North.Updater Start

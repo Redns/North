@@ -52,5 +52,13 @@ namespace North.Core.Entities
         /// 关联用户ID
         /// </summary>
         public Guid UserId { get; set; }
+
+        #region 导航属性
+        /// <summary>
+        /// 图片下载历史
+        /// </summary>
+        [Navigate(NavigateType.OneToMany, nameof(ImageDownloadHistoryEntity.ImageId))]
+        public List<ImageDownloadHistoryEntity> DownloadHistories { get; set; }
+        #endregion
     }
 }

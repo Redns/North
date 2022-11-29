@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using North.Core.Helpers;
 using System.ComponentModel.DataAnnotations;
 
 namespace North.RCL.Forms
@@ -102,6 +103,11 @@ namespace North.RCL.Forms
         [Required(ErrorMessage = "密码不能为空")]
         [StringLength(32, MinimumLength = 8, ErrorMessage = "密码长度必须介于8 ~ 32之间")]
         public string Password { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 加密后的密码
+        /// </summary>
+        public string EncryptedPassword => $"{Email}:{Password}".MD5();
 
         public RegisterModel() { }
         public RegisterModel(string name, string email, string avatar, string avatarContentType, string password)
