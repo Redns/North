@@ -48,14 +48,14 @@ namespace North.Core.Repository
             return await _db.Queryable<T>().SingleAsync(expression);
         }
 
-        public List<T> GetList(Expression<Func<T, bool>> expression)
+        public ISugarQueryable<T> GetAll()
         {
-            return _db.Queryable<T>().Where(expression).ToList();
+            return _db.Queryable<T>();
         }
 
-        public async ValueTask<List<T>> GetListAsync(Expression<Func<T, bool>> expression)
+        public ISugarQueryable<T> GetList(Expression<Func<T, bool>> expression)
         {
-            return await _db.Queryable<T>().Where(expression).ToListAsync();
+            return _db.Queryable<T>().Where(expression);
         }
 
         public bool Any(Expression<Func<T, bool>> expression)

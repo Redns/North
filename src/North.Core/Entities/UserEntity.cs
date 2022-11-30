@@ -73,6 +73,11 @@ namespace North.Core.Entities
         /// 用户 Claims 信息最后一次的修改时间，修改后用户需要同步信息/重新登录
         /// </summary>
         public DateTime LastModifyTime { get; set; }
+
+        /// <summary>
+        /// 用户组 ID
+        /// </summary>
+        public Guid UserGroupId { get; set; }
         #endregion
 
         #region 图片上传限制

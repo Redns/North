@@ -31,7 +31,7 @@ namespace North.Controllers
 
 
         /// <summary>
-        /// 
+        /// 用户登录授权接口
         /// </summary>
         /// <returns></returns>
         [HttpPost("login")]
@@ -45,8 +45,8 @@ namespace North.Controllers
                 if (!string.IsNullOrEmpty(userAccount) && !string.IsNullOrEmpty(userEncryptedPassword))
                 {
                     var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
-                    var user = await userRepository.SingleAsync(u => u.Name == userAccount || u.Email == userAccount);
-                    if ((user?.State is UserState.Normal) && (_accessor.HttpContext is not null))
+                    var user = await userRepository.SingleAsync(u => (u.Name == userAccount || u.Email == userAccount) && u.Password == userEncryptedPassword);
+                    if (_accessor.HttpContext is not null && user?.State is UserState.Normal && user.IsApiAvailable)
                     {
                         await _accessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                                                                 new ClaimsPrincipal(user.ClaimsIdentify),
@@ -69,28 +69,67 @@ namespace North.Controllers
         }
 
 
-        ///// <summary>
-        ///// 获取用户信息
-        ///// </summary>
-        ///// <param name="email">用户邮箱</param>
-        ///// <returns></returns>
-        //[HttpGet("user/{email}")]
-        //[Authorize(Roles = "System")]
-        //public async ValueTask<ApiResult<UserDTOEntity?>> GetUser(string email)
-        //{
-
-        //}
-
-
-        ///// <summary>
-        ///// 获取所有用户信息
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpGet("users")]
-        //[Authorize(Roles = "System")]
-        //public async ValueTask<ApiResult<IEnumerable<UserDTOEntity>>> GetUsers()
-        //{
-
-        //}
+        /// <summary>
+        /// 用户登陆历史查询接口
+        /// </summary>
+        /// <param name="account">待查询用户名或邮箱</param>
+        /// <returns></returns>
+        [HttpGet("user/login_history")]
+        [Authorize(Roles = "System,User")]
+        public async ValueTask<ApiResult<IEnumerable<LoginHistoryEntity>>> GetUserLoginHistories([FromQuery] string account)
+        {
+            try
+            {
+                var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+                var currentOperateUserId = User.Identities.FirstOrDefault()?.FindFirst(ClaimTypes.SerialNumber)?.Value;
+                var currentOperateUserLastModifyTime = User.Identities.FirstOrDefault()?.FindFirst("LastModifyTime")?.Value;
+                var currentOperateUser = await userRepository.SingleAsync(u => u.Id.ToString() == currentOperateUserId);
+                if(currentOperateUser is null)
+                {
+                    // 用户不存在
+                    return new(ApiStatusCode.AccountNotExist, Enumerable.Empty<LoginHistoryEntity>());
+                }
+                else if(!currentOperateUser.IsApiAvailable)
+                {
+                    // 无权访问 API
+                    return new(ApiStatusCode.OperationDenied, Enumerable.Empty<LoginHistoryEntity>());
+                }
+                else if((currentOperateUser.State is not UserState.Normal) || (currentOperateUser.LastModifyTime.ToString("G") != currentOperateUserLastModifyTime))
+                {
+                    // 用户状态异常或改变
+                    return new(ApiStatusCode.AccountStateAbnormal, "User status has changed", Enumerable.Empty<LoginHistoryEntity>());
+                }
+                else
+                {
+                    // 当前登录有效
+                    // 检查待查询用户是否存在
+                    var queriedUser = await userRepository.GetList(u => u.Name == account || u.Email == account)
+                                                          .Includes(u => u.LoginHistories)
+                                                          .FirstAsync();
+                    if(queriedUser is null)
+                    {
+                        // 待查询用户不存在
+                        return new(ApiStatusCode.AccountNotExist, "The requested user does not exist", Enumerable.Empty<LoginHistoryEntity>());
+                    }
+                    else if ((currentOperateUser.Permission is UserPermission.System) || (queriedUser.Id.ToString() == currentOperateUserId))
+                    {
+                        // 当前登录权限为系统，允许查询所有成员
+                        // 当前登录权限为用户，仅允许查询本人登陆历史
+                        return new(ApiStatusCode.Success, "The user login history query succeeded", queriedUser.LoginHistories);
+                    }
+                    else
+                    {
+                        // 当前登录权限为普通用户且非查询本人
+                        // 拒绝查询
+                        return new(ApiStatusCode.PermissionDenied);
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                _logger.Error("Failed to get user login history", e);
+                return new(ApiStatusCode.ServerInternalError, Enumerable.Empty<LoginHistoryEntity>());
+            }
+        }
     }
 }
