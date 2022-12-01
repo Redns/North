@@ -18,7 +18,10 @@
 
   <ItemGroup>
     <PackageReference Include="Krins.Nuget" Version="1.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.0" />
+    <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,9 +33,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\North.Core\North.Core.csproj" />
-    <ProjectReference Include="..\North.PluginBase\North.Plugin.csproj">
-      <TreatAsUsed>true</TreatAsUsed>
-    </ProjectReference>
     <ProjectReference Include="..\North.Plugin\North.Plugin.csproj" />
     <ProjectReference Include="..\North.RCL\North.RCL.csproj" />
   </ItemGroup>

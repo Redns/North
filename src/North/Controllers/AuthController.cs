@@ -80,6 +80,7 @@ namespace North.Controllers
         {
             try
             {
+                // TODO 代码复用此处
                 var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
                 var currentOperateUserId = User.Identities.FirstOrDefault()?.FindFirst(ClaimTypes.SerialNumber)?.Value;
                 var currentOperateUserLastModifyTime = User.Identities.FirstOrDefault()?.FindFirst("LastModifyTime")?.Value;

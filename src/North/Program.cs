@@ -131,7 +131,8 @@ namespace North
                 endpoint.MapControllers();
                 endpoint.MapFallbackToPage("/_Host");
             });
-            app.Urls.Add("http://*:12121");
+            // TODO ÐÞ¸Ä¶Ë¿ÚÖÁ 12121
+            app.Urls.Add("http://*:12122");
 
             app.Run();
         }

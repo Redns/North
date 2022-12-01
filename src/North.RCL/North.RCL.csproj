@@ -12,6 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\North.Core\North.Core.csproj" />
   </ItemGroup>
 

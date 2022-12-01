@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
-    <PackageReference Include="NsfwSpy" Version="3.4.3" />
+    <PackageReference Include="NsfwSpy" Version="3.5.0" />
   </ItemGroup>
 
 </Project>
