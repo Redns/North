@@ -8,15 +8,17 @@
 
 1. 用户登录授权系统
 
-   ![image-20221202212357589](https://imagebed.krins.cloud/api/image/HT64H224.png)
+   ![image-20221202212357589](img/登录页面.png)
 
 2. 全新风格 UI
 
-   ![image-20221202212640017](https://imagebed.krins.cloud/api/image/06V6TRP4.png)
+   ![image-20221202212640017](img/主页面.png)
 
 3. 插件化开发
 
-   ![image-20221202212734313](https://imagebed.krins.cloud/api/image/0040VD68.png)
+   ![image-20221202212734313](img/插件化_图片上传流程.png)
+
+   ![](img/插件上下文架构.png)
 
 4. 其他
 
@@ -28,7 +30,7 @@
 
 在做了在做了，等我期末考试完 + 稍微做点毕设给老师点交代 + 读点老师布置的读书任务后，应该就有时间好好做了 [doge]
 
-![在做了在做了](http://imagebed.krins.cloud/api/image/848XD046.jpg)
+![在做了在做了](img/不要催在做了.jpg)
 
 ## Background
 
