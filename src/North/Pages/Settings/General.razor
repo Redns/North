@@ -1,12 +1,15 @@
 ﻿@page "/settings/general"
 
+@using North.Common
 @using North.Core.Common
 @using North.Core.Entities
 @using North.RCL.Buttons
+@using North.RCL.Texts
 @using SqlSugar
 
 @inject ILogger _logger
 @inject ISnackbar _snackbar
+@inject IDialogService _dialog
 @inject NavigationManager _nav
 @inject ISqlSugarClient _client
 @inject IHttpContextAccessor _accessor
@@ -18,52 +21,109 @@
     </div>
 </AuthorizeView>
 <AuthorizeView Roles="System">
-    <div class="d-flex flex-column gap-4 mud-width-full mud-height-full overflow-scroll px-6 py-4" id="page">
-        <div class="d-flex flex-column gap-2">
-            <p class="menu_text">数据库类型</p>
-            <div class="d-flex flex-row align-center" style="width:230px; height:40px;">
-                <MudSelect @bind-Value="@GeneralSetting.DataBase.EnabledName" T="string" Immediate SelectedValuesChanged="@((e) => GenerateConnectStringTemplate())"
+    <MudStack Spacing="6" Style="padding-left:37px; margin-top:20px;" id="page">
+        <!-- 图床数据库源 -->
+        <MudStack Spacing="2">
+            <MudTooltip Text="使用 SqlSugar ORM 框架，支持数据库参见官方文档" Placement="Placement.Right">
+                <p class="menu_text">数据库源</p>
+            </MudTooltip>
+            <MudStack Row Spacing="2" AlignItems="AlignItems.Center" Style="width:220px;">
+                <MudSelect @bind-Value="@GeneralSetting.DataBase.EnabledName" T="string" Immediate
                            Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
-                    @foreach(var database in GeneralSetting.DataBase.Databases)
+                    @foreach (var db in GeneralSetting.DataBase.Databases)
                     {
-                        <MudSelectItem Value="database.Name" Style="height:40px;">
-                            <div class="d-flex flex-row gap-2 justify-start align-center">
-                                <i class="@DatabaseIconClass(database.Type)" style="font-size:20px; color:#49A5DB;"></i>@database.Name
-                            </div>
+                        <MudSelectItem Value="db.Name" Style="height:40px;">
+                            <IconfontText Icon="@db.IconClass" Color="@db.IconColor" Text="@db.Name" />
                         </MudSelectItem>
                     }
                 </MudSelect>
-                <MudTooltip Text="生成模板" Placement="Placement.Right">
-                    <MudIconButton Icon="@Icons.Outlined.Lightbulb" OnClick="@GenerateConnectStringTemplate" Class="ml-2"></MudIconButton>
+                <MudTooltip Text="编辑" Placement="Placement.Right">
+                    <MudIconButton Icon="@Icons.Outlined.Edit" OnClick="@OpenDatabaseEditDialog" />
                 </MudTooltip>
-            </div>
-            
-        </div>
+            </MudStack>
+        </MudStack>
         <!-- 保存/取消设置 -->
-        <div class="d-flex flex-row gap-2">
+        <MudStack Row Style="width:100%;">
             <MudButton Variant="Variant.Filled" Color="Color.Tertiary"
-                       OnClick="SaveSettings" Disabled="SaveRunning" Style="width:100px;">
+                       OnClick="SaveSettings" Disabled="@SaveRunning"
+                       Style="width:100px;">
                 @if (SaveRunning)
                 {
                     <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate />
                 }
                 <MudText>保 存</MudText>
             </MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Error"
-                       OnClick="RestoreSettings" Disabled="RestoreRunning" Style="width:100px;">
+            <MudButton Variant="Variant.Filled" Color="Color.Error" Style="width:100px;"
+                       OnClick="RestoreSettings" Disabled="RestoreRunning">
                 @if (RestoreRunning)
                 {
                     <MudProgressCircular Style="width:17px; height:17px; margin-right:10px;" Indeterminate />
                 }
                 <MudText>还 原</MudText>
             </MudButton>
-        </div>
-    </div>
+        </MudStack>
+    </MudStack>
+    <MudDialog @bind-IsVisible="@IsDialogVisiable" Options="new DialogOptions(){ MaxWidth = MaxWidth.Large }">
+        <TitleContent>
+            <MudStack Row AlignItems="AlignItems.Center">
+                <MudIcon Icon="@Icons.Filled.Storage" />
+                <MudText Typo="Typo.h6">数据库源</MudText>
+            </MudStack>
+        </TitleContent>
+        <DialogContent>
+            <MudTable Items="@GeneralSetting.DataBase.Databases" Context="db" Breakpoint="Breakpoint.Sm" Virtualize Hover FixedHeader FixedFooter AllowUnsorted="false" Elevation="0">
+                <HeaderContent>
+                    <MudTh>
+                        <IconText Icon="@Icons.Outlined.Key" IconStyle="transform:rotate(135deg)" Text="名 称" Typo="Typo.subtitle1" Style="width:100%;"></IconText>
+                    </MudTh>
+                    <MudTh>
+                        <IconText Icon="@Icons.Outlined.LocalFireDepartment" Text="类 型" Typo="Typo.subtitle1" Style="width:100%;"></IconText>
+                    </MudTh>
+                    <MudTh>
+                        <IconText Icon="@Icons.Outlined.InsertLink" IconStyle="transform:rotate(135deg)" Text="连接字符串" Typo="Typo.subtitle1" Style="width:100%;"></IconText>
+                    </MudTh>
+                    <MudTh>
+                        <IconText Icon="@Icons.Outlined.ModeEdit" Text="编 辑" Typo="Typo.subtitle1" Style="width:100%;"></IconText>
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="名 称" Style="text-align:center;">
+                        <MudTextField @bind-Value="@db.Name" Variant="Variant.Outlined"
+                                      Margin="Margin.Dense" Style="width:90%; max-width:140px; height:35px;" />
+                    </MudTd>
+                    <MudTd DataLabel="类 型" Style="text-align:center;">
+                        <MudText>@db.Type.ToString()</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="连接字符串" Style="text-align:center;">
+                        <MudTextField @bind-Value="@db.ConnectionString" Variant="Variant.Outlined" Lines="2"
+                                      Margin="Margin.Dense" Style="width:100%; min-width:420px; line-height:1.5em;" />
+                    </MudTd>
+                    <MudTd DataLabel="编 辑" Style="text-align:center;">
+                        <MudStack Row Spacing="2">
+                            <MudButton StartIcon="@Icons.Filled.Sync" Color="Color.Tertiary" Variant="Variant.Outlined" OnClick="@(() => {})">更 新</MudButton>
+                            <MudButton StartIcon="@Icons.Outlined.CallMissedOutgoing" Color="Color.Warning" Variant="Variant.Outlined" OnClick="@(() => {})">迁 移</MudButton>
+                            <MudButton StartIcon="@Icons.Outlined.Delete" Color="Color.Error" Variant="Variant.Outlined" OnClick="@(() => RemoveDatabase(db))">删 除</MudButton>
+                        </MudStack>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </DialogContent>
+        <DialogActions>
+            <MudButton>Cancel</MudButton>
+            <MudButton Color="Color.Primary">Ok</MudButton>
+        </DialogActions>
+    </MudDialog>
 </AuthorizeView>
 
 <style>
     .menu_text {
         font-weight: bold;
+    }
+
+    #page {
+        overflow: scroll;
+        overflow-x: hidden;
+        height: 100%;
     }
 
     #page::-webkit-scrollbar {

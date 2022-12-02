@@ -18,7 +18,8 @@ namespace North.Shared
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
-            await AuthorizationAsync();
+            // TODO 启用用户鉴权
+            // await AuthorizationAsync();
             await base.OnInitializedAsync();
         }
 
@@ -32,7 +33,8 @@ namespace North.Shared
         {
             if (!firstRender)
             {
-                await AuthorizationAsync();
+                // TODO 启用用户鉴权
+                // await AuthorizationAsync();
             }
             await base.OnAfterRenderAsync(firstRender);
         }

@@ -1,25 +1,39 @@
 ﻿using MudBlazor;
 using North.Common;
 using North.Core.Common;
-using North.Core.Entities;
-using SqlSugar;
-
 namespace North.Pages.Settings
 {
     partial class General
     {
-        private bool SaveRunning { get; set; } = false;
+        private bool SaveRunning { get; set; } = false; 
         private bool RestoreRunning { get; set; } = false;
+        private bool IsDialogVisiable { get; set; } = false;
         private GeneralSetting GeneralSetting { get; set; } = GlobalValues.AppSettings.General.Clone();
 
-        private string DatabaseIconClass(DbType type) => type switch
+        private void OpenDatabaseEditDialog()
         {
-            DbType.Sqlite => "iconfont icon-sqlite",
-            DbType.SqlServer => "iconfont icon-SQLserver",
-            DbType.MySql => "iconfont icon-mysql",
-            DbType.PostgreSQL => "iconfont icon-postgresql",
-            _ => throw new NotSupportedException("Database not supported")
-        };
+            var databaseEditDialogParams = new DialogParameters
+            {
+                { "Databases", GeneralSetting.DataBase.Databases },
+                { "EnableDatabaseName", GeneralSetting.DataBase.EnabledName }
+            };
+            IsDialogVisiable = true;
+        }
+
+
+        private void RemoveDatabase(Core.Common.Database database)
+        {
+            if(database.Name == GeneralSetting.DataBase.EnabledName)
+            {
+                _snackbar.Add("不能删除正在使用的数据源", Severity.Error);
+            }
+            else
+            {
+                GeneralSetting.DataBase.Databases = GeneralSetting.DataBase.Databases.Where(db => db != database).ToArray();
+
+                _snackbar.Add($"已删除数据源 {database.Name}", Severity.Success);
+            }
+        }
 
 
         /// <summary>
@@ -79,23 +93,6 @@ namespace North.Pages.Settings
             {
                 RestoreRunning = false;
             }
-        }
-
-
-        /// <summary>
-        /// 生成连接字符串模板
-        /// </summary>
-        /// <exception cref="NotSupportedException"></exception>
-        private void GenerateConnectStringTemplate()
-        {
-            //GeneralSetting.DataBase.ConnectionString = GeneralSetting.DataBase.Type switch
-            //{
-            //    DatabaseType.Sqlite => "Data Source={DATABASE_LOCATION};",
-            //    DatabaseType.SqlServer => "Data Source={SERVER_ADDRESS};Initial Catalog={DATABASE_NAME};User Id={USER_NAME};Password={USER_PASSWORD};",
-            //    DatabaseType.MySQL => "Server={SERVER_ADDRESS};Database={DATABASE_NAME};Uid={USER_NAME};Pwd={USER_PASSWORD};",
-            //    DatabaseType.PostgreSQL => "Host={SERVER_ADDRESS};Port={PORT};Database={DATABASE_NAME};Username={USER_NAME};Password={USER_PASSWORD};",
-            //    _ => throw new NotSupportedException("Database not supported")
-            //};
         }
 
 

@@ -2,7 +2,33 @@
 
 ![version: v1.1.4 (shields.io)](https://img.shields.io/badge/release-v2.2.13-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-6.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
 
-<br>
+## Recent Progress
+
+### 亿些小更改
+
+1. 用户登录授权系统
+
+   ![image-20221202212357589](https://imagebed.krins.cloud/api/image/HT64H224.png)
+
+2. 全新风格 UI
+
+   ![image-20221202212640017](https://imagebed.krins.cloud/api/image/06V6TRP4.png)
+
+3. 插件化开发
+
+   ![image-20221202212734313](https://imagebed.krins.cloud/api/image/0040VD68.png)
+
+4. 其他
+
+   - 多数据库支持（MySql、SQL Server、Oracle、Sqlite、PostgreSQL、OpenGauss）
+   - 图片权限设置，更加多样化的管理模式
+   - ……
+
+### 何时发布
+
+在做了在做了，等我期末考试完 + 稍微做点毕设给老师点交代 + 读点老师布置的读书任务后，应该就有时间好好做了 [doge]
+
+![在做了在做了](http://imagebed.krins.cloud/api/image/848XD046.jpg)
 
 ## Background
 
@@ -12,19 +38,13 @@
 - 对象存储（OSS、COS、七牛云等）
 - 免费公共图床（SM.MS、聚合图床、ImgTP、Postimage等）
 
-<br>
-
 但上述图床都有些不尽人意
 
 - 公共图床的稳定性未知，往往会开启审查机制、限制上传图片的尺寸
 - `Github` 国内访问速度堪忧，并且官方明令禁止将 `Github` 和 `Gitee` 仓库作为图床
 - 对象存储的容量和访问速度还不错，但流量较贵
 
-<br>
-
 图床服务并不需要高性能的服务器去承载，现在云服务器的价格也并不昂贵，因此搭建个人图床也许是不错的选择。出于这样的想法，作者设计了 `ImageBed` 以供大家快速搭建个人图床服务。
-
-<br>
 
 ## Feature
 
@@ -33,8 +53,6 @@
 - 安全可靠，图片完全存储在主机
 - 无图片尺寸、数量、带宽限制（取决于环境）
 - 跨平台，可在 `windows`、`Linux`、`MacOS` 部署
-
-<br>
 
 ## Install
 
@@ -46,8 +64,6 @@
   - [在 macOS 上安装 .NET](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-6.0.4-macos-x64-installer)
 - [Nginx](https://nginx.org/en/) (可选)
 
-<br>
-
 #### All Release
 
 > 在这里可快速选择适合自己的版本，表格中的格式为 "最小版本/ 推荐版本"
@@ -58,8 +74,6 @@
 |    图库管理    | [v2.0.0](https://github.com/Redns/ImageBed/releases/tag/v2.0.0) / [v2.2.13](https://github.com/Redns/ImageBed/releases/tag/v2.2.13) |                                                          |
 |    自动更新    | [v2.3.14](https://github.com/Redns/ImageBed/releases/tag/v2.3.14) / [v2.3.14](https://github.com/Redns/ImageBed/releases/tag/v2.3.14) |                                                          |
 
-<br>
-
 #### 本地搭建
 
 > 版本:  Windows 11 家庭中文版 (21H2)
@@ -68,25 +82,17 @@
 
    ![image-20220506144854125](https://jing-image.oss-cn-chengdu.aliyuncs.com/image-20220506144854125.png)
 
-   <br>
-
 2. 解压资源包 (图片存储路径为 `Data/Resources/Images`)
 
    ![Z62J08FN](https://jing-image.oss-cn-chengdu.aliyuncs.com/Z62J08FN.png)
-
-   <br>
 
 3. 双击 `ImageBed.exe` 运行服务
 
    ![V6X4644N](https://jing-image.oss-cn-chengdu.aliyuncs.com/V6X4644N.png)
 
-   <br>
-
 4. 浏览器地址栏输入 `localhost:12121`
 
    ![8PD0X4VR](https://jing-image.oss-cn-chengdu.aliyuncs.com/8PD0X4VR.png)
-
-   <br>
 
 5. 点击上传图片
 
@@ -94,11 +100,8 @@
 
    ![F4TNFTTD](https://jing-image.oss-cn-chengdu.aliyuncs.com/F4TNFTTD.png)
 
-   <br>
-
 6. 安装完成
 
-   <br>
 
 #### 云服务器搭建
 
@@ -107,8 +110,6 @@
 1. 将资源包解压后上传至云服务器
 
    ![08HLTD88](https://jing-image.oss-cn-chengdu.aliyuncs.com/08HLTD88.png)
-
-   <br>
 
 2. 进入 `ImageBed` 文件夹，运行 `ImageBed.dll`
 
@@ -130,13 +131,10 @@
    ubuntu@VM-0-16-ubuntu:~$ sudo kill 4363
    ```
 
-   <br>
-
 3. 浏览器地址栏输入 `{ip}:12121` 即可访问图床服务，其中 `{ip}` 为云服务器公网 `ip`
 
 4. 安装完成
 
-   <br>
 
 #### Nginx 反向代理
 
@@ -147,8 +145,6 @@
    ```shell
    sudo apt-get install nginx
    ```
-
-   <br>
 
 2. 打开 `/etc/nginx/nginx.conf`，修改相关设置
 
@@ -219,8 +215,6 @@
    }
    ```
 
-   <br>
-
 3. 检查 `nginx.conf` 语法是否正确
 
    ```shell
@@ -234,8 +228,6 @@
    nginx: configuration file /etc/nginx/nginx.conf test is successful
    ```
 
-   <br>
-
 4. 关闭防火墙并重新加载 `nginx`
 
    ```shell
@@ -245,7 +237,6 @@
    sudo nginx -s reload
    ```
 
-   <br>
 
 ## Usage
 
@@ -255,19 +246,13 @@
 
 ![web界面上传](img/上传图片.gif)
 
-<br>
-
 **剪贴板上传**
 
 ![剪贴板上传](img/剪贴板上传.gif)
 
-<br>
-
 #### 删除
 
 ![删除图片](img/删除图片.gif)
-
-<br>
 
 #### 导入导出
 
@@ -275,25 +260,17 @@
 
 ![导入图片](img/导入图片.gif)
 
-<br>
-
 **导出图片**
 
 ![导出图片](img/导出图片.gif)
-
-<br>
 
 #### 视图切换
 
 ![视图切换](img/视图切换.gif)
 
-<br>
-
 ## API
 
 该图床服务器包含三个API（上传、下载、删除），控制器为 `Controllers/ImageController`
-
-<br>
 
 ### 上传图片
 
@@ -313,8 +290,6 @@
 |  message   | [string] |  是  | 提示信息 |
 |    res     | [array]  |  是  | 图片链接 |
 
-<br>
-
 ### 下载图片
 
 `HTTP` `GET` /api/image/{imageName}
@@ -329,8 +304,6 @@
 
 | 图片文件 |
 | -------- |
-
-<br>
 
 ### 删除图片
 
@@ -350,27 +323,19 @@
 |  message   | [string] |  是  | 提示信息 |
 |    res     | [object] |  是  | 恒为null |
 
-<br>
-
 ## Q & A
 
 ### S1. 局域网用户如何上传图片？
 
 局域网内用户在浏览器输入 `{ip}:12121` 即可访问图床服务器，其中 `{ip}` 为服务器的 `局域网IP`
 
-<br>
-
 ### S2. 如何对接Picgo?
 
 [PicGo](https://picgo.github.io/PicGo-Doc/zh/) 是一款图床管理软件，支持多种图床。使用 `picgo` 可大大简化我们上传图片的流程，笔者在此开发了 `picgo` 插件 [picgo-plugin-imagebed](https://github.com/Redns/picgo-plugin-imagebed) 以供大家使用
 
-<br/>
-
 ### S3. 导入图片压缩包无响应？
 
 请尝试直接压缩图片，而不是包含图片的文件夹
-
-<br>
 
 ### S4. 仪表盘界面未出现统计数据
 
@@ -378,22 +343,14 @@
 
 ![2F4TD6N2](https://jing-image.oss-cn-chengdu.aliyuncs.com/2F4TD6N2.png)
 
-<br>
-
 下方的统计曲线默认每天统计一次昨日的数据，统计时间可在设置中选择，第一天安装没有数据曲线是正常的。若长时间未显示曲线请确保程序版本高于 `2.1.4`，仍未解决请在 [Issue](https://github.com/Redns/ImageBed/issues) 提问并附上日志 (路径为 `Data/Logs/imagebed.log`)。
-
-<br/>
 
 ### S5. 通知设置中的邮箱授权码如何获取？
 
 请移步 [这里](https://service.mail.qq.com/cgi-bin/help?subtype=1&&no=1001256&&id=28)
 
-<br>
-
 ### S6. 修改页脚后页面未改变？
 
 请尝试刷新页面
-
-<br>
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Redns/ImageBed&type=Date)](https://star-history.com/#Redns/ImageBed&Date)

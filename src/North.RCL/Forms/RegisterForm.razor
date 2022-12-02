@@ -3,7 +3,7 @@
 @using North.RCL.Texts
 
 <MudPaper Class="d-flex flex-column justify-center px-5 pt-5 pb-3" Style="@Style">
-    <TitleText Text="@Title" Class="mb-3" Style="font-size:35px; font-weight:500; text-align:center;" />
+    <TitleText Text="@Title" Class="mb-3" Style="font-size:35px; font-weight:500; text-align:center;  user-select:none;" />
     @if (string.IsNullOrEmpty(Model.Avatar))
     {
         <MudIconButton HtmlTag="label" for="avatar_upload" Color="Color.Success" Icon="@Icons.Filled.CloudUpload"

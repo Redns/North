@@ -126,6 +126,48 @@ namespace North.Core.Common
         /// </summary>
         public bool IsAutoCloseConnection { get; set; }
 
+        /// <summary>
+        /// 数据库图标
+        /// </summary>
+        public string IconClass => Type switch
+        {
+            DbType.MySqlConnector => "iconfont icon-mysql",
+            DbType.SqlServer => "iconfont icon-SQLserver",
+            DbType.Oracle => "iconfont icon-xuniku",
+            DbType.PostgreSQL => "iconfont icon-postgresql",
+            DbType.Sqlite => "iconfont icon-sqlite",
+            DbType.OpenGauss => "iconfont icon-dakai-GAUSS",
+            _ => throw new NotSupportedException("The database is not yet supported")
+        };
+
+        /// <summary>
+        /// 图标颜色
+        /// </summary>
+        public string IconColor => Type switch
+        {
+            DbType.MySqlConnector => "#2A8393",
+            DbType.SqlServer => "#DA5969",
+            DbType.Oracle => "#F80F0A",
+            DbType.PostgreSQL => "#2F5F91",
+            DbType.Sqlite => "#00CCFF",
+            DbType.OpenGauss => "#297EB6",
+            _ => throw new NotSupportedException("The database is not yet supported")
+        };
+
+        /// <summary>
+        /// 数据库连接字符串模板
+        /// </summary>
+        public string ConnectionStringTemplate => Type switch
+        {
+            DbType.MySqlConnector => "server=localhost;Database=SqlSugar4xTest;Uid=root;Pwd=haosql;",
+            DbType.SqlServer => "server=.;uid=sa;pwd=haosql;database=SQLSUGAR4XTEST",
+            DbType.Oracle => "Data Source=localhost/orcl;User ID=system;Password=haha;",
+            DbType.PostgreSQL => "PORT=5432;DATABASE=SqlSugar4xTest;HOST=localhost;PASSWORD=haosql;USER ID=postgres",
+            DbType.Sqlite => "DataSource=DataBase/SqlSugar4xTest.sqlite",
+            DbType.OpenGauss => "PORT=5432;DATABASE=SqlSugar4xTest;HOST=localhost;PASSWORD=haosql;USER ID=postgres;No Reset On Close=true;",
+            _ => throw new NotSupportedException("The database is not yet supported")
+        };
+
         public Database(string name, DbType type, string connectionString, bool isAutoCloseConnection)
         {
             Name = name;
