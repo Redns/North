@@ -179,7 +179,7 @@ namespace North.Pages.Auth
                 // 上传图片至 Blob
                 using var avatarReadStream = avatar.OpenReadStream((long)avatarMaxSize);
                 using var avatarReadStreamRef = new DotNetStreamReference(avatarReadStream);
-                Model.Avatar = await JS.UploadToBlob(avatarReadStream, avatar.ContentType);
+                Model.Avatar = await JS.UploadToBlobAsync(avatarReadStream, avatar.ContentType);
                 Model.AvatarContentType = avatar.ContentType;
             }
             catch(Exception e)
@@ -197,7 +197,7 @@ namespace North.Pages.Auth
         {
             if (!string.IsNullOrEmpty(Model.Avatar))
             {
-                await JS.DestroyBlob(Model.Avatar);
+                await JS.DestroyBlobAsync(Model.Avatar);
                 Model.Avatar = string.Empty;
                 Model.AvatarContentType = string.Empty;
             }

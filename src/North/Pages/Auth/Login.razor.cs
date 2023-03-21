@@ -67,15 +67,14 @@ namespace North.Pages.Auth
 
                 // 检索用户
                 var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
-                var user = await userRepository.SingleAsync(u => u.Email == LoginModel.Email && 
-                                                                 u.Password == LoginModel.EncryptedPassword);
+                var user = await userRepository.SingleAsync(u => (u.Name == LoginModel.Account || u.Email == LoginModel.Account) && (u.State == UserState.Normal));
                 if(user is null)
                 {
-                    _snackbar.Add("账号不存在或密码错误", Severity.Error);
+                    _snackbar.Add("账户不存在或状态异常", Severity.Error);
                 }
-                else if(user.State is not UserState.Normal)
+                else if($"{user.Email}:{LoginModel.Password}".MD5() != user.Password)
                 {
-                    _snackbar.Add("账户状态异常", Severity.Error);
+                    _snackbar.Add("账户与密码不匹配", Severity.Error);
                 }
                 else
                 {
@@ -83,6 +82,15 @@ namespace North.Pages.Auth
                     var userClaimsIdentifyKey = Guid.NewGuid().ToString();
                     var userClaimsIdentify = user.ClaimsIdentify;
                     _identifies.Add(userClaimsIdentifyKey, userClaimsIdentify);
+
+                    // 写入用户登陆历史
+                    var deviceInfo = await _js.GetDeviceInfoAsync();
+                    await new UserLoginHistoryRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName).AddAsync(new UserLoginHistoryEntity
+                    {
+                        DeviceName = $"{deviceInfo.Os} ({deviceInfo.Description})",
+                        IPAddress = _accessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4()?.ToString() ?? "UnKnown",
+                        UserId = user.Id
+                    });
 
                     // 前往 Signin 页面写入注册信息
                     _nav.NavigateTo($"signin?key={userClaimsIdentifyKey}&redirect={Redirect}", true);

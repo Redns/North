@@ -85,14 +85,9 @@ namespace North
                                     // SameAsRequest: 若提供 Cookie 的 URI 为 HTTPS，则只会在后续 HTTPS 请求上将 Cookie 返回服务器；若提供 Cookie 的 URI 为 HTTP，则会在后续 HTTP 和 HTTPS 请求上将 Cookie 返回服务器。
                                     SecurePolicy = CookieSecurePolicy.SameAsRequest
                                 };
-                                // 订阅 Cookie 身份验证期间发生的事件
                                 options.Events = new CookieAuthenticationEvents
                                 {
-                                    // 登录完成后调用
-                                    // 此时实际上并没有完成 Cookie 写入，因此无法通过 context.HttpContext.User.Claims 获取用户信息
-                                    OnSignedIn = (context) => Task.CompletedTask,
-                                    // 注销时调用
-                                    OnSigningOut = (context) => Task.CompletedTask
+                                    
                                 };
                             });
             builder.Services.AddSingleton<IPoster, MineKitPoster>(poster => new MineKitPoster());
@@ -121,18 +116,29 @@ namespace North
             // 构建 web 应用
             app = builder.Build();
 
-            app.UseRouting();
+            // TODO 添加中间件
+            // app.Use(PluginsContext.Middlewares);
             app.UseStaticFiles();
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoint =>
             {
+                // 强制引导至安装页面
+                if (!GlobalValues.IsApplicationInstalled)
+                {
+                    endpoint.MapGet("/", context =>
+                    {
+                        context.Response.Redirect("/install");
+                        return Task.CompletedTask;
+                    });
+                }
                 endpoint.MapBlazorHub();
                 endpoint.MapControllers();
                 endpoint.MapFallbackToPage("/_Host");
             });
-            // TODO 修改端口至 12121
-            app.Urls.Add("http://*:12122");
+            // TODO 设置页面增加端口修改功能
+            app.Urls.Add(GlobalValues.AppSettings.General.ApplicationUrl);
 
             app.Run();
         }

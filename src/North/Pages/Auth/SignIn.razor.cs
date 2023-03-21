@@ -26,6 +26,7 @@ namespace North.Pages.Auth
             var claimsIdentify = _identifies.GetValueOrDefault(Key);
             if ((_accessor.HttpContext is not null) && claimsIdentify is not null)
             {
+                // 授权 Cookie 
                 await _accessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                                                         new ClaimsPrincipal(claimsIdentify),
                                                         new AuthenticationProperties()
@@ -33,7 +34,11 @@ namespace North.Pages.Auth
                                                             IsPersistent = true,
                                                             ExpiresUtc = DateTime.Now.AddSeconds(GlobalValues.AppSettings.Auth.CookieValidTime)
                                                         });
+
+                // 移除授权信息
                 _identifies.Remove(Key);
+
+                // 重定向页面
                 _nav.NavigateTo(Redirect, true);
             }
             _nav.NavigateTo($"login?redirect={Redirect}", true);

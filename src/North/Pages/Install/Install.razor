@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/install"
 
 @using North.Common
 @using North.Core.Entities
@@ -15,9 +15,7 @@
 @inject Dictionary<string, ClaimsIdentity> _identifies
 
 <MudStack Class="d-flex justify-center align-center mud-width-full mud-height-full">
-    <LoginForm Model="@LoginModel" Title="@GlobalValues.AppSettings.Appearance.Name" 
-               OnLogin="@UserLogin" OnEnter="@EnterToLogin" LoginRunning="@LoginRunning"
-               RegisterLink="register" RetrievePasswordLink="findpwd"/>
+    
 </MudStack>
 
 <style>
@@ -28,3 +26,5 @@
         background-size: cover;
     }
 </style>
+
+

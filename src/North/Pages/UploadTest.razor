@@ -6,10 +6,13 @@
 @using System.Reflection.Metadata
 @using System.Diagnostics
 @using North.RCL.Forms
+@using System.Reflection
+@using System.Text.Json
 
 @inject ILogger _logger
-@inject IJSRuntime JS
+@inject IJSRuntime _js
 @inject ISnackbar _snackbar
+@inject IHttpContextAccessor _accessor
 
 @*<InputFile @onpastemultimedia="(e => Paste(e))" accept="image/*" OnChange="(e => Upload(e))" />
 
@@ -17,6 +20,17 @@
     <AutoRenderForm Model="@Model" />
 </MudStack>*@
 
-<div class="mud-width-full" style="position:absolute; top:0; bottom:0; background-color:black;">
+Device: @DeviceInfo
 
-</div>
+Version: @Version
+
+<MudButton OnClick="async () => {
+    DeviceInfo = JsonSerializer.Serialize(await _js.GetDeviceInfoAsync());
+    // TODO 获取系统版本号
+    Version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+}">Click Me!</MudButton>
+
+@code{
+    private string DeviceInfo { get; set; } = string.Empty;
+    private string Version { get; set; } = string.Empty;
+}

@@ -1,7 +1,54 @@
 ﻿@page "/settings/about"
 
-<h3>About</h3>
+@inject IJSRuntime JS
+@inject ILogger _logger
+@inject ISnackbar _snackbar
+@inject IHttpContextAccessor _accessor
+@inject NavigationManager _navigationManager
 
-@code {
+<AuthorizeView Roles="User">
+    <MudStack Spacing="10" Row AlignItems="AlignItems.Center" Class="message_warn">
+        <MudImage Src="icons/warn.svg" Width="180" Elevation="0" Class="rounded-lg ma-4" />
+        <MudLink Href="/" Color="Color.Warning" Style="font-weight:bold; font-size:34px;">您的权限不足，无法访问</MudLink>
+    </MudStack>
+</AuthorizeView>
+<AuthorizeView Roles="System">
+    <MudStack Spacing="6" Style="padding-left:37px; margin-top:20px;" id="page">
+        <!-- 图床版本号 -->
+        <MudStack Spacing="2">
+            <p class="menu_text">版本号</p>
+            <p>@AppVersion</p>
+        </MudStack>
+        <MudStack Spacing="2">
+            <p class="menu_text">贡献者</p>
 
-}
+        </MudStack>
+    </MudStack>
+</AuthorizeView>
+
+<style>
+    .menu_text {
+        font-weight:bold;
+    }
+
+    #page {
+        overflow: scroll;
+        overflow-x: hidden;
+        height: 100%;
+    }
+
+    #page::-webkit-scrollbar {
+        display:none;
+    }
+
+    .message_warn {
+        width:fit-content;
+        height:fit-content;
+        left: 0;
+        top: 0;
+        bottom: 100px;
+        right: 0;
+        position: absolute;
+        margin: auto;
+    }
+</style>

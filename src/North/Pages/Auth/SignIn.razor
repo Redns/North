@@ -1,6 +1,10 @@
 ﻿@page "/signin"
-@using System.Security.Claims
 
+@using System.Security.Claims
+@using SqlSugar
+
+@inject IJSRuntime _js
 @inject NavigationManager _nav
+@inject ISqlSugarClient _client
 @inject IHttpContextAccessor _accessor
 @inject Dictionary<string, ClaimsIdentity> _identifies

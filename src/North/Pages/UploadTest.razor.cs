@@ -26,7 +26,7 @@ namespace North.Pages
             {
                 Console.WriteLine($"[Blob destroy] {blobs[0].Url}");
                 Console.WriteLine($"[Blob Alive] {blobs[1].Url}");
-                await JS.InvokeVoidAsync("destroy", blobs[0].Url);
+                await _js.InvokeVoidAsync("destroy", blobs[0].Url);
             }
         }
 
@@ -36,9 +36,9 @@ namespace North.Pages
             {
                 using (var image = args.GetMultipleFiles()[0].OpenReadStream(10 * 1024 * 1024))
                 {
-                    var blobUrl = await JS.UploadToBlob(image, "image/jpg");
+                    var blobUrl = await _js.UploadToBlobAsync(image, "image/jpg");
                     //await JS.InvokeVoidAsync("copyTextToClipboard", blobUrl);
-                    var res = await JS.CopyToClipboard(blobUrl);
+                    var res = await _js.CopyToClipboardAsync(blobUrl);
                     _snackbar.Add($"[Upload success] {blobUrl}", Severity.Success);
                 }
             }

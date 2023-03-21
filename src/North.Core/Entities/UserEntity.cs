@@ -112,8 +112,8 @@ namespace North.Core.Entities
         /// <summary>
         /// 登录历史
         /// </summary>
-        [Navigate(NavigateType.OneToMany, nameof(LoginHistoryEntity.UserId))]
-        public List<LoginHistoryEntity> LoginHistories { get; set; }
+        [Navigate(NavigateType.OneToMany, nameof(UserLoginHistoryEntity.UserId))]
+        public List<UserLoginHistoryEntity> LoginHistories { get; set; }
         #endregion
 
 

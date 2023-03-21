@@ -89,11 +89,11 @@ namespace North.Shared
             DarkTheme = !DarkTheme;
             if (DarkTheme)
             {
-                await JS.SetBodyStyle("#1A1A27", "invert(1) hue-rotate(180deg)");
+                await JS.SetBodyStyleAsync("#1A1A27", "invert(1) hue-rotate(180deg)");
             }
             else
             {
-                await JS.SetBodyStyle(string.Empty, string.Empty);
+                await JS.SetBodyStyleAsync(string.Empty, string.Empty);
             }
         }
 

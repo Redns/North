@@ -23,6 +23,30 @@ namespace North.Common
         public Func<HttpRequest, UserDTOEntity?, ValueTask<FileContentResult>> OnImageDownload { get; private set; } = (request, user) => ValueTask.FromResult(new FileContentResult(File.ReadAllBytes("Resources/Images/ImageNotFound.jpg"), "image/jpg"));
         #endregion
 
+        #region 中间件
+        // TODO 中间件测试
+        private static Func<HttpContext, RequestDelegate, Task> _middlewares = (context, next) =>
+        {
+            var ipAddress = context.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+            if (ipAddress == "0.0.0.1")
+            {
+                context.Response.StatusCode = 403;
+                return Task.CompletedTask;
+            }
+            else
+            {
+                return next(context);
+            }
+        };
+        public static Func<HttpContext, RequestDelegate, Task> Middlewares
+        {
+            get
+            {
+                return _middlewares;
+            }
+        }
+        #endregion
+
         private readonly object _lock = new();
         private readonly ApplicationPartManager _applicationPartManager;
         private readonly IActionDescriptorChangeProvider _actionDescriptorChangeProvider;

@@ -2,13 +2,13 @@
 
 namespace North.Core.Entities
 {
-    [SugarTable("LoginHistories")]
-    public class LoginHistoryEntity : Entity
+    [SugarTable("UserLoginHistories")]
+    public class UserLoginHistoryEntity : Entity
     {
         /// <summary>
         /// 设备名称
         /// </summary>
-        [SugarColumn(Length = 32)]
+        [SugarColumn(Length = 64)]
         public string DeviceName { get; set; } = string.Empty;
 
         /// <summary>

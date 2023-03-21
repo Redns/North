@@ -8,6 +8,8 @@ using North.Core.Repository;
 using SqlSugar;
 using System.Security.Claims;
 using ILogger = North.Core.Services.Logger.ILogger;
+using Microsoft.JSInterop;
+using North.Core.Helpers;
 
 namespace North.Controllers
 {
@@ -55,6 +57,12 @@ namespace North.Controllers
                                                                     IsPersistent = true,
                                                                     ExpiresUtc = DateTime.Now.AddSeconds(GlobalValues.AppSettings.Auth.CookieValidTime)
                                                                 });
+                        await new UserLoginHistoryRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName).AddAsync(new UserLoginHistoryEntity
+                        {
+                            DeviceName = $"API ({Request.Headers.UserAgent.ToString() ?? "Unknown"})",
+                            IPAddress = _accessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4()?.ToString() ?? "UnKnown",
+                            UserId = user.Id
+                        });
                         return new ApiResult<object>(ApiStatusCode.Success, "Login successfully");
                     }
                     return new ApiResult<object>(ApiStatusCode.AccountStateAbnormal, "Account does not exist or status is abnormal");
@@ -76,7 +84,7 @@ namespace North.Controllers
         /// <returns></returns>
         [HttpGet("user/login_history")]
         [Authorize(Roles = "System,User")]
-        public async ValueTask<ApiResult<IEnumerable<LoginHistoryEntity>>> GetUserLoginHistories([FromQuery] string account)
+        public async ValueTask<ApiResult<IEnumerable<UserLoginHistoryEntity>>> GetUserLoginHistories([FromQuery] string account)
         {
             try
             {
@@ -88,17 +96,17 @@ namespace North.Controllers
                 if(currentOperateUser is null)
                 {
                     // 用户不存在
-                    return new(ApiStatusCode.AccountNotExist, Enumerable.Empty<LoginHistoryEntity>());
+                    return new(ApiStatusCode.AccountNotExist, Enumerable.Empty<UserLoginHistoryEntity>());
                 }
                 else if(!currentOperateUser.IsApiAvailable)
                 {
                     // 无权访问 API
-                    return new(ApiStatusCode.OperationDenied, Enumerable.Empty<LoginHistoryEntity>());
+                    return new(ApiStatusCode.OperationDenied, Enumerable.Empty<UserLoginHistoryEntity>());
                 }
                 else if((currentOperateUser.State is not UserState.Normal) || (currentOperateUser.LastModifyTime.ToString("G") != currentOperateUserLastModifyTime))
                 {
                     // 用户状态异常或改变
-                    return new(ApiStatusCode.AccountStateAbnormal, "User status has changed", Enumerable.Empty<LoginHistoryEntity>());
+                    return new(ApiStatusCode.AccountStateAbnormal, "User status has changed", Enumerable.Empty<UserLoginHistoryEntity>());
                 }
                 else
                 {
@@ -110,7 +118,7 @@ namespace North.Controllers
                     if(queriedUser is null)
                     {
                         // 待查询用户不存在
-                        return new(ApiStatusCode.AccountNotExist, "The requested user does not exist", Enumerable.Empty<LoginHistoryEntity>());
+                        return new(ApiStatusCode.AccountNotExist, "The requested user does not exist", Enumerable.Empty<UserLoginHistoryEntity>());
                     }
                     else if ((currentOperateUser.Permission is UserPermission.System) || (queriedUser.Id.ToString() == currentOperateUserId))
                     {
@@ -129,7 +137,7 @@ namespace North.Controllers
             catch(Exception e)
             {
                 _logger.Error("Failed to get user login history", e);
-                return new(ApiStatusCode.ServerInternalError, Enumerable.Empty<LoginHistoryEntity>());
+                return new(ApiStatusCode.ServerInternalError, Enumerable.Empty<UserLoginHistoryEntity>());
             }
         }
     }

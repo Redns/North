@@ -57,14 +57,23 @@ namespace North.Core.Common
     /// </summary>
     public class GeneralSetting
     {
+        /// <summary>
+        /// 数据库相关设置
+        /// </summary>
         public DataBaseSetting DataBase { get; set; }
 
-        public GeneralSetting(DataBaseSetting dataBase)
+        /// <summary>
+        /// 应用监听链接
+        /// </summary>
+        public string ApplicationUrl { get; set; }
+
+        public GeneralSetting(DataBaseSetting dataBase, string applicationUrl)
         {
             DataBase = dataBase;
+            ApplicationUrl = applicationUrl;
         }
 
-        public GeneralSetting Clone() => new(DataBase.Clone());
+        public GeneralSetting Clone() => new(DataBase.Clone(), ApplicationUrl);
     }
 
 
