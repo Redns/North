@@ -1,3 +1,4 @@
+using IP2Region.Net.XDB;
 using Krins.Nuget;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -56,12 +57,14 @@ namespace North
                     IsAutoCloseConnection = db.IsAutoCloseConnection,
                 }).ToList());
             });
+            // 清除系统默认日志组件
             builder.Services.AddLogging(logging =>
             {
-                // 清除默认日志组件
                 logging.ClearProviders();
             });
+            // 日志服务
             builder.Services.AddSingleton<ILogger, NLogger>(logger => new NLogger(GlobalValues.AppSettings.Log));
+            // Cookie验证
             builder.Services.AddAuthentication(options =>
                             {
                                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -88,16 +91,11 @@ namespace North
                                 };
                                 options.Events = new CookieAuthenticationEvents
                                 {
-                                    OnValidatePrincipal = context =>
-                                    {
-                                        return Task.Run(() =>
-                                        {
-                                            Console.WriteLine("Checking...");
-                                        });
-                                    }
                                 };
                             });
+            // 邮件发送服务
             builder.Services.AddSingleton<IPoster, MineKitPoster>(poster => new MineKitPoster());
+            // 用户登录信息暂存
             builder.Services.AddSingleton(loginIdentify => new Dictionary<string, ClaimsIdentity>());
             // 动态加载控制器
             builder.Services.AddSingleton(NorthActionDescriptorChangeProvider.Instance);
@@ -118,6 +116,7 @@ namespace North
                     }
                 };
             });
+            builder.Services.AddSingleton<ISearcher, Searcher>();
 
 
             // 构建 web 应用

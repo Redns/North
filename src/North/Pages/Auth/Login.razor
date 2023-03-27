@@ -1,5 +1,6 @@
 ﻿@page "/login"
 
+@using IP2Region.Net.XDB;
 @using North.Common
 @using North.Core.Entities
 @using System.Security.Claims
@@ -9,6 +10,7 @@
 @inject IJSRuntime _js
 @inject ILogger _logger
 @inject ISnackbar _snackbar
+@inject ISearcher _ipSearchar
 @inject NavigationManager _nav
 @inject ISqlSugarClient _client
 @inject IHttpContextAccessor _accessor

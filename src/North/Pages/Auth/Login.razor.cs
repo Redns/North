@@ -84,11 +84,14 @@ namespace North.Pages.Auth
                     _identifies.Add(userClaimsIdentifyKey, userClaimsIdentify);
 
                     // 写入用户登陆历史
+                    // ip地址默认为0.0.0.0，若为非ip字符串则ip2region解析会报错
                     var deviceInfo = await _js.GetDeviceInfoAsync();
+                    var ipAddress = _accessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4()?.ToString() ?? "0.0.0.0";
                     await new UserLoginHistoryRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName).AddAsync(new UserLoginHistoryEntity
                     {
                         DeviceName = $"{deviceInfo.Os} ({deviceInfo.Description})",
-                        IPAddress = _accessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4()?.ToString() ?? "UnKnown",
+                        IPAddress = ipAddress,
+                        IPRegion = _ipSearchar.Search(ipAddress) ?? "UnKnown",
                         UserId = user.Id
                     });
 

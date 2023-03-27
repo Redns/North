@@ -1,5 +1,6 @@
 ﻿@page "/uploadTest"
 
+@using IP2Region.Net.XDB;
 @using North.Core.Entities
 @using North.Core.Helpers
 @using North.Events.PasteMultimediaEvent
@@ -13,12 +14,7 @@
 @inject IJSRuntime _js
 @inject ISnackbar _snackbar
 @inject IHttpContextAccessor _accessor
-
-@*<InputFile @onpastemultimedia="(e => Paste(e))" accept="image/*" OnChange="(e => Upload(e))" />
-
-<MudStack  Class="d-flex flex-column justify-center align-center mud-width-full mud-height-full">
-    <AutoRenderForm Model="@Model" />
-</MudStack>*@
+@inject ISearcher _ipSearcher
 
 Device: @DeviceInfo
 

@@ -10,8 +10,7 @@
 <PageTitle>@GlobalValues.AppSettings.Appearance.Name</PageTitle>
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly"
-            AdditionalAssemblies="@_pluginContext.RazorPageAssembies"
-            OnNavigateAsync="@(() => Console.WriteLine("Navigating..."))">
+            AdditionalAssemblies="@_pluginContext.RazorPageAssembies">
         <Found Context="routeData">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />

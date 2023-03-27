@@ -17,6 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="IP2Region.Net" Version="1.0.10" />
     <PackageReference Include="Krins.Nuget" Version="1.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.0" />
     <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
