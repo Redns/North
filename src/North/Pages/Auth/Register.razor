@@ -15,6 +15,8 @@
 @inject NavigationManager _nav
 @inject IHttpContextAccessor _accessor
 
+@layout AuthLayout
+
 <MudStack Class="d-flex justify-center align-center mud-width-full mud-height-full">
     <RegisterForm Model="@Model" Title="@GlobalValues.AppSettings.Appearance.Name"
                   OnRegister="@UserRegister" OnEnter="@EnterToRegister" OnAvatarUpload="@UploadAvatar" OnAvatarClear="@ClearAvatar"

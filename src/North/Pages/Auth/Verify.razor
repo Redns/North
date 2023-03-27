@@ -8,6 +8,8 @@
 @inject NavigationManager _navigationManager
 @inject SqlSugarClient _client
 
+@layout AuthLayout
+
 <MudStack Row AlignItems="AlignItems.Center" id="verify_stack">
     @if (VerifyRunning)
     {

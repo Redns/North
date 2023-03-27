@@ -12,36 +12,24 @@
 @inject NavigationManager _nav
 @inject IHttpContextAccessor _accessor
 
-<PageTitle>@GlobalValues.AppSettings.Appearance.Name</PageTitle>
-
-<AuthorizeView>
-    <Authorized>
-        <MudStack Spacing="0" Style="height:50px;">
-            <ActionToolBar IsExpanded="@IsExpanded" DarkTheme="@DarkTheme" Title="@GlobalValues.AppSettings.Appearance.Name"
-                           OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" OnSwitchTheme="@SwitchTheme" OnUserClick="@(() => SignOut())" />
-            <MudDivider />
-        </MudStack>
-        <MudStack Row Spacing="0" Style="position: absolute; top: 50px; bottom: 0; left: 0; right:0;">
-            <NavMenu IsExpanded="@IsExpanded" OpenMiniOnHover="GlobalValues.AppSettings.Appearance.NavAutoExpand" Style="width:240px;" />
-            <MudStack Spacing="0" Class="mud-height-full mud-width-full">
-                @if (string.IsNullOrWhiteSpace(GlobalValues.AppSettings.Appearance.Footer))
-                {
-                    @Body
-                }
-                else
-                {
-                    <MudStack Class="mud-width-full" Style="height:calc(100% - 40px);">
-                        @Body
-                    </MudStack>
-                    <FooterText Content="@GlobalValues.AppSettings.Appearance.Footer" Style="height:40px; text-align:center;" />
-                }
-            </MudStack>
-        </MudStack>
-    </Authorized>
-    <NotAuthorized>
-        <MudStack Spacing="0" Class="mud-height-full mud-width-full">
+<MudStack Spacing="0" Style="height:50px;">
+    <ActionToolBar IsExpanded="@IsExpanded" DarkTheme="@DarkTheme" Title="@GlobalValues.AppSettings.Appearance.Name"
+                   OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" OnSwitchTheme="@SwitchTheme" OnUserClick="@(() => SignOut())" />
+    <MudDivider />
+</MudStack>
+<MudStack Row Spacing="0" Style="position: absolute; top: 50px; bottom: 0; left: 0; right:0;">
+    <NavMenu IsExpanded="@IsExpanded" OpenMiniOnHover="GlobalValues.AppSettings.Appearance.NavAutoExpand" Style="width:240px;" />
+    <MudStack Spacing="0" Class="mud-height-full mud-width-full">
+        @if (string.IsNullOrWhiteSpace(GlobalValues.AppSettings.Appearance.Footer))
+        {
             @Body
+        }
+        else
+        {
+            <MudStack Class="mud-width-full" Style="height:calc(100% - 40px);">
+                @Body
+            </MudStack>
             <FooterText Content="@GlobalValues.AppSettings.Appearance.Footer" Style="height:40px; text-align:center;" />
-        </MudStack>
-    </NotAuthorized>
-</AuthorizeView>
+        }
+    </MudStack>
+</MudStack>

@@ -1,17 +1,43 @@
-﻿@inject PluginsContext _pluginContext
+﻿@using North.Common
+@using North.RCL.Texts
+@using SqlSugar;
 
-@using North.Common
+@inject NavigationManager _nav
+@inject ISqlSugarClient _client
+@inject PluginsContext _pluginContext
+@inject IHttpContextAccessor _accessor
 
+<PageTitle>@GlobalValues.AppSettings.Appearance.Name</PageTitle>
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly"
-            AdditionalAssemblies="@_pluginContext.RazorPageAssembies">
+            AdditionalAssemblies="@_pluginContext.RazorPageAssembies"
+            OnNavigateAsync="@(() => Console.WriteLine("Navigating..."))">
         <Found Context="routeData">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
-            <PageTitle>Not found</PageTitle>
-            页面未找到
+            <MudStack Spacing="0" Class="mud-height-full mud-width-full">
+                @if (string.IsNullOrWhiteSpace(GlobalValues.AppSettings.Appearance.Footer))
+                {
+                    <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-width-full" Style="height:calc(100% - 40px);">
+                        <MudImage Src="icons/warn.svg" Width="180" Height="180" Style="margin-right:20px;" />
+                        <MudText Typo="Typo.h5">目标地址不存在，</MudText>
+                        <MudLink Href="" Typo="Typo.h5">点击此处</MudLink>
+                        <MudText Typo="Typo.h5">返回首页</MudText>
+                    </MudStack>
+                }
+                else
+                {
+                    <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-width-full" Style="height:calc(100% - 40px);">
+                        <MudImage Src="icons/warn.svg" Width="180" Height="180" Style="margin-right:20px;" />
+                        <MudText Typo="Typo.h5">目标地址不存在，</MudText>
+                        <MudLink Href="" Typo="Typo.h5">点击此处</MudLink>
+                        <MudText Typo="Typo.h5">返回首页</MudText>
+                    </MudStack>
+                    <FooterText Content="@GlobalValues.AppSettings.Appearance.Footer" Style="height:40px; text-align:center;" />
+                }
+            </MudStack>
         </NotFound>
     </Router>
     <MudBlazor.MudThemeProvider />

@@ -1,0 +1,18 @@
+﻿@using North.Common;
+@using North.RCL.Texts
+
+@inherits LayoutComponentBase
+
+<MudStack Spacing="0" Class="mud-height-full mud-width-full">
+    @if (string.IsNullOrWhiteSpace(GlobalValues.AppSettings.Appearance.Footer))
+    {
+        @Body
+    }
+    else
+    {
+        <MudStack Class="mud-width-full" Style="height:calc(100% - 40px);">
+            @Body
+        </MudStack>
+        <FooterText Content="@GlobalValues.AppSettings.Appearance.Footer" Style="height:40px; text-align:center;" />
+    }
+</MudStack>

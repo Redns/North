@@ -13,7 +13,7 @@
 @using North.Events.PasteMultimediaEvent
 @using North.RCL.Texts
 
-<AuthorizeView Roles="User,Administrator,System">
+<AuthorizeView Roles="User,System">
     <div class="mud-height-full" id="upload-mid-stack">
         <MudPaper @ondragenter="@SetDragClass" @ondragleave="@ClearDragClass" @ondragend="@ClearDragClass"
                   Outlined Style="height:50%; min-height:350px; margin-top:20%;" Class="@DragClass">

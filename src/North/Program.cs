@@ -88,7 +88,13 @@ namespace North
                                 };
                                 options.Events = new CookieAuthenticationEvents
                                 {
-                                    
+                                    OnValidatePrincipal = context =>
+                                    {
+                                        return Task.Run(() =>
+                                        {
+                                            Console.WriteLine("Checking...");
+                                        });
+                                    }
                                 };
                             });
             builder.Services.AddSingleton<IPoster, MineKitPoster>(poster => new MineKitPoster());

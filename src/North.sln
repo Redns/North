@@ -22,9 +22,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "North.Plugin", "North.Plugi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "North.Launcher", "North.Launcher\North.Launcher.csproj", "{ACF80FF6-8F86-4A78-AE39-520C5860A3AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "North.Plugin.Bingimg", "North.Plugin.Bingimg\North.Plugin.Bingimg.csproj", "{6545D2B8-ED80-42E1-A2BF-67504DF6A4C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "North.Plugin.Bingimg", "North.Plugin.Bingimg\North.Plugin.Bingimg.csproj", "{6545D2B8-ED80-42E1-A2BF-67504DF6A4C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "North.Plugin.Firewall", "North.Plugin.Firewall\North.Plugin.Firewall.csproj", "{C540F5DF-E699-48F7-B73B-0FE51D315387}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "North.Plugin.Firewall", "North.Plugin.Firewall\North.Plugin.Firewall.csproj", "{C540F5DF-E699-48F7-B73B-0FE51D315387}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
