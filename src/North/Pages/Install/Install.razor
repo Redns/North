@@ -15,7 +15,7 @@
 @inject Dictionary<string, ClaimsIdentity> _identifies
 
 <MudStack Class="d-flex justify-center align-center mud-width-full mud-height-full">
-    
+    <MudButton OnClick="@(() => _snackbar.Add("Hello"))">Install</MudButton>
 </MudStack>
 
 <style>

@@ -7,6 +7,8 @@ namespace North.Pages.Install
         /// <summary>
         /// 背景图片链接
         /// </summary>
+        /// TODO 此处为优化加载速度 appsettings.json 中使用固图片链接
+        /// Bing 每日一图可制作为插件，api 为 "https://api.xygeng.cn/bing/"
         public string BackgroundImageUrl { get; set; } = string.Empty;
 
 

@@ -61,8 +61,7 @@ src/North.Benchmark/bin
 src/North.Benchmark/obj
 #  North.Benchmark End
 
-# North.Plugin.Demo Start
-src/North.Plugin.Demo/.vs
-src/North.Plugin.Demo/bin
-src/North.Plugin.Demo/obj
-# North.Plugin.Demo End
+# North.Plugins Start
+src/North.Plugin.Bingimg/*
+src/North.Plugin.Firewall/*
+# North.Plugin.Bingimg End

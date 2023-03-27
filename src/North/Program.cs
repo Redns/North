@@ -69,6 +69,7 @@ namespace North
                             })
                             .AddCookie(options =>
                             {
+                                // TODO 配置自动跳转
                                 // 确定用于创建 Cookie 的设置
                                 options.Cookie = new CookieBuilder()
                                 {
@@ -115,7 +116,6 @@ namespace North
 
             // 构建 web 应用
             app = builder.Build();
-
             // TODO 添加中间件
             // app.Use(PluginsContext.Middlewares);
             app.UseStaticFiles();
@@ -124,13 +124,26 @@ namespace North
             app.UseAuthorization();
             app.UseEndpoints(endpoint =>
             {
-                // 强制引导至安装页面
                 if (!GlobalValues.IsApplicationInstalled)
                 {
+                    // 未安装时强制跳转至安装页面
                     endpoint.MapGet("/", context =>
                     {
-                        context.Response.Redirect("/install");
-                        return Task.CompletedTask;
+                        return Task.Run(() =>
+                        {
+                            context.Response.Redirect("/install");
+                        });
+                    });
+                }
+                else
+                {
+                    // 应用已安装后将无法访问安装页面
+                    endpoint.MapGet("/install", context =>
+                    {
+                        return Task.Run(() =>
+                        {
+                            context.Response.Redirect("/");
+                        });
                     });
                 }
                 endpoint.MapBlazorHub();

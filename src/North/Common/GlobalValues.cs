@@ -41,7 +41,7 @@ namespace North.Common
         /// 应用程序是否安装完成
         /// </summary>
         /// TODO 根据机密文件是否存储有管理员账号密码判断
-        private static bool _isApplicationInstalled = false;
+        private static bool _isApplicationInstalled = true;
         public static bool IsApplicationInstalled
         {
             get { return _isApplicationInstalled; }
