@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.JSInterop;
-using North.Core.Common;
-using North.Core.Entities;
-using North.Core.Repository;
-using System.Security.Claims;
+﻿using North.Core.Common;
 
 namespace North.Common
 {
@@ -13,19 +8,9 @@ namespace North.Common
     public static class GlobalValues
     {
         /// <summary>
-        /// 以下页面无需授权即可访问（防止 MainLayout 认证陷入死循环）
+        /// 以下页面无需授权即可访问（防止App.razor路由陷入死循环）
         /// </summary>
         public static string[] WithoutAuthenticationPages { get; } = new string[] { "login", "register", "signin", "verify", "install" };
-
-
-        /// <summary>
-        /// 身份认证属性
-        /// </summary>
-        public static AuthenticationProperties AuthenticationProperties { get; } = new AuthenticationProperties()
-        {
-            IsPersistent = true,
-            ExpiresUtc = DateTime.Now.AddSeconds(AppSettings.Auth.CookieValidTime)
-        };
 
         /// <summary>
         /// 应用设置
@@ -40,11 +25,14 @@ namespace North.Common
         /// <summary>
         /// 应用程序是否安装完成
         /// </summary>
-        /// TODO 根据机密文件是否存储有管理员账号密码判断
-        private static bool _isApplicationInstalled = true;
+        private static bool? _isApplicationInstalled = null;
         public static bool IsApplicationInstalled
         {
-            get { return _isApplicationInstalled; }
+            get
+            {
+                // 根据有无数据库判断是否安装完成
+                return _isApplicationInstalled ??= AppSettings.General.DataBase.Databases.Any();
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ using North.Core.Entities;
 using North.Core.Services.Logger;
 using SqlSugar;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace North.Core.Common
 {
@@ -138,6 +139,7 @@ namespace North.Core.Common
         /// <summary>
         /// 数据库图标
         /// </summary>
+        [JsonIgnore]
         public string IconClass => Type switch
         {
             DbType.MySqlConnector => "iconfont icon-mysql",
@@ -152,6 +154,7 @@ namespace North.Core.Common
         /// <summary>
         /// 图标颜色
         /// </summary>
+        [JsonIgnore]
         public string IconColor => Type switch
         {
             DbType.MySqlConnector => "#2A8393",
@@ -166,6 +169,7 @@ namespace North.Core.Common
         /// <summary>
         /// 数据库连接字符串模板
         /// </summary>
+        [JsonIgnore]
         public string ConnectionStringTemplate => Type switch
         {
             DbType.MySqlConnector => "server=localhost;Database=SqlSugar4xTest;Uid=root;Pwd=haosql;",
