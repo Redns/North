@@ -30,6 +30,7 @@
     <Folder Include="Data\Logs\" />
     <Folder Include="Plugins\" />
     <Folder Include="Resources\Images\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,11 +8,18 @@ namespace North.Pages
         private static readonly string DefaultDragClass = "flex-none relative rounded-lg border-2 border-dashed ";
         private string DragClass = DefaultDragClass;
         private bool Clearing = false;
-        private List<ImageUploadModel> Images { get; set; } = new(64);
+        private List<ImageUploadModel> Images { get; set; } = new();
         private object UrlType { get; set; } = ImageUrlType.Markdown;
 
         private async Task OnInputImagesChanged(InputFileChangeEventArgs args)
         {
+            for(int i = 0; i < args.FileCount; i++)
+            {
+                Images.Add(new ImageUploadModel()
+                {
+                    Stream = new MemoryStream()
+                });
+            }
             await _pluginsContext.OnImageUpload(Images, null);
         }
 

@@ -20,7 +20,7 @@ namespace North
         public async Task AuthorizationAsync()
         {
             var relativeUrl = _nav.ToBaseRelativePath(_nav.Uri).Split('?').First().ToLower();
-            var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+            var userRepository = new UserRepository(_client, _appSetting.General.DataBase.EnabledName);
             if ((_accessor.HttpContext is not null) && (await _accessor.HttpContext.AuthAsync(userRepository) is true))
             {
                 if (relativeUrl.Contains(GlobalValues.WithoutAuthenticationPages, true))

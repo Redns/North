@@ -8,7 +8,13 @@ namespace North.Pages.Settings
     {
         private bool SaveRunning { get; set; } = false;
         private bool RestoreRunning { get; set; } = false;
-        private AuthSetting AuthSetting { get; set; } = GlobalValues.AppSettings.Auth.Clone();
+        private AuthSetting AuthSetting { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+            AuthSetting = _appSetting.Auth.Clone();
+        }
 
 
         /// <summary>
@@ -21,13 +27,13 @@ namespace North.Pages.Settings
             {
                 SaveRunning = true;
                 await Task.Delay(500);
-                GlobalValues.AppSettings.Auth = AuthSetting.Clone();
-                GlobalValues.AppSettings.Save();
+                _appSetting.Auth = AuthSetting.Clone();
+                _appSetting.Save();
                 _snackbar.Add("保存成功", Severity.Success);
             }
             catch (Exception e)
             {
-                AuthSetting = GlobalValues.AppSettings.Auth.Clone();
+                AuthSetting = _appSetting.Auth.Clone();
                 _snackbar.Add("保存失败，已还原设置", Severity.Error);
                 _logger.Error("Failed to save auth settings", e);
             }
@@ -52,7 +58,7 @@ namespace North.Pages.Settings
             {
                 RestoreRunning = true;
                 await Task.Delay(500);
-                AuthSetting = GlobalValues.AppSettings.Auth.Clone();
+                AuthSetting = _appSetting.Auth.Clone();
                 _snackbar.Add("已还原设置", Severity.Success);
             }
             catch (Exception e)

@@ -32,7 +32,7 @@ namespace North.Pages.Auth
                                                         new AuthenticationProperties()
                                                         {
                                                             IsPersistent = true,
-                                                            ExpiresUtc = DateTime.Now.AddSeconds(GlobalValues.AppSettings.Auth.CookieValidTime)
+                                                            ExpiresUtc = DateTime.Now.AddSeconds(_appSetting.Auth.CookieValidTime)
                                                         });
 
                 // 移除授权信息

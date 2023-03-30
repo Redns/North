@@ -9,7 +9,13 @@ namespace North.Pages.Settings
     {
         public bool SaveRunning { get; set; } = false;
         public bool RestoreRunning { get; set; } = false;
-        public LogSetting LogSetting { get; set; } = GlobalValues.AppSettings.Log.Clone();
+        public LogSetting LogSetting { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+            LogSetting = _appSetting.Log.Clone();
+        }
 
 
         /// <summary>
@@ -51,15 +57,15 @@ namespace North.Pages.Settings
                 else
                 {
                     await Task.Delay(500);
-                    GlobalValues.AppSettings.Log = LogSetting.Clone();
-                    GlobalValues.AppSettings.Save();
+                    _appSetting.Log = LogSetting.Clone();
+                    _appSetting.Save();
                     _logger.ConfigLoggers(LogSetting);
                     _snackbar.Add("保存成功", Severity.Success);
                 }
             }
             catch (Exception e)
             {
-                LogSetting = GlobalValues.AppSettings.Log.Clone();
+                LogSetting = _appSetting.Log.Clone();
                 _snackbar.Add("保存失败，已还原设置", Severity.Error);
                 _logger.Error("Failed to save log settings", e);
             }
@@ -84,7 +90,7 @@ namespace North.Pages.Settings
             {
                 RestoreRunning = true;
                 await Task.Delay(500);
-                LogSetting = GlobalValues.AppSettings.Log.Clone();
+                LogSetting = _appSetting.Log.Clone();
                 _snackbar.Add("已还原设置", Severity.Success);
             }
             catch (Exception e)

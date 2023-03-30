@@ -1,6 +1,7 @@
 ﻿@page "/register"
 
 @using North.Common
+@using North.Core.Common;
 @using North.Core.Entities
 @using North.Core.Services.Poster
 @using North.RCL.Forms
@@ -12,13 +13,14 @@
 @inject IPoster _poster
 @inject ISnackbar _snackbar
 @inject ISqlSugarClient _client
+@inject AppSetting _appSetting
 @inject NavigationManager _nav
 @inject IHttpContextAccessor _accessor
 
 @layout AuthLayout
 
 <MudStack Class="d-flex justify-center align-center mud-width-full mud-height-full">
-    <RegisterForm Model="@Model" Title="@GlobalValues.AppSettings.Appearance.Name"
+    <RegisterForm Model="@Model" Title="@_appSetting.Appearance.Name"
                   OnRegister="@UserRegister" OnEnter="@EnterToRegister" OnAvatarUpload="@UploadAvatar" OnAvatarClear="@ClearAvatar"
                   RegisterRunning="@RegisterRunning"  LoginLink="login" RetrievePasswordLink="findpwd" />
 </MudStack>

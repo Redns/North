@@ -13,6 +13,7 @@
 @inject NavigationManager _nav
 @inject ISqlSugarClient _client
 @inject IHttpContextAccessor _accessor
+@inject AppSetting _appSetting
 
 <AuthorizeView Roles="User">
     <div class="flex-row justify-center align-center message_warn">

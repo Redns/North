@@ -1,10 +1,12 @@
 ﻿@page "/verify"
 
+@using North.Core.Common;
 @using North.Core.Entities
 @using SqlSugar
 
 @inject ILogger _logger
 @inject ISnackbar _snackbar
+@inject AppSetting _appSetting
 @inject NavigationManager _navigationManager
 @inject SqlSugarClient _client
 

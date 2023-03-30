@@ -45,7 +45,7 @@ namespace North.Pages.Auth
             {
                 await InvokeAsync(() =>
                 {
-                    BackgroundImageUrl = GlobalValues.AppSettings.Appearance.BackgroundUrl;
+                    BackgroundImageUrl = _appSetting.Appearance.BackgroundUrl;
                     StateHasChanged();
                 });
             }
@@ -66,7 +66,7 @@ namespace North.Pages.Auth
                 await Task.Delay(500);
 
                 // 检索用户
-                var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+                var userRepository = new UserRepository(_client, _appSetting.General.DataBase.EnabledName);
                 var user = await userRepository.SingleAsync(u => (u.Name == LoginModel.Account || u.Email == LoginModel.Account) && (u.State == UserState.Normal));
                 if(user is null)
                 {
@@ -87,7 +87,7 @@ namespace North.Pages.Auth
                     // ip地址默认为0.0.0.0，若为非ip字符串则ip2region解析会报错
                     var deviceInfo = await _js.GetDeviceInfoAsync();
                     var ipAddress = _accessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4()?.ToString() ?? "0.0.0.0";
-                    await new UserLoginHistoryRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName).AddAsync(new UserLoginHistoryEntity
+                    await new UserLoginHistoryRepository(_client, _appSetting.General.DataBase.EnabledName).AddAsync(new UserLoginHistoryEntity
                     {
                         DeviceName = $"{deviceInfo.Os} ({deviceInfo.Description})",
                         IPAddress = ipAddress,

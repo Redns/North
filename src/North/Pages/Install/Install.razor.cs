@@ -23,7 +23,7 @@ namespace North.Pages.Install
             {
                 await InvokeAsync(() =>
                 {
-                    BackgroundImageUrl = GlobalValues.AppSettings.Appearance.BackgroundUrl;
+                    BackgroundImageUrl = _appSetting.Appearance.BackgroundUrl;
                     StateHasChanged();
                 });
             }

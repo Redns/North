@@ -69,8 +69,8 @@ namespace North.Pages.Auth
         /// <returns></returns>
         private async Task VerifyRegister()
         {
-            var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
-            var emailRepository = new EmailRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+            var userRepository = new UserRepository(_client, _appSetting.General.DataBase.EnabledName);
+            var emailRepository = new EmailRepository(_client, _appSetting.General.DataBase.EnabledName);
             var email = await emailRepository.FirstAsync(e => e.Id.ToString() == Id);
             if ((email is null) || (DateTime.Now > email.ExpireTime))
             {

@@ -1,13 +1,15 @@
 ﻿@using North.Common
+@using North.Core.Common;
 @using North.RCL.Texts
 @using SqlSugar;
 
+@inject AppSetting _appSetting
 @inject NavigationManager _nav
 @inject ISqlSugarClient _client
 @inject PluginsContext _pluginContext
 @inject IHttpContextAccessor _accessor
 
-<PageTitle>@GlobalValues.AppSettings.Appearance.Name</PageTitle>
+<PageTitle>@_appSetting.Appearance.Name</PageTitle>
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly"
             AdditionalAssemblies="@_pluginContext.RazorPageAssembies">
@@ -17,7 +19,7 @@
         </Found>
         <NotFound>
             <MudStack Spacing="0" Class="mud-height-full mud-width-full">
-                @if (string.IsNullOrWhiteSpace(GlobalValues.AppSettings.Appearance.Footer))
+                @if (string.IsNullOrWhiteSpace(_appSetting.Appearance.Footer))
                 {
                     <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-width-full" Style="height:calc(100% - 40px);">
                         <MudImage Src="icons/warn.svg" Width="180" Height="180" Style="margin-right:20px;" />
@@ -34,7 +36,7 @@
                         <MudLink Href="" Typo="Typo.h5">点击此处</MudLink>
                         <MudText Typo="Typo.h5">返回首页</MudText>
                     </MudStack>
-                    <FooterText Content="@GlobalValues.AppSettings.Appearance.Footer" Style="height:40px; text-align:center;" />
+                    <FooterText Content="@_appSetting.Appearance.Footer" Style="height:40px; text-align:center;" />
                 }
             </MudStack>
         </NotFound>

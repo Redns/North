@@ -1,10 +1,13 @@
 ﻿@using North.Common;
+@using North.Core.Common;
 @using North.RCL.Texts
+
+@inject AppSetting _appSetting
 
 @inherits LayoutComponentBase
 
 <MudStack Spacing="0" Class="mud-height-full mud-width-full">
-    @if (string.IsNullOrWhiteSpace(GlobalValues.AppSettings.Appearance.Footer))
+    @if (string.IsNullOrWhiteSpace(_appSetting.Appearance.Footer))
     {
         @Body
     }
@@ -13,6 +16,6 @@
         <MudStack Class="mud-width-full" Style="height:calc(100% - 40px);">
             @Body
         </MudStack>
-        <FooterText Content="@GlobalValues.AppSettings.Appearance.Footer" Style="height:40px; text-align:center;" />
+        <FooterText Content="@_appSetting.Appearance.Footer" Style="height:40px; text-align:center;" />
     }
 </MudStack>

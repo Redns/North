@@ -10,6 +10,7 @@ using System.Security.Claims;
 using ILogger = North.Core.Services.Logger.ILogger;
 using Microsoft.JSInterop;
 using North.Core.Helpers;
+using North.Core.Common;
 
 namespace North.Controllers
 {
@@ -21,14 +22,16 @@ namespace North.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ILogger _logger;
+        private readonly AppSetting _appSetting;
         private readonly ISqlSugarClient _client;
         private readonly IHttpContextAccessor _accessor;
 
-        public AuthController(ILogger logger, ISqlSugarClient client, IHttpContextAccessor accessor)
+        public AuthController(ILogger logger, AppSetting appSetting, ISqlSugarClient client, IHttpContextAccessor accessor)
         {
             _logger = logger;
             _client = client;
             _accessor = accessor;
+            _appSetting = appSetting;
         }
 
 
@@ -46,7 +49,7 @@ namespace North.Controllers
                 var userEncryptedPassword = Request.Headers["Password"].ToString();
                 if (!string.IsNullOrEmpty(userAccount) && !string.IsNullOrEmpty(userEncryptedPassword))
                 {
-                    var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+                    var userRepository = new UserRepository(_client, _appSetting.General.DataBase.EnabledName);
                     var user = await userRepository.SingleAsync(u => (u.Name == userAccount || u.Email == userAccount) && u.Password == userEncryptedPassword);
                     if (_accessor.HttpContext is not null && user?.State is UserState.Normal && user.IsApiAvailable)
                     {
@@ -55,9 +58,9 @@ namespace North.Controllers
                                                                 new AuthenticationProperties()
                                                                 {
                                                                     IsPersistent = true,
-                                                                    ExpiresUtc = DateTime.Now.AddSeconds(GlobalValues.AppSettings.Auth.CookieValidTime)
+                                                                    ExpiresUtc = DateTime.Now.AddSeconds(_appSetting.Auth.CookieValidTime)
                                                                 });
-                        await new UserLoginHistoryRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName).AddAsync(new UserLoginHistoryEntity
+                        await new UserLoginHistoryRepository(_client, _appSetting.General.DataBase.EnabledName).AddAsync(new UserLoginHistoryEntity
                         {
                             DeviceName = $"API ({Request.Headers.UserAgent.ToString() ?? "Unknown"})",
                             IPAddress = _accessor.HttpContext?.Connection.RemoteIpAddress?.MapToIPv4()?.ToString() ?? "UnKnown",
@@ -89,7 +92,7 @@ namespace North.Controllers
             try
             {
                 // TODO 代码复用此处
-                var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+                var userRepository = new UserRepository(_client, _appSetting.General.DataBase.EnabledName);
                 var currentOperateUserId = User.Identities.FirstOrDefault()?.FindFirst(ClaimTypes.SerialNumber)?.Value;
                 var currentOperateUserLastModifyTime = User.Identities.FirstOrDefault()?.FindFirst("LastModifyTime")?.Value;
                 var currentOperateUser = await userRepository.SingleAsync(u => u.Id.ToString() == currentOperateUserId);

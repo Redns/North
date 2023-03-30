@@ -1,10 +1,13 @@
-# ImageBed
+<p align="center" style="font-size:60px; font-weight:700; color:#23BFDF">
+   <img width="240" src="img/snow.svg" alt="Logo">
+    North
+</p>
 
 ![version: v1.1.4 (shields.io)](https://img.shields.io/badge/release-v2.2.13-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-6.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
 
-## Recent Progress
+> 抱歉朋友们，由于毕设赶进度，暂缓推进该项目。感谢各位朋友的关注与支持，该项目不会停止开发，后续将先更新一个不包含插件系统的版本。
 
-### 亿些小更改
+## Recent Progress
 
 1. 用户登录授权系统
 
@@ -22,15 +25,11 @@
 
 4. 其他
 
-   - 多数据库支持（MySql、SQL Server、Oracle、Sqlite、PostgreSQL、OpenGauss）
-   - 图片权限设置，更加多样化的管理模式
+   - 支持 docker 部署
+   - 可视化安装、迁移
+   - 支持用户组策略、图片权限设置
+   - 多数据库支持（MySql、SQL Server、Oracle、Sqlite、PostgreSQL、……）
    - ……
-
-### 何时发布
-
-在做了在做了，等我期末考试完 + 稍微做点毕设给老师点交代 + 读点老师布置的读书任务后，应该就有时间好好做了 [doge]
-
-![在做了在做了](img/不要催在做了.jpg)
 
 ## Background
 

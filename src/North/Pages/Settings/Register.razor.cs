@@ -8,7 +8,13 @@ namespace North.Pages.Settings
     {
         public bool SaveRunning { get; set; } = false;
         public bool RestoreRunning { get; set; } = false;
-        public RegisterSetting RegisterSetting { get; set; } = GlobalValues.AppSettings.Register.Clone();
+        public RegisterSetting RegisterSetting { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+            RegisterSetting = _appSetting.Register.Clone();
+        }
 
 
         /// <summary>
@@ -21,13 +27,13 @@ namespace North.Pages.Settings
             {
                 SaveRunning = true;
                 await Task.Delay(500);
-                GlobalValues.AppSettings.Register = RegisterSetting.Clone();
-                GlobalValues.AppSettings.Save();
+                _appSetting.Register = RegisterSetting.Clone();
+                _appSetting.Save();
                 _snackbar.Add("保存成功", Severity.Success);
             }
             catch(Exception e)
             {
-                RegisterSetting = GlobalValues.AppSettings.Register.Clone();
+                RegisterSetting = _appSetting.Register.Clone();
                 _snackbar.Add("保存失败，已还原设置", Severity.Error);
                 _logger.Error("Failed to save appearance settings", e);
             }
@@ -52,7 +58,7 @@ namespace North.Pages.Settings
             {
                 RestoreRunning = true;
                 await Task.Delay(500);
-                RegisterSetting = GlobalValues.AppSettings.Register.Clone();
+                RegisterSetting = _appSetting.Register.Clone();
                 _snackbar.Add("已还原设置", Severity.Success);
             }
             catch (Exception e)

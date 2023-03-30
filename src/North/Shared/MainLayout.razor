@@ -1,4 +1,5 @@
 ﻿@using North.Common
+@using North.Core.Common;
 @using North.Core.Entities
 @using North.RCL.Texts
 @using North.RCL.ToolBars
@@ -11,16 +12,17 @@
 @inject ISqlSugarClient _client
 @inject NavigationManager _nav
 @inject IHttpContextAccessor _accessor
+@inject AppSetting _appSetting
 
 <MudStack Spacing="0" Style="height:50px;">
-    <ActionToolBar IsExpanded="@IsExpanded" DarkTheme="@DarkTheme" Title="@GlobalValues.AppSettings.Appearance.Name"
+    <ActionToolBar IsExpanded="@IsExpanded" DarkTheme="@DarkTheme" Title="@_appSetting.Appearance.Name"
                    OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" OnSwitchTheme="@SwitchTheme" OnUserClick="@(() => SignOut())" />
     <MudDivider />
 </MudStack>
 <MudStack Row Spacing="0" Style="position: absolute; top: 50px; bottom: 0; left: 0; right:0;">
-    <NavMenu IsExpanded="@IsExpanded" OpenMiniOnHover="GlobalValues.AppSettings.Appearance.NavAutoExpand" Style="width:240px;" />
+    <NavMenu IsExpanded="@IsExpanded" OpenMiniOnHover="_appSetting.Appearance.NavAutoExpand" Style="width:240px;" />
     <MudStack Spacing="0" Class="mud-height-full mud-width-full">
-        @if (string.IsNullOrWhiteSpace(GlobalValues.AppSettings.Appearance.Footer))
+        @if (string.IsNullOrWhiteSpace(_appSetting.Appearance.Footer))
         {
             @Body
         }
@@ -29,7 +31,7 @@
             <MudStack Class="mud-width-full" Style="height:calc(100% - 40px);">
                 @Body
             </MudStack>
-            <FooterText Content="@GlobalValues.AppSettings.Appearance.Footer" Style="height:40px; text-align:center;" />
+            <FooterText Content="@_appSetting.Appearance.Footer" Style="height:40px; text-align:center;" />
         }
     </MudStack>
 </MudStack>

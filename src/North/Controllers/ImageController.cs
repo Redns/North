@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using North.Common;
+using North.Core.Common;
 using North.Core.Entities;
 using North.Core.Models;
 using North.Core.Repository;
@@ -15,16 +16,18 @@ namespace North.Controllers
     public class ImageController : ControllerBase
     {
         private readonly ILogger _logger;
+        private readonly AppSetting _appSetting;
         private readonly PluginsContext _context;
         private readonly ISqlSugarClient _client;
         private readonly IHttpContextAccessor _accessor;
 
-        public ImageController(ILogger logger, PluginsContext context, ISqlSugarClient client, IHttpContextAccessor accessor)
+        public ImageController(ILogger logger, AppSetting appSetting, PluginsContext context, ISqlSugarClient client, IHttpContextAccessor accessor)
         {
             _logger = logger;
             _context = context;
             _client = client;
             _accessor = accessor;
+            _appSetting = appSetting;
         }
 
 
@@ -47,7 +50,7 @@ namespace North.Controllers
                 var currentOperateUserIdentify = User.Identities.FirstOrDefault();
                 if (currentOperateUserIdentify?.IsAuthenticated is true)
                 {
-                    var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+                    var userRepository = new UserRepository(_client, _appSetting.General.DataBase.EnabledName);
                     var currentOperateUserId = currentOperateUserIdentify.FindFirst(ClaimTypes.SerialNumber)?.Value;
                     var currentOperateUserLastModifyTime = currentOperateUserIdentify.FindFirst("LastModifyTime")?.Value;
                     var currentOperateUser = await userRepository.SingleAsync(u => u.Id.ToString() == currentOperateUserId);
@@ -90,7 +93,7 @@ namespace North.Controllers
                 var currentOperateUserIdentify = User.Identities.FirstOrDefault();
                 if (currentOperateUserIdentify?.IsAuthenticated is true)
                 {
-                    var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+                    var userRepository = new UserRepository(_client, _appSetting.General.DataBase.EnabledName);
                     var currentOperateUserId = currentOperateUserIdentify.FindFirst(ClaimTypes.SerialNumber)?.Value;
                     var currentOperateUserLastModifyTime = currentOperateUserIdentify.FindFirst("LastModifyTime")?.Value;
                     var currentOperateUser = await userRepository.SingleAsync(u => u.Id.ToString() == currentOperateUserId);

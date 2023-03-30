@@ -21,18 +21,5 @@ namespace North.Common
             get { return _appSetting ??= AppSetting.Load(); }
             set { _appSetting = value; }
         }
-
-        /// <summary>
-        /// 应用程序是否安装完成
-        /// </summary>
-        private static bool? _isApplicationInstalled = null;
-        public static bool IsApplicationInstalled
-        {
-            get
-            {
-                // 根据有无数据库判断是否安装完成
-                return _isApplicationInstalled ??= AppSettings.General.DataBase.Databases.Any();
-            }
-        }
     }
 }

@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MudBlazor;
-using North.Common;
-using North.Core.Common;
 using North.Core.Entities;
 using North.Core.Helpers;
 using North.Core.Models.Notification;
@@ -30,18 +28,12 @@ namespace North.Pages.Auth
         public RegisterModel Model { get; set; } = new RegisterModel();
 
         /// <summary>
-        /// 系统注册设置
-        /// </summary>
-        public RegisterSetting RegisterSettings { get; set; } = GlobalValues.AppSettings.Register;
-
-
-        /// <summary>
         /// 检查系统是否开放注册
         /// </summary>
         /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
-            if (!RegisterSettings.AllowRegister)
+            if (!_appSetting.Register.AllowRegister)
             {
                 _snackbar.Add("系统当前未开放注册", Severity.Error);
                 _nav.NavigateTo("login", true);
@@ -61,7 +53,7 @@ namespace North.Pages.Auth
             {
                 await InvokeAsync(() =>
                 {
-                    BackgroundImageUrl = GlobalValues.AppSettings.Appearance.BackgroundUrl;
+                    BackgroundImageUrl = _appSetting.Appearance.BackgroundUrl;
                     StateHasChanged();
                 });
             }
@@ -87,7 +79,7 @@ namespace North.Pages.Auth
                 }
 
                 // 判断账号是否已被注册
-                var userRepository = new UserRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName);
+                var userRepository = new UserRepository(_client, _appSetting.General.DataBase.EnabledName);
                 if (await userRepository.AnyAsync(u => u.Email == Model.Email))
                 {
                     _snackbar.Add("邮箱已被注册", Severity.Error); return;
@@ -137,24 +129,24 @@ namespace North.Pages.Auth
         /// <returns></returns>
         private async Task SendRegisterVerifyEmail()
         {
-            var emailSettings = GlobalValues.AppSettings.Notify.Email;
+            var emailSettings = _appSetting.Notify.Email;
 
             // 添加验证邮件至数据库
             var verifyEmail = new EmailEntity 
             {
                 Email = Model.Email,
-                ExpireTime = DateTime.Now.AddMilliseconds(RegisterSettings.VerifyEmailValidTime),
+                ExpireTime = DateTime.Now.AddMilliseconds(_appSetting.Register.VerifyEmailValidTime),
                 VerifyType = VerifyType.Register
             };
-            await new EmailRepository(_client, GlobalValues.AppSettings.General.DataBase.EnabledName).AddAsync(verifyEmail);
+            await new EmailRepository(_client, _appSetting.General.DataBase.EnabledName).AddAsync(verifyEmail);
 
             // 构造验证邮件并发送
-            var verifyEmailBody = $"欢迎注册 {GlobalValues.AppSettings.Appearance.Name} 图床，" +
+            var verifyEmailBody = $"欢迎注册 {_appSetting.Appearance.Name} 图床，" +
                                   $"<a href=\"{_nav.BaseUri}verify?type=register&id={verifyEmail.Id}\">点击链接</a> " +
                                   $"以验证您的账户 {Model.Name}";
-            await _poster.SendAsync(new MailModel(new MailAddress(GlobalValues.AppSettings.Appearance.Name, emailSettings.Account),
+            await _poster.SendAsync(new MailModel(new MailAddress(_appSetting.Appearance.Name, emailSettings.Account),
                                                   new MailAddress(Model.Name, Model.Email),
-                                                  $"{GlobalValues.AppSettings.Appearance.Name} 图床注册验证",
+                                                  $"{_appSetting.Appearance.Name} 图床注册验证",
                                                   verifyEmailBody,
                                                   emailSettings.Code,
                                                   true));
@@ -170,10 +162,10 @@ namespace North.Pages.Auth
             try
             {
                 var avatar = args.File;
-                var avatarMaxSize = RegisterSettings.MaxAvatarSize * 1024 * 1024;
+                var avatarMaxSize = _appSetting.Register.MaxAvatarSize * 1024 * 1024;
                 if (avatar.Size > avatarMaxSize)
                 {
-                    _snackbar.Add($"头像大小不能超过 {RegisterSettings.MaxAvatarSize} MB", Severity.Error); return;
+                    _snackbar.Add($"头像大小不能超过 {_appSetting.Register.MaxAvatarSize} MB", Severity.Error); return;
                 }
 
                 // 上传图片至 Blob

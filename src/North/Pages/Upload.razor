@@ -26,20 +26,21 @@
                 <MudText Typo="Typo.h6">点击或拖拽图片至此处上传</MudText>
             </MudStack>
         </MudPaper>
-        <div class="d-flex flex-row justify-center gap-3 mt-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" StartIcon="@Icons.Outlined.FileUpload">上 传</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Outlined.Clear">清 空</MudButton>
+        <div class="d-flex flex-row justify-space-between gap-3 mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" StartIcon="@Icons.Outlined.FileUpload">上传全部</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Outlined.Clear">清空列表</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Warning" StartIcon="@Icons.Outlined.Lock">访问权限</MudButton>
             <MudMenu ActivationEvent="@MouseEvent.MouseOver" 
                      AnchorOrigin="Origin.CenterRight" TransformOrigin="Origin.TopLeft">
                 <ActivatorContent>
-                    <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Outlined.ContentCopy">拷 贝</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Outlined.ContentCopy">拷贝链接</MudButton>
                 </ActivatorContent>
                 <ChildContent>
                     <MudList Clickable @bind-SelectedValue="@UrlType">
-                        <MudListItem Value="ImageUrlType.Markdown" Style="height:40px;">
+                        <MudListItem Value="ImageUrlType.Markdown" Style="height:40px; color:gray;">
                             <IconfontText Icon="icon-file-markdown" Text="Markdown" Color="#B0BEC5" />
                         </MudListItem>
-                        <MudListItem Value="ImageUrlType.Url" Style="height:40px;">
+                        <MudListItem Value="ImageUrlType.Url" Style="height:40px; color:gray;">
                             <IconfontText Icon="icon-URLScheme" Text="Url" Color="#81C784" />
                         </MudListItem>
                         <MudListItem Value="ImageUrlType.Html" Style="height:40px;">
@@ -49,24 +50,12 @@
                             <IconfontText Icon="icon-14" Text="UBB" Color="#2196F3" />
                         </MudListItem>
                     </MudList>
-                    @*<MudMenuItem Style="height:40px;">
-                        <IconfontText Icon="icon-file-markdown" Text="Markdown" Color="#B0BEC5" />
-                    </MudMenuItem>
-                    <MudMenuItem Style="height:40px;">
-                        <IconfontText Icon="icon-URLScheme" Text="Url" Color="#81C784" />
-                    </MudMenuItem>
-                    <MudMenuItem Style="height:40px;">
-                        <IconfontText Icon="icon-html" Text="Html" Color="#E1A983" />
-                    </MudMenuItem>
-                    <MudMenuItem Style="height:40px;">
-                        <IconfontText Icon="icon-14" Text="UBB" Color="#2196F3" />
-                    </MudMenuItem>*@
                 </ChildContent>
             </MudMenu>
         </div>
         @foreach (var image in Images)
         {
-            <MudPaper Outlined Square Class="mud-width-full mb-4">
+            <MudPaper Outlined Square Class="mud-width-full mb-4 mt-4">
                 <MudStack Row Class="mud-width-full">
                     <MudAvatar Image="@image.PreviewUrl" Square Style="width:50px; height:50px;" />
                     <MudStack Spacing="0" Class="mud-width-full">

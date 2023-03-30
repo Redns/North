@@ -91,7 +91,57 @@ namespace North.Core.Common
         /// <summary>
         /// 可用的数据库
         /// </summary>
-        public Database[] Databases { get; set; }
+        private Database[] _databases;
+        public Database[] Databases
+        {
+            get { return _databases; }
+            set
+            {
+                _databases = value;
+                _isApplicationInstalled = null;
+                _databaseConnectionConfigs.Clear();
+            }
+        }
+
+        /// <summary>
+        /// SqlSugar数据库配置对象
+        /// </summary>
+        private List<ConnectionConfig> _databaseConnectionConfigs = new();
+        [JsonIgnore]
+        public List<ConnectionConfig> DatabaseConnectionConfigs
+        {
+            get
+            {
+                if(!_databaseConnectionConfigs.Any())
+                {
+                    foreach(var db in Databases)
+                    {
+                        _databaseConnectionConfigs.Add(new ConnectionConfig
+                        {
+                            ConfigId = db.Name,
+                            DbType = db.Type,
+                            ConnectionString = db.ConnectionString,
+                            IsAutoCloseConnection = db.IsAutoCloseConnection,
+                        });
+                    }
+                }
+                return _databaseConnectionConfigs;
+            }
+        }
+
+        /// <summary>
+        /// 应用程序是否安装完成
+        /// </summary>
+        private bool? _isApplicationInstalled = null;
+        [JsonIgnore]
+        public bool IsApplicationInstalled
+        {
+            get
+            {
+                // 根据有无数据库判断是否安装完成
+                return _isApplicationInstalled ??= Databases.Any();
+            }
+        }
 
         public DataBaseSetting(string enabledName, Database[] databases)
         {

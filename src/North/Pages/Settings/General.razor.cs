@@ -8,7 +8,13 @@ namespace North.Pages.Settings
         private bool SaveRunning { get; set; } = false; 
         private bool RestoreRunning { get; set; } = false;
         private bool IsDialogVisiable { get; set; } = false;
-        private GeneralSetting GeneralSetting { get; set; } = GlobalValues.AppSettings.General.Clone();
+        private GeneralSetting GeneralSetting { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+            GeneralSetting = _appSetting.General.Clone();
+        }
 
         private void OpenDatabaseEditDialog()
         {
@@ -54,7 +60,7 @@ namespace North.Pages.Settings
             }
             catch (Exception e)
             {
-                GeneralSetting = GlobalValues.AppSettings.General.Clone();
+                GeneralSetting = _appSetting.General.Clone();
 
                 _snackbar.Add("保存失败，已还原设置", Severity.Error);
                 _logger.Error("Failed to save general settings", e);
@@ -80,7 +86,7 @@ namespace North.Pages.Settings
                     StateHasChanged();
                 });
 
-                GeneralSetting = GlobalValues.AppSettings.General.Clone();
+                GeneralSetting = _appSetting.General.Clone();
 
                 _snackbar.Add("已还原设置", Severity.Success);
             }

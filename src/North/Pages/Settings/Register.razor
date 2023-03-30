@@ -1,11 +1,13 @@
 ﻿@page "/settings/register"
 
+@using North.Core.Common;
 @using North.Core.Entities
 
 @inject ILogger _logger
 @inject ISnackbar _snackbar
 @inject IHttpContextAccessor _accessor
 @inject NavigationManager _navigationManager
+@inject AppSetting _appSetting
 
 <AuthorizeView Roles="User">
     <MudStack Spacing="10" Row AlignItems="AlignItems.Center" Class="message_warn">

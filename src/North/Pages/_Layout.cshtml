@@ -1,8 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
 @using North.Common
+@using North.Core.Common;
 @using North.Pages.Auth
+
 @namespace North.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@inject AppSetting _appSetting
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +15,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <base href="~/" />
         <!-- 标签栏图标 -->
-        <link rel="shortcut icon" href="@GlobalValues.AppSettings.Appearance.Icon" type="image/x-icon"/>
+        <link rel="shortcut icon" href="@_appSetting.Appearance.Icon" type="image/x-icon"/>
         <link href="North.styles.css" rel="stylesheet" />
         <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
     </head>
