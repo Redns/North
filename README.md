@@ -1,7 +1,6 @@
-<p align="center" style="font-size:60px; font-weight:700; color:#23BFDF">
-   <img width="240" src="img/snow.svg" alt="Logo">
-    North
-</p>
+<img src="img/snow.svg" alt="North" width="120" height="120" align="right" />
+
+# North
 
 ![version: v1.1.4 (shields.io)](https://img.shields.io/badge/release-v2.2.13-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-6.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
 
