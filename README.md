@@ -1,4 +1,4 @@
-<img src="img/snow.svg" alt="North" width="120" height="120" align="right" />
+<img src="https://jing-image.oss-cn-chengdu.aliyuncs.com/snow.svg" alt="North" width="120" height="120" align="right" />
 
 # North
 
@@ -10,17 +10,17 @@
 
 1. 用户登录授权系统
 
-   ![image-20221202212357589](img/登录页面.png)
+   ![image-20221202212357589](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E7%99%BB%E5%BD%95%E9%A1%B5%E9%9D%A2.png)
 
 2. 全新风格 UI
 
-   ![image-20221202212640017](img/主页面.png)
+   ![image-20221202212640017](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E4%B8%BB%E9%A1%B5%E9%9D%A2.png)
 
 3. 插件化开发
 
-   ![image-20221202212734313](img/插件化_图片上传流程.png)
+   ![image-20221202212734313](https://jing-image.oss-cn-chengdu.aliyuncs.com/4204FR6J.png)
 
-   ![](img/插件上下文架构.png)
+   ![插件上下文结构](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E6%8F%92%E4%BB%B6%E4%B8%8A%E4%B8%8B%E6%96%87%E6%9E%B6%E6%9E%84.png)
 
 4. 其他
 
@@ -244,29 +244,29 @@
 
 **web 界面上传**
 
-![web界面上传](img/上传图片.gif)
+![web界面上传](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87.gif)
 
 **剪贴板上传**
 
-![剪贴板上传](img/剪贴板上传.gif)
+![剪贴板上传](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E5%89%AA%E8%B4%B4%E6%9D%BF%E4%B8%8A%E4%BC%A0.gif)
 
 #### 删除
 
-![删除图片](img/删除图片.gif)
+![删除图片](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E5%88%A0%E9%99%A4%E5%9B%BE%E7%89%87.gif)
 
 #### 导入导出
 
 **导入图片**
 
-![导入图片](img/导入图片.gif)
+![导入图片](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E5%AF%BC%E5%85%A5%E5%9B%BE%E7%89%87.gif)
 
 **导出图片**
 
-![导出图片](img/导出图片.gif)
+![导出图片](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E5%AF%BC%E5%87%BA%E5%9B%BE%E7%89%87.gif)
 
 #### 视图切换
 
-![视图切换](img/视图切换.gif)
+![视图切换](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E8%A7%86%E5%9B%BE%E5%88%87%E6%8D%A2.gif)
 
 ## API
 
@@ -337,20 +337,8 @@
 
 请尝试直接压缩图片，而不是包含图片的文件夹
 
-### S4. 仪表盘界面未出现统计数据
-
-仪表盘正常显示时的界面如下
-
-![2F4TD6N2](https://jing-image.oss-cn-chengdu.aliyuncs.com/2F4TD6N2.png)
-
-下方的统计曲线默认每天统计一次昨日的数据，统计时间可在设置中选择，第一天安装没有数据曲线是正常的。若长时间未显示曲线请确保程序版本高于 `2.1.4`，仍未解决请在 [Issue](https://github.com/Redns/ImageBed/issues) 提问并附上日志 (路径为 `Data/Logs/imagebed.log`)。
-
-### S5. 通知设置中的邮箱授权码如何获取？
+### S4. 通知设置中的邮箱授权码如何获取？
 
 请移步 [这里](https://service.mail.qq.com/cgi-bin/help?subtype=1&&no=1001256&&id=28)
-
-### S6. 修改页脚后页面未改变？
-
-请尝试刷新页面
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Redns/ImageBed&type=Date)](https://star-history.com/#Redns/ImageBed&Date)

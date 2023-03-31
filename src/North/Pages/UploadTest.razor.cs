@@ -34,13 +34,11 @@ namespace North.Pages
         {
             try
             {
-                using (var image = args.GetMultipleFiles()[0].OpenReadStream(10 * 1024 * 1024))
-                {
-                    var blobUrl = await _js.UploadToBlobAsync(image, "image/jpg");
-                    //await JS.InvokeVoidAsync("copyTextToClipboard", blobUrl);
-                    var res = await _js.CopyToClipboardAsync(blobUrl);
-                    _snackbar.Add($"[Upload success] {blobUrl}", Severity.Success);
-                }
+                using var image = args.GetMultipleFiles()[0].OpenReadStream(10 * 1024 * 1024);
+                var blobUrl = await _js.UploadToBlobAsync(image, "image/jpg");
+                //await JS.InvokeVoidAsync("copyTextToClipboard", blobUrl);
+                var res = await _js.CopyToClipboardAsync(blobUrl);
+                _snackbar.Add($"[Upload success] {blobUrl}", Severity.Success);
             }
             catch (Exception e)
             {
