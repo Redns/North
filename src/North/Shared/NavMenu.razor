@@ -1,10 +1,10 @@
 ﻿<AuthorizeView Roles="User">
     <MudDrawer @bind-Open="@IsExpanded" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini">
         <MudNavMenu Rounded Margin="Margin.Normal" Color="Color.Tertiary" Class="pa-2" id="nav">
-            <MudNavLink Href="/upload" Icon="@Icons.Outlined.Upload">上 传</MudNavLink>
-            <MudNavLink Href="/dashboard" Icon="@Icons.Outlined.Speed">仪表盘</MudNavLink>
-            <MudNavLink Href="/images" Icon="@Icons.Outlined.BrokenImage">图 库</MudNavLink>
-            <MudNavGroup Icon="@Icons.Outlined.Settings" Title="设 置" HideExpandIcon>
+            <MudNavLink Href="/upload" Icon="@Icons.Material.Outlined.Upload">上 传</MudNavLink>
+            <MudNavLink Href="/dashboard" Icon="@Icons.Material.Outlined.Speed">仪表盘</MudNavLink>
+            <MudNavLink Href="/images" Icon="@Icons.Material.Outlined.BrokenImage">图 库</MudNavLink>
+            <MudNavGroup Icon="@Icons.Material.Outlined.Settings" Title="设 置" HideExpandIcon>
                 
             </MudNavGroup>
         </MudNavMenu>
@@ -14,18 +14,18 @@
     <MudDrawer @bind-Open="@IsExpanded" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="OpenMiniOnHover" Class="mud-height-full" Style="overflow-x:hidden;" id="nav">
         <MudNavMenu Rounded Margin="Margin.Normal" Color="Color.Tertiary" Class="mud-heigth-full" Style="@Style">
             <MudNavLink Href="/upload" Icon="@Icons.Material.Outlined.FileUpload">上 传</MudNavLink>
-            <MudNavLink Href="/dashboard" Icon="@Icons.Outlined.Speed">仪表盘</MudNavLink>
-            <MudNavLink Href="/images" Icon="@Icons.Outlined.BrokenImage">图 库</MudNavLink>
-            <MudNavLink Href="/users" Icon="@Icons.Outlined.People">用户组</MudNavLink>
-            <MudNavLink Href="/plugins" Icon="@Icons.Outlined.Workspaces">插 件</MudNavLink>
-            <MudNavGroup Icon="@Icons.Outlined.Settings" Title="设 置" HideExpandIcon>
-                <MudNavLink Href="/settings/general" Icon="@Icons.Outlined.Handyman">通 用</MudNavLink>
-                <MudNavLink Href="/settings/appearance" Icon="@Icons.Outlined.ColorLens">外 观</MudNavLink>
-                <MudNavLink Href="/settings/register" Icon="@Icons.Outlined.PersonAddAlt">注 册</MudNavLink>
-                <MudNavLink Href="/settings/auth" Icon="@Icons.Outlined.Security">授 权</MudNavLink>
-                <MudNavLink Href="/settings/notification" Icon="@Icons.Outlined.Notifications">通 知</MudNavLink>
-                <MudNavLink Href="/settings/log" Icon="@Icons.Outlined.LibraryBooks">日 志</MudNavLink>
-                <MudNavLink Href="/settings/about" Icon="@Icons.Outlined.Info">关 于</MudNavLink>
+            <MudNavLink Href="/dashboard" Icon="@Icons.Material.Outlined.Speed">仪表盘</MudNavLink>
+            <MudNavLink Href="/images" Icon="@Icons.Material.Outlined.BrokenImage">图 库</MudNavLink>
+            <MudNavLink Href="/users" Icon="@Icons.Material.Outlined.People">用户组</MudNavLink>
+            <MudNavLink Href="/plugins" Icon="@Icons.Material.Outlined.Workspaces">插 件</MudNavLink>
+            <MudNavGroup Icon="@Icons.Material.Outlined.Settings" Title="设 置" HideExpandIcon>
+                <MudNavLink Href="/settings/general" Icon="@Icons.Material.Outlined.Handyman">通 用</MudNavLink>
+                <MudNavLink Href="/settings/appearance" Icon="@Icons.Material.Outlined.ColorLens">外 观</MudNavLink>
+                <MudNavLink Href="/settings/register" Icon="@Icons.Material.Outlined.PersonAddAlt">注 册</MudNavLink>
+                <MudNavLink Href="/settings/auth" Icon="@Icons.Material.Outlined.Security">授 权</MudNavLink>
+                <MudNavLink Href="/settings/notification" Icon="@Icons.Material.Outlined.Notifications">通 知</MudNavLink>
+                <MudNavLink Href="/settings/log" Icon="@Icons.Material.Outlined.LibraryBooks">日 志</MudNavLink>
+                <MudNavLink Href="/settings/about" Icon="@Icons.Material.Outlined.Info">关 于</MudNavLink>
             </MudNavGroup>
         </MudNavMenu>
     </MudDrawer>

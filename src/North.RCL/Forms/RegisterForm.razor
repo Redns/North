@@ -6,7 +6,7 @@
     <TitleText Text="@Title" Class="mb-3" Style="font-size:35px; font-weight:500; text-align:center;  user-select:none;" />
     @if (string.IsNullOrEmpty(Model.Avatar))
     {
-        <MudIconButton HtmlTag="label" for="avatar_upload" Color="Color.Success" Icon="@Icons.Filled.CloudUpload"
+        <MudIconButton HtmlTag="label" for="avatar_upload" Color="Color.Success" Icon="@Icons.Material.Filled.CloudUpload"
                        Class="mb-3" Style="width:fit-content; margin:auto; min-width:55px; min-height:55px;">
         </MudIconButton>
     }
@@ -18,15 +18,15 @@
         <DataAnnotationsValidator/>
         <MudTextField @bind-Value="@Model.Name" For="@(() => Model.Name)"
                       Placeholder="用户名" Variant="Variant.Outlined" Margin="Margin.Dense"
-                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Person"
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Person"
                       Class="mb-3"></MudTextField>
         <MudTextField @bind-Value="@Model.Email" For="@(() => Model.Email)"
                       Placeholder="邮 箱" Variant="Variant.Outlined" Margin="Margin.Dense" 
-                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Outlined.Email"
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Outlined.Email"
                       Class="mb-3"></MudTextField>
         <MudTextField @bind-Value="@Model.Password" InputType="InputType.Password"  For="@(() => Model.Password)"
                       Placeholder="密 码" Variant="Variant.Outlined" Margin="Margin.Dense" 
-                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Lock" Immediate
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Lock" Immediate
                       OnKeyDown="@OnEnter" Class="mb-3"></MudTextField>
         <MudButton ButtonType="ButtonType.Submit" Class="mb-3"
                    Variant="Variant.Filled" Color="Color.Tertiary" FullWidth 

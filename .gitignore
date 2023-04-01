@@ -62,6 +62,7 @@ src/North.Benchmark/obj
 #  North.Benchmark End
 
 # North.Plugins Start
+src/North.Plugin.LocalStorage/*
 src/North.Plugin.Bingimg/*
 src/North.Plugin.Firewall/*
 src/North.PluginTest/*

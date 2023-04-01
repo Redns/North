@@ -25,7 +25,7 @@ namespace North.Common
 
         #region 中间件
         // TODO 中间件测试
-        private static Func<HttpContext, RequestDelegate, Task> _middlewares = (context, next) =>
+        private static readonly Func<HttpContext, RequestDelegate, Task> _middlewares = (context, next) =>
         {
             var ipAddress = context.Connection.RemoteIpAddress?.MapToIPv4().ToString();
             if (ipAddress == "0.0.0.1")

@@ -106,7 +106,7 @@ namespace North.Core.Common
         /// <summary>
         /// SqlSugar数据库配置对象
         /// </summary>
-        private List<ConnectionConfig> _databaseConnectionConfigs = new();
+        private readonly List<ConnectionConfig> _databaseConnectionConfigs = new();
         [JsonIgnore]
         public List<ConnectionConfig> DatabaseConnectionConfigs
         {
@@ -192,7 +192,7 @@ namespace North.Core.Common
         [JsonIgnore]
         public string IconClass => Type switch
         {
-            DbType.MySqlConnector => "iconfont icon-mysql",
+            DbType.MySql => "iconfont icon-mysql",
             DbType.SqlServer => "iconfont icon-SQLserver",
             DbType.Oracle => "iconfont icon-xuniku",
             DbType.PostgreSQL => "iconfont icon-postgresql",
@@ -207,7 +207,7 @@ namespace North.Core.Common
         [JsonIgnore]
         public string IconColor => Type switch
         {
-            DbType.MySqlConnector => "#2A8393",
+            DbType.MySql => "#2A8393",
             DbType.SqlServer => "#DA5969",
             DbType.Oracle => "#F80F0A",
             DbType.PostgreSQL => "#2F5F91",
@@ -222,7 +222,7 @@ namespace North.Core.Common
         [JsonIgnore]
         public string ConnectionStringTemplate => Type switch
         {
-            DbType.MySqlConnector => "server=localhost;Database=SqlSugar4xTest;Uid=root;Pwd=haosql;",
+            DbType.MySql => "server=localhost;Database=SqlSugar4xTest;Uid=root;Pwd=haosql;",
             DbType.SqlServer => "server=.;uid=sa;pwd=haosql;database=SQLSUGAR4XTEST",
             DbType.Oracle => "Data Source=localhost/orcl;User ID=system;Password=haha;",
             DbType.PostgreSQL => "PORT=5432;DATABASE=SqlSugar4xTest;HOST=localhost;PASSWORD=haosql;USER ID=postgres",

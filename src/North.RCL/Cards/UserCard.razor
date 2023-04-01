@@ -7,14 +7,14 @@
     </MudBadge>
     <MudPaper Elevation="0" Class="d-flex flex-column flex-auto ml-5">
         <div class="d-flex flex-row align-center gap-x-0">
-            <IconText Icon="@Icons.Outlined.Person" Text="@User.Name" Typo="Typo.subtitle1" Link="@($"/user/{User.Id}")"></IconText>
+            <IconText Icon="@Icons.Material.Outlined.Person" Text="@User.Name" Typo="Typo.subtitle1" Link="@($"/user/{User.Id}")"></IconText>
             <div class="d-flex flex-row gap-0 ml-2">
                 <MudChip Color="@PermissionChipColor" Size="Size.Small">@PermissionChipText</MudChip>
                 <MudChip Color="@ApiChipColor" Size="Size.Small">API</MudChip>
             </div>
         </div>
-        <IconText Icon="@Icons.Outlined.Email" Text="@User.Email" Typo="Typo.subtitle1" Link="@($"/user/{User.Id}")"></IconText>
-        <IconText Icon="@Icons.Outlined.CloudUpload" Text="@($"{User.SingleMaxUploadNums} 张 / {User.SingleMaxUploadCapacity:f2} MB (单次)，{User.MaxUploadNums} 张 / {User.MaxUploadCapacity:f2} MB（全部）")" Typo="Typo.subtitle1"></IconText>
+        <IconText Icon="@Icons.Material.Outlined.Email" Text="@User.Email" Typo="Typo.subtitle1" Link="@($"/user/{User.Id}")"></IconText>
+        <IconText Icon="@Icons.Material.Outlined.CloudUpload" Text="@($"{User.SingleMaxUploadNums} 张 / {User.SingleMaxUploadCapacity:f2} MB (单次)，{User.MaxUploadNums} 张 / {User.MaxUploadCapacity:f2} MB（全部）")" Typo="Typo.subtitle1"></IconText>
     </MudPaper>
     <MudPaper Elevation="0" Class="d-flex flex-column gap-x-0 mx-2" Style="width:fit-content;">
         <MudButton Color="Color.Info" Variant="Variant.Text" OnClick="@OnEdit">修 改</MudButton>

@@ -39,7 +39,7 @@
                     }
                 </MudSelect>
                 <MudTooltip Text="编辑" Placement="Placement.Right">
-                    <MudIconButton Icon="@Icons.Outlined.Edit" OnClick="@OpenDatabaseEditDialog" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" OnClick="@OpenDatabaseEditDialog" />
                 </MudTooltip>
             </MudStack>
         </MudStack>
@@ -67,7 +67,7 @@
     <MudDialog @bind-IsVisible="@IsDialogVisiable" Options="new DialogOptions(){ MaxWidth = MaxWidth.Large }">
         <TitleContent>
             <MudStack Row AlignItems="AlignItems.Center">
-                <MudIcon Icon="@Icons.Filled.Storage" />
+                <MudIcon Icon="@Icons.Material.Filled.Storage" />
                 <MudText Typo="Typo.h6">数据库源</MudText>
             </MudStack>
         </TitleContent>
@@ -75,16 +75,16 @@
             <MudTable Items="@GeneralSetting.DataBase.Databases" Context="db" Breakpoint="Breakpoint.Sm" Virtualize Hover FixedHeader FixedFooter AllowUnsorted="false" Elevation="0">
                 <HeaderContent>
                     <MudTh>
-                        <IconText Icon="@Icons.Outlined.Key" IconStyle="transform:rotate(135deg)" Text="名 称" Typo="Typo.subtitle1" Style="width:100%;"></IconText>
+                        <IconText Icon="@Icons.Material.Outlined.Key" IconStyle="transform:rotate(135deg)" Text="名 称" Typo="Typo.subtitle1" Style="width:100%;"></IconText>
                     </MudTh>
                     <MudTh>
-                        <IconText Icon="@Icons.Outlined.LocalFireDepartment" Text="类 型" Typo="Typo.subtitle1" Style="width:100%;"></IconText>
+                        <IconText Icon="@Icons.Material.Outlined.LocalFireDepartment" Text="类 型" Typo="Typo.subtitle1" Style="width:100%;"></IconText>
                     </MudTh>
                     <MudTh>
-                        <IconText Icon="@Icons.Outlined.InsertLink" IconStyle="transform:rotate(135deg)" Text="连接字符串" Typo="Typo.subtitle1" Style="width:100%;"></IconText>
+                        <IconText Icon="@Icons.Material.Outlined.InsertLink" IconStyle="transform:rotate(135deg)" Text="连接字符串" Typo="Typo.subtitle1" Style="width:100%;"></IconText>
                     </MudTh>
                     <MudTh>
-                        <IconText Icon="@Icons.Outlined.ModeEdit" Text="编 辑" Typo="Typo.subtitle1" Style="width:100%;"></IconText>
+                        <IconText Icon="@Icons.Material.Outlined.ModeEdit" Text="编 辑" Typo="Typo.subtitle1" Style="width:100%;"></IconText>
                     </MudTh>
                 </HeaderContent>
                 <RowTemplate>
@@ -101,9 +101,9 @@
                     </MudTd>
                     <MudTd DataLabel="编 辑" Style="text-align:center;">
                         <MudStack Row Spacing="2">
-                            <MudButton StartIcon="@Icons.Filled.Sync" Color="Color.Tertiary" Variant="Variant.Outlined" OnClick="@(() => {})">更 新</MudButton>
-                            <MudButton StartIcon="@Icons.Outlined.CallMissedOutgoing" Color="Color.Warning" Variant="Variant.Outlined" OnClick="@(() => {})">迁 移</MudButton>
-                            <MudButton StartIcon="@Icons.Outlined.Delete" Color="Color.Error" Variant="Variant.Outlined" OnClick="@(() => RemoveDatabase(db))">删 除</MudButton>
+                            <MudButton StartIcon="@Icons.Material.Filled.Sync" Color="Color.Tertiary" Variant="Variant.Outlined" OnClick="@(() => {})">更 新</MudButton>
+                            <MudButton StartIcon="@Icons.Material.Outlined.CallMissedOutgoing" Color="Color.Warning" Variant="Variant.Outlined" OnClick="@(() => {})">迁 移</MudButton>
+                            <MudButton StartIcon="@Icons.Material.Outlined.Delete" Color="Color.Error" Variant="Variant.Outlined" OnClick="@(() => RemoveDatabase(db))">删 除</MudButton>
                         </MudStack>
                     </MudTd>
                 </RowTemplate>

@@ -24,7 +24,7 @@
                             Margin="Margin.Dense" Variant="Variant.Outlined"
                             Style="width:90%; max-width:260px; height:35px;" />
                 <MudTooltip Text="点击下载日志" Placement="Placement.Right">
-                    <MudIconButton Icon="@Icons.Filled.Download" Variant="Variant.Outlined" Color="Color.Info" OnClick="DownloadLogfile"/>
+                    <MudIconButton Icon="@Icons.Material.Filled.Download" Variant="Variant.Outlined" Color="Color.Info" OnClick="DownloadLogfile" />
                 </MudTooltip>
             </MudStack>
         </MudStack>
@@ -44,7 +44,7 @@
                     <MudSelectItem Value="LogLevel.Error" Style="height:35px;" />
                         <MudSelectItem Value="LogLevel.Critical" Style="height:35px;" />
                     </MudSelect>
-                <MudIcon Icon="@Icons.Outlined.ArrowRightAlt" />
+                <MudIcon Icon="@Icons.Material.Outlined.ArrowRightAlt" />
                 <MudSelect @bind-Value="@LogSetting.Levels.Max"
                             Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter"
                             Style="width:90%; max-width:140px; max-height:35px;">

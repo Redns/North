@@ -8,7 +8,7 @@
         {
             <MudTextField T="string" Value="@p.GetValue(Model)?.ToString()" ValueChanged="(e) => p.SetValue(Model, e)"
                           Placeholder="@p.Name" Variant="Variant.Outlined" Margin="Margin.Dense"
-                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Filled.Person"
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Person"
                           Class="mb-3"></MudTextField>
             <MudText>@p.GetValue(Model)</MudText>
         }
