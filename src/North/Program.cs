@@ -111,7 +111,7 @@ namespace North
                     };
                 });
                 builder.Services.AddSingleton<ISearcher, Searcher>();
-
+                
 
                 // 构建 web 应用
                 app = builder.Build();

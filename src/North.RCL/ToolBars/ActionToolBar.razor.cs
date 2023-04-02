@@ -25,7 +25,7 @@ namespace North.RCL.ToolBars
         /// <summary>
         /// 切换主题按钮图标
         /// </summary>
-        public string ThemeSwitchIcon => DarkTheme ? Icons.Material.Outlined.WbSunny : Icons.Outlined.DarkMode;
+        public string ThemeSwitchIcon => DarkTheme ? Icons.Material.Outlined.WbSunny : Icons.Material.Outlined.DarkMode;
 
         /// <summary>
         /// 切换主题按钮提示

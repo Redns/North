@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Net.Sockets;
-using System.Text;
 using Timer = System.Timers.Timer;
 
 namespace North.Core.Helpers

@@ -1,4 +1,5 @@
-﻿using MudBlazor;
+﻿using Masuit.Tools.Html;
+using MudBlazor;
 using North.Common;
 using North.Core.Common;
 
@@ -26,9 +27,16 @@ namespace North.Pages.Settings
             {
                 SaveRunning = true;
                 await Task.Delay(400);
+
+                // 防 XSS 处理
+                AppearanceSettings.Footer = AppearanceSettings.Footer.HtmlSantinizerStandard();
+                
+                // 修改全局设置并保存至本地
                 _appSetting.Appearance = AppearanceSettings.Clone();
                 _appSetting.Save();
                 _snackbar.Add("保存成功", Severity.Success);
+
+                // 强制重新刷新该页面以更新网站样式
                 _navigationManager.NavigateTo(_navigationManager.Uri, true);
             }
             catch(Exception e)
