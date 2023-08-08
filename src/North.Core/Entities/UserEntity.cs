@@ -84,7 +84,7 @@ namespace North.Core.Entities
         /// <summary>
         /// 最大上传数量（张）
         /// </summary>
-        public long MaxUploadNums { get; set; } = 0;
+        public int MaxUploadNums { get; set; } = 0;
 
         /// <summary>
         /// 最大存储容量（MB）
@@ -92,14 +92,60 @@ namespace North.Core.Entities
         public double MaxUploadCapacity { get; set; } = 0;
 
         /// <summary>
-        /// 单次最大上传数量（张）
+        /// 最大存储容量（Byte）
         /// </summary>
-        public long SingleMaxUploadNums { get; set; } = 0L;
+        [SugarColumn(IsIgnore = true)]
+        public double MaxUploadCapacityByte => MaxUploadCapacity * 1024 * 1024;
 
         /// <summary>
-        /// 单次最大上传容量（MB）
+        /// 总上传数量（张）
         /// </summary>
-        public double SingleMaxUploadCapacity { get; set; } = 0;
+        public int TotalUploadedNums { get; set; } = 0;
+
+        /// <summary>
+        /// 总上传容量
+        /// </summary>
+        public double TotalUploadedCapacity { get; set; } = 0;
+
+        /// <summary>
+        /// 总上传容量（Byte）
+        /// </summary>
+        [SugarColumn(IsIgnore = true)]
+        public double TotalUploadedCapacityByte => TotalUploadedCapacity * 1024 * 1024;
+
+        /// <summary>
+        /// 单次最大上传数量（张）
+        /// </summary>
+        public int SingleMaxUploadNums { get; set; } = 0;
+
+        /// <summary>
+        /// 单张图片最大尺寸（MB）
+        /// </summary>
+        public double SingleMaxUploadSize { get; set; } = 0;
+
+        /// <summary>
+        /// 单张图片最大尺寸（Byte）
+        /// </summary>
+        [SugarColumn(IsIgnore = true)]
+        public double SingleMaxUploadSizeByte => SingleMaxUploadSize * 1024 * 1024;
+
+        /// <summary>
+        /// 图片剩余上传数量（张）
+        /// </summary>
+        [SugarColumn(IsIgnore = true)]
+        public int UplaodRemainedNums => MaxUploadNums - TotalUploadedNums;
+
+        /// <summary>
+        /// 图片剩余上传容量（MB）
+        /// </summary>
+        [SugarColumn(IsIgnore = true)]
+        public double UploadRemainedCapacity => MaxUploadCapacity - TotalUploadedCapacity;
+
+        /// <summary>
+        /// 图片剩余上传容量（Byte）
+        /// </summary>
+        [SugarColumn(IsIgnore = true)]
+        public double UploadRemainedCapacityByte => UploadRemainedCapacity * 1024 * 1024;
         #endregion
 
         #region 导航属性
@@ -133,7 +179,7 @@ namespace North.Core.Entities
             MaxUploadNums = MaxUploadNums,
             MaxUploadCapacity = MaxUploadCapacity,
             SingleMaxUploadNums = SingleMaxUploadNums,
-            SingleMaxUploadCapacity = SingleMaxUploadCapacity
+            SingleMaxUploadSize = SingleMaxUploadSize
         };
 
 
@@ -218,7 +264,7 @@ namespace North.Core.Entities
         /// <summary>
         /// 最大上传数量（张）
         /// </summary>
-        public long MaxUploadNums { get; init; }
+        public int MaxUploadNums { get; init; }
 
         /// <summary>
         /// 最大存储容量（MB）
@@ -226,14 +272,54 @@ namespace North.Core.Entities
         public double MaxUploadCapacity { get; init; }
 
         /// <summary>
-        /// 单次最大上传数量（张）
+        /// 最大存储容量（Byte）
         /// </summary>
-        public long SingleMaxUploadNums { get; init; }
+        public double MaxUploadCapacityByte => MaxUploadCapacity * 1024 * 1024;
 
         /// <summary>
-        /// 单次最大上传容量（MB）
+        /// 总上传数量（张）
         /// </summary>
-        public double SingleMaxUploadCapacity { get; init; }
+        public int TotalUploadedNums { get; init; }
+
+        /// <summary>
+        /// 总上传容量（MB）
+        /// </summary>
+        public double TotalUploadedCapacity { get; init; }
+
+        /// <summary>
+        /// 总上传容量（Byte）
+        /// </summary>
+        public double TotalUploadedCapacityByte => TotalUploadedCapacity * 1024 * 1024;
+
+        /// <summary>
+        /// 单次最大上传数量（张）
+        /// </summary>
+        public int SingleMaxUploadNums { get; init; }
+
+        /// <summary>
+        /// 单张图片最大尺寸（MB）
+        /// </summary>
+        public double SingleMaxUploadSize { get; init; }
+
+        /// <summary>
+        /// 单张图片最大尺寸（Byte）
+        /// </summary>
+        public double SingleMaxUploadSizeByte => SingleMaxUploadSize * 1024 * 1024;
+
+        /// <summary>
+        /// 图片剩余上传数量（张）
+        /// </summary>
+        public int UplaodRemainedNums => MaxUploadNums - TotalUploadedNums;
+
+        /// <summary>
+        /// 图片剩余上传容量（MB）
+        /// </summary>
+        public double UploadRemainedCapacity => MaxUploadCapacity - TotalUploadedCapacity;
+
+        /// <summary>
+        /// 图片剩余上传容量（Byte）
+        /// </summary>
+        public double UploadRemainedCapacityByte => UploadRemainedCapacity * 1024 * 1024;
         #endregion
     }
 

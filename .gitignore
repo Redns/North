@@ -21,24 +21,11 @@ src/North.Core/bin
 src/North.Core/obj
 # North.Core End
 
-# North.Launcher Start
-src/North.Launcher/.vs
-src/North.Launcher/bin
-src/North.Launcher/obj
-src/North.Launcher/Properties
-# North.Launcher End
-
 # North.Plugin Start
 src/North.Plugin/.vs
 src/North.Plugin/bin
 src/North.Plugin/obj
 # North.PluginBase End
-
-# North.Updater Start
-src/North.Updater/.vs
-src/North.Updater/bin
-src/North.Updater/obj
-# North.Updater End
 
 # North.Nsfw Start
 src/North.Nsfw/.vs
@@ -66,4 +53,10 @@ src/North.Plugin.LocalStorage/*
 src/North.Plugin.Bingimg/*
 src/North.Plugin.Firewall/*
 src/North.PluginTest/*
-# North.Plugin.Bingimg End
+# North.Plugins End
+
+# North.Plugin.NetVips Start
+src/North.Plugin.NetVips/.vs
+src/North.Plugin.NetVips/bin
+src/North.Plugin.NetVips/obj
+# North.Plugin.NetVips End

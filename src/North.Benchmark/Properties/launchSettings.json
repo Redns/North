@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "North.Benchmark": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:2550;http://localhost:2552"
+    }
+  }
+}

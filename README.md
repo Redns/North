@@ -4,8 +4,6 @@
 
 ![version: v1.1.4 (shields.io)](https://img.shields.io/badge/release-v2.2.13-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-6.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
 
-> 抱歉朋友们，由于毕设赶进度，暂缓推进该项目。感谢各位朋友的关注与支持，该项目不会停止开发，后续将先更新一个不包含插件系统的版本。
-
 ## Recent Progress
 
 1. 用户登录授权系统

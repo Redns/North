@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\North.Core\North.Core.csproj" />
+    <Folder Include="Middlewares\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\North.Plugin\North.Plugin.csproj" />
   </ItemGroup>
 
 </Project>

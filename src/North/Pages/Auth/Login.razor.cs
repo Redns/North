@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Masuit.Tools.Security;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using North.Common;
@@ -72,7 +73,7 @@ namespace North.Pages.Auth
                 {
                     _snackbar.Add("账户不存在或状态异常", Severity.Error);
                 }
-                else if($"{user.Email}:{LoginModel.Password}".MD5() != user.Password)
+                else if($"{user.Email}:{LoginModel.Password}".MDString() != user.Password)
                 {
                     _snackbar.Add("账户与密码不匹配", Severity.Error);
                 }

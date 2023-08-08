@@ -46,7 +46,12 @@ namespace North.Core.Entities
         /// <summary>
         /// 请求次数
         /// </summary>
-        public long Request { get; set; } = 0L;
+        public int Request { get; set; } = 0;
+
+        /// <summary>
+        /// 访问权限
+        /// </summary>
+        public ImageAccessPermission AccessPermission { get; set; }
 
         /// <summary>
         /// 关联用户ID
@@ -60,5 +65,16 @@ namespace North.Core.Entities
         [Navigate(NavigateType.OneToMany, nameof(ImageDownloadHistoryEntity.ImageId))]
         public List<ImageDownloadHistoryEntity> DownloadHistories { get; set; }
         #endregion
+    }
+
+
+    /// <summary>
+    /// 图片访问权限
+    /// </summary>
+    public enum ImageAccessPermission
+    {
+        Public = 0,     // 公开（所有人可见）
+        LoggedInUser,   // 已登录用户可见
+        Private         // 私密（仅本人可见）
     }
 }

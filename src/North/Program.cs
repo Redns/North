@@ -1,5 +1,6 @@
 using IP2Region.Net.XDB;
 using Krins.Nuget;
+using Masuit.Tools.Core.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -7,7 +8,6 @@ using MudBlazor;
 using MudBlazor.Services;
 using North.Common;
 using North.Core.Services.Logger;
-using North.Core.Services.Poster;
 using SqlSugar;
 using System.Security.Claims;
 using ILogger = North.Core.Services.Logger.ILogger;
@@ -88,8 +88,6 @@ namespace North
                                     {
                                     };
                                 });
-                // 邮件发送服务
-                builder.Services.AddSingleton<IPoster, MineKitPoster>(poster => new MineKitPoster());
                 // 用户登录信息暂存
                 builder.Services.AddSingleton(loginIdentify => new Dictionary<string, ClaimsIdentity>());
                 // 动态加载控制器
@@ -110,8 +108,11 @@ namespace North
                         }
                     };
                 });
+                // IP 物理地址查询
                 builder.Services.AddSingleton<ISearcher, Searcher>();
-                
+                // 压缩解压工具
+                builder.Services.AddSevenZipCompressor();
+
 
                 // 构建 web 应用
                 app = builder.Build();

@@ -15,7 +15,7 @@ namespace North.Plugin
         /// <param name="images">待上传的图片</param>
         /// <param name="user">当前用户</param>
         /// <returns></returns>
-        Task UploadAsync(List<ImageUploadModel> images, UserDTOEntity? user = null);
+        void Upload(in IEnumerable<ImageUploadModel> images, in UserDTOEntity user);
 
 
         /// <summary>
@@ -24,6 +24,6 @@ namespace North.Plugin
         /// <param name="request">下载请求</param>
         /// <param name="user">当前用户</param>
         /// <returns>允许下载返回 true，否则返回 false</returns>
-        ValueTask<bool> DownloadAsync(HttpRequest request, UserDTOEntity? user = null);
+        bool Download(in HttpRequest request, in ImageEntity image, in UserDTOEntity? user);
     }
 }

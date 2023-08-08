@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using North.Core.Entities;
 using North.Core.Models;
 
 namespace North.Plugin
@@ -22,6 +23,6 @@ namespace North.Plugin
         /// </summary>
         /// <param name="request">下载请求</param>
         /// <returns>图片</returns>
-        ValueTask<IActionResult> DownloadAsync(HttpRequest request);
+        ValueTask<IActionResult> DownloadAsync(HttpRequest request, ImageEntity image);
     }
 }

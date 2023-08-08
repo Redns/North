@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Masuit.Tools.Security;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using North.Core.Helpers;
@@ -107,7 +108,7 @@ namespace North.RCL.Forms
         /// <summary>
         /// 加密后的密码
         /// </summary>
-        public string EncryptedPassword => $"{Email}:{Password}".MD5();
+        public string EncryptedPassword => $"{Email}:{Password}".MDString();
 
         public RegisterModel() { }
         public RegisterModel(string name, string email, string avatar, string avatarContentType, string password)

@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using Masuit.Tools.Models;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MudBlazor;
 using North.Core.Entities;
 using North.Core.Helpers;
-using North.Core.Models.Notification;
 using North.Core.Repository;
 using North.RCL.Forms;
 
@@ -144,12 +144,20 @@ namespace North.Pages.Auth
             var verifyEmailBody = $"欢迎注册 {_appSetting.Appearance.Name} 图床，" +
                                   $"<a href=\"{_nav.BaseUri}verify?type=register&id={verifyEmail.Id}\">点击链接</a> " +
                                   $"以验证您的账户 {Model.Name}";
-            await _poster.SendAsync(new MailModel(new MailAddress(_appSetting.Appearance.Name, emailSettings.Account),
-                                                  new MailAddress(Model.Name, Model.Email),
-                                                  $"{_appSetting.Appearance.Name} 图床注册验证",
-                                                  verifyEmailBody,
-                                                  emailSettings.Code,
-                                                  true));
+            new Email()
+            {
+                SmtpServer = $"smtp.{emailSettings.Account.Split(new char[] { '@', '.' })[1]}.com",
+                SmtpPort = 465,
+                EnableSsl = true,
+                Username = emailSettings.Account,
+                Password = emailSettings.Code,
+                Tos = Model.Email,
+                Subject = $"{_appSetting.Appearance.Name} 图床注册验证",
+                Body = verifyEmailBody
+            }.SendAsync(s =>
+            {
+
+            });
         }
 
 

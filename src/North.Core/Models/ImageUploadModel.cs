@@ -10,62 +10,62 @@ namespace North.Core.Models
         /// <summary>
         /// 图片名称（含后缀）
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// 图片类型
         /// </summary>
-        public string ContentType { get; init; }
+        public string ContentType { get; init; } = string.Empty;
 
         /// <summary>
         /// 图片预览图链接
         /// </summary>
-        public string PreviewUrl { get; init; }
+        public string PreviewUrl { get; init; } = string.Empty;
 
         /// <summary>
         /// 图片缩略图链接
         /// </summary>
-        public string ThumbnailUrl { get; set; }
+        public string ThumbnailUrl { get; set; } = string.Empty;
 
         /// <summary>
         /// 图片链接
         /// </summary>
-        public string SourceUrl { get; set; }
+        public string SourceUrl { get; set; } = string.Empty;
 
         /// <summary>
         /// 图片高度
         /// </summary>
-        public int Height { get; set; }
+        public int Height { get; set; } = 0;
 
         /// <summary>
         /// 图片宽度
         /// </summary>
-        public int Width { get; set; }
+        public int Width { get; set; } = 0;
 
         /// <summary>
         /// 图片数据流
         /// </summary>
-        public Stream Stream { get; init; }
+        public Stream? Stream { get; init; } = null;
 
         /// <summary>
         /// 图片大小（单位：字节）
         /// </summary>
-        public long Length => Stream.Length;
+        public long Length => Stream?.Length ?? 0L;
 
         /// <summary>
         /// 图片上传进度（0-100）
         /// </summary>
-        public int Progress { get; set; }
+        public int Progress { get; set; } = 0;
 
         /// <summary>
         /// 图片上传提示信息
         /// </summary>
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
 
         /// <summary>
         /// 图片上传状态
         /// </summary>
-        public ImageUploadState State { get; set; }
+        public ImageUploadState State { get; set; } = ImageUploadState.UnStart;
 
         /// <summary>
         /// 进度条颜色

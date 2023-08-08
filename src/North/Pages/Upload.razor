@@ -27,13 +27,16 @@
             </MudStack>
         </MudPaper>
         <div class="d-flex flex-row justify-space-between gap-3 mt-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" StartIcon="@Icons.Material.Outlined.FileUpload">上传全部</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Outlined.Clear">清空列表</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Warning" StartIcon="@Icons.Material.Outlined.Lock">访问权限</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" StartIcon="@Icons.Material.Outlined.FileUpload" 
+                       OnClick="UploadAllImages" Disabled="!Images.Any(i => i.State is ImageUploadState.UnStart or ImageUploadState.Failed)">上传全部</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Outlined.Clear" 
+                       OnClick="ClearAllImages" Disabled="!Images.Any(i => i.State is not ImageUploadState.Uploading)">清空列表</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Warning" StartIcon="@Icons.Material.Outlined.Lock"
+                       Disabled="Images.Any(i => i.State is ImageUploadState.Uploading)">访问权限</MudButton>
             <MudMenu ActivationEvent="@MouseEvent.MouseOver" 
                      AnchorOrigin="Origin.CenterRight" TransformOrigin="Origin.TopLeft">
                 <ActivatorContent>
-                    <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Outlined.ContentCopy">拷贝链接</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Outlined.ContentCopy">链接格式</MudButton>
                 </ActivatorContent>
                 <ChildContent>
                     <MudList Clickable @bind-SelectedValue="@UrlType">
@@ -57,22 +60,24 @@
         {
             <MudPaper Outlined Square Class="mud-width-full mb-4 mt-4">
                 <MudStack Row Class="mud-width-full">
-                    <MudAvatar Image="@image.PreviewUrl" Square Style="width:50px; height:50px;" />
+                    <MudAvatar Square Style="width:50px; height:50px;">
+                        <MudImage Src="@image.PreviewUrl" />
+                    </MudAvatar>
                     <MudStack Spacing="0" Class="mud-width-full">
-                        <MudText>@image.Name</MudText>
-                        <MudText Class="d-flex mud-width-full align-center">@($"{image.Length / (1024.0 * 1024.0):f2} MB, {image.Message}")</MudText>
-                        </MudStack>
-                        <MudStack Row Spacing="1" Class="d-flex mud-height-full  align-center" Style="width:fit-content;">
-                            <MudIconButton Icon="@Icons.Material.Outlined.FileUpload" Color="Color.Tertiary"
-                                   OnClick="@(() => UploadImage(image))" Disabled="@(image.State is ImageUploadState.Success or ImageUploadState.Uploading)"></MudIconButton>
-                        <MudIconButton Icon="@Icons.Material.Outlined.Clear" Color="Color.Error"
-                                   OnClick="@(() => ClearImage(image))"></MudIconButton>
-                        <MudIconButton Icon="@Icons.Material.Outlined.ContentCopy" Color="Color.Info"
-                                   OnClick="@(() => CopyImageUrl(image))" Disabled="@(image.State is not ImageUploadState.Success)"></MudIconButton>
-                        </MudStack>
+                        <MudText Style="user-select:none;">@image.Name</MudText>
+                        <MudText Class="d-flex mud-width-full align-center" Style="user-select:none;">@($"{image.Length / (1024.0 * 1024.0):f2} MB, {image.Message}")</MudText>
                     </MudStack>
-                    <MudProgressLinear Color="@image.ProgressColor" Size="Size.Small" Value="@image.Progress" Class="mud-width-full" />
-                </MudPaper>
+                    <MudStack Row Spacing="1" Class="d-flex mud-height-full  align-center" Style="width:fit-content;">
+                        <MudIconButton Icon="@Icons.Material.Outlined.FileUpload" Color="Color.Tertiary"
+                                OnClick="@(() => UploadImageAsync(image))" Disabled="@(image.State is ImageUploadState.Success or ImageUploadState.Uploading)"></MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Outlined.Clear" Color="Color.Error"
+                                OnClick="@(() => ClearImageAsync(image))" Disabled="@(image.State is ImageUploadState.Uploading)"></MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Outlined.ContentCopy" Color="Color.Info"
+                                OnClick="@(() => CopyImageUrlAsync(image))" Disabled="@(image.State is not ImageUploadState.Success)"></MudIconButton>
+                    </MudStack>
+                </MudStack>
+                <MudProgressLinear Color="@image.ProgressColor" Size="Size.Small" Value="@image.Progress" Class="mud-width-full" />
+            </MudPaper>
         }
     </div>
 </AuthorizeView>
