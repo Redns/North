@@ -63,6 +63,6 @@ namespace North.RCL.Cards
         /// </summary>
         public Color ApiChipColor => User.IsApiAvailable ? Color.Success : Color.Error;
 
-        public string UploadLimitText => $"{User.SingleMaxUploadNums}张 / {User.SingleMaxUploadCapacity:f2} MB (单次)，{User.MaxUploadNums}张 / {User.MaxUploadCapacity:f2} MB (全部)";
+        public string UploadLimitText => $"{User.SingleMaxUploadNums}张 / {User.SingleMaxUploadSize:f2} MB (单次)，{User.MaxUploadNums}张 / {User.MaxUploadSize:f2} MB (全部)";
     }
 }

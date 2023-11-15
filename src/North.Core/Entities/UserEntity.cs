@@ -89,29 +89,29 @@ namespace North.Core.Entities
         /// <summary>
         /// 最大存储容量（MB）
         /// </summary>
-        public double MaxUploadCapacity { get; set; } = 0;
+        public double MaxUploadSize { get; set; } = 0;
 
         /// <summary>
         /// 最大存储容量（Byte）
         /// </summary>
         [SugarColumn(IsIgnore = true)]
-        public double MaxUploadCapacityByte => MaxUploadCapacity * 1024 * 1024;
+        public double MaxUploadByteSize => MaxUploadSize * 1024 * 1024;
 
         /// <summary>
-        /// 总上传数量（张）
+        /// 已上传数量（张）
         /// </summary>
-        public int TotalUploadedNums { get; set; } = 0;
+        public int UploadedNums { get; set; } = 0;
 
         /// <summary>
-        /// 总上传容量
+        /// 已上传容量（MB）
         /// </summary>
-        public double TotalUploadedCapacity { get; set; } = 0;
+        public double UploadedSize { get; set; } = 0;
 
         /// <summary>
-        /// 总上传容量（Byte）
+        /// 已上传容量（Byte）
         /// </summary>
         [SugarColumn(IsIgnore = true)]
-        public double TotalUploadedCapacityByte => TotalUploadedCapacity * 1024 * 1024;
+        public double UploadedByteSize => UploadedSize * 1024 * 1024;
 
         /// <summary>
         /// 单次最大上传数量（张）
@@ -127,19 +127,19 @@ namespace North.Core.Entities
         /// 单张图片最大尺寸（Byte）
         /// </summary>
         [SugarColumn(IsIgnore = true)]
-        public double SingleMaxUploadSizeByte => SingleMaxUploadSize * 1024 * 1024;
+        public double SingleMaxUploadByteSize => SingleMaxUploadSize * 1024 * 1024;
 
         /// <summary>
         /// 图片剩余上传数量（张）
         /// </summary>
         [SugarColumn(IsIgnore = true)]
-        public int UplaodRemainedNums => MaxUploadNums - TotalUploadedNums;
+        public int UplaodRemainedNums => MaxUploadNums - UploadedNums;
 
         /// <summary>
         /// 图片剩余上传容量（MB）
         /// </summary>
         [SugarColumn(IsIgnore = true)]
-        public double UploadRemainedCapacity => MaxUploadCapacity - TotalUploadedCapacity;
+        public double UploadRemainedCapacity => MaxUploadSize - UploadedSize;
 
         /// <summary>
         /// 图片剩余上传容量（Byte）
@@ -177,7 +177,7 @@ namespace North.Core.Entities
             Permission = Permission,
             IsApiAvailable = IsApiAvailable,
             MaxUploadNums = MaxUploadNums,
-            MaxUploadCapacity = MaxUploadCapacity,
+            MaxUploadCapacity = MaxUploadSize,
             SingleMaxUploadNums = SingleMaxUploadNums,
             SingleMaxUploadSize = SingleMaxUploadSize
         };

@@ -19,11 +19,11 @@ namespace North.Plugin
 
 
         /// <summary>
-        /// 图片下载鉴权（检查是否有权限访问）
+        /// 图片访问鉴权（检查是否有权限访问）
         /// </summary>
         /// <param name="request">下载请求</param>
         /// <param name="user">当前用户</param>
-        /// <returns>允许下载返回 true，否则返回 false</returns>
-        bool Download(in HttpRequest request, in ImageEntity image, in UserDTOEntity? user);
+        /// <returns>允许访问返回 true，否则返回 false</returns>
+        bool CanAccess(in HttpRequest request, in ImageEntity image, in UserDTOEntity? user);
     }
 }

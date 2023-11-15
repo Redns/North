@@ -311,6 +311,11 @@ namespace North.Core.Common
         public bool NavAutoExpand { get; set; }
 
         /// <summary>
+        /// 图片懒加载
+        /// </summary>
+        public bool ImageLazyLoad { get; set; }
+
+        /// <summary>
         /// 背景每日一图 API
         /// </summary>
         public string BackgroundUrl { get; set; }
@@ -320,16 +325,17 @@ namespace North.Core.Common
         /// </summary>
         public string Footer { get; set; }
 
-        public AppearanceSetting(string name, string icon, bool navAutoExpand, string backgroundUrl, string footer)
+        public AppearanceSetting(string name, string icon, bool navAutoExpand, bool imageLazyLoad, string backgroundUrl, string footer)
         {
             Name = name;
             Icon = icon;
             NavAutoExpand = navAutoExpand;
+            ImageLazyLoad = imageLazyLoad;
             BackgroundUrl = backgroundUrl;
             Footer = footer;
         }
 
-        public AppearanceSetting Clone() => new(Name, Icon, NavAutoExpand, BackgroundUrl, Footer);
+        public AppearanceSetting Clone() => new(Name, Icon, NavAutoExpand, ImageLazyLoad, BackgroundUrl, Footer);
     }
 
     #endregion

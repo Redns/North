@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Middlewares\" />
+    <Folder Include="Actions\" />
   </ItemGroup>
 
   <ItemGroup>

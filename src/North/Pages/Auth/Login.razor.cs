@@ -35,20 +35,30 @@ namespace North.Pages.Auth
         public LoginModel LoginModel { get; set; } = new LoginModel();
 
 
-        /// <summary>
-        /// 加载完 css 和 js 之后再加载背景图片，优化用户体验
-        /// </summary>
-        /// <param name="firstRender"></param>
-        /// <returns></returns>
+        protected override async Task OnInitializedAsync()
+        {
+            if(!_appSetting.Appearance.ImageLazyLoad)
+            {
+                BackgroundImageUrl = _appSetting.Appearance.BackgroundUrl;
+            }
+            await base.OnInitializedAsync();
+        }
+
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                await InvokeAsync(() =>
+                // 背景图片懒加载
+                // 加载完 css 和 js 之后再加载背景图片，优化用户体验
+                if (_appSetting.Appearance.ImageLazyLoad)
                 {
-                    BackgroundImageUrl = _appSetting.Appearance.BackgroundUrl;
-                    StateHasChanged();
-                });
+                    await InvokeAsync(() =>
+                    {
+                        BackgroundImageUrl = _appSetting.Appearance.BackgroundUrl;
+                        StateHasChanged();
+                    });
+                }
             }
             await base.OnAfterRenderAsync(firstRender);
         }

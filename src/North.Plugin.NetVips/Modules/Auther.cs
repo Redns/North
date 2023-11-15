@@ -17,7 +17,7 @@ namespace North.Plugin.NetVips.Modules
         /// <param name="image">图片实体</param>
         /// <param name="user">访问用户实体</param>
         /// <returns></returns>
-        public bool Download(in HttpRequest request, in ImageEntity image, in UserDTOEntity? user)
+        public bool CanAccess(in HttpRequest request, in ImageEntity image, in UserDTOEntity? user)
         {
             return image.AccessPermission is ImageAccessPermission.Public ||
                    (image.AccessPermission is ImageAccessPermission.LoggedInUser && user is not null) ||
@@ -33,7 +33,7 @@ namespace North.Plugin.NetVips.Modules
         /// <returns></returns>
         public void Upload(in IEnumerable<ImageUploadModel> images, in UserDTOEntity user)
         {
-            // 获取插件设置
+            // TODO 获取插件设置
             var imageUploadPreference = UploadPreference.None;
 
             // 去除超出尺寸限制的图片
