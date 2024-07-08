@@ -1,5 +1,7 @@
 ﻿@using North.Common
 @using North.Core.Common;
+@using North.Core.Entities
+@using North.Core.Services.AuthService
 @using North.RCL.Texts
 @using SqlSugar;
 
@@ -8,10 +10,11 @@
 @inject ISqlSugarClient _client
 @inject PluginsContext _pluginContext
 @inject IHttpContextAccessor _accessor
+@inject IAuthService<UserDTOEntity> _authService
 
 <PageTitle>@_appSetting.Appearance.Name</PageTitle>
 <CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(App).Assembly"
+    <Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="AuthAsync"
             AdditionalAssemblies="@_pluginContext.RazorPageAssembies">
         <Found Context="routeData">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />

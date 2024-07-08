@@ -12,7 +12,7 @@ src/North/.vs
 src/North/bin
 src/North/obj
 src/North/.config
-# src/North/appsettings.json
+src/North/appsettings.json
 # North End
 
 # North.Core Start
@@ -32,7 +32,6 @@ src/North.Nsfw/.vs
 src/North.Nsfw/bin
 src/North.Nsfw/obj
 src/North.Nsfw/Properties
-src/North.Nsfw/appsettings.json
 # North.Nsfw End
 
 # North.RCL Start
@@ -60,3 +59,10 @@ src/North.Plugin.NetVips/.vs
 src/North.Plugin.NetVips/bin
 src/North.Plugin.NetVips/obj
 # North.Plugin.NetVips End
+/src/North/appsettings.json
+/src/North/Properties/PublishProfiles/linux-arm64.pubxml
+/src/North/Properties/PublishProfiles/linux-arm64.pubxml.user
+/src/North/Properties/PublishProfiles/win-x64-v2.4.15.pubxml
+/src/North/Properties/PublishProfiles/win-x64-v2.4.15.pubxml.user
+/src/North/Properties/PublishProfiles/win-x64.pubxml
+/src/North/Properties/PublishProfiles/win-x64.pubxml.user

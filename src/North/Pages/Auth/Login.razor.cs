@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
-using North.Common;
 using North.Core.Entities;
 using North.Core.Helpers;
 using North.Core.Repository;
@@ -13,7 +12,7 @@ namespace North.Pages.Auth
     partial class Login
     {
         /// <summary>
-        /// 源地址
+        /// 重定向地址
         /// </summary>
         [Parameter]
         [SupplyParameterFromQuery]

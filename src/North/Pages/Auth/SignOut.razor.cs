@@ -13,10 +13,7 @@ namespace North.Pages.Auth
             if (_accessor.HttpContext is not null)
             {
                 await _accessor.HttpContext.SignOutAsync();
-                await Task.Run(() =>
-                {
-                    _navigationManager.NavigateTo("login");
-                });   
+                _navigationManager.NavigateTo("login", true);
             }
             await base.OnInitializedAsync();
         }

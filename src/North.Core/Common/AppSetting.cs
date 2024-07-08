@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
-using North.Core.Entities;
 using North.Core.Services.Logger;
 using SqlSugar;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -9,24 +9,14 @@ namespace North.Core.Common
 {
     public class AppSetting
     {
+        public WelcomeSetting Welcome { get; set; }
         public GeneralSetting General { get; set; }
-        public AppearanceSetting Appearance { get; set; }
+        public AppearanceSetting Appearance { get; set; } 
         public RegisterSetting Register { get; set; }
         public NotifySetting Notify { get; set; }
         public AuthSetting Auth { get; set; }
         public LogSetting Log { get; set; }
         public PluginSetting Plugin { get; set; }
-
-        public AppSetting(GeneralSetting general, AppearanceSetting appearance, RegisterSetting register, NotifySetting notify, AuthSetting auth, LogSetting log, PluginSetting plugin)
-        {
-            General = general;
-            Appearance = appearance;
-            Register = register;
-            Notify = notify;
-            Auth = auth;
-            Log = log;
-            Plugin = plugin;
-        }
 
 
         /// <summary>
@@ -36,20 +26,55 @@ namespace North.Core.Common
         /// <returns></returns>
         public static AppSetting Load(string path = "appsettings.json") => JsonSerializer.Deserialize<AppSetting>(File.ReadAllText(path)) ?? throw new Exception($"Load {path} failed");
 
-
         /// <summary>
         /// 保存设置
         /// </summary>
         /// <param name="path"></param>
         public void Save(string path = "appsettings.json") => File.WriteAllText(path, ToString());
 
-        public AppSetting Clone() => new(General.Clone(), Appearance.Clone(), Register.Clone(), Notify.Clone(), Auth.Clone(), Log.Clone(), Plugin.Clone());
+        /// <summary>
+        /// 深拷贝设置对象
+        /// </summary>
+        /// <returns></returns>
+        public AppSetting Clone() => new()
+        {
+            General = General.Clone(),
+            Appearance = Appearance.Clone(),
+            Register = Register.Clone(),
+            Notify = Notify.Clone(),
+            Auth = Auth.Clone(),
+            Log = Log.Clone(),
+            Plugin = Plugin.Clone()
+        };
 
+        /// <summary>
+        /// 序列化对象
+        /// </summary>
+        /// <returns></returns>
         public override string ToString() => JsonSerializer.Serialize(this, new JsonSerializerOptions()
         {
             WriteIndented = true
         });
     }
+
+    #region 欢迎设置
+    public class WelcomeSetting
+    {
+        /// <summary>
+        /// 应用版本
+        /// </summary>
+        private string? _version = null;
+
+        [JsonIgnore]
+        public string Version
+        {
+            get
+            {
+                return _version ??= Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "*";
+            }
+        }
+    }
+    #endregion
 
     #region 通用设置
 
@@ -76,7 +101,6 @@ namespace North.Core.Common
 
         public GeneralSetting Clone() => new(DataBase.Clone(), ApplicationUrl);
     }
-
 
     /// <summary>
     /// 数据库设置

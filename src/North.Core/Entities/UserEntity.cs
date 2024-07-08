@@ -148,6 +148,18 @@ namespace North.Core.Entities
         public double UploadRemainedCapacityByte => UploadRemainedCapacity * 1024 * 1024;
         #endregion
 
+        #region 图片存储策略（重命名、冲突）
+        /// <summary>
+        /// 图片重命名策略
+        /// </summary>
+        public ImageRenamePolicy ImageRenamePolicy { get; set; }
+
+        /// <summary>
+        /// 图片重命名冲突策略
+        /// </summary>
+        public ImageRenameConflictPolicy ImageRenameConflictPolicy { get; set;}
+        #endregion
+
         #region 导航属性
         /// <summary>
         /// 用户图片
@@ -179,7 +191,9 @@ namespace North.Core.Entities
             MaxUploadNums = MaxUploadNums,
             MaxUploadCapacity = MaxUploadSize,
             SingleMaxUploadNums = SingleMaxUploadNums,
-            SingleMaxUploadSize = SingleMaxUploadSize
+            SingleMaxUploadSize = SingleMaxUploadSize,
+            ImageRenamePolicy = ImageRenamePolicy,
+            ImageRenameConflictPolicy = ImageRenameConflictPolicy
         };
 
 
@@ -187,12 +201,12 @@ namespace North.Core.Entities
         /// 用户 Claims 认证对象
         /// </summary>
         [SugarColumn(IsIgnore = true)]
-        public ClaimsIdentity ClaimsIdentify => new(new Claim[]
-        {
-            new Claim(ClaimTypes.Role, Role),
-            new Claim(ClaimTypes.SerialNumber, Id.ToString()),
-            new Claim("LastModifyTime", LastModifyTime.ToString("G"))
-        }, CookieAuthenticationDefaults.AuthenticationScheme);
+        public ClaimsIdentity ClaimsIdentify => new(
+        [
+            new(ClaimTypes.Role, Role),
+            new(ClaimTypes.SerialNumber, Id.ToString()),
+            new("LastModifyTime", LastModifyTime.ToString("G"))
+        ], CookieAuthenticationDefaults.AuthenticationScheme);
 
 
         /// <summary>
@@ -321,6 +335,18 @@ namespace North.Core.Entities
         /// </summary>
         public double UploadRemainedCapacityByte => UploadRemainedCapacity * 1024 * 1024;
         #endregion
+    
+        #region 图片存储策略（重命名、冲突）
+        /// <summary>
+        /// 图片重命名策略
+        /// </summary>
+        public ImageRenamePolicy ImageRenamePolicy { get; init; }
+
+        /// <summary>
+        /// 图片重命名冲突策略
+        /// </summary>
+        public ImageRenameConflictPolicy ImageRenameConflictPolicy { get; init;}
+        #endregion
     }
 
 
@@ -342,5 +368,28 @@ namespace North.Core.Entities
         Checking = 0,       // 待验证
         Normal,             // 正常
         Forbidden           // 封禁中
+    }
+
+
+    /// <summary>
+    /// 图片存储策略
+    /// </summary>
+    public enum ImageRenamePolicy
+    {
+        Origin = 0,                     // 保持源名城
+        Timestamp,                      // 时间戳重命名
+        RandomString                    // 随机字符串重命名
+    }
+
+
+    /// <summary>
+    /// 图片存储冲突策略
+    /// </summary>
+    public enum ImageRenameConflictPolicy
+    {
+        Override = 0,                   // 覆写原图片
+        Abort,                          // 放弃保存当前图片
+        RandomPrefix,                   // 随机字符串前缀
+        RandomSuffix                    // 随机字符串后缀
     }
 }

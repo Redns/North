@@ -1,8 +1,5 @@
-﻿using North.Common;
-using North.Core.Entities;
-using North.Core.Helpers;
-using North.Core.Repository;
-using System.Security.Claims;
+﻿using North.Core.Helpers;
+using North.Core.Services.AuthService;
 
 namespace North.Shared
 {

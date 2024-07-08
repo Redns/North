@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Forms;
 using North.Core.Helpers;
 using North.Core.Models;
+using North.Core.Repository;
 
 namespace North.Pages
 {
@@ -21,20 +22,29 @@ namespace North.Pages
         /// <returns></returns>
         private async Task OnInputImagesChanged(InputFileChangeEventArgs args)
         {
-            // 解析输入文件
-            foreach(var image in args.GetMultipleFiles(int.MaxValue))
+            // 用户授权判定
+            var relativeUrl = _nav.ToBaseRelativePath(_nav.Uri).Split('?').First().ToLower();
+            if ((_accessor.HttpContext is null) || (await _authService.AuthAsync(_accessor.HttpContext) is false))
             {
-                var imageReadStream = image.OpenReadStream(long.MaxValue);
+                _snackbar.Add("授权信息无效，请重新登录", MudBlazor.Severity.Error);
+                _nav.NavigateTo($"/login?redirect={relativeUrl}", true);
+                return;
+            }
+
+            // 解析输入图片
+            await Parallel.ForEachAsync(args.GetMultipleFiles(int.MaxValue), async (image, token) =>
+            {
+                var imageReadStream = image.OpenReadStream(long.MaxValue, token);
+                var imagePreviewUrl = await JS.UploadToBlobAsync(imageReadStream, image.ContentType);
                 Images.Add(new ImageUploadModel()
                 {
                     Name = image.Name,
                     ContentType = image.ContentType,
-                    PreviewUrl = await JS.UploadToBlobAsync(imageReadStream, image.ContentType),
-                    SourceUrl = $"http://{image.Name}",
+                    PreviewUrl = imagePreviewUrl,
                     Stream = imageReadStream,
                     Message = "等待上传..."
                 });
-            }
+            });
         }
 
 
@@ -44,8 +54,15 @@ namespace North.Pages
         /// <param name="image">待上传的图片</param>
         private async Task UploadImageAsync(ImageUploadModel image)
         {
-            // 重置图片上传状态
+            // 更新图片上传状态
+            image.Message = "图片上传中...";
             image.State = ImageUploadState.Uploading;
+            
+            
+            // 解析图片信息（宽度、高度）
+            
+
+
 
             // TODO 模拟上传
             Thread.Sleep(1000);
@@ -54,11 +71,6 @@ namespace North.Pages
             image.Message = image.State == ImageUploadState.Success ? "上传成功" : "上传失败";
 
             // TODO 上传图片
-            //await _pluginsContext.OnImageUpload(new List<ImageUploadModel>()
-            //{
-            //    image
-            //}, null);
-
             if(image.State is ImageUploadState.Success && image.Stream is not null)
             {
                 await image.Stream.DisposeAsync();

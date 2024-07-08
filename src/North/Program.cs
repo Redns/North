@@ -2,11 +2,16 @@ using IP2Region.Net.XDB;
 using Krins.Nuget;
 using Masuit.Tools.Core.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using MudBlazor;
 using MudBlazor.Services;
 using North.Common;
+using North.Core.Common;
+using North.Core.Entities;
+using North.Core.Repository;
+using North.Core.Services.AuthService;
 using North.Core.Services.Logger;
 using SqlSugar;
 using System.Security.Claims;
@@ -23,7 +28,9 @@ namespace North
         {
             try
             {
-                // ´´½¨ÈİÆ÷
+                /**
+                 * åˆ›å»ºå®¹å™¨
+                 */
                 builder = WebApplication.CreateBuilder(args);
 
                 builder.Services.AddRazorPages();
@@ -31,7 +38,7 @@ namespace North
                 builder.Services.AddHttpContextAccessor();
                 builder.Services.AddMudServices(config =>
                 {
-                    // Snackbar ÅäÖÃ
+                    // Snackbar é…ç½®
                     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
                     config.SnackbarConfiguration.PreventDuplicates = true;
                     config.SnackbarConfiguration.SnackbarVariant = Variant.Text;
@@ -42,60 +49,70 @@ namespace North
                 });
                 builder.Services.AddServerSideBlazor(option =>
                 {
-                    // µ±Î´´¦ÀíµÄÒì³£²úÉúÊ±£¬ÊÇ·ñ·¢ËÍÏêÏ¸µÄ´íÎóĞÅÏ¢ÖÁ Javascript
-                    // Éú²ú»·¾³Ó¦µ±¹Ø±Õ£¬·ñÔò¿ÉÄÜ±©Â©³ÌĞòĞÅÏ¢
+                    // å½“æœªå¤„ç†çš„å¼‚å¸¸äº§ç”Ÿæ—¶ï¼Œæ˜¯å¦å‘é€è¯¦ç»†çš„é”™è¯¯ä¿¡æ¯è‡³ Javascript
+                    // ç”Ÿäº§ç¯å¢ƒåº”å½“å…³é—­ï¼Œå¦åˆ™å¯èƒ½æš´æ¼ç¨‹åºä¿¡æ¯
                     option.DetailedErrors = false;
-                    // JS »¥µ÷ÓÃ³¬Ê±ÊÂ¼şÉèÖÃ
+                    // JS äº’è°ƒç”¨è¶…æ—¶äº‹ä»¶è®¾ç½®
                     option.JSInteropDefaultCallTimeout = TimeSpan.FromSeconds(10);
                 });
-                // Ó¦ÓÃÉèÖÃ
+                // åº”ç”¨è®¾ç½®
                 builder.Services.AddSingleton(GlobalValues.AppSettings);
-                // Êı¾İ¿â¶ÔÏóÅäÖÃ
+                // æ•°æ®åº“å¯¹è±¡é…ç½®
                 builder.Services.AddScoped<ISqlSugarClient>(client => new SqlSugarClient(GlobalValues.AppSettings.General.DataBase.DatabaseConnectionConfigs));
-                // Çå³ıÏµÍ³Ä¬ÈÏÈÕÖ¾×é¼ş
+                // æ¸…é™¤ç³»ç»Ÿé»˜è®¤æ—¥å¿—ç»„ä»¶
                 builder.Services.AddLogging(logging =>
                 {
                     logging.ClearProviders();
                 });
-                // ÈÕÖ¾·şÎñ
+                // æ—¥å¿—æœåŠ¡
                 builder.Services.AddSingleton<ILogger, NLogger>(logger => new NLogger(GlobalValues.AppSettings.Log));
-                // CookieÑéÖ¤
+                // CookieéªŒè¯
                 builder.Services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.RequireAuthenticatedSignIn = false;
                 })
                                 .AddCookie(options =>
                                 {
-                                    // TODO ÅäÖÃ×Ô¶¯Ìø×ª
-                                    // È·¶¨ÓÃÓÚ´´½¨ Cookie µÄÉèÖÃ
+                                    // TODO é…ç½®è‡ªåŠ¨è·³è½¬
+                                    // ç¡®å®šç”¨äºåˆ›å»º Cookie çš„è®¾ç½®
                                     options.Cookie = new CookieBuilder()
                                     {
-                                        // SameSite ÊôĞÔÓÃ»§ÏŞÖÆµÚÈı·½ Cookie£¬¼õÉÙ°²È«·çÏÕ£¬ËüÓĞÈı¸öÖµ£¨²Î¿¼£ºhttp://www.ruanyifeng.com/blog/2019/09/cookie-samesite.html£©
-                                        // Strict: ÍêÈ«½ûÖ¹µÚÈı·½ Cookie£¬¿çÕ¾µã£¨¶¥¼¶¡¢¶ş¼¶ÓòÃû²»Í¬£©Ê±²»»á·¢ËÍ Cookie
-                                        // Lax: ´ó¶àÊıÇé¿öÒ²ÊÇ²»·¢ËÍµÚÈı·½ Cookie£¬µ«ÊÇµ¼º½µ½Ä¿±êÍøÖ·µÄ Get ÇëÇó³ıÍâ
-                                        // None: ÏÔÊ½¹Ø±Õ SameSite ÊôĞÔ£¬µ«±ØĞëÍ¬Ê±ÉèÖÃ Secure ÊôĞÔ£¨Cookie Ö»ÄÜÍ¨¹ı HTTPS Ğ­Òé·¢ËÍ£©
+                                        // SameSite å±æ€§ç”¨æˆ·é™åˆ¶ç¬¬ä¸‰æ–¹ Cookieï¼Œå‡å°‘å®‰å…¨é£é™©ï¼Œå®ƒæœ‰ä¸‰ä¸ªå€¼ï¼ˆå‚è€ƒï¼šhttp://www.ruanyifeng.com/blog/2019/09/cookie-samesite.htmlï¼‰
+                                        // Strict: å®Œå…¨ç¦æ­¢ç¬¬ä¸‰æ–¹ Cookieï¼Œè·¨ç«™ç‚¹ï¼ˆé¡¶çº§ã€äºŒçº§åŸŸåä¸åŒï¼‰æ—¶ä¸ä¼šå‘é€ Cookie
+                                        // Lax: å¤§å¤šæ•°æƒ…å†µä¹Ÿæ˜¯ä¸å‘é€ç¬¬ä¸‰æ–¹ Cookieï¼Œä½†æ˜¯å¯¼èˆªåˆ°ç›®æ ‡ç½‘å€çš„ Get è¯·æ±‚é™¤å¤–
+                                        // None: æ˜¾å¼å…³é—­ SameSite å±æ€§ï¼Œä½†å¿…é¡»åŒæ—¶è®¾ç½® Secure å±æ€§ï¼ˆCookie åªèƒ½é€šè¿‡ HTTPS åè®®å‘é€ï¼‰
                                         SameSite = SameSiteMode.Lax,
-                                        // ÉèÖÃÎª false ¿É×èÖ¹ JS ·¢ÏÖ¡¢ĞŞ¸Ä Cookie
+                                        // è®¾ç½®ä¸º false å¯é˜»æ­¢ JS å‘ç°ã€ä¿®æ”¹ Cookie
                                         HttpOnly = true,
-                                        // ¸ù¾İÌá¹© Cookie µÄ URI µÄÀàĞÍ£¨HTTP/HTTPS£©À´¾ö¶¨ºóĞøºÎÊ±ÔÚÇëÇóÊ±Ğ¯´ø Cookie£¬ËüÓĞÈı¸öÖµ
-                                        // Always: ÒªÇóµÇÂ¼Ò³¼°Ö®ºóËùÓĞĞèÒªÉí·İÑéÖ¤µÄÒ³Ãæ¾ùÎª HTTPS
-                                        // None: µÇÂ¼Ò³Îª HTTPS£¬µ«ÆäËû HTTP Ò³Ò²ĞèÒªÉí·İÑéÖ¤ĞÅÏ¢
-                                        // SameAsRequest: ÈôÌá¹© Cookie µÄ URI Îª HTTPS£¬ÔòÖ»»áÔÚºóĞø HTTPS ÇëÇóÉÏ½« Cookie ·µ»Ø·şÎñÆ÷£»ÈôÌá¹© Cookie µÄ URI Îª HTTP£¬Ôò»áÔÚºóĞø HTTP ºÍ HTTPS ÇëÇóÉÏ½« Cookie ·µ»Ø·şÎñÆ÷¡£
+                                        // æ ¹æ®æä¾› Cookie çš„ URI çš„ç±»å‹ï¼ˆHTTP/HTTPSï¼‰æ¥å†³å®šåç»­ä½•æ—¶åœ¨è¯·æ±‚æ—¶æºå¸¦ Cookieï¼Œå®ƒæœ‰ä¸‰ä¸ªå€¼
+                                        // Always: è¦æ±‚ç™»å½•é¡µåŠä¹‹åæ‰€æœ‰éœ€è¦èº«ä»½éªŒè¯çš„é¡µé¢å‡ä¸º HTTPS
+                                        // None: ç™»å½•é¡µä¸º HTTPSï¼Œä½†å…¶ä»– HTTP é¡µä¹Ÿéœ€è¦èº«ä»½éªŒè¯ä¿¡æ¯
+                                        // SameAsRequest: è‹¥æä¾› Cookie çš„ URI ä¸º HTTPSï¼Œåˆ™åªä¼šåœ¨åç»­ HTTPS è¯·æ±‚ä¸Šå°† Cookie è¿”å›æœåŠ¡å™¨ï¼›è‹¥æä¾› Cookie çš„ URI ä¸º HTTPï¼Œåˆ™ä¼šåœ¨åç»­ HTTP å’Œ HTTPS è¯·æ±‚ä¸Šå°† Cookie è¿”å›æœåŠ¡å™¨ã€‚
                                         SecurePolicy = CookieSecurePolicy.SameAsRequest
+                                        
                                     };
+                                    options.SlidingExpiration = true;
                                     options.Events = new CookieAuthenticationEvents
                                     {
                                     };
                                 });
-                // ÓÃ»§µÇÂ¼ĞÅÏ¢Ôİ´æ
+                // ç”¨æˆ·ç™»å½•ä¿¡æ¯æš‚å­˜
                 builder.Services.AddSingleton(loginIdentify => new Dictionary<string, ClaimsIdentity>());
-                // ¶¯Ì¬¼ÓÔØ¿ØÖÆÆ÷
+                // ç”¨æˆ·æˆæƒæœåŠ¡
+                builder.Services.AddScoped<IAuthService<UserDTOEntity>>(auth =>
+                {
+                    var appSetting = app.Services.GetRequiredService<AppSetting>();
+                    var sqlSlient = app.Services.GetRequiredService<ISqlSugarClient>();
+                    var repository = new UserRepository(sqlSlient, appSetting.General.DataBase.EnabledName);
+
+                    return new NorthAuthService(repository, GlobalValues.WithoutAuthenticationPages);
+                });
+                // åŠ¨æ€åŠ è½½æ§åˆ¶å™¨
                 builder.Services.AddSingleton(NorthActionDescriptorChangeProvider.Instance);
                 builder.Services.AddSingleton<IActionDescriptorChangeProvider>(NorthActionDescriptorChangeProvider.Instance);
-                // Nuget ÒıÇæ
+                // Nuget å¼•æ“
                 builder.Services.AddSingleton(nugetEngine => new NugetEngine());
-                // ²å¼ş³ÌĞò¼¯
+                // æ’ä»¶ç¨‹åºé›†
                 builder.Services.AddSingleton(pluginContext =>
                 {
                     var applicationPartManager = app.Services.GetRequiredService<ApplicationPartManager>();
@@ -108,15 +125,21 @@ namespace North
                         }
                     };
                 });
-                // IP ÎïÀíµØÖ·²éÑ¯
+                // IP ç‰©ç†åœ°å€æŸ¥è¯¢
                 builder.Services.AddSingleton<ISearcher, Searcher>();
-                // Ñ¹Ëõ½âÑ¹¹¤¾ß
+                // å‹ç¼©è§£å‹å·¥å…·
                 builder.Services.AddSevenZipCompressor();
+                builder.Host.UseDefaultServiceProvider(options =>
+                {
+                    options.ValidateScopes = false;
+                });
 
 
-                // ¹¹½¨ web Ó¦ÓÃ
+                /**
+                 * æ„å»º web åº”ç”¨
+                 */
                 app = builder.Build();
-                // TODO Ìí¼ÓÖĞ¼ä¼ş
+                // TODO æ·»åŠ ä¸­é—´ä»¶
                 // app.Use(PluginsContext.Middlewares);
                 app.UseStaticFiles();
                 app.UseRouting();
@@ -126,7 +149,7 @@ namespace North
                 {
                     if (!GlobalValues.AppSettings.General.DataBase.IsApplicationInstalled)
                     {
-                        // Î´°²×°Ê±Ç¿ÖÆÌø×ªÖÁ°²×°Ò³Ãæ
+                        // æœªå®‰è£…æ—¶å¼ºåˆ¶è·³è½¬è‡³å®‰è£…é¡µé¢
                         endpoint.MapGet("/", context =>
                         {
                             return Task.Run(() =>
@@ -137,7 +160,7 @@ namespace North
                     }
                     else
                     {
-                        // Ó¦ÓÃÒÑ°²×°ºó½«ÎŞ·¨·ÃÎÊ°²×°Ò³Ãæ
+                        // åº”ç”¨å·²å®‰è£…åå°†æ— æ³•è®¿é—®å®‰è£…é¡µé¢
                         endpoint.MapGet("/install", context =>
                         {
                             return Task.Run(() =>
@@ -150,12 +173,11 @@ namespace North
                     endpoint.MapControllers();
                     endpoint.MapFallbackToPage("/_Host");
                 });
-                // TODO ÉèÖÃÒ³ÃæÔö¼Ó¶Ë¿ÚĞŞ¸Ä¹¦ÄÜ
+                // TODO è®¾ç½®é¡µé¢å¢åŠ ç«¯å£ä¿®æ”¹åŠŸèƒ½
                 app.Urls.Add(GlobalValues.AppSettings.General.ApplicationUrl);
-
                 app.Run();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine($"{e.Message}\n{e.StackTrace}");
                 Console.ReadKey();

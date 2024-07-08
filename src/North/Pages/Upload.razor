@@ -1,17 +1,24 @@
 ﻿@page "/"
 @page "/upload"
 
+@using North.Common
+@using North.Core.Entities
+@using North.Core.Models
+@using North.Core.Services.AuthService
+@using North.Events.PasteMultimediaEvent
+@using North.RCL.Texts
+@using North.Core.Common
+@using SqlSugar
+
 @inject IJSRuntime JS
 @inject ILogger _logger
 @inject ISnackbar _snackbar
+@inject AppSetting _appSetting
 @inject NavigationManager _nav
+@inject ISqlSugarClient _client
 @inject IHttpContextAccessor _accessor
 @inject PluginsContext _pluginsContext
-
-@using North.Common
-@using North.Core.Models
-@using North.Events.PasteMultimediaEvent
-@using North.RCL.Texts
+@inject IAuthService<UserDTOEntity> _authService
 
 <AuthorizeView Roles="User,System">
     <div class="mud-height-full" id="upload-mid-stack">
@@ -85,14 +92,11 @@
 <style>
     #upload-mid-stack {
         width:90%;
-        max-width:600px;
+        max-width:640px;
         left:0;
         right:0;
         margin:auto;
         overflow:scroll;
-    }
-
-    #upload-mid-stack::-webkit-scrollbar {
-        display: none;
+        scrollbar-width: none;
     }
 </style>

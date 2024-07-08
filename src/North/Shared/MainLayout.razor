@@ -1,6 +1,7 @@
 ﻿@using North.Common
 @using North.Core.Common;
 @using North.Core.Entities
+@using North.Core.Services.AuthService
 @using North.RCL.Texts
 @using North.RCL.ToolBars
 @using SqlSugar
@@ -13,6 +14,7 @@
 @inject NavigationManager _nav
 @inject IHttpContextAccessor _accessor
 @inject AppSetting _appSetting
+@inject IAuthService<UserDTOEntity> _authService
 
 <MudStack Spacing="0" Style="height:50px;">
     <ActionToolBar IsExpanded="@IsExpanded" DarkTheme="@DarkTheme" Title="@_appSetting.Appearance.Name"
