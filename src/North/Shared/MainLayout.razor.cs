@@ -8,7 +8,6 @@ namespace North.Shared
         public bool IsExpanded { get; set; } = false;
         public bool DarkTheme { get; set; } = false;
 
-
         /// <summary>
         /// 切换主题
         /// </summary>

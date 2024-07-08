@@ -376,7 +376,7 @@ namespace North.Core.Entities
     /// </summary>
     public enum ImageRenamePolicy
     {
-        Origin = 0,                     // 保持源名城
+        Origin = 0,                     // 保持源名称
         Timestamp,                      // 时间戳重命名
         RandomString                    // 随机字符串重命名
     }

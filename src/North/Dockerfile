@@ -3,18 +3,18 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
-EXPOSE 8080
+EXPOSE 12121
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
+WORKDIR ../src
 COPY ["North/North.csproj", "North/"]
 COPY ["North.Core/North.Core.csproj", "North.Core/"]
 COPY ["North.Plugin/North.Plugin.csproj", "North.Plugin/"]
 COPY ["North.RCL/North.RCL.csproj", "North.RCL/"]
 RUN dotnet restore "./North/North.csproj"
 COPY . .
-WORKDIR "/src/North"
+WORKDIR "../src/North"
 RUN dotnet build "./North.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

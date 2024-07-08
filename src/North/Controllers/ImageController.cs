@@ -37,14 +37,13 @@ namespace North.Controllers
         {
             try
             {
-                var images = ((FormFileCollection)formCollection.Files).ConvertAll(file => new ImageUploadModel
+                var images = ((FormFileCollection)formCollection.Files).ConvertAll(file => new ImageUploadModel(file.OpenReadStream())
                 {
                     Name = file.Name,
                     ContentType = file.ContentType,
                     PreviewUrl = string.Empty,
                     ThumbnailUrl = string.Empty,
-                    SourceUrl = string.Empty,
-                    Stream = file.OpenReadStream()
+                    SourceUrl = string.Empty
                 });
 
                 var currentOperateUserIdentify = User.Identities.FirstOrDefault();

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
-using North.Common;
 using System.Security.Claims;
 
 namespace North.Pages.Auth
@@ -32,6 +31,7 @@ namespace North.Pages.Auth
                                                         new AuthenticationProperties()
                                                         {
                                                             IsPersistent = true,
+                                                            AllowRefresh = true,
                                                             ExpiresUtc = DateTime.Now.AddSeconds(_appSetting.Auth.CookieValidTime)
                                                         });
 

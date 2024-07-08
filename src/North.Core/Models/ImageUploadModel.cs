@@ -1,4 +1,6 @@
-﻿using MudBlazor;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using MudBlazor;
+using NetTaste;
 
 namespace North.Core.Models
 {
@@ -33,19 +35,9 @@ namespace North.Core.Models
         public string SourceUrl { get; set; } = string.Empty;
 
         /// <summary>
-        /// 图片高度
-        /// </summary>
-        public int Height { get; set; } = 0;
-
-        /// <summary>
-        /// 图片宽度
-        /// </summary>
-        public int Width { get; set; } = 0;
-
-        /// <summary>
         /// 图片数据流
         /// </summary>
-        public Stream? Stream { get; init; } = null;
+        public Stream Stream { get; init; }
 
         /// <summary>
         /// 图片大小（单位：字节）
@@ -76,6 +68,22 @@ namespace North.Core.Models
             ImageUploadState.Success => Color.Tertiary,
             _ => Color.Info
         };
+
+        public ImageUploadModel(Stream stream)
+        {
+            Stream = stream;
+        }
+
+        public ImageUploadModel(IBrowserFile file, Stream stream, string preiewUrl)
+        {
+            Name = file.Name;
+            ContentType = file.ContentType;
+            PreviewUrl = preiewUrl;
+            Stream = stream;
+            State = ImageUploadState.UnStart;
+            Progress = 0;
+            Message = "等待上传...";
+        }
     }
 
 

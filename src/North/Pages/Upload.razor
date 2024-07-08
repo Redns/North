@@ -9,6 +9,7 @@
 @using North.RCL.Texts
 @using North.Core.Common
 @using SqlSugar
+@using North.Core.Services.ImageService
 
 @inject IJSRuntime JS
 @inject ILogger _logger
@@ -16,13 +17,14 @@
 @inject AppSetting _appSetting
 @inject NavigationManager _nav
 @inject ISqlSugarClient _client
+@inject IImageService _imageService
 @inject IHttpContextAccessor _accessor
 @inject PluginsContext _pluginsContext
 @inject IAuthService<UserDTOEntity> _authService
 
 <AuthorizeView Roles="User,System">
     <div class="mud-height-full" id="upload-mid-stack">
-        <MudPaper @ondragenter="@SetDragClass" @ondragleave="@ClearDragClass" @ondragend="@ClearDragClass"
+        <MudPaper @ondrop="@ClearDragClass" @ondragenter="@SetDragClass" @ondragleave="@ClearDragClass" @ondragend="@ClearDragClass"
                   Outlined Style="height:50%; min-height:350px; margin-top:20%;" Class="@DragClass">
             @if (!Clearing)
             {
@@ -34,34 +36,12 @@
             </MudStack>
         </MudPaper>
         <div class="d-flex flex-row justify-space-between gap-3 mt-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" StartIcon="@Icons.Material.Outlined.FileUpload" 
-                       OnClick="UploadAllImages" Disabled="!Images.Any(i => i.State is ImageUploadState.UnStart or ImageUploadState.Failed)">上传全部</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Outlined.Clear" 
-                       OnClick="ClearAllImages" Disabled="!Images.Any(i => i.State is not ImageUploadState.Uploading)">清空列表</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Warning" StartIcon="@Icons.Material.Outlined.Lock"
-                       Disabled="Images.Any(i => i.State is ImageUploadState.Uploading)">访问权限</MudButton>
-            <MudMenu ActivationEvent="@MouseEvent.MouseOver" 
-                     AnchorOrigin="Origin.CenterRight" TransformOrigin="Origin.TopLeft">
-                <ActivatorContent>
-                    <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Outlined.ContentCopy">链接格式</MudButton>
-                </ActivatorContent>
-                <ChildContent>
-                    <MudList Clickable @bind-SelectedValue="@UrlType">
-                        <MudListItem Value="ImageUrlType.Markdown" Style="height:40px; color:gray;">
-                            <IconfontText Icon="icon-file-markdown" Text="Markdown" Color="#B0BEC5" />
-                        </MudListItem>
-                        <MudListItem Value="ImageUrlType.Url" Style="height:40px; color:gray;">
-                            <IconfontText Icon="icon-URLScheme" Text="Url" Color="#81C784" />
-                        </MudListItem>
-                        <MudListItem Value="ImageUrlType.Html" Style="height:40px;">
-                            <IconfontText Icon="icon-html" Text="Html" Color="#E1A983" />
-                        </MudListItem>
-                        <MudListItem Value="ImageUrlType.UBB" Style="height:40px;">
-                            <IconfontText Icon="icon-14" Text="UBB" Color="#2196F3" />
-                        </MudListItem>
-                    </MudList>
-                </ChildContent>
-            </MudMenu>
+            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" StartIcon="@Icons.Material.Outlined.FileUpload" FullWidth
+                       OnClick="UploadAllImagesAsync" Disabled="!Images.Any(i => i.State is ImageUploadState.UnStart or ImageUploadState.Failed)">上 传</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Outlined.Clear" FullWidth
+                       OnClick="ClearAllImagesAsync" Disabled="!Images.Any(i => i.State is not ImageUploadState.Uploading)">清 空</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Outlined.Settings" FullWidth
+                       Disabled="Images.Any(i => i.State is ImageUploadState.Uploading)">设 置</MudButton>
         </div>
         @foreach (var image in Images)
         {

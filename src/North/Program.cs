@@ -1,3 +1,4 @@
+using IP2Region.Net.Abstractions;
 using IP2Region.Net.XDB;
 using Krins.Nuget;
 using Masuit.Tools.Core.AspNetCore;
@@ -11,6 +12,7 @@ using North.Core.Common;
 using North.Core.Entities;
 using North.Core.Repository;
 using North.Core.Services.AuthService;
+using North.Core.Services.ImageService;
 using North.Core.Services.Logger;
 using SqlSugar;
 using System.Security.Claims;
@@ -70,6 +72,7 @@ namespace North
                                 .AddCookie(options =>
                                 {
                                     // TODO 配置自动跳转
+                                    options.LoginPath = new PathString("/login");
                                     // 确定用于创建 Cookie 的设置
                                     options.Cookie = new CookieBuilder()
                                     {
@@ -128,6 +131,8 @@ namespace North
                 builder.Services.AddSingleton<ISearcher, Searcher>();
                 // 压缩解压工具
                 builder.Services.AddSevenZipCompressor();
+                // 图片服务
+                builder.Services.AddSingleton<IImageService>(imageService => new NetVipsImageService());
 
 
                 /**
@@ -144,6 +149,8 @@ namespace North
                 app.Urls.Add(GlobalValues.AppSettings.General.ApplicationUrl);
                 app.MapBlazorHub(options =>
                 {
+                    // Cookie 到期后自动断开 SignalR 连接
+                    // 若设置为 false 则 Cookie 过期时除非手动刷新页面，否则不会更新当前状态，即 context.User.Identity?.IsAuthenticated 始终为 true
                     options.CloseOnAuthenticationExpiration = true;
                 });
                 app.MapFallbackToPage("/_Host");
