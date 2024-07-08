@@ -2,7 +2,6 @@ using IP2Region.Net.XDB;
 using Krins.Nuget;
 using Masuit.Tools.Core.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using MudBlazor;
@@ -67,10 +66,7 @@ namespace North
                 // 日志服务
                 builder.Services.AddSingleton<ILogger, NLogger>(logger => new NLogger(GlobalValues.AppSettings.Log));
                 // Cookie验证
-                builder.Services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                })
+                builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                                 .AddCookie(options =>
                                 {
                                     // TODO 配置自动跳转
@@ -89,7 +85,6 @@ namespace North
                                         // None: 登录页为 HTTPS，但其他 HTTP 页也需要身份验证信息
                                         // SameAsRequest: 若提供 Cookie 的 URI 为 HTTPS，则只会在后续 HTTPS 请求上将 Cookie 返回服务器；若提供 Cookie 的 URI 为 HTTP，则会在后续 HTTP 和 HTTPS 请求上将 Cookie 返回服务器。
                                         SecurePolicy = CookieSecurePolicy.SameAsRequest
-                                        
                                     };
                                     options.SlidingExpiration = true;
                                     options.Events = new CookieAuthenticationEvents
@@ -106,6 +101,10 @@ namespace North
                     var repository = new UserRepository(sqlSlient, appSetting.General.DataBase.EnabledName);
 
                     return new NorthAuthService(repository, GlobalValues.WithoutAuthenticationPages);
+                });
+                builder.Host.UseDefaultServiceProvider(options =>
+                {
+                    options.ValidateScopes = false;
                 });
                 // 动态加载控制器
                 builder.Services.AddSingleton(NorthActionDescriptorChangeProvider.Instance);
@@ -129,10 +128,6 @@ namespace North
                 builder.Services.AddSingleton<ISearcher, Searcher>();
                 // 压缩解压工具
                 builder.Services.AddSevenZipCompressor();
-                builder.Host.UseDefaultServiceProvider(options =>
-                {
-                    options.ValidateScopes = false;
-                });
 
 
                 /**
@@ -145,36 +140,13 @@ namespace North
                 app.UseRouting();
                 app.UseAuthentication();
                 app.UseAuthorization();
-                app.UseEndpoints(endpoint =>
-                {
-                    if (!GlobalValues.AppSettings.General.DataBase.IsApplicationInstalled)
-                    {
-                        // 未安装时强制跳转至安装页面
-                        endpoint.MapGet("/", context =>
-                        {
-                            return Task.Run(() =>
-                            {
-                                context.Response.Redirect("/install");
-                            });
-                        });
-                    }
-                    else
-                    {
-                        // 应用已安装后将无法访问安装页面
-                        endpoint.MapGet("/install", context =>
-                        {
-                            return Task.Run(() =>
-                            {
-                                context.Response.Redirect("/");
-                            });
-                        });
-                    }
-                    endpoint.MapBlazorHub();
-                    endpoint.MapControllers();
-                    endpoint.MapFallbackToPage("/_Host");
-                });
                 // TODO 设置页面增加端口修改功能
                 app.Urls.Add(GlobalValues.AppSettings.General.ApplicationUrl);
+                app.MapBlazorHub(options =>
+                {
+                    options.CloseOnAuthenticationExpiration = true;
+                });
+                app.MapFallbackToPage("/_Host");
                 app.Run();
             }
             catch (Exception e)

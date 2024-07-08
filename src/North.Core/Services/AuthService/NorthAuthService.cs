@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using North.Core.Entities;
 using North.Core.Helpers;
 using North.Core.Repository;
@@ -38,7 +37,7 @@ namespace North.Core.Services.AuthService
             {
                 return null;
             }
-
+            
             // 核对云端认证信息
             var user = await _repository.SingleAsync(u => u.Id.ToString() == userId);
             if ((user?.LastModifyTime.ToString("G") != userLastModifyTime) || (user.State is not UserState.Normal))

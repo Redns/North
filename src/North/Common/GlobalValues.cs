@@ -10,7 +10,7 @@ namespace North.Common
         /// <summary>
         /// 以下页面无需授权即可访问（防止App.razor路由陷入死循环）
         /// </summary>
-        public static string[] WithoutAuthenticationPages { get; } = new string[] { "login", "register", "signin", "verify", "install" };
+        public static string[] WithoutAuthenticationPages { get; } = ["login", "register", "signin", "verify", "install"];
 
         /// <summary>
         /// 应用设置
