@@ -3,6 +3,7 @@ using IP2Region.Net.XDB;
 using Krins.Nuget;
 using Masuit.Tools.Core.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using MudBlazor;
@@ -120,6 +121,10 @@ namespace North
                     var applicationPartManager = app.Services.GetRequiredService<ApplicationPartManager>();
                     return new PluginsContext(applicationPartManager, NorthActionDescriptorChangeProvider.Instance)
                     {
+                        OnRefreshRazorPages = (assemblies) =>
+                        {
+                            throw new NotImplementedException();
+                        },
                         OnRefreshControllers = (applicationParts) =>
                         {
                             NorthActionDescriptorChangeProvider.Instance.HasChanged = true;
@@ -140,8 +145,7 @@ namespace North
                  * 构建 web 应用
                  */
                 app = builder.Build();
-                // TODO 添加中间件
-                // app.Use(PluginsContext.Middlewares);
+                app.Use(app.Services.GetRequiredService<PluginsContext>().Middleware);
                 app.UseStaticFiles();
                 app.UseRouting();
                 app.UseAuthentication();

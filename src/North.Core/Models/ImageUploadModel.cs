@@ -15,6 +15,16 @@ namespace North.Core.Models
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
+        /// 图片宽度（像素）
+        /// </summary>
+        public int Width { get; set; } = 0;
+
+        /// <summary>
+        /// 图片高度（像素）
+        /// </summary>
+        public int Height { get; set; } = 0;
+
+        /// <summary>
         /// 图片类型
         /// </summary>
         public string ContentType { get; init; } = string.Empty;

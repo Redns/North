@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using North.Core.Entities;
 
 namespace North.Plugin
 {
@@ -7,6 +8,6 @@ namespace North.Plugin
     /// </summary>
     public interface IDownloadNode
     {
-        Task InvokeAsync(HttpRequest request);
+        Task InvokeAsync(in HttpRequest request, in ImageEntity image);
     }
 }

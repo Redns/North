@@ -70,10 +70,10 @@ namespace North.Controllers
                     }
                     else
                     {
-                        return _context.OnImageUpload(images, currentOperateUser.DTO);
+                        return _context.OnUpload(images, currentOperateUser.DTO);
                     }
                 }
-                return _context.OnImageUpload(images, null);
+                return _context.OnUpload(images, null);
             }
             catch(Exception e)
             {
@@ -113,10 +113,10 @@ namespace North.Controllers
                     }
                     else
                     {
-                        return _context.OnImageDownload(Request, currentOperateUser.DTO);
+                        return _context.OnDownload(Request, currentOperateUser.DTO);
                     }
                 }
-                return _context.OnImageDownload(Request, null);
+                return _context.OnDownload(Request, null);
             }
             catch(Exception e)
             {

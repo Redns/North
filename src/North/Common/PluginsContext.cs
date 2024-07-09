@@ -13,47 +13,68 @@ namespace North.Common
 {
     public class PluginsContext
     {
-        #region 插件页面、控制器更新回调函数
-        public Action<IList<Assembly>> OnRefreshRazorPages { get; init; } = (assemblies) => { };
-        public Action<IList<ApplicationPart>> OnRefreshControllers { get; init; } = (applicationParts) => { };
-        #endregion
+        /// <summary>
+        /// 全局锁
+        /// </summary>
+        private readonly object _lock = new();
 
-        #region 图片上传/下载委托
-        public Func<List<ImageUploadModel>, UserDTOEntity?, Task> OnImageUpload { get; private set; } = (images, user) => Task.CompletedTask;
-        public Func<HttpRequest, UserDTOEntity?, ValueTask<FileContentResult>> OnImageDownload { get; private set; } = (request, user) => ValueTask.FromResult(new FileContentResult(File.ReadAllBytes("Resources/Images/ImageNotFound.jpg"), "image/jpg"));
-        #endregion
+        /// <summary>
+        /// 插件程序集上下文
+        /// </summary>
+        private readonly List<PluginAssemblyLoadContext> _pluginContexts = [];
 
-        #region 中间件
-        // TODO 中间件测试
-        private static readonly Func<HttpContext, RequestDelegate, Task> _middlewares = (context, next) =>
-        {
-            var ipAddress = context.Connection.RemoteIpAddress?.MapToIPv4().ToString();
-            if (ipAddress == "0.0.0.1")
-            {
-                context.Response.StatusCode = 403;
-                return Task.CompletedTask;
-            }
-            else
-            {
-                return next(context);
-            }
-        };
-        public static Func<HttpContext, RequestDelegate, Task> Middlewares
+        /// <summary>
+        /// forget what it is
+        /// </summary>
+        private readonly ApplicationPartManager _applicationPartManager;
+
+        /// <summary>
+        /// forget what it is
+        /// </summary>
+        private readonly IActionDescriptorChangeProvider _actionDescriptorChangeProvider;
+
+        /// <summary>
+        /// Razor Pages 程序集集合
+        /// 注意程序集中不一定包含 Razor Pages
+        /// </summary>>
+        public readonly List<Assembly> _razorPageAssembies = [];
+        public List<Assembly> RazorPageAssembies
         {
             get
             {
-                return _middlewares;
+                return _razorPageAssembies;
             }
         }
+
+
+        #region 事件函数
+
+        /// <summary>
+        /// 中间件
+        /// </summary>
+        public Func<HttpContext, RequestDelegate, Task> Middleware { get; private set; } = (context, next) => { return next(context); };
+
+        /// <summary>
+        /// Razor 页面更新
+        /// </summary>
+        public Action<IList<Assembly>> OnRefreshRazorPages { get; init; } = (assemblies) => { };
+
+        /// <summary>
+        /// 控制器更新
+        /// </summary>
+        public Action<IList<ApplicationPart>> OnRefreshControllers { get; init; } = (applicationParts) => { };
+
+        /// <summary>
+        /// 图片上传
+        /// </summary>
+        public Func<List<ImageUploadModel>, UserDTOEntity?, Task> OnUpload { get; private set; } = (images, user) => Task.CompletedTask;
+
+        /// <summary>
+        /// 图片下载
+        /// </summary>
+        public Func<HttpRequest, UserDTOEntity?, ValueTask<FileContentResult>> OnDownload { get; private set; } = (request, user) => ValueTask.FromResult(new FileContentResult(File.ReadAllBytes("Resources/Images/ImageNotFound.jpg"), "image/jpg"));
+
         #endregion
-
-        private readonly object _lock = new();
-        private readonly ApplicationPartManager _applicationPartManager;
-        private readonly IActionDescriptorChangeProvider _actionDescriptorChangeProvider;
-        private readonly List<PluginAssemblyLoadContext> _pluginContexts = new();
-
-        #region Razor Pages 程序集
-        private List<Assembly>? _razorPageAssemblies = null;
 
         public PluginsContext(ApplicationPartManager applicationPartManager, IActionDescriptorChangeProvider actionDescriptorChangeProvider)
         {
@@ -61,36 +82,19 @@ namespace North.Common
             _actionDescriptorChangeProvider = actionDescriptorChangeProvider;
         }
 
-        /// <summary>
-        /// Razor Pages 程序集集合（程序集中不一定包含 Razor Pages）
-        /// </summary>
-        public List<Assembly> RazorPageAssembies
-        {
-            get
-            {
-                return _razorPageAssemblies ??= _pluginContexts.ConvertAll(context => context.Assembly);
-            }
-        }
-        #endregion
-
-
         public void EnableRazorPages(PluginEntity plugin)
         {
-            //var pluginContext = _pluginContexts.FirstOrDefault(context => context.Plugin.Id == plugin.Id);
-            //if(pluginContext is not null)
-            //{
-            //    _razorPageAssemblies.FirstOrDefault(assembly => assembly.)
-            //}
+            throw new NotImplementedException();
         }
-
 
         public void DisableRazorPages(PluginEntity plugin)
         {
-
+            throw new NotImplementedException();
         }
         
 
-        #region 加载插件（磁盘 ---> 内存）
+        #region 加载 / 卸载插件
+
         /// <summary>
         /// 加载插件
         /// </summary>
@@ -112,9 +116,7 @@ namespace North.Common
                 Load(plugin);
             }
         }
-        #endregion
 
-        #region 卸载插件（从内存中清除）
         /// <summary>
         /// 卸载插件
         /// </summary>
@@ -129,7 +131,6 @@ namespace North.Common
             }
         }
 
-
         /// <summary>
         /// 卸载多个插件
         /// </summary>
@@ -141,8 +142,11 @@ namespace North.Common
                 Unload(plugin);
             }
         }
+
         #endregion
 
+
+        #region 安装 / 卸载插件
 
         /// <summary>
         /// 安装插件
@@ -151,7 +155,7 @@ namespace North.Common
         /// <param name="setting">插件设置</param>
         public void Install(PluginEntity plugin, PluginSetting setting)
         {
-
+            throw new NotImplementedException();
         }
 
 
@@ -162,8 +166,10 @@ namespace North.Common
         /// <param name="setting"></param>
         public void UnInstall(PluginEntity plugin, PluginSetting setting)
         {
-            
+            throw new NotImplementedException();
         }
+
+        #endregion
     }
 
 
@@ -176,12 +182,21 @@ namespace North.Common
         public Assembly Assembly { get; init; }
         public AssemblyPart AssemblyPart { get; init; }
 
-        #region 图片上传/下载模块集合
-        public Dictionary<string, IAuth> Authers { get; init; } = new();
-        public Dictionary<string, IParse> Parsers { get; init; } = new();
-        public Dictionary<string, IStorage> Storagers { get; init; } = new();
-        public Dictionary<string, IUploadNode> UploadNodes { get; init; } = new();
-        public Dictionary<string, IDownloadNode> DownloadNodes { get; init; } = new();
+        #region Modules (图片上传/下载模块集合)
+        public Dictionary<string, IAuth> Authers { get; init; } = [];
+        public Dictionary<string, IParse> Parsers { get; init; } = [];
+        public Dictionary<string, IStorage> Storagers { get; init; } = [];
+        public Dictionary<string, IUploadNode> UploadNodes { get; init; } = [];
+        public Dictionary<string, IDownloadNode> DownloadNodes { get; init; } = [];
+        #endregion
+
+        #region Middlewares
+
+        /// <summary>
+        /// 中间件
+        /// </summary>
+        public Dictionary<string, IMiddleware> Middlewares { get; init; } = [];
+
         #endregion
 
         public PluginAssemblyLoadContext(PluginEntity plugin) : base(isCollectible: true)
@@ -190,7 +205,10 @@ namespace North.Common
             Assembly = LoadFromAssemblyPath(plugin.InstallDir);
             AssemblyPart = new AssemblyPart(Assembly);
 
-            // 解析插件中的图片上传/下载模块
+            /**
+             * 解析插件子模块
+             * // TODO 采用反射实现
+             */
             foreach (var type in Assembly.GetTypes())
             {
                 if (typeof(IAuth).IsAssignableFrom(type))
@@ -231,6 +249,14 @@ namespace North.Common
                     if (downloadNode is not null)
                     {
                         DownloadNodes.Add(type.FullName ?? throw new ArgumentNullException(type.FullName), downloadNode);
+                    }
+                }
+                else if(typeof(IMiddleware).IsAssignableFrom(type))
+                {
+                    var middleware = Activator.CreateInstance(type) as IMiddleware;
+                    if (middleware is not null)
+                    {
+                        Middlewares.Add(type.FullName ?? throw new ArgumentNullException(type.Name), middleware);
                     }
                 }
             }

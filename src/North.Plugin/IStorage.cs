@@ -15,7 +15,7 @@ namespace North.Plugin
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        Task UploadAsync(ImageUploadModel image);
+        Task UploadAsync(in ImageUploadModel image);
 
 
         /// <summary>
@@ -23,6 +23,6 @@ namespace North.Plugin
         /// </summary>
         /// <param name="request">下载请求</param>
         /// <returns>图片</returns>
-        ValueTask<IActionResult> DownloadAsync(HttpRequest request, ImageEntity image);
+        ValueTask<IActionResult> DownloadAsync(in HttpRequest request, in ImageEntity image);
     }
 }

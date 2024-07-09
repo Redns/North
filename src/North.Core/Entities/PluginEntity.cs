@@ -6,6 +6,7 @@ namespace North.Core.Entities
     public class PluginEntity : Entity
     {
         #region 插件基本信息
+
         /// <summary>
         /// 插件名称
         /// </summary>
@@ -40,6 +41,7 @@ namespace North.Core.Entities
         /// </summary>
         [SugarColumn(Length = 128)]
         public string Description { get; set; }
+
         #endregion
 
         /// <summary>
@@ -50,12 +52,14 @@ namespace North.Core.Entities
         /// <summary>
         /// 安装文件夹（绝对路径）
         /// </summary>
-        [SugarColumn(Length = 256)]
+        [SugarColumn(Length = 512)]
         public string InstallDir { get; set; }
 
         #region 导航属性
+
         [Navigate(NavigateType.OneToMany, nameof(PluginModuleEntity.PluginId))]
         public List<PluginModuleEntity> Modules { get; set; }
+
         #endregion
     }
 

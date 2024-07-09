@@ -7,6 +7,6 @@ namespace North.Plugin
     /// </summary>
     public interface IUploadNode
     {
-        Task InvokeAsync(ImageUploadModel image);
+        Task InvokeAsync(in ImageUploadModel image);
     }
 }

@@ -1,4 +1,5 @@
-﻿using North.Core.Models;
+﻿using North.Core.Entities;
+using North.Core.Models;
 
 namespace North.Plugin
 {
@@ -12,6 +13,6 @@ namespace North.Plugin
         /// </summary>
         /// <param name="image">待解析的图片</param>
         /// <returns></returns>
-        Task ParseAsync(ImageUploadModel image);
+        Task ParseAsync(in ImageUploadModel image);
     }
 }

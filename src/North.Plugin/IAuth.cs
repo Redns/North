@@ -15,7 +15,7 @@ namespace North.Plugin
         /// <param name="images">待上传的图片</param>
         /// <param name="user">当前用户</param>
         /// <returns></returns>
-        void Upload(in IEnumerable<ImageUploadModel> images, in UserDTOEntity user);
+        Task UploadAuthAsync(in IEnumerable<ImageUploadModel> images, in UserDTOEntity user);
 
 
         /// <summary>
@@ -24,6 +24,6 @@ namespace North.Plugin
         /// <param name="request">下载请求</param>
         /// <param name="user">当前用户</param>
         /// <returns>允许访问返回 true，否则返回 false</returns>
-        bool CanAccess(in HttpRequest request, in ImageEntity image, in UserDTOEntity? user);
+        ValueTask<bool> AccessAuthAsync(in HttpRequest request, in ImageEntity image, in UserDTOEntity? user);
     }
 }
