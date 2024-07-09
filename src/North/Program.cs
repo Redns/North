@@ -128,7 +128,8 @@ namespace North
                     };
                 });
                 // IP 物理地址查询
-                builder.Services.AddSingleton<ISearcher, Searcher>();
+                // TODO 模式和路径可配置、数据文件可更新
+                builder.Services.AddSingleton<ISearcher>(new Searcher(CachePolicy.Content, "Data/ip2region.xdb"));
                 // 压缩解压工具
                 builder.Services.AddSevenZipCompressor();
                 // 图片服务
