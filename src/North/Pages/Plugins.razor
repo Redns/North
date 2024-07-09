@@ -1,4 +1,4 @@
-﻿@*@page "/plugins"
+﻿@page "/plugins"
 
 @using North.Common
 @using North.Core.Common
@@ -8,7 +8,7 @@
 @inject ISnackbar _snackbar
 @inject IDialogService _dialog
 
-<AuthorizeView Roles="User,Administrator">
+<AuthorizeView Roles="User">
     <MudStack Spacing="10" Row AlignItems="AlignItems.Center" Class="message_warn">
         <MudImage Src="icons/warn.svg" Width="180" Elevation="0" Class="rounded-lg ma-4" />
         <MudLink Href="/" Color="Color.Warning" Style="font-weight:bold; font-size:34px;">您的权限不足，无法访问</MudLink>
@@ -17,115 +17,22 @@
 <AuthorizeView Roles="System">
     <MudStack Spacing="5" id="page">
         <MudTextField @bind-Value="@SearchPluginName" DebounceInterval="500" OnDebounceIntervalElapsed="@SearchPluginsAsync"
-                      Variant="Variant.Text" Placeholder="请输入插件名称..." id="search-field"
-                      Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Search" OnAdornmentClick="@SearchPluginsAsync" />
-        @if(IsSearching)
-        {
-            <Loading Enable Style="position:absolute; left:0; right:0; top:0; bottom:0; margin:auto;" />
-        }
-        else if(!ShowPlugins.Any())
-        {
-            <Empty />
-        }
-        else 
-        {
-            <MudGrid Justify="Justify.FlexStart" id="plugin-grid">
-                @foreach (var plugin in ShowPlugins)
-                {
-                    <MudItem xs="12" lg="6">
-                        <MudCard Outlined id="plugin-card">
-                            <MudStack Row AlignItems="AlignItems.Center" id="plugin-stack" >
-                                <MudAvatar Image="@plugin.IconUrl" Square id="plugin-stack-avatar" />
-                                <MudStack id="plugin-stack-mid">
-                                    <a href="@($"https://www.nuget.org/packages/{plugin.Name}")" style="font-size:22px; font-weight:300; line-height:.9; color:#337ab7;">@plugin.Name</a>
-                                    <MudStack Row>
-                                        <MudIcon Icon="@Icons.Outlined.Group"></MudIcon>
-                                        <MudText>@plugin.Authors.FormatString(25)</MudText>
-                                        <MudIcon Icon="@Icons.Outlined.FileDownload"></MudIcon>
-                                        <MudText>@plugin.DownloadCount.FormatNumber()</MudText>
-                                        <MudIcon Icon="@Icons.Outlined.Flag"></MudIcon>
-                                        <MudText>@plugin.Version.ToNormalizedString()</MudText>
-                                    </MudStack>
-                                    <MudText Style="white-space:nowrap;">@plugin.Description</MudText>
-                                </MudStack>
-                                <MudStack Justify="Justify.FlexEnd" id="plugin-stack-button">
-                                    @if(plugin.State is PluginState.UnInstall)
-                                    {
-                                        <MudTooltip Text="点击安装" Placement="Placement.Bottom">
-                                            <MudIconButton Icon="@Icons.Filled.InstallDesktop" OnClick="@(() => InstallPlugin(plugin))"></MudIconButton>
-                                        </MudTooltip>
-                                    }
-                                    else if(plugin.State is PluginState.Enable)
-                                    {
-                                        <MudMenu Icon="@Icons.Outlined.Settings" AnchorOrigin="Origin.BottomRight" ActivationEvent="MouseEvent.MouseOver">
-                                            <MudMenuItem OnClick="@(() => DisablePlugin(plugin))">
-                                                <MudStack Row>
-                                                    <MudIcon Icon="@Icons.Outlined.LockOpen" />
-                                                    <MudText>禁 用</MudText>
-                                                </MudStack>
-                                            </MudMenuItem>
-                                            <MudMenuItem OnClick="@(() => UpdatePlugin(plugin))">
-                                                <MudStack Row>
-                                                    <MudIcon Icon="@Icons.Outlined.Sync" />
-                                                    <MudText>更 新</MudText>
-                                                </MudStack>
-                                            </MudMenuItem>
-                                            <MudMenuItem OnClick="@(() => UnInstallPlugin(plugin))">
-                                                <MudStack Row>
-                                                    <MudIcon Icon="@Icons.Outlined.Delete" />
-                                                    <MudText>卸 载</MudText>
-                                                </MudStack>
-                                            </MudMenuItem>
-                                        </MudMenu>
-                                    }
-                                    else if(plugin.State is PluginState.Disable)
-                                    {
-                                        <MudMenu Icon="@Icons.Outlined.Settings" AnchorOrigin="Origin.BottomRight">
-                                            <MudMenuItem OnClick="@(() => EnablePlugin(plugin))">
-                                                <MudStack Row>
-                                                    <MudIcon Icon="@Icons.Outlined.Lock" />
-                                                    <MudText>启 用</MudText>
-                                                </MudStack>
-                                            </MudMenuItem>
-                                            <MudMenuItem  OnClick="@(() => UpdatePlugin(plugin))">
-                                                <MudStack Row>
-                                                    <MudIcon Icon="@Icons.Outlined.Sync" />
-                                                    <MudText>更 新</MudText>
-                                                </MudStack>
-                                            </MudMenuItem>
-                                            <MudMenuItem  OnClick="@(() => UnInstallPlugin(plugin))">
-                                                <MudStack Row>
-                                                    <MudIcon Icon="@Icons.Outlined.Delete" />
-                                                    <MudText>卸 载</MudText>
-                                                </MudStack>
-                                            </MudMenuItem>
-                                        </MudMenu>
-                                    }
-                                </MudStack>
-                            </MudStack>
-                        </MudCard>
-                    </MudItem>
-                }
-            </MudGrid>
-        }           
+                      Variant="Variant.Outlined" Placeholder="请输入插件名称..." FullWidth Style="width: 90%; max-width: 480px; max-height: 46px;"
+                      Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnAdornmentClick="@SearchPluginsAsync" />
     </MudStack>
 </AuthorizeView>
 
 <style>
     #page {
-        margin: 0 30px;
+        margin: 15px 20px;
         width:calc(100% - 30px);
         height: fit-content;
         max-height: calc(100% - 55px);
     }
 
-    #search-field {
-        max-width:100%;
-    }
-
     #plugin-grid {
         height: fit-content;
-        max-width:100%;
+        max-width: 100%;
         max-height: calc(100% - 30px);
         overflow:scroll;
         overflow-x:hidden;
@@ -177,4 +84,4 @@
         position: absolute;
         margin: auto;
     }
-</style>*@
+</style>

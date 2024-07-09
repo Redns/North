@@ -35,7 +35,6 @@ namespace North.Pages.Auth
         {
             if (!_appSetting.Register.AllowRegister)
             {
-                _snackbar.Add("系统当前未开放注册", Severity.Error);
                 _nav.NavigateTo("login", true);
             }
             await base.OnInitializedAsync();

@@ -57,9 +57,9 @@
                     <MudStack Row Spacing="1" Class="d-flex mud-height-full  align-center" Style="width:fit-content;">
                         <MudIconButton Icon="@Icons.Material.Outlined.FileUpload" Color="Color.Tertiary"
                                 OnClick="@(() => UploadImageAsync(image))" Disabled="@(image.State is ImageUploadState.Success or ImageUploadState.Uploading)"></MudIconButton>
-                    <MudIconButton Icon="@Icons.Material.Outlined.Clear" Color="Color.Error"
+                        <MudIconButton Icon="@Icons.Material.Outlined.Clear" Color="Color.Error"
                                 OnClick="@(() => ClearImageAsync(image))" Disabled="@(image.State is ImageUploadState.Uploading)"></MudIconButton>
-                    <MudIconButton Icon="@Icons.Material.Outlined.ContentCopy" Color="Color.Info"
+                        <MudIconButton Icon="@Icons.Material.Outlined.ContentCopy" Color="Color.Info"
                                 OnClick="@(() => CopyImageUrlAsync(image))" Disabled="@(image.State is not ImageUploadState.Success)"></MudIconButton>
                     </MudStack>
                 </MudStack>

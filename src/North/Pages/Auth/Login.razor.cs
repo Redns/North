@@ -43,13 +43,15 @@ namespace North.Pages.Auth
             await base.OnInitializedAsync();
         }
 
-
+        /// <summary>
+        /// 背景图片懒加载
+        /// </summary>
+        /// <param name="firstRender"></param>
+        /// <returns></returns>
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                // 背景图片懒加载
-                // 加载完 css 和 js 之后再加载背景图片，优化用户体验
                 if (_appSetting.Appearance.ImageLazyLoad)
                 {
                     await InvokeAsync(() =>

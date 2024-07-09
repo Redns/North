@@ -6,7 +6,7 @@
 
 @inherits LayoutComponentBase
 
-<MudStack Spacing="0" Class="mud-height-full mud-width-full">
+<MudStack Spacing="0" Class="mud-height-full mud-width-full" Style="user-select: none;"> 
     @if (string.IsNullOrWhiteSpace(_appSetting.Appearance.Footer))
     {
         @Body
