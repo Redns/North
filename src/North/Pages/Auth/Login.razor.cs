@@ -24,46 +24,9 @@ namespace North.Pages.Auth
         public bool LoginRunning { get; set; } = false;
 
         /// <summary>
-        /// 背景图片链接
-        /// </summary>
-        public string BackgroundImageUrl { get; set; } = string.Empty;
-
-        /// <summary>
         /// 登录模型
         /// </summary>
         public LoginModel LoginModel { get; set; } = new LoginModel();
-
-
-        protected override async Task OnInitializedAsync()
-        {
-            if(!_appSetting.Appearance.ImageLazyLoad)
-            {
-                BackgroundImageUrl = _appSetting.Appearance.BackgroundUrl;
-            }
-            await base.OnInitializedAsync();
-        }
-
-        /// <summary>
-        /// 背景图片懒加载
-        /// </summary>
-        /// <param name="firstRender"></param>
-        /// <returns></returns>
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender)
-            {
-                if (_appSetting.Appearance.ImageLazyLoad)
-                {
-                    await InvokeAsync(() =>
-                    {
-                        BackgroundImageUrl = _appSetting.Appearance.BackgroundUrl;
-                        StateHasChanged();
-                    });
-                }
-            }
-            await base.OnAfterRenderAsync(firstRender);
-        }
-
 
         /// <summary>
         /// 用户登录
