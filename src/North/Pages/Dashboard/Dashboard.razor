@@ -1,12 +1,10 @@
 ﻿@page "/dashboard"
 
-<AuthorizeView>
-    <Authorized>
+<AuthorizeView Roles="User">
+    
+</AuthorizeView>
+<AuthorizeView Roles="System">
 
-    </Authorized>
-    <NotAuthorized>
-
-    </NotAuthorized>
 </AuthorizeView>
 
 @code {

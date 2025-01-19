@@ -5,19 +5,18 @@
             <MudNavLink Href="/dashboard" Icon="@Icons.Material.Outlined.Speed" Style="user-select:none;">仪表盘</MudNavLink>
             <MudNavLink Href="/images" Icon="@Icons.Material.Outlined.BrokenImage" Style="user-select:none;">图 库</MudNavLink>
             <MudNavGroup Icon="@Icons.Material.Outlined.Settings" Title="设 置" HideExpandIcon>
-                
+                <MudNavLink Href="/settings/about" Icon="@Icons.Material.Outlined.Info" Style="user-select:none;">关 于</MudNavLink>
             </MudNavGroup>
         </MudNavMenu>
     </MudDrawer>
 </AuthorizeView>
 <AuthorizeView Roles="System">
-    <MudDrawer @bind-Open="@IsExpanded" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="OpenMiniOnHover" Class="mud-height-full" Style="overflow-x:hidden;" id="nav">
+    <MudDrawer @bind-Open="@IsExpanded" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="OpenMiniOnHover" Class="mud-height-full" Style="overflow-x:hidden" id="nav">
         <MudNavMenu Rounded Margin="Margin.Normal" Color="Color.Tertiary" Class="mud-heigth-full" Style="@Style">
             <MudNavLink Href="/upload" Icon="@Icons.Material.Outlined.FileUpload" Style="user-select:none;">上 传</MudNavLink>
             <MudNavLink Href="/dashboard" Icon="@Icons.Material.Outlined.Speed" Style="user-select:none;">仪表盘</MudNavLink>
             <MudNavLink Href="/images" Icon="@Icons.Material.Outlined.BrokenImage" Style="user-select:none;">图 库</MudNavLink>
             <MudNavLink Href="/users" Icon="@Icons.Material.Outlined.People" Style="user-select:none;">用户组</MudNavLink>
-            <MudNavLink Href="/plugins" Icon="@Icons.Material.Outlined.Workspaces" Style="user-select:none;">插 件</MudNavLink>
             <MudNavGroup Icon="@Icons.Material.Outlined.Settings" Title="设 置" HideExpandIcon>
                 <MudNavLink Href="/settings/general" Icon="@Icons.Material.Outlined.Handyman" Style="user-select:none;">通 用</MudNavLink>
                 <MudNavLink Href="/settings/appearance" Icon="@Icons.Material.Outlined.ColorLens" Style="user-select:none;">外 观</MudNavLink>

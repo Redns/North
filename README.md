@@ -2,7 +2,7 @@
 
 # North
 
-![version: v1.1.4 (shields.io)](https://img.shields.io/badge/release-v2.2.13-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-6.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
+![version: v1.1.4 (shields.io)](https://img.shields.io/badge/release-v2.2.13-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-8.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue) [<img src="https://api.gitsponsors.com/api/badge/img?id=466481041" height="20">](https://api.gitsponsors.com/api/badge/link?p=zD+Cnkh6vEfAUhpOOaJdpaiqof7lYuKmQAw6udFbsAySjwHdHxp/6DK/JQA9ZAg085wO9tmPoUAYoLhq2FhkRQ==)
 
 ## Recent Progress
 

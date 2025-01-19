@@ -67,7 +67,8 @@ namespace North.Pages
 
 
             // TODO 模拟上传
-            Thread.Sleep(1000);
+            // Thread.Sleep(1000);
+            await Task.Delay(1000);
             model.State = new Random().Next() % 2 == 0 ? ImageUploadState.Success : ImageUploadState.Failed;
             model.Progress = model.State == ImageUploadState.Success ? 100 : 0;
             model.Message = model.State == ImageUploadState.Success ? "上传成功" : "上传失败";
