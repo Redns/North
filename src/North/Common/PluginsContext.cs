@@ -182,7 +182,9 @@ namespace North.Common
         public Assembly Assembly { get; init; }
         public AssemblyPart AssemblyPart { get; init; }
 
+
         #region Modules (图片上传/下载模块集合)
+        public Dictionary<PluginCategory, Dictionary<string, Type>> Modules { get; init; } = [];
         public Dictionary<string, IAuth> Authers { get; init; } = [];
         public Dictionary<string, IParse> Parsers { get; init; } = [];
         public Dictionary<string, IStorage> Storagers { get; init; } = [];
@@ -285,5 +287,18 @@ namespace North.Common
             TokenSource = new CancellationTokenSource();
             return new CancellationChangeToken(TokenSource.Token);
         }
+    }
+
+    /// <summary>
+    /// 插件类别
+    /// </summary>
+    public enum PluginCategory
+    {
+        Auther = 0,
+        Parser,
+        Storager,
+        UploadNode,
+        DownloadNode,
+        Middleware
     }
 }

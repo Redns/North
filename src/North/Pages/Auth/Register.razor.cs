@@ -18,11 +18,6 @@ namespace North.Pages.Auth
         public bool RegisterRunning { get; set; } = false;
 
         /// <summary>
-        /// 背景图片链接
-        /// </summary>
-        public string BackgroundImageUrl { get; set; } = string.Empty;
-
-        /// <summary>
         /// 注册模型
         /// </summary>
         public RegisterModel Model { get; set; } = new RegisterModel();
@@ -30,36 +25,23 @@ namespace North.Pages.Auth
         /// <summary>
         /// 检查系统是否开放注册
         /// </summary>
-        /// <returns></returns>
-        protected override async Task OnInitializedAsync()
-        {
-            if (!_appSetting.Register.AllowRegister)
-            {
-                _snackbar.Add("系统当前未开放注册", Severity.Error);
-                _nav.NavigateTo("login", true);
-            }
-            await base.OnInitializedAsync();
-        }
-
-
-        /// <summary>
-        /// 加载完 css 和 js 之后再加载背景图片，优化用户体验
-        /// </summary>
         /// <param name="firstRender"></param>
         /// <returns></returns>
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                await InvokeAsync(() =>
+                if (!_appSetting.Register.AllowRegister)
                 {
-                    BackgroundImageUrl = _appSetting.Appearance.BackgroundUrl;
-                    StateHasChanged();
-                });
+                    _snackbar.Add("系统未开放注册", Severity.Error);
+                    await Task.Delay(2000).ContinueWith((task) =>
+                    {
+                        _nav.NavigateTo("login", true);
+                    });
+                }
             }
             await base.OnAfterRenderAsync(firstRender);
         }
-
 
         /// <summary>
         /// 用户注册
@@ -85,7 +67,8 @@ namespace North.Pages.Auth
                     _snackbar.Add("邮箱已被注册", Severity.Error); return;
                 }
 
-                // TODO 添加注册逻辑
+                // 发送验证邮件
+                await SendRegisterVerifyEmail();
                 await userRepository.AddAsync(new UserEntity
                 {
                     Name = Model.Name,
@@ -108,7 +91,6 @@ namespace North.Pages.Auth
             } 
         }
 
-
         /// <summary>
         /// 监测 Enter 键
         /// </summary>
@@ -121,7 +103,6 @@ namespace North.Pages.Auth
                 await UserRegister();
             }
         }
-
 
         /// <summary>
         /// 发送注册验证邮件
@@ -156,7 +137,7 @@ namespace North.Pages.Auth
                 Body = verifyEmailBody
             }.SendAsync(s =>
             {
-
+                _snackbar.Add("验证邮件已发送", Severity.Success);
             });
         }
 

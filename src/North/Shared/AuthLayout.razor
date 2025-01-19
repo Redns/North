@@ -6,7 +6,7 @@
 
 @inherits LayoutComponentBase
 
-<MudStack Spacing="0" Class="mud-height-full mud-width-full">
+<MudStack Spacing="0" Class="mud-height-full mud-width-full" Style="user-select: none;"> 
     @if (string.IsNullOrWhiteSpace(_appSetting.Appearance.Footer))
     {
         @Body
@@ -15,7 +15,16 @@
     {
         <MudStack Class="mud-width-full" Style="height:calc(100% - 40px);">
             @Body
-        </MudStack>
+        </MudStack> 
         <FooterText Content="@_appSetting.Appearance.Footer" Style="height:40px; text-align:center;" />
     }
 </MudStack>
+
+<style>
+    body {
+        background-image: url(@BackgroundImageUrl);
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+</style>
