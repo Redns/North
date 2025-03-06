@@ -66,3 +66,10 @@ src/North.Plugin.NetVips/obj
 /src/North/Properties/PublishProfiles/win-x64-v2.4.15.pubxml.user
 /src/North/Properties/PublishProfiles/win-x64.pubxml
 /src/North/Properties/PublishProfiles/win-x64.pubxml.user
+/src/North.Server/obj
+/src/North.Client/.vs
+/src/North.Client/bin
+/src/North.Client/obj
+/src/North.Razor/bin
+/src/North.Razor/obj
+/src/North.Server/bin/Debug/net8.0
