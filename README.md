@@ -1,24 +1,24 @@
-<img src="https://jing-image.oss-cn-chengdu.aliyuncs.com/snow.svg" alt="North" width="120" height="120" align="right" />
+<img src="https://image.krins.cloud/snow.svg" alt="North" width="120" height="120" align="right" />
 
 # North
 
-![version: v1.1.4 (shields.io)](https://img.shields.io/badge/release-v2.2.13-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-8.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue) [<img src="https://api.gitsponsors.com/api/badge/img?id=466481041" height="20">](https://api.gitsponsors.com/api/badge/link?p=zD+Cnkh6vEfAUhpOOaJdpaiqof7lYuKmQAw6udFbsAySjwHdHxp/6DK/JQA9ZAg085wO9tmPoUAYoLhq2FhkRQ==)
+![version: v1.1.4 (shields.io)](https://img.shields.io/badge/release-v2.2.13-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-8.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
 
 ## Recent Progress
 
 1. 用户登录授权系统
 
-   ![image-20221202212357589](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E7%99%BB%E5%BD%95%E9%A1%B5%E9%9D%A2.png)
+   ![image-20221202212357589](https://image.krins.cloud/%E7%99%BB%E5%BD%95%E9%A1%B5%E9%9D%A2.png)
 
 2. 全新风格 UI
 
-   ![image-20221202212640017](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E4%B8%BB%E9%A1%B5%E9%9D%A2.png)
+   ![image-20221202212640017](https://image.krins.cloud/%E4%B8%BB%E9%A1%B5%E9%9D%A2.png)
 
 3. 插件化开发
 
-   ![image-20221202212734313](https://jing-image.oss-cn-chengdu.aliyuncs.com/4204FR6J.png)
+   ![image-20221202212734313](https://image.krins.cloud/4204FR6J.png)
 
-   ![插件上下文结构](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E6%8F%92%E4%BB%B6%E4%B8%8A%E4%B8%8B%E6%96%87%E6%9E%B6%E6%9E%84.png)
+   ![插件上下文结构](https://image.krins.cloud/%E6%8F%92%E4%BB%B6%E4%B8%8A%E4%B8%8B%E6%96%87%E6%9E%B6%E6%9E%84.png)
 
 4. 其他
 
@@ -78,25 +78,25 @@
 
 1. 前往 [ImageBed主页](https://github.com/Redns/ImageBed/releases) 下载资源包
 
-   ![image-20220506144854125](https://jing-image.oss-cn-chengdu.aliyuncs.com/image-20220506144854125.png)
+   ![image-20220506144854125](https://image.krins.cloud/image-20220506144854125.png)
 
 2. 解压资源包 (图片存储路径为 `Data/Resources/Images`)
 
-   ![Z62J08FN](https://jing-image.oss-cn-chengdu.aliyuncs.com/Z62J08FN.png)
+   ![Z62J08FN](https://image.krins.cloud/Z62J08FN.png)
 
 3. 双击 `ImageBed.exe` 运行服务
 
-   ![V6X4644N](https://jing-image.oss-cn-chengdu.aliyuncs.com/V6X4644N.png)
+   ![V6X4644N](https://image.krins.cloud/V6X4644N.png)
 
 4. 浏览器地址栏输入 `localhost:12121`
 
-   ![8PD0X4VR](https://jing-image.oss-cn-chengdu.aliyuncs.com/8PD0X4VR.png)
+   ![8PD0X4VR](https://image.krins.cloud/8PD0X4VR.png)
 
 5. 点击上传图片
 
-   ![RJ6V26VJ](https://jing-image.oss-cn-chengdu.aliyuncs.com/RJ6V26VJ.png)
+   ![RJ6V26VJ](https://image.krins.cloud/RJ6V26VJ.png)
 
-   ![F4TNFTTD](https://jing-image.oss-cn-chengdu.aliyuncs.com/F4TNFTTD.png)
+   ![F4TNFTTD](https://image.krins.cloud/F4TNFTTD.png)
 
 6. 安装完成
 
@@ -107,7 +107,7 @@
 
 1. 将资源包解压后上传至云服务器
 
-   ![08HLTD88](https://jing-image.oss-cn-chengdu.aliyuncs.com/08HLTD88.png)
+   ![08HLTD88](https://image.krins.cloud/08HLTD88.png)
 
 2. 进入 `ImageBed` 文件夹，运行 `ImageBed.dll`
 
@@ -242,29 +242,29 @@
 
 **web 界面上传**
 
-![web界面上传](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87.gif)
+![web界面上传](https://image.krins.cloud/%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87.gif)
 
 **剪贴板上传**
 
-![剪贴板上传](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E5%89%AA%E8%B4%B4%E6%9D%BF%E4%B8%8A%E4%BC%A0.gif)
+![剪贴板上传](https://image.krins.cloud/%E5%89%AA%E8%B4%B4%E6%9D%BF%E4%B8%8A%E4%BC%A0.gif)
 
 #### 删除
 
-![删除图片](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E5%88%A0%E9%99%A4%E5%9B%BE%E7%89%87.gif)
+![删除图片](https://image.krins.cloud/%E5%88%A0%E9%99%A4%E5%9B%BE%E7%89%87.gif)
 
 #### 导入导出
 
 **导入图片**
 
-![导入图片](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E5%AF%BC%E5%85%A5%E5%9B%BE%E7%89%87.gif)
+![导入图片](https://image.krins.cloud/%E5%AF%BC%E5%85%A5%E5%9B%BE%E7%89%87.gif)
 
 **导出图片**
 
-![导出图片](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E5%AF%BC%E5%87%BA%E5%9B%BE%E7%89%87.gif)
+![导出图片](https://image.krins.cloud/%E5%AF%BC%E5%87%BA%E5%9B%BE%E7%89%87.gif)
 
 #### 视图切换
 
-![视图切换](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E8%A7%86%E5%9B%BE%E5%88%87%E6%8D%A2.gif)
+![视图切换](https://image.krins.cloud/%E8%A7%86%E5%9B%BE%E5%88%87%E6%8D%A2.gif)
 
 ## API
 
