@@ -1,24 +1,18 @@
-<img src="https://jing-image.oss-cn-chengdu.aliyuncs.com/snow.svg" alt="North" width="120" height="120" align="right" />
+<img src="https://image.krins.cloud/snow.svg" alt="North" width="120" height="120" align="right" />
 
 # North
 
-![version: v1.1.4 (shields.io)](https://img.shields.io/badge/release-v2.2.13-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-8.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue) [<img src="https://api.gitsponsors.com/api/badge/img?id=466481041" height="20">](https://api.gitsponsors.com/api/badge/link?p=zD+Cnkh6vEfAUhpOOaJdpaiqof7lYuKmQAw6udFbsAySjwHdHxp/6DK/JQA9ZAg085wO9tmPoUAYoLhq2FhkRQ==)
+![version: v1.1.4 (shields.io)](https://img.shields.io/badge/release-v2.2.13-green) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/.net-8.0-orange) ![version: v1.0.0 (shields.io)](https://img.shields.io/badge/License-MIT-blue)
 
 ## Recent Progress
 
 1. 用户登录授权系统
 
-   ![image-20221202212357589](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E7%99%BB%E5%BD%95%E9%A1%B5%E9%9D%A2.png)
+   ![image-20221202212357589](https://image.krins.cloud/%E7%99%BB%E5%BD%95%E9%A1%B5%E9%9D%A2.png)
 
 2. 全新风格 UI
 
-   ![image-20221202212640017](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E4%B8%BB%E9%A1%B5%E9%9D%A2.png)
-
-3. 插件化开发
-
-   ![image-20221202212734313](https://jing-image.oss-cn-chengdu.aliyuncs.com/4204FR6J.png)
-
-   ![插件上下文结构](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E6%8F%92%E4%BB%B6%E4%B8%8A%E4%B8%8B%E6%96%87%E6%9E%B6%E6%9E%84.png)
+   ![image-20221202212640017](https://image.krins.cloud/%E4%B8%BB%E9%A1%B5%E9%9D%A2.png)
 
 4. 其他
 
@@ -30,19 +24,21 @@
 
 ## Background
 
-图床可以把图片转为链接，从而方便我们书写、分享博客，目前图床主要分为以下几类
+图床可以把图片转为链接，从而方便我们书写、分享博客，现有图床主要分为以下几类
 
-- 利用 `Git` 仓库存储
-- 对象存储（OSS、COS、七牛云等）
-- 免费公共图床（SM.MS、聚合图床、ImgTP、Postimage等）
+- 利用 Github 仓库存储
+- 对象存储（CSS、OSS、七牛云等）
+- 免费公共图床（[聚合图床](https://www.superbed.cn/)、[Imglt](https://www.imglt.com/)、[Postimage](https://postimages.org/) 等）
 
 但上述图床都有些不尽人意
 
-- 公共图床的稳定性未知，往往会开启审查机制、限制上传图片的尺寸
-- `Github` 国内访问速度堪忧，并且官方明令禁止将 `Github` 和 `Gitee` 仓库作为图床
+- Github 不限制仓库大小但国内访问速度堪忧，且官方明令禁止将仓库作为图床
 - 对象存储的容量和访问速度还不错，但流量较贵
+- 公共图床的稳定性未知，且往往会开启审查机制、限制上传图片的尺寸
 
-图床服务并不需要高性能的服务器去承载，现在云服务器的价格也并不昂贵，因此搭建个人图床也许是不错的选择。出于这样的想法，作者设计了 `ImageBed` 以供大家快速搭建个人图床服务。
+图床服务并不需要高性能服务器承载，学生云服务器的价格也并不昂贵，没有云服务器也可以结合内网穿透工具搭建，综上搭建个人图床也许是不错的选择。出于上述想法，笔者基于 [Blazor Server](https://dotnet.microsoft.com/zh-cn/apps/aspnet/web-apps/blazor) 设计了 [ImageBed](https://github.com/Redns/ImageBed) 以供大家快速搭建个人图床服务
+
+![img](https://image.krins.cloud/a9c0d02d4f8cc655f2c0251abf690f8b.png)
 
 ## Feature
 
@@ -78,25 +74,25 @@
 
 1. 前往 [ImageBed主页](https://github.com/Redns/ImageBed/releases) 下载资源包
 
-   ![image-20220506144854125](https://jing-image.oss-cn-chengdu.aliyuncs.com/image-20220506144854125.png)
+   ![image-20220506144854125](https://image.krins.cloud/image-20220506144854125.png)
 
 2. 解压资源包 (图片存储路径为 `Data/Resources/Images`)
 
-   ![Z62J08FN](https://jing-image.oss-cn-chengdu.aliyuncs.com/Z62J08FN.png)
+   ![Z62J08FN](https://image.krins.cloud/Z62J08FN.png)
 
 3. 双击 `ImageBed.exe` 运行服务
 
-   ![V6X4644N](https://jing-image.oss-cn-chengdu.aliyuncs.com/V6X4644N.png)
+   ![V6X4644N](https://image.krins.cloud/V6X4644N.png)
 
 4. 浏览器地址栏输入 `localhost:12121`
 
-   ![8PD0X4VR](https://jing-image.oss-cn-chengdu.aliyuncs.com/8PD0X4VR.png)
+   ![8PD0X4VR](https://image.krins.cloud/8PD0X4VR.png)
 
 5. 点击上传图片
 
-   ![RJ6V26VJ](https://jing-image.oss-cn-chengdu.aliyuncs.com/RJ6V26VJ.png)
+   ![RJ6V26VJ](https://image.krins.cloud/RJ6V26VJ.png)
 
-   ![F4TNFTTD](https://jing-image.oss-cn-chengdu.aliyuncs.com/F4TNFTTD.png)
+   ![F4TNFTTD](https://image.krins.cloud/F4TNFTTD.png)
 
 6. 安装完成
 
@@ -107,7 +103,7 @@
 
 1. 将资源包解压后上传至云服务器
 
-   ![08HLTD88](https://jing-image.oss-cn-chengdu.aliyuncs.com/08HLTD88.png)
+   ![08HLTD88](https://image.krins.cloud/08HLTD88.png)
 
 2. 进入 `ImageBed` 文件夹，运行 `ImageBed.dll`
 
@@ -242,29 +238,29 @@
 
 **web 界面上传**
 
-![web界面上传](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87.gif)
+![web界面上传](https://image.krins.cloud/%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87.gif)
 
 **剪贴板上传**
 
-![剪贴板上传](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E5%89%AA%E8%B4%B4%E6%9D%BF%E4%B8%8A%E4%BC%A0.gif)
+![剪贴板上传](https://image.krins.cloud/%E5%89%AA%E8%B4%B4%E6%9D%BF%E4%B8%8A%E4%BC%A0.gif)
 
 #### 删除
 
-![删除图片](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E5%88%A0%E9%99%A4%E5%9B%BE%E7%89%87.gif)
+![删除图片](https://image.krins.cloud/%E5%88%A0%E9%99%A4%E5%9B%BE%E7%89%87.gif)
 
 #### 导入导出
 
 **导入图片**
 
-![导入图片](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E5%AF%BC%E5%85%A5%E5%9B%BE%E7%89%87.gif)
+![导入图片](https://image.krins.cloud/%E5%AF%BC%E5%85%A5%E5%9B%BE%E7%89%87.gif)
 
 **导出图片**
 
-![导出图片](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E5%AF%BC%E5%87%BA%E5%9B%BE%E7%89%87.gif)
+![导出图片](https://image.krins.cloud/%E5%AF%BC%E5%87%BA%E5%9B%BE%E7%89%87.gif)
 
 #### 视图切换
 
-![视图切换](https://jing-image.oss-cn-chengdu.aliyuncs.com/%E8%A7%86%E5%9B%BE%E5%88%87%E6%8D%A2.gif)
+![视图切换](https://image.krins.cloud/%E8%A7%86%E5%9B%BE%E5%88%87%E6%8D%A2.gif)
 
 ## API
 
@@ -327,7 +323,7 @@
 
 局域网内用户在浏览器输入 `{ip}:12121` 即可访问图床服务器，其中 `{ip}` 为服务器的 `局域网IP`
 
-### S2. 如何对接Picgo?
+### S2. 如何对接 Picgo?
 
 [PicGo](https://picgo.github.io/PicGo-Doc/zh/) 是一款图床管理软件，支持多种图床。使用 `picgo` 可大大简化我们上传图片的流程，笔者在此开发了 `picgo` 插件 [picgo-plugin-imagebed](https://github.com/Redns/picgo-plugin-imagebed) 以供大家使用
 

@@ -1,75 +1,23 @@
-# doc Start
-doc/~$3_上传流程.drawio.bkp
-# doc End
+*.bkp
+*.dtmp
+*.pubxml
+*.pubxml.user
 
-# Root Start
-src/.vs
-src/.vscode
-# Root End
+**/.vs
+**/.vscode
+**/bin
+**/obj
 
-# North Start
-src/North/.vs
-src/North/bin
-src/North/obj
+# North
 src/North/.config
 src/North/appsettings.json
-# North End
 
-# North.Core Start
-src/North.Core/.vs
-src/North.Core/bin
-src/North.Core/obj
-# North.Core End
-
-# North.Plugin Start
-src/North.Plugin/.vs
-src/North.Plugin/bin
-src/North.Plugin/obj
-# North.PluginBase End
-
-# North.Nsfw Start
-src/North.Nsfw/.vs
-src/North.Nsfw/bin
-src/North.Nsfw/obj
+# North.Nsfw
 src/North.Nsfw/Properties
-# North.Nsfw End
-
-# North.RCL Start
-src/North.RCL/.vs
-src/North.RCL/bin
-src/North.RCL/obj
 src/North.RCL/Properties
-# North.RCL End
 
-# North.Benchmark Start
-src/North.Benchmark/.vs
-src/North.Benchmark/bin
-src/North.Benchmark/obj
-#  North.Benchmark End
-
-# North.Plugins Start
+# North.Plugins
 src/North.Plugin.LocalStorage/*
 src/North.Plugin.Bingimg/*
 src/North.Plugin.Firewall/*
 src/North.PluginTest/*
-# North.Plugins End
-
-# North.Plugin.NetVips Start
-src/North.Plugin.NetVips/.vs
-src/North.Plugin.NetVips/bin
-src/North.Plugin.NetVips/obj
-# North.Plugin.NetVips End
-/src/North/appsettings.json
-/src/North/Properties/PublishProfiles/linux-arm64.pubxml
-/src/North/Properties/PublishProfiles/linux-arm64.pubxml.user
-/src/North/Properties/PublishProfiles/win-x64-v2.4.15.pubxml
-/src/North/Properties/PublishProfiles/win-x64-v2.4.15.pubxml.user
-/src/North/Properties/PublishProfiles/win-x64.pubxml
-/src/North/Properties/PublishProfiles/win-x64.pubxml.user
-/src/North.Server/obj
-/src/North.Client/.vs
-/src/North.Client/bin
-/src/North.Client/obj
-/src/North.Razor/bin
-/src/North.Razor/obj
-/src/North.Server/bin/Debug/net8.0
