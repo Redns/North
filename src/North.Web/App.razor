@@ -1,6 +1,27 @@
-﻿<Router AppAssembly="@typeof(App).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+﻿<PageTitle>@AppName</PageTitle>
+
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
+    <NotFound>
+        <MudStack Spacing="0" Class="mud-height-full mud-width-full" Style="min-height: 100vh;">
+            <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center"
+                      Class="mud-width-full" Style="flex: 1;">
+                <MudImage Src="icons/warn.svg" Width="180" Height="180" Style="margin-right:20px;" />
+                <MudText Typo="Typo.h5">目标地址不存在，</MudText>
+                <MudLink Href="" Typo="Typo.h5">点击此处</MudLink>
+                <MudText Typo="Typo.h5">返回首页</MudText>
+            </MudStack>
+            @if (!string.IsNullOrWhiteSpace(FooterText))
+            {
+                <FooterText Content="@FooterText" Style="height:40px; text-align:center;" />
+            }
+        </MudStack>
+    </NotFound>
 </Router>
+
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />

@@ -7,17 +7,7 @@
 **/.vscode
 **/bin
 **/obj
+**/Properties
 
-# North
 src/North/.config
 src/North/appsettings.json
-
-# North.Nsfw
-src/North.Nsfw/Properties
-src/North.RCL/Properties
-
-# North.Plugins
-src/North.Plugin.LocalStorage/*
-src/North.Plugin.Bingimg/*
-src/North.Plugin.Firewall/*
-src/North.PluginTest/*

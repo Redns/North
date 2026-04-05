@@ -1,21 +1,27 @@
 ﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+@inject NavigationManager _nav
 
-        <article class="content px-4">
+<MudStack Spacing="0" Style="height:50px;">
+    <ActionToolBar IsExpanded="@IsExpanded" ThemeMode="@ThemeMode" Title="North"
+                   OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" OnSwitchTheme="@SwitchTheme"
+                   OnUserClick="@(() => SignOut())" />
+    <MudDivider />
+</MudStack>
+<MudStack Row Spacing="0" Style="position: absolute; top: 50px; bottom: 0; left: 0; right:0; user-select: none;">
+    <NavMenu IsExpanded="@IsExpanded" OpenMiniOnHover="@OpenMiniOnHover" Style="width:240px;" />
+    <MudStack Spacing="0" Class="mud-height-full mud-width-full">
+        @if (string.IsNullOrWhiteSpace(FooterText))
+        {
             @Body
-        </article>
-    </main>
-</div>
-
-<MudThemeProvider />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
+        }
+        else
+        {
+            <MudStack Class="mud-width-full" Style="height:calc(100% - 40px);">
+                @Body
+            </MudStack>
+            <FooterText Content="@FooterText" Style="height:40px; text-align:center;" />
+        }
+    </MudStack>
+</MudStack>
+<MudThemeProvider IsDarkMode="@IsDarkMode" @ref="_mudThemeProvider" />

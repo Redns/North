@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.4.11626.88 stable
+VisualStudioVersion = 18.4.11626.88
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "North.Sdk", "North.Sdk\North.Sdk.csproj", "{B84F114F-DE39-432D-9836-0B8A0D2FE0A9}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "North.WebApi", "North.WebApi\North.WebApi.csproj", "{9C7F8D1A-0C8C-4254-9AEE-A73E498EF978}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "North.Web", "North.Web\North.Web.csproj", "{20CA986D-055D-4F7F-9653-E903285F8BB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "North.RCL", "North.RCL\North.RCL.csproj", "{A8E76602-2BE2-5A9A-9172-D3053F866F7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{20CA986D-055D-4F7F-9653-E903285F8BB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20CA986D-055D-4F7F-9653-E903285F8BB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20CA986D-055D-4F7F-9653-E903285F8BB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8E76602-2BE2-5A9A-9172-D3053F866F7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8E76602-2BE2-5A9A-9172-D3053F866F7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8E76602-2BE2-5A9A-9172-D3053F866F7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8E76602-2BE2-5A9A-9172-D3053F866F7D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
