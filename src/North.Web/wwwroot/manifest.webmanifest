@@ -1,6 +1,6 @@
 {
-  "name": "North.Web",
-  "short_name": "North.Web",
+  "name": "North",
+  "short_name": "North",
   "id": "./",
   "start_url": "./",
   "display": "standalone",

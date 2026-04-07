@@ -21,11 +21,14 @@
 
 <body>
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+        <div class="loading-container">
+            <!-- 旋转 SVG 图形 -->
+            <img src="icons/loading.svg" class="loading-spinner" alt="Loading..." />
+            <!-- 进度条 -->
+            <div class="loading-progress-bar">
+                <div class="loading-progress-bar-fill"></div>
+            </div>
+        </div>
     </div>
 
     <div id="blazor-error-ui">
