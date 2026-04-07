@@ -95,3 +95,13 @@ h1:focus {
 code {
     color: #c02d76;
 }
+
+/* 在触屏设备上隐藏所有 tooltip 相关元素 */
+@media (any-hover: none) and (any-pointer: coarse) {
+
+    .mud-tooltip,
+    .mud-popover[class*="tooltip"],
+    .mud-tooltip-root .mud-popover {
+        display: none !important;
+    }
+}
