@@ -22,7 +22,7 @@ namespace North.Web.Layout
         /// 鼠标悬浮时自动展开侧边栏
         /// TODO 通过 API 获取用户设置
         /// </summary>
-        public bool OpenMiniOnHover { get; set; } = true;
+        public bool OpenMiniOnHover { get; set; } = false;
 
         /// <summary>
         /// 侧边导航栏是否展开

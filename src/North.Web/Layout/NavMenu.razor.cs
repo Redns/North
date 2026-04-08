@@ -2,7 +2,7 @@
 
 namespace North.Web.Layout
 {
-   public partial class NavMenu
+    public partial class NavMenu
     {
         [Parameter]
         public string Style { get; set; } = string.Empty;
