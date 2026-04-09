@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace North.Web
 {
@@ -27,6 +28,7 @@ namespace North.Web
                 config.SnackbarConfiguration.HideTransitionDuration = 200;
                 config.SnackbarConfiguration.ShowTransitionDuration = 200;
             });
+            builder.Services.AddPWAUpdater();
 
             await builder.Build().RunAsync();
         }

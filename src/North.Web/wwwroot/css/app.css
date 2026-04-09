@@ -3,6 +3,12 @@ body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+body .pwa-updater[b-pwa-updater] {
+    --pwa-updater-bar-height: 40px;
+    --pwa-updater-bar-backcolor: #00AF69;
+    --pwa-updater-bar-z-index: calc(var(--mud-zindex-drawer) + 10) !important;
+}
+
 h1:focus {
     outline: none;
 }

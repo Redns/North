@@ -8,6 +8,14 @@ self.addEventListener("activate", (event) =>
 );
 self.addEventListener("fetch", (event) => event.respondWith(onFetch(event)));
 
+// PWA Update message listener
+self.addEventListener("message", async (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    self.skipWaiting();
+  }
+});
+
 const cacheNamePrefix = "offline-cache-";
 const cacheName = `${cacheNamePrefix}${self.assetsManifest.version}`;
 const offlineAssetsInclude = [
