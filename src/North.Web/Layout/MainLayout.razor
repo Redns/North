@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
-
 @inject NavigationManager _nav
+@inject IHttpClientFactory httpClientFactory
 
 <MudStack Spacing="0" Style="height:50px;">
     <ActionToolBar IsExpanded="@IsExpanded" ThemeMode="@ThemeMode" Title="North"
@@ -25,5 +25,8 @@
     </MudStack>
 </MudStack>
 
-<PWAUpdater Text="检测到新版本" ButtonCaption="立即更新" Align="PWAUpdater.Aligns.Bottom" />
+<PWAUpdater Text="" ButtonCaption="立即更新" Align="PWAUpdater.Aligns.Bottom">
+    <p>@ReleaseNotesText</p>
+</PWAUpdater>
+
 <MudThemeProvider IsDarkMode="@IsDarkMode" @ref="_mudThemeProvider" />

@@ -8,6 +8,11 @@ namespace North.Web.Layout
         private MudThemeProvider? _mudThemeProvider;
 
         /// <summary>
+        /// PWA 更新内容
+        /// </summary>
+        public string ReleaseNotesText { get; set; } = "检测到新版本";
+
+        /// <summary>
         /// TODO 通过 API 获取应用名称
         /// </summary>
         public string AppName { get; set; } = "North";
@@ -45,6 +50,21 @@ namespace North.Web.Layout
         public bool IsDarkMode =>
             ThemeMode is ThemeMode.Dark || (ThemeMode is ThemeMode.System && IsSystemDarkMode);
 
+        protected override async Task OnInitializedAsync()
+        {
+            // 加载更新日志
+            try
+            {
+                ReleaseNotesText = await httpClientFactory
+                    .CreateClient(Program.HTTP_CLIENT_LOCAL)
+                    .GetStringAsync("/data/release_notes.txt");
+            }
+            catch
+            {
+                ReleaseNotesText = "检测到新版本";
+            }
+        }
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender && _mudThemeProvider != null)
@@ -61,13 +81,11 @@ namespace North.Web.Layout
                     }
                 });
             }
-            await base.OnAfterRenderAsync(firstRender);
         }
 
         /// <summary>
         /// 切换主题
         /// </summary>
-        /// <returns></returns>
         public async Task SwitchTheme()
         {
             ThemeMode = ThemeMode switch
