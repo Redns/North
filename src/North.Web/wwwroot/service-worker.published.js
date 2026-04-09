@@ -11,7 +11,6 @@ self.addEventListener("fetch", (event) => event.respondWith(onFetch(event)));
 // PWA Update message listener
 self.addEventListener("message", async (event) => {
   if (event.data?.type === "SKIP_WAITING") {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
     self.skipWaiting();
   }
 });
@@ -25,12 +24,23 @@ const offlineAssetsInclude = [
   /\.html/,
   /\.js$/,
   /\.json$/,
+  /\.xml$/,
+  /\.yaml$/,
+  /\.toml$/,
   /\.css$/,
   /\.woff$/,
+  /\.woff2$/,
+  /\.ttf$/,
+  /\.eot$/,
+  /\.otf$/,
   /\.png$/,
   /\.jpe?g$/,
   /\.gif$/,
   /\.ico$/,
+  /\.svg$/,
+  /\.webp$/,
+  /\.avif$/,
+  /\.bmp$/,
   /\.blat$/,
   /\.dat$/,
 ];
