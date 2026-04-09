@@ -3,6 +3,7 @@ body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+/* PWA 应用更新提醒 */
 body .pwa-updater[b-pwa-updater] {
     --pwa-updater-bar-height: 40px;
     --pwa-updater-bar-backcolor: #00AF69;
@@ -34,6 +35,53 @@ h1:focus {
     color: red;
 }
 
+/* 加载动画容器 */
+.loading-container {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.loading-spinner {
+    width: 4rem;
+    height: 4rem;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 加载进度条 */
+.loading-progress-bar {
+    width: 200px;
+    height: 4px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.loading-progress-bar-fill {
+    width: var(--blazor-load-percentage, 0%);
+    height: 100%;
+    background-color: #31C8C9;
+    border-radius: 4px;
+    transition: width 0.1s ease-out;
+}
+
+code {
+    color: #c02d76;
+}
+
+/* 未知错误提示 */
 #blazor-error-ui {
     color-scheme: light only;
     background: lightyellow;
@@ -55,55 +103,22 @@ h1:focus {
     top: 0.5rem;
 }
 
-/* 容器 - 整体居中 */
-.loading-container {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
+/* 页脚 */
+.footer-text {
+    display: block;
 }
 
-/* 旋转加载动画 - 使用 SVG 文件 */
-.loading-spinner {
-    width: 4rem;
-    height: 4rem;
-    animation: spin 0.8s linear infinite;
-}
+/* 在小屏设备上不显示页脚（宽度 ≤ 600px） */
+@media (max-width: 600px) {
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
+    .footer-text,
+    .footer-text .mud-stack,
+    div[class*="footer-text"] {
+        display: none !important;
     }
 }
 
-/* 进度条容器 */
-.loading-progress-bar {
-    width: 200px;
-    height: 4px;
-    background-color: #e0e0e0;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-/* 进度条填充 */
-.loading-progress-bar-fill {
-    width: var(--blazor-load-percentage, 0%);
-    height: 100%;
-    background-color: #31C8C9;
-    border-radius: 4px;
-    transition: width 0.1s ease-out;
-}
-
-code {
-    color: #c02d76;
-}
-
-/* 在触屏设备上隐藏所有 tooltip 相关元素 */
+/* 在触屏设备上隐藏 tooltip 相关元素 */
 @media (any-hover: none) and (any-pointer: coarse) {
 
     .mud-tooltip,

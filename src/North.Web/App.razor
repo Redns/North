@@ -18,8 +18,7 @@
             </MudStack>
             @if (!string.IsNullOrWhiteSpace(FooterText))
             {
-                <FooterText Content="@FooterText"
-                            Style="height:40px; text-align:center; position: absolute; bottom: 0; width: 100%;" />
+                <FooterText Content = "@FooterText" Style="height:40px; text-align:center; position: absolute; bottom: 0; width: 100%;" Class="footer-text" />
             }
         </MudStack>
     </NotFound>
