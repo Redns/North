@@ -52,17 +52,7 @@ namespace North.Web.Layout
 
         protected override async Task OnInitializedAsync()
         {
-            // 加载更新日志
-            try
-            {
-                ReleaseNotesText = await httpClientFactory
-                    .CreateClient(Program.HTTP_CLIENT_LOCAL)
-                    .GetStringAsync("/data/release_notes.txt");
-            }
-            catch
-            {
-                ReleaseNotesText = "检测到新版本";
-            }
+            PWAUpdaterService.NextVersionIsWaiting += OnUpdateReady;
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -103,6 +93,25 @@ namespace North.Web.Layout
         public void SignOut()
         {
             _nav.NavigateTo("signout", true);
+        }
+
+        private async void OnUpdateReady(object? sender, EventArgs e)
+        {
+            try
+            {
+                ReleaseNotesText = await httpClientFactory
+                    .CreateClient(Program.HTTP_CLIENT_LOCAL)
+                    .GetStringAsync("data/release_notes.txt");
+            }
+            catch
+            {
+                ReleaseNotesText = "检测到新版本";
+            }
+        }
+
+        public void Dispose()
+        {
+            PWAUpdaterService.NextVersionIsWaiting -= OnUpdateReady;
         }
     }
 }

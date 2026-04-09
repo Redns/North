@@ -24,6 +24,7 @@ const offlineAssetsInclude = [
   /\.html/,
   /\.js$/,
   /\.json$/,
+  /\.txt$/,
   /\.xml$/,
   /\.yaml$/,
   /\.toml$/,
@@ -44,7 +45,10 @@ const offlineAssetsInclude = [
   /\.blat$/,
   /\.dat$/,
 ];
-const offlineAssetsExclude = [/^service-worker\.js$/];
+const offlineAssetsExclude = [
+  /^service-worker\.js$/,
+  /data\/release_notes\.txt$/,
+];
 
 // Replace with your base path if you are hosting on a subfolder. Ensure there is a trailing '/'.
 const base = "/";

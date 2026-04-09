@@ -1,6 +1,9 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager _nav
 @inject IHttpClientFactory httpClientFactory
+@inject IPWAUpdaterService PWAUpdaterService
+
+@implements IDisposable
 
 <MudStack Spacing="0" Style="height:50px;">
     <ActionToolBar IsExpanded="@IsExpanded" ThemeMode="@ThemeMode" Title="North"
