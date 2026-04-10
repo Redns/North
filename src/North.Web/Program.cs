@@ -1,24 +1,23 @@
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
+using North.Web.Layout;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace North.Web
 {
     public class Program
     {
-        public const string HTTP_CLIENT_LOCAL = "LocalClient";
-
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            builder.Services.AddHttpClient(
-                HTTP_CLIENT_LOCAL,
-                client =>
+            builder.Services.AddHttpClient<MainLayout>(
+                (services, client) =>
                 {
                     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
                 }
@@ -38,6 +37,7 @@ namespace North.Web
                 config.SnackbarConfiguration.ShowTransitionDuration = 200;
             });
             builder.Services.AddPWAUpdater();
+            builder.Services.AddBlazoredLocalStorage();
 
             await builder.Build().RunAsync();
         }

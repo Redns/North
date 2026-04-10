@@ -1,9 +1,5 @@
 ﻿@using MudBlazor
 
-<MudStack Class="@Class" Style="@Style">
-    @FooterContent
+<MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="@Class" Style="@Style">
+    @((MarkupString)Content)
 </MudStack>
-
-@code {
-    RenderFragment FooterContent => (builder) => builder.AddMarkupContent(0, Content);
-}

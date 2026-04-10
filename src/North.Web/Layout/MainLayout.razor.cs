@@ -1,5 +1,7 @@
-﻿using MudBlazor;
+﻿using FastEnumUtility;
+using MudBlazor;
 using North.RCL.ToolBars;
+using North.Web.Common;
 
 namespace North.Web.Layout
 {
@@ -52,13 +54,39 @@ namespace North.Web.Layout
 
         protected override async Task OnInitializedAsync()
         {
+            await base.OnInitializedAsync();
+
+            // PWA 更新事件
             PWAUpdaterService.NextVersionIsWaiting += OnUpdateReady;
+
+            // 加载本地主题模式
+            var themeModeString = await localStorageService.GetItemAsStringAsync(
+                GlobalValues.LOCAL_STORAGE_KEY_THEME_MODE
+            );
+
+            if (string.IsNullOrEmpty(themeModeString))
+            {
+                await localStorageService.SetItemAsStringAsync(
+                    GlobalValues.LOCAL_STORAGE_KEY_THEME_MODE,
+                    ThemeMode.FastToString()
+                );
+            }
+            else
+            {
+                ThemeMode = FastEnum.Parse<ThemeMode>(themeModeString);
+            }
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
+            await base.OnAfterRenderAsync(firstRender);
+
             if (firstRender && _mudThemeProvider != null)
             {
+                ReleaseNotesText = await httpClientFactory
+                    .CreateClient(nameof(MainLayout))
+                    .GetStringAsync("data/release_notes.txt");
+
                 // 获取系统主题
                 IsSystemDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
                 // 监听系统主题的变化
@@ -85,6 +113,11 @@ namespace North.Web.Layout
                 ThemeMode.Light => ThemeMode.System,
                 _ => ThemeMode.System,
             };
+
+            await localStorageService.SetItemAsStringAsync(
+                GlobalValues.LOCAL_STORAGE_KEY_THEME_MODE,
+                ThemeMode.FastToString()
+            );
         }
 
         /// <summary>
@@ -92,7 +125,7 @@ namespace North.Web.Layout
         /// </summary>
         public void SignOut()
         {
-            _nav.NavigateTo("signout", true);
+            navigationManager.NavigateTo("signout", true);
         }
 
         private async void OnUpdateReady(object? sender, EventArgs e)
@@ -100,7 +133,7 @@ namespace North.Web.Layout
             try
             {
                 ReleaseNotesText = await httpClientFactory
-                    .CreateClient(Program.HTTP_CLIENT_LOCAL)
+                    .CreateClient()
                     .GetStringAsync("data/release_notes.txt");
             }
             catch

@@ -1,7 +1,9 @@
 ﻿@inherits LayoutComponentBase
-@inject NavigationManager _nav
+
+@inject NavigationManager navigationManager
 @inject IHttpClientFactory httpClientFactory
 @inject IPWAUpdaterService PWAUpdaterService
+@inject ILocalStorageService localStorageService
 
 @implements IDisposable
 
