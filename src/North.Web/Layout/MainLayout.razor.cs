@@ -83,10 +83,6 @@ namespace North.Web.Layout
 
             if (firstRender && _mudThemeProvider != null)
             {
-                ReleaseNotesText = await httpClientFactory
-                    .CreateClient(nameof(MainLayout))
-                    .GetStringAsync("data/release_notes.txt");
-
                 // 获取系统主题
                 IsSystemDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
                 // 监听系统主题的变化
@@ -133,7 +129,7 @@ namespace North.Web.Layout
             try
             {
                 ReleaseNotesText = await httpClientFactory
-                    .CreateClient()
+                    .CreateClient(nameof(MainLayout))
                     .GetStringAsync("data/release_notes.txt");
             }
             catch
