@@ -4,13 +4,18 @@ public static class GlobalValues
 {
     #region LocalStorage Keys
     /// <summary>
-    /// 主题模式
+    /// 涓婚妯″紡
     /// </summary>
     public const string LOCAL_STORAGE_KEY_THEME_MODE = "ThemeMode";
 
     /// <summary>
-    /// 系统主题色是否为深色模式
+    /// 绯荤粺涓婚妯″紡
     /// </summary>
     public const string LOCAL_STORAGE_KEY_IS_SYSTEM_DARK_MODE = "SystemDarkMode";
+
+    /// <summary>
+    /// 宸︿晶鑿滃崟鏄惁灞曞紑
+    /// </summary>
+    public const string LOCAL_STORAGE_KEY_IS_LEFT_MENU_EXPANDED = "IsMenuExpanded";
     #endregion
 }

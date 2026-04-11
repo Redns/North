@@ -1,3 +1,5 @@
+using North.Web.Common;
+
 namespace North.Web.Layout
 {
     public partial class MainLayout
@@ -26,14 +28,38 @@ namespace North.Web.Layout
         /// <summary>
         /// 侧边导航栏是否展开
         /// </summary>
-        public bool IsExpanded { get; set; } = false;
+        public bool IsExpanded
+        {
+            get;
+            set
+            {
+                if (field == value)
+                {
+                    return;
+                }
+                field = value;
+
+                // InvokeAsync(
+                //     async () =>
+                //         await localStorageService.SetItemAsync(
+                //             GlobalValues.LOCAL_STORAGE_KEY_IS_LEFT_MENU_EXPANDED,
+                //             value
+                //         )
+                // );
+            }
+        } = false;
 
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
 
-            PWAUpdaterService.NextVersionIsWaiting += OnUpdateReady;
             await ThemeState.InitializeAsync();
+
+            PWAUpdaterService.NextVersionIsWaiting += OnUpdateReady;
+
+            // IsExpanded = await localStorageService.GetItemAsync<bool>(
+            //     GlobalValues.LOCAL_STORAGE_KEY_IS_LEFT_MENU_EXPANDED
+            // );
         }
 
         /// <summary>
