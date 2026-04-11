@@ -3,12 +3,12 @@
 @inject NavigationManager navigationManager
 @inject IHttpClientFactory httpClientFactory
 @inject IPWAUpdaterService PWAUpdaterService
-@inject ILocalStorageService localStorageService
+@inject AppThemeState ThemeState
 
 @implements IDisposable
 
 <MudStack Spacing="0" Style="height:50px;">
-    <ActionToolBar IsExpanded="@IsExpanded" ThemeMode="@ThemeMode" Title="North"
+    <ActionToolBar IsExpanded="@IsExpanded" ThemeMode="@ThemeState.ThemeMode" Title="North"
                    OnNavMenuStateChanged="(() => IsExpanded = !IsExpanded)" OnSwitchTheme="@SwitchTheme"
                    OnUserClick="@(() => SignOut())" />
     <MudDivider />
@@ -34,4 +34,4 @@
     <p>@ReleaseNotesText</p>
 </PWAUpdater>
 
-<MudThemeProvider IsDarkMode="@IsDarkMode" @ref="_mudThemeProvider" />
+<AppThemeProvider PersistThemeModeIfMissing="true" />

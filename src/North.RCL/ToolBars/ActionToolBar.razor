@@ -4,8 +4,8 @@
 
 <MudToolBar Style="@Style">
     <MudTooltip Text="@(IsExpanded ? "收起" : "展开")" Placement="Placement.Right">
-        <MudIconButton Icon="@Icons.Material.Outlined.Menu"
-                       OnClick="@OnNavMenuStateChanged" Ripple="false" Style="margin-left:-20px;" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" OnClick="@OnNavMenuStateChanged" Ripple="false"
+                       Style="margin-left:-20px;" />
     </MudTooltip>
     <TitleText Text="@Title" Style="margin-left:10px; font-size:22px; user-select:none; font-weight:450;" />
     <MudSpacer />
@@ -16,6 +16,6 @@
         <MudIconButton Icon="@Icons.Material.Outlined.ManageAccounts" OnClick="@OnUserClick" />
     </MudTooltip>
     <MudTooltip Text="@ThemeSwitchTooltip">
-        <MudIconButton Icon="@ThemeSwitchIcon" OnClick="@OnSwitchTheme" />
+        <MudIconButton Icon="@ThemeSwitchIcon" OnClick="@OnSwitchTheme" Style="margin-right:-10px;" />
     </MudTooltip>
 </MudToolBar>

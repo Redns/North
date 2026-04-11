@@ -1,5 +1,3 @@
-﻿@inject ILocalStorageService localStorageService
-
 <MudStack Spacing="0" Class="mud-height-full mud-width-full" Style="min-height: 100vh;" Justify="Justify.Center"
           AlignItems="AlignItems.Center">
     <MudStack Style="margin-bottom: 200px;" Class="mud-width-full" AlignItems="AlignItems.Center">
@@ -18,5 +16,4 @@
     }
 </MudStack>
 
-<!-- stupid to repeat -->
-<MudThemeProvider IsDarkMode="@IsDarkMode" @ref="_mudThemeProvider" />
+<AppThemeProvider />

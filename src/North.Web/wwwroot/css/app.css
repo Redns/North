@@ -1,12 +1,40 @@
 html,
 body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+html,
+body,
+#app {
+    min-height: 100%;
+}
+
+html,
+body {
+    background-color: var(--mud-palette-background,
+            var(--app-loading-background, #ffffff));
+}
+
+body {
+    margin: 0;
+}
+
+html[data-theme-dark="true"],
+body[data-theme-dark="true"] {
+    --app-loading-background: #32333d;
+    --app-loading-track: rgba(255, 255, 255, 0.14);
+}
+
+html[data-theme-dark="false"],
+body[data-theme-dark="false"] {
+    --app-loading-background: var(--mud-palette-background);
+    --app-loading-track: rgba(0, 0, 0, 0.08);
 }
 
 /* PWA 应用更新提醒 */
 body .pwa-updater[b-pwa-updater] {
     --pwa-updater-bar-height: 40px;
-    --pwa-updater-bar-backcolor: #00AF69;
+    --pwa-updater-bar-backcolor: #00af69;
     --pwa-updater-bar-z-index: calc(var(--mud-zindex-drawer) + 10) !important;
     --pwa-updater-updatenowbutton-height: 30px;
 }
@@ -26,15 +54,15 @@ h1:focus {
 
 /* 加载动画容器 */
 .loading-container {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: fixed;
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 1rem;
+    background-color: var(--mud-palette-background,
+            var(--app-loading-background, #ffffff));
 }
 
 .loading-spinner {
@@ -53,7 +81,7 @@ h1:focus {
 .loading-progress-bar {
     width: 200px;
     height: 4px;
-    background-color: #e0e0e0;
+    background-color: var(--app-loading-track, rgba(0, 0, 0, 0.08));
     border-radius: 4px;
     overflow: hidden;
 }
@@ -61,7 +89,7 @@ h1:focus {
 .loading-progress-bar-fill {
     width: var(--blazor-load-percentage, 0%);
     height: 100%;
-    background-color: #31C8C9;
+    background-color: #31c8c9;
     border-radius: 4px;
     transition: width 0.1s ease-out;
 }
@@ -93,7 +121,7 @@ h1:focus {
     display: block;
 }
 
-/* 在小屏设备上不显示页脚（宽度 ≤ 600px） */
+/* 在小屏设备上不显示页脚 */
 @media (max-width: 600px) {
 
     .footer-text,

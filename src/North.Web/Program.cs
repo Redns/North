@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
 using North.Web.Layout;
+using North.Web.Services;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace North.Web
@@ -38,6 +39,7 @@ namespace North.Web
             });
             builder.Services.AddPWAUpdater();
             builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddScoped<AppThemeState>();
 
             await builder.Build().RunAsync();
         }

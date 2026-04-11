@@ -11,6 +11,6 @@
         /// TODO 通过 API 获取页脚信息
         /// </summary>
         public string FooterText { get; set; } =
-            @"<a href=""https://github.com/Redns/ImageBed"" target=""_blank"" style=""color: rgba(0, 164, 255, 1); font-size: 16px"">Powered by North © 2022-2026 Redns, All rights reserved</a>";
+            @"<a href=""https://github.com/Redns/North"" target=""_blank"" style=""color: rgba(0, 164, 255, 1); font-size: 16px"">Powered by North © 2022-2026 Redns, All rights reserved</a>";
     }
 }

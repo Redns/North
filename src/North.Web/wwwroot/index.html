@@ -13,19 +13,52 @@
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet" />
+          rel="stylesheet" />
     <!-- Important: Increment the version parameter whenever you update MudBlazor to prevent caching issues -->
     <link href="_content/MudBlazor/MudBlazor.min.css?v=1" rel="stylesheet" />
+    <meta name="color-scheme" content="light dark" />
+    <style>
+        html {
+            background-color: #f7f9fc;
+        }
+
+        html[data-theme-dark="true"] {
+            background-color: #32333d;
+        }
+    </style>
+    <script>
+        window.northTheme = {
+            apply: function (themeMode, isDarkMode) {
+                var root = document.documentElement;
+                var body = document.body;
+
+                root.dataset.themeMode = themeMode || "System";
+                root.dataset.themeDark = isDarkMode ? "true" : "false";
+
+                if (body) {
+                    body.dataset.themeMode = root.dataset.themeMode;
+                    body.dataset.themeDark = root.dataset.themeDark;
+                }
+            }
+        };
+
+        (function () {
+            var themeMode = localStorage.getItem("ThemeMode") || "System";
+            var isSystemDarkMode = window.matchMedia &&
+                window.matchMedia("(prefers-color-scheme: dark)").matches;
+            var isDarkMode = themeMode === "Dark" || (themeMode === "System" && isSystemDarkMode);
+
+            window.northTheme.apply(themeMode, isDarkMode);
+        })();
+    </script>
     <script type="importmap"></script>
 </head>
 
 <body>
     <div id="app">
         <div class="loading-container">
-            <!-- 加载动画图标 -->
             <img src="icons/loading.svg" class="loading-spinner" alt="Loading..." />
-            <!-- 加载进度条 -->
-            <div class="loading-progress-bar" 1>
+            <div class="loading-progress-bar">
                 <div class="loading-progress-bar-fill"></div>
             </div>
         </div>
